@@ -20,7 +20,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-            url: 'api/daphne/command', // the url where we want to POST
+            url: '/api/daphne/command', // the url where we want to POST
             data: formData, // our data object
             dataType: 'json', // what type of data do we expect back from the server
             encode: true
@@ -49,7 +49,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-            url: 'api/histdb/question', // the url where we want to POST
+            url: '/api/histdb/question', // the url where we want to POST
             data: formData, // our data object
             dataType: 'json', // what type of data do we expect back from the server
             encode: true
