@@ -100,13 +100,13 @@ $(document).ready(function() {
     });
 
     if (annyang) {
-        // Let's define our first command. First the text we expect, and then the function it should call
-        var commands = {
-            'hello': function() { alert('Hello world!'); }
-        };
+        // // Let's define our first command. First the text we expect, and then the function it should call
+        // var commands = {
+        //     'hello': function() { alert('Hello world!'); }
+        // };
 
-        // Add our commands to annyang
-        annyang.addCommands(commands);
+        // // Add our commands to annyang
+        // annyang.addCommands(commands);
 
         annyang.addCallback('result', function(phrases) {
             executeCommand(phrases[0]);
