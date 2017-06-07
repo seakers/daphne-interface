@@ -9,69 +9,86 @@
     <link rel="stylesheet" href="css/app.css">
   </head>
   <body>
-    <div class="row">
-      <div class="large-12 columns">
-        <h1 class="text-center">DAPHNE</h1>
-      </div>
-    </div>
+    <div class="expanded row" id="full-page">
+      <div class="large-7 columns" id="left-side">
+        <div class="row">
+          <div class="large-12 columns" id="figure-zone">Figure</div>
+        </div>
+        <div class="row">
+          <div class="large-12 columns" id="support-zone">Support</div>
+        </div>
+      </div> <!-- Finish left-side -->
 
-    <hr>
+      <div class="large-5 columns" id="right-side">
+        <form id="daphne-form" action="/api/daphne/command" method="POST">
+          <div class="row">
+            <div class="large-12 columns" id="input-zone">
+              <div class="input-group">
+                <input class="input-group-field" name="command" type="text" placeholder="Ask a question / Give a command / Speak it out!">
+                <div class="input-group-button">
+                  <input type="submit" class="button" value="Do it!">
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
 
-    <div class="row">
-      <div class="large-12 columns">
-        <h3 class="text-center" id="active-mode">No active mode</h3>
-      </div>
-    </div>
+        <div class="row">
+          <div class="large-12 columns" id="cards-zone">
+            Cards zone
+            <div class="row">
+              <div class="large-12 columns">
+                <h3 class="text-center" id="active-mode">No active mode</h3>
+              </div>
+            </div>
 
-    <hr>
+            <hr>
 
-    <form id="daphne-form" action="/api/daphne/command" method="POST">
-      <div class="row">
-        <div class="input-group">
-          <input class="input-group-field" name="command" type="text" placeholder="Ask a question / Give a command / Speak it out!">
-          <div class="input-group-button">
-            <input type="submit" class="button" value="Do it!">
+            <div class="row">
+              <div class="callout large-12 columns" id="result-box">
+                <p class="text-center">The result of your action will appear here!</p>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+              <div class="large-12 columns">
+                <h3 class="text-center">Cheatsheet</h3>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="large-6 columns">
+                <div class="card">
+                  <div class="card-divider">
+                    <h4>General commands</h4>
+                  </div>
+                  <div class="card-section" id="general-command-list">
+                    <p>List of commands.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="large-6 columns">
+                <div class="card">
+                  <div class="card-divider">
+                    <h4>Active mode commands</h4>
+                  </div>
+                  <div class="card-section" id="active-command-list">
+                    <p>List of commands.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </form>
 
-    <div class="row">
-      <div class="callout large-12 columns" id="result-box">
-        <p class="text-center">The result of your action will appear here!</p>
-      </div>
-    </div>
-
-    <hr>
-
-    <div class="row">
-      <div class="large-12 columns">
-        <h3 class="text-center">Cheatsheet</h3>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="large-6 columns">
-        <div class="card">
-          <div class="card-divider">
-            <h4>General commands</h4>
-          </div>
-          <div class="card-section" id="general-command-list">
-            <p>List of commands.</p>
-          </div>
+        <div class="row">
+          <div class="large-12 columns" id="extra-zone">Extra space</div>
         </div>
-      </div>
-      <div class="large-6 columns">
-        <div class="card">
-          <div class="card-divider">
-            <h4>Active mode commands</h4>
-          </div>
-          <div class="card-section" id="active-command-list">
-            <p>List of commands.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+
+      </div> <!-- Finish right-side -->
+    </div> <!-- Finish full-page -->
 
     <script src="js/vendor/jquery.js"></script>
     <script src="js/vendor/what-input.js"></script>
