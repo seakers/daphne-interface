@@ -47,6 +47,8 @@ $(document).ready(function() {
             'question': question
         }
 
+        $("input[name=command]").val(question);
+
         $.ajax({
             type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
             url: '/api/histdb/question', // the url where we want to POST
