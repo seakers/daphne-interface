@@ -2,7 +2,7 @@ $(document).foundation();
 
 $(document).ready(function() {
 
-    var currentMode = 0;
+    var currentMode = -1;
 
     var modeCodes = [
         'No active mode',
@@ -91,6 +91,10 @@ $(document).ready(function() {
         }
         else if (real_command_type == 5) {
             // Send command to criticize API
+        }
+        else if (real_command_type == 100) {
+            // Stop
+            responsiveVoice.cancel();
         }
     }
 
