@@ -9,86 +9,110 @@
     <link rel="stylesheet" href="css/app.css">
   </head>
   <body>
-    <div class="expanded row" id="full-page">
-      <div class="large-7 columns" id="left-side">
-        <div class="row">
-          <div class="large-12 columns" id="figure-zone">Figure</div>
+    <div class="app-dashboard shrink-medium">
+      <div class="row expanded app-dashboard-top-nav-bar">
+        <div class="columns medium-2">
+          <button data-toggle="app-dashboard-sidebar" class="menu-icon hide-for-medium"></button>
+          <a class="app-dashboard-logo">Foundation</a>
         </div>
-        <div class="row">
-          <div class="large-12 columns" id="support-zone">Support</div>
+        <div class="columns show-for-medium">
+          <div class="app-dashboard-search-bar-container">
+            <input class="app-dashboard-search" type="search" placeholder="Search">
+            <i class="app-dashboard-search-icon fa fa-search"></i>
+          </div>
         </div>
-      </div> <!-- Finish left-side -->
+        <div class="columns shrink app-dashboard-top-bar-actions">
+          <button href="#" class="button hollow">Logout</button>
+          <a href="#" height="30" width="30" alt=""><i class="fa fa-info-circle"></i></a>
+        </div>
+      </div>
 
-      <div class="large-5 columns" id="right-side">
-        <form id="daphne-form" action="/api/daphne/command" method="POST">
-          <div class="row">
-            <div class="large-12 columns" id="input-zone">
-              <div class="input-group">
-                <input class="input-group-field" name="command" type="text" placeholder="Ask a question / Give a command / Speak it out!">
-                <div class="input-group-button">
-                  <input type="submit" class="button" value="Do it!">
-                </div>
-              </div>
+      <div class="app-dashboard-body off-canvas-wrapper">
+        <div id="app-dashboard-sidebar" class="app-dashboard-sidebar position-left off-canvas off-canvas-absolute reveal-for-medium" data-off-canvas>
+          <div class="app-dashboard-sidebar-title-area">
+            <div class="app-dashboard-close-sidebar">
+              <h3 class="app-dashboard-sidebar-block-title">Items</h3>
+              <!-- Close button -->
+              <button id="close-sidebar" data-app-dashboard-toggle-shrink class="app-dashboard-sidebar-close-button show-for-medium" aria-label="Close menu" type="button">
+                <span aria-hidden="true"><a href="#"><i class="large fa fa-angle-double-left"></i></a></span>
+              </button>
+            </div>
+            <div class="app-dashboard-open-sidebar">
+              <button id="open-sidebar" data-app-dashboard-toggle-shrink class="app-dashboard-open-sidebar-button show-for-medium" aria-label="open menu" type="button">
+                <span aria-hidden="true"><a href="#"><i class="large fa fa-angle-double-right"></i></a></span>
+              </button>
             </div>
           </div>
-        </form>
-
-        <div class="row">
-          <div class="large-12 columns" id="cards-zone">
-            Cards zone
-            <div class="row">
-              <div class="large-12 columns">
-                <h3 class="text-center" id="active-mode">No active mode</h3>
-              </div>
-            </div>
-
-            <hr>
-
-            <div class="row">
-              <div class="callout large-12 columns" id="result-box">
-                <p class="text-center">The result of your action will appear here!</p>
-              </div>
-            </div>
-
-            <hr>
-
-            <div class="row">
-              <div class="large-12 columns">
-                <h3 class="text-center">Cheatsheet</h3>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="large-6 columns">
-                <div class="card">
-                  <div class="card-divider">
-                    <h4>General commands</h4>
-                  </div>
-                  <div class="card-section" id="general-command-list">
-                    <p>List of commands.</p>
-                  </div>
-                </div>
-              </div>
-              <div class="large-6 columns">
-                <div class="card">
-                  <div class="card-divider">
-                    <h4>Active mode commands</h4>
-                  </div>
-                  <div class="card-section" id="active-command-list">
-                    <p>List of commands.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="app-dashboard-sidebar-inner">
+            <ul class="menu vertical">
+              <li><a href="#" class="is-active">
+                <i class="large fa fa-institution"></i><span class="app-dashboard-sidebar-text">Buildings</span>
+              </a></li>
+              <li><a>
+                <i class="large fa fa-hourglass"></i><span class="app-dashboard-sidebar-text">Time</span>
+              </a></li>
+              <li><a>
+                <i class="large fa fa-industry"></i><span class="app-dashboard-sidebar-text">Industry</span>
+              </a></li>
+              <li><a href="#" class="is-active">
+                <i class="large fa fa-institution"></i><span class="app-dashboard-sidebar-text">Buildings</span>
+              </a></li>
+              <li><a>
+                <i class="large fa fa-hourglass"></i><span class="app-dashboard-sidebar-text">Time</span>
+              </a></li>
+              <li><a>
+                <i class="large fa fa-industry"></i><span class="app-dashboard-sidebar-text">Industry</span>
+              </a></li>
+              <li><a href="#" class="is-active">
+                <i class="large fa fa-institution"></i><span class="app-dashboard-sidebar-text">Buildings</span>
+              </a></li>
+              <li><a>
+                <i class="large fa fa-hourglass"></i><span class="app-dashboard-sidebar-text">Time</span>
+              </a></li>
+              <li><a>
+                <i class="large fa fa-industry"></i><span class="app-dashboard-sidebar-text">Industry</span>
+              </a></li>
+            </ul>
           </div>
         </div>
 
-        <div class="row">
-          <div class="large-12 columns" id="extra-zone">Extra space</div>
-        </div>
+        <div class="app-dashboard-body-content off-canvas-content" data-off-canvas-content>
+          <h2 class="text-center">Lorem Ipsum</h2>
+          <ul class="bar-graph">
+            <li class="bar-graph-axis">
+              <div class="bar-graph-label">100%</div>
+              <div class="bar-graph-label">80%</div>
+              <div class="bar-graph-label">60%</div>
+              <div class="bar-graph-label">40%</div>
+              <div class="bar-graph-label">20%</div>
+              <div class="bar-graph-label">0%</div>
+            </li>
+            <li class="bar primary" style="height: 95%;" title="95">
+              <div class="percent">95<span>%</span></div>
+              <div class="description">Yetis</div>
+            </li>
+            <li class="bar secondary" style="height: 90%;" title="90">
+              <div class="percent">90<span>%</span></div>
+              <div class="description">ZURBians</div>
+            </li>
+            <li class="bar success" style="height: 80%;" title="80">
+              <div class="percent">80<span>%</span></div>
+              <div class="description">Cows</div>
+            </li>
+            <li class="bar warning" style="height: 75%;" title="75">
+              <div class="percent">75<span>%</span></div>
+              <div class="description">Cows that think they're Yetis</div>
+            </li>
+            <li class="bar alert" style="height: 40%;" title="40">
+              <div class="percent">40<span>%</span></div>
+              <div class="description">Who knows</div>
+            </li>
+          </ul>
 
-      </div> <!-- Finish right-side -->
-    </div> <!-- Finish full-page -->
+        </div>
+      </div>
+    </div>
+
 
     <script src="js/vendor/jquery.js"></script>
     <script src="js/vendor/what-input.js"></script>
