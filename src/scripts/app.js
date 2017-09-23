@@ -1,5 +1,3 @@
-$(document).foundation();
-
 $(document).ready(function() {
 
     var currentMode = 0;
