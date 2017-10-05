@@ -5,7 +5,7 @@
   "main": "dist/index.html",
   "scripts": {
     "dist": "npm-run-all -p dist:*",
-    "watch": "npm-run-all --parallel serve dist watch:*",
+    "watch": "npm-run-all --parallel dist watch:*",
     "serve": "firefox http://localhost:8000/dist/index.html",
     "test": "npm run -s lint",
     "predist": "npm run clean",
