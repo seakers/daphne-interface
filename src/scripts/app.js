@@ -1,5 +1,146 @@
-$(document).ready(function() {
+"use strict";
 
+class Daphne {
+    constructor() {
+        this.data = null; // Array containing the imported data
+    
+        // Instances of Classes
+        this.problem = null; // Problem-specific class
+        this.label = null;
+        this.tradespace_plot = null;
+        this.filter = null;
+        
+        this.data_mining = null;
+        this.feature_application = null;
+    
+    
+        //Interaction states
+        this.UI_states = {
+            "support_panel_active":false,
+            "selection_changed":true
+        };
+
+        PubSub.subscribe(DATA_PROCESSED, (msg, data) => {
+            this.data = data;
+        });
+    }
+
+    get_data_ids(data) {
+        if (!data) {
+            data = this.data;
+        }
+        
+        let ids = [];
+        for(let i = 0; i < data.length; i++) {
+            ids.push(data[i].id);
+        }
+        return ids;
+    }
+    
+
+    /*
+    Imports a new data from a file
+    @param path: a string name for the file
+    */
+    async import_new_data(filename) {
+        console.log('Importing data...');
+
+        if (!filename) {
+            filename = this.problem.result_filename; 
+        }
+
+        try {
+            let req_data = new FormData();
+            req_data.append("filename", filename);
+            let data_response = await fetch(
+                '/api/ifeed/import-data/',
+                {
+                    method: 'POST',
+                    body: req_data
+                }
+            );
+
+            if (data_response.ok) {
+                this.data = await data_response.json();
+
+                if (this.problem.import_callback) {
+                    await this.problem.import_callback(this.data);  
+                }
+                else {
+                    console.log("Data preprocessing not defined.");
+                }
+
+                PubSub.publish(DATA_UPDATED, this.data);
+                // TODO: this.main_plot.update(ifeed.data,0,1);
+            }
+            else {
+                console.error("Error accessing the data.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
+    }
+    
+    calculate_pareto_ranking(limit) {  
+        let rank = 0;
+        
+        if (!limit) {
+            limit = 15;
+        }
+        
+        let archs = this.data;
+        
+        while (archs.length > 0) {
+            let remaining = [];
+            let n = archs.length;
+
+            if (rank > limit) {
+                break;
+            }
+
+            for (let i = 0; i < n; i++) {
+                let non_dominated = true;
+                let this_arch = archs[i];
+                
+                for (let j = 0; j < n; j++) {
+                    if (i === j) {
+                        continue;
+                    }
+                    else if (dominates(archs[j].outputs, this_arch.outputs, this.problem.output_obj)){
+                        non_dominated = false;
+                    }
+                }
+
+                if (non_dominated === true) {
+                    archs[i].pareto_ranking = rank;
+                }
+                else {
+                    remaining.push(archs[i]);
+                }
+            }
+
+            rank++;
+            archs = remaining;
+        }
+    }
+}
+
+(function () {
+
+    // General Code
+    let daphne = new Daphne();
+
+    daphne.problem = new EOSS();
+    daphne.label = new EOSSLabel(daphne.problem);
+    daphne.tradespace_plot = new TradespacePlot(daphne.problem.output_list);
+
+    daphne.import_new_data().then(() => {
+        daphne.calculate_pareto_ranking();
+    });
+    
+
+    // Historian Code
     var currentMode = 0;
 
     var modeCodes = [
@@ -123,5 +264,4 @@ $(document).ready(function() {
 
         SpeechKITT.startRecognition();
     }
-
-});
+} ());

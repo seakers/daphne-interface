@@ -34,117 +34,79 @@
           </span>
           <div class="nav-right nav-menu is-hidden-tablet">
             <a href="#" class="nav-item is-active">
-              Dashboard
+              Create
             </a>
             <a href="#" class="nav-item">
-              Activity
+              Evaluate
             </a>
             <a href="#" class="nav-item">
-              Timeline
+              Criticize
             </a>
             <a href="#" class="nav-item">
-              Folders
+              Data Mining
             </a>
           </div>
         </div>
       </nav>
-      <section class="hero is-small">
-        <!-- Hero content: will be in the middle -->
-        <div class="hero-body">
-          <div class="container">
-            <h1 class="title">
-              Admin Dashboard
-            </h1>
-            <h2 class="subtitle">
-              A simple admin template
-            </h2>
-          </div>
-        </div>
-
-        <!-- Hero footer: will stick at the bottom -->
-        <div class="hero-foot">
-          <nav class="level">
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Tweets</p>
-                <p class="title">3,456</p>
-              </div>
-            </div>
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Following</p>
-                <p class="title">123</p>
-              </div>
-            </div>
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Followers</p>
-                <p class="title">456K</p>
-              </div>
-            </div>
-            <div class="level-item has-text-centered">
-              <div>
-                <p class="heading">Likes</p>
-                <p class="title">789</p>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </section>
       <section class="section">
+        <div class="columns is-mobile">
+          <div class="column">
+            <section class="panel">
+              <p class="panel-heading">
+                Tradespace exploration
+              </p>
+              <div class="panel-block with-columns">
+                <div class="columns is-mobile">
+                  <div class="column">
+                    <figure id='main_plot'></figure>
+                  </div>
+                  <div class="column is-narrow">
+                    <div id='interaction_modes'>
+                    <div>Mouse Selection</div>
+                    <div class="tooltip">
+<!--                        <span class="tooltiptext">Zoom/Pan: This option allows zooming/panning on the scatter plot</span>-->
+                        <div style="margin-top:3px">
+                            Zoom/Pan:
+                            <input class="main_plot interaction_mode" id="zoom-pan" type="radio" checked="True"/>
+                        </div>
+                    </div>
+                    <div class="tooltip">
+<!--                        <span class="tooltiptext">Drag-select: This option allows selecting designs by dragging over points</span>-->
+                        <div>
+                            Drag-select:
+                            <input class="main_plot interaction_mode" id="drag-select" type="radio"/>
+                        </div>
+                    </div>
+                    <div class="tooltip">
+<!--                        <span class="tooltiptext">Deselect: This option allows de-selecting designs by dragging over points</span> -->
+                        <div>
+                            Deselect: 
+                            <input class="main_plot interaction_mode" id="de-select" type="radio"/>
+                        </div>
+                    </div>
+                </div>
+                <div id='selection_options'>
+                    <div>
+                        <div>Range Selection</div>
+                        Cost range: <br/>
+                        <input id="selectArchsWithinRange_minCost" class="select_within_range_text_box" type="text" value="0"/>&nbsp; ~&nbsp; <input id="selectArchsWithinRange_maxCost" class="select_within_range_text_box" type="text" value="inf"/>
+                        <br/>
+                        Science Benefit range: <br/>
+                        <input id="selectArchsWithinRange_minScience" class="select_within_range_text_box" type="text" value="0"/>&nbsp; ~&nbsp; <input id="selectArchsWithinRange_maxScience" class="select_within_range_text_box" type="text" value="1"/>
+                        <br/>
+                        <button type="button" id="selectArchsWithinRangeButton" >Select Designs</button>
+                    </div>
+                    <button type="button"  id="hide_selection">Hide selections</button>
+                    <button type="button"  id="show_all_archs">Show all architectures</button> 
+                    <button type="button"  id="cancel_selection">Cancel all selections</button>
+                </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
         <div class="columns is-mobile is-multiline">
-          <div class="column is-one-third-desktop is-full-mobile">
-            <section class="panel">
-              <p class="panel-heading">
-                Total Users
-              </p>
-              <p class="panel-tabs">
-                <a class="is-active" href="#">All Time</a>
-                <a href="#">Past week</a>
-                <a href="#">Past month</a>
-                <a href="#">Past quarter</a>
-                <a href="#">Past Year</a>
-              </p>
-              <div class="panel-block">
-                <div id="chart1" style="height: 250px;"></div>
-              </div>
-              <div class="panel-block">
-                <button class="button is-default is-outlined is-fullwidth">
-                  View Data
-                </button>
-              </div>
-            </section>
-          </div>
-          <div class="column is-one-third-desktop is-full-mobile">
-            <section class="panel">
-              <p class="panel-heading">
-                Sales
-              </p>
-              <div class="panel-block">
-                <div id="chart2" style="height: 280px;"></div>
-              </div>
-              <div class="panel-block">
-                <button class="button is-default is-outlined is-fullwidth">
-                  View Data
-                </button>
-              </div>
-            </section>
-          </div>
-          <div class="column is-one-third-desktop is-full-mobile">
-            <section class="panel">
-              <p class="panel-heading">
-                YoY Comparison
-              </p>
-              <div class="panel-block">
-                <div id="chart3" style="height: 280px;"></div>
-              </div>
-              <div class="panel-block">
-                <button class="button is-default is-outlined is-fullwidth">
-                  View Data
-                </button>
-              </div>
-            </section>
-          </div>
           <div class="column is-half-desktop is-full-mobile">
             <section class="panel">
               <p class="panel-heading">
@@ -184,7 +146,7 @@
                 Forecast
               </p>
               <div class="panel-block">
-                <div id="chart5" style="height: 280px;"></div>
+                <div id="chart5"></div>
               </div>
             </section>
           </div>
@@ -352,6 +314,8 @@
   </div>
 </footer>
 <script type="text/javascript" src="./assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="./assets/js/pubsub.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script async type="text/javascript" src="./assets/js/app.js"></script>
 </body>
 </html>

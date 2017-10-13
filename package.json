@@ -11,6 +11,7 @@
     "predist": "npm run clean",
     "notify-update": "notify -t 'Daphne' -m 'Dist updated' -s",
     "dist:fonts": "cp -R src/fonts dist/assets/",
+    "dist:data": "cp -R src/data dist/assets/",
     "dist:styles": "npm-run-all -p scss:* && postcss -u autoprefixer -r dist/assets/css/*",
     "dist:scripts": "npm-run-all -p minjs:*",
     "dist:images": "imagemin-newer src/images dist/assets/img -p",
@@ -18,14 +19,15 @@
     "postdist:html": "npm-run-all -p nocache:*",
     "nocache:index": "node node_modules/asset-cache-bust/bin/asset-cache-bust --asset-root dist dist/index.html",
     "scss:main": "node-sass --output-style compressed src/styles/app.scss dist/assets/css/app.css",
-    "minjs:main": "uglifyjs -m -c -o dist/assets/js/app.js src/scripts/app.js",
+    "minjs:main": "uglifyjs --source-map url=app.js.map -m -c -o dist/assets/js/app.js -- src/scripts/{utils,label,eoss_label,problem,eoss,tradespace_plot,app}.js",
     "minjs:jquery": "cp node_modules/jquery/dist/jquery.min.* dist/assets/js/",
+    "minjs:pubsub": "uglifyjs -m -c -o dist/assets/js/pubsub.js -- node_modules/pubsub-js/src/pubsub.js",
     "watch:js": "onchange \"src/scripts\" -- npm-run-all dist:scripts notify-update",
     "watch:css": "onchange \"src/styles\" -- npm-run-all dist:styles notify-update",
     "watch:fonts": "onchange \"src/fonts\" -- npm-run-all dist:fonts notify-update",
     "watch:data": "onchange \"src/data\" -- npm-run-all dist:data notify-update",
     "watch:images": "onchange \"src/images\" -- npm-run-all dist:images notify-update",
-    "watch:html": "onchange \"src/*.html\" -- npm-run-all --silent lint:html dist:html",
+    "watch:html": "onchange \"src/*.html\" -- npm-run-all --silent dist:html notify-update",
     "clean": "rm -Rf dist/assets/js dist/assets/css dist/index.html  dist/live.html && mkdirp dist/assets/js dist/assets/fonts",
     "lint": "npm-run-all --silent --parallel -c lint:*",
     "lint:html": "htmllint dist/*.html",
@@ -36,7 +38,8 @@
   "license": "MIT",
   "dependencies": {
     "bulma": "^0.5.3",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "pubsub-js": "^1.5.7"
   },
   "devDependencies": {
     "asset-cache-bust": "^2.2.0",
@@ -58,6 +61,6 @@
     "postcss-cli": "^4.1.1",
     "sass-lint": "^1.11.1",
     "standard": "^10.0.3",
-    "uglify-js": "^3.1.1"
+    "uglify-es": "^3.1.3"
   }
 }
