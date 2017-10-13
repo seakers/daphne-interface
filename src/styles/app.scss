@@ -8,16 +8,16 @@ body {
   background-color: #2EB398;
 }
 
-.nav.is-dark {
+.navbar.is-dark {
   background-color: #232B2D;
   color: #F6F7F7;
 }
 
-.nav.is-dark .nav-item a, .nav.is-dark a.nav-item {
+.navbar.is-dark .navbar-item a, .navbar.is-dark a.navbar-item {
     color: #F6F7F7;
 }
 
-.nav.is-dark .nav-item a.button.is-default {
+.navbar.is-dark .navbar-item a.button.is-default {
     color: #F6F7F7;
     background-color: transparent;
     border-width: 2px;
@@ -35,7 +35,6 @@ body {
 
 .aside .title {
   color: #6F7B7E;
-  font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
 }
@@ -62,6 +61,7 @@ body {
 
 .admin-panel {
   padding-bottom: 0;
+  padding-right: 0;
 }
 
 .content {
@@ -76,4 +76,12 @@ body {
 
 .with-columns {
   display: block;
+}
+
+.section.is-small {
+  padding: 1rem 1.5rem;
+}
+
+#arch_info_display_table td {
+  text-align: center;
 }

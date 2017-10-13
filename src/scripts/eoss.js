@@ -9,7 +9,7 @@ class Architecture {
 }
 
 class EOSS extends Problem {
-    constructor() {
+    constructor(context) {
         // Set the problem instance
         super(
             "EOSS_data.csv",
@@ -31,6 +31,12 @@ class EOSS extends Problem {
         this.instrument_list = [];
         this.orbit_num = null;
         this.instrument_num = null;
+
+        this.context = context;
+
+        PubSub.subscribe(ARCH_SELECTED, (msg, arch) => {
+            this.display_arch_info(arch);
+        });
     }
 
     /*
@@ -126,117 +132,99 @@ class EOSS extends Problem {
 
 
     display_arch_info(data) {
-
-        var bitString = self.booleanArray2String(data.inputs);
+        let bitString = this.booleanArray2String(data.inputs);
+        let json_arch = [];
         
-        var json_arch=[];
-        
-        for(var i=0;i<self.orbit_num;i++){
+        for (let i = 0; i < this.orbit_num; i++) {
+            let orbit = this.orbit_list[i];
+            let assigned = [];
             
-            var orbit = self.orbit_list[i];
-            var assigned = [];
-            
-            for(var j=0;j<self.instrument_num;j++){
-
-                if(bitString[i*self.instrument_num+j]=='1'){
-                    var instrument = self.instrument_list[j];
+            for (let j = 0; j < this.instrument_num; j++) {
+                if (bitString[i*this.instrument_num + j] == '1') {
+                    let instrument = this.instrument_list[j];
                     //Store the instrument names assigned to jth orbit
                     assigned.push(instrument);
                 }
             }
             // Store the name of the orbit and the assigned instruments
-            json_arch.push({"orbit":orbit,"children":assigned});
+            json_arch.push({ "orbit": orbit, "children": assigned });
         }        
     
         
-        var norb = json_arch.length;
-        var maxNInst = 0;
-        var totalNInst = 0;
+        let norb = json_arch.length;
+        let maxNInst = 0;
+        let totalNInst = 0;
 
-        for (var i = 0; i < self.orbit_num; i++) {
-            var nInst = json_arch[i].children.length;
+        for (let i = 0; i < this.orbit_num; i++) {
+            let nInst = json_arch[i].children.length;
             totalNInst = totalNInst + nInst;
             if (nInst > maxNInst) {
                 maxNInst = nInst;
             }
         }
 
-        d3.select("#support_panel").select("#view1")
-                .select("g").select("table").remove();
+        d3.select("#design_inspector > .panel-block").select("g").select("table").remove();
 
-        var supportPanel = d3.select("#support_panel").select("#view1").select("g");
+        let design_inspector = d3.select("#design_inspector > .panel-block").select("g");
+        let table = design_inspector.append("table")
+            .attr("id", "arch_info_display_table")
+            .attr("class", "table");
 
-        var table = supportPanel.append("table")
-                                .attr("id", "arch_info_display_table");
-
-        var columns = [];
-        columns.push({columnName: "orbit"});
+        let columns = [];
+        columns.push({ columnName: "orbit" });
         
-        for ( i = 0; i < maxNInst; i++) {
-            var tmp = i + 1;
-            columns.push({columnName: "Inst " + tmp});
+        for (let i = 0; i < maxNInst; i++) {
+            let tmp = i + 1;
+            columns.push({ columnName: "Inst " + tmp });
         }
 
         // create table header
         table.append('thead').append('tr')
             .selectAll('th')
-            .data(columns).enter()
+            .data(columns)
+            .enter()
             .append('th')
-            .attr("width", function (d) {
-                if (d.columnName == "orbit") {
-                    return "120px";
-                } else {
-                    return "70px";
-                }
-            })
-            .text(function (d) {
-                return d.columnName;
-            })
-            .style("font-size", "12px");
+            .text(d => d.columnName);
 
 
         // create table body
-        table.append('tbody')
-            .selectAll('tr')
-            .data(json_arch).enter()
-            .append('tr')
-            .attr("name", function (d) {
-                return d.orbit;
-            })
-            .selectAll('td')
-            .data(function (row, i) {
-                var thisRow = [];
-                var orbitObj = {type: "orbit", content: json_arch[i].orbit};
-                thisRow.push(orbitObj);
-                for (var j = 0; j < json_arch[i].children.length; j++) {
-                    var instObj = {type: "instrument", content: json_arch[i].children[j], orbit: json_arch[i].orbit};
+        let rows = table.append('tbody')
+            .selectAll("tr")
+            .data(json_arch);
+
+        let rows_headers = rows.enter()
+            .append("tr")
+            .attr("name", d => d.orbit)
+            .selectAll("th")
+            .data((row, i) => {
+                return [{ type: "orbit", content: json_arch[i].orbit }];
+            });
+
+        rows_headers.enter()
+            .append("th")
+            .attr("name", d => d.content)
+            .attr("class", "arch_cell")
+            .text(d => this.context.label.actualName2DisplayName(d.content, "orbit"));
+
+        let rows_cells = table.select("tbody").selectAll("tr")
+            .selectAll("td")
+            .data((row, i) => {
+                let thisRow = [];
+                for (let j = 0; j < json_arch[i].children.length; j++) {
+                    let instObj = { type: "instrument", content: json_arch[i].children[j], orbit: json_arch[i].orbit };
+                    thisRow.push(instObj);
+                }
+                for (let j = json_arch[i].children.length; j < maxNInst; j++) {
+                    let instObj = { type: "instrument", content: "", orbit: json_arch[i].orbit };
                     thisRow.push(instObj);
                 }
                 return thisRow;
-            }).enter()
-            .append('td')
-            .attr("name", function (d) {
-                return d.content;
-            })
-            .style("background-color", function (d) {
-                if (d.type == "orbit") {
-                    return "#D0D0D0";
-                }
-            })
-            .attr("id", "arch_cell")
-            .attr("width", function (d, i) {
-                if (d.type == "orbit") {
-                    return "120px";
-                } else {
-                    return "70px";
-                }
-            })
-            .text(function (d) {
-               if(d.type=="orbit"){
-                  return ifeed.label.actualName2DisplayName(d.content,"orbit");
-              }
-              return ifeed.label.actualName2DisplayName(d.content,"instrument");
-            })
-            .style("font-size", "13px");
+            });
+        
+        rows_cells.enter()
+            .append("td")
+            .attr("name", d => d.content)
+            .attr("class", "arch_cell")
+            .text(d => this.context.label.actualName2DisplayName(d.content, "instrument"));
     }
 }

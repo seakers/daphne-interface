@@ -144,7 +144,7 @@ class EOSSLabel extends Label {
             if (nth == -1) { // Couldn't find the name from the list
                 return name;
             }
-            return this.instrument_relabeld[nth];
+            return this.instrument_relabeled[nth];
         }
         else {
             return name;

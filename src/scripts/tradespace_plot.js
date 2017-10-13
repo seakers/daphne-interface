@@ -9,7 +9,7 @@ class TradespacePlot {
         this.main_plot_params = {
             "margin": {top: 20, right: 20, bottom: 30, left: 60},
             "width": 960,
-            "height": 540,
+            "height": 500,
         };
         
         this.color = {
@@ -21,8 +21,6 @@ class TradespacePlot {
         };
 
         this.output_list = output_list;
-
-        this.initialize();
 
         PubSub.subscribe(DATA_UPDATED, (msg, data) => {
             this.update(data, 0, 1);
@@ -36,25 +34,11 @@ class TradespacePlot {
     }
 
 
-    initialize() {
-        d3.select("#support_panel").select("#view1").select("g").remove();
-        d3.select("#support_panel").select("#view1").append("g")
-                .append("div")
-                .style("width","900px")
-                .style("margin","auto")
-                .append("div")
-                .style("width","100%")
-                .style("font-size","21px")
-                .text("If you hover the mouse over a design, relevant information will be displayed here.");
-    }
-
-
+    /*
+        Draws the scatter plot with architecture inputs
+        @param source: a JSON object array containing the basic arch info
+    */
     update(source, xIndex, yIndex) {
-        /*
-            Draws the scatter plot with architecture inputs
-            @param source: a JSON object array containing the basic arch info
-        */
-        
         this.reset_main_plot();
         
         let margin = this.main_plot_params.margin;
@@ -62,9 +46,7 @@ class TradespacePlot {
         let height = this.main_plot_params.height - margin.top - margin.bottom;
 
         // setup x 
-        let xValue = function (d) {
-            return d.outputs[xIndex];
-        }; // data -> value
+        let xValue = d => d.outputs[xIndex]; // data -> value
         
         let xScale = d3.scaleLinear().range([0, width]); // value -> display
 
@@ -72,23 +54,20 @@ class TradespacePlot {
         let xBuffer = (d3.max(source, xValue) - d3.min(source, xValue)) * 0.05;
         xScale.domain([d3.min(source, xValue) - xBuffer, d3.max(source, xValue) + xBuffer]);
         
-        let xMap = function (d) {
-            return xScale(xValue(d));
-        }; // data -> display
+        let xMap = d => xScale(xValue(d)); // data -> display
+
         let xAxis = d3.axisBottom(xScale);
 
         // setup y
-        let yValue = function (d) {
-            return d.outputs[yIndex];
-        }; // data -> value
+        let yValue = d => d.outputs[yIndex]; // data -> value
+
         let yScale = d3.scaleLinear().range([height, 0]); // value -> display
 
         let yBuffer = (d3.max(source, yValue) - d3.min(source, yValue)) * 0.05;
         yScale.domain([d3.min(source, yValue) - yBuffer, d3.max(source, yValue) + yBuffer]);
 
-        let yMap = function (d) {
-            return yScale(yValue(d));
-        }; // data -> display
+        let yMap = d => yScale(yValue(d)); // data -> display
+
         let yAxis = d3.axisLeft(yScale);
                 
         this.xScale = xScale;
@@ -105,105 +84,74 @@ class TradespacePlot {
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
-            .call(
-                d3.zoom()
+            .call(d3.zoom()
                 .scaleExtent([0.4, 25])
-                .on("zoom", function (d) {
-                    svg = d3.select("#main_plot")
-                            .select("svg");
+                .on("zoom", d => {
+                    gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
+                    gY.call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
 
-                    svg.select(".main_plot.x.axis").call(xAxis);
-                    svg.select(".main_plot.y.axis").call(yAxis);
-
-                    objects.select(".hAxisLine").attr("transform", "translate(0," + yScale(0) + ")");
-                    objects.select(".vAxisLine").attr("transform", "translate(" + xScale(0) + ",0)");
-
-                    svg.selectAll(".main_plot.dot")
-                            .attr("transform", function (d) {
-                                var xCoord = xMap(d);
-                                var yCoord = yMap(d);
-                                return "translate(" + xCoord + "," + yCoord + ")";
-                            });
-
-                    this.translate = d3.event.translate;
-                    this.scale = d3.event.scale;
+                    dots.attr("transform", d3.event.transform)
+                        .attr("r", 3.3/d3.event.transform.k);
                 })
             )
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        let that = this;
+        // Clipping area
+        let clip = svg.append("defs").append("svg:clipPath")
+            .attr("id", "clip")
+            .append("svg:rect")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("x", 0) 
+            .attr("y", 0);
 
         // x-axis
-        svg.append("g")
-            .attr("class", "main_plot x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis)
-            .append("text")
+        let gX = svg.append("g")
+            .attr("class", "axis axis-x")
+            .attr("transform", "translate(0, " + height + ")")
+            .call(xAxis);
+            
+        svg.append("text")
+            .attr("transform", "translate(" + width + ", " + height + ")")
             .attr("class", "label")
-            .attr("x", width)
             .attr("y", -6)
             .style("text-anchor", "end")
-            .text(() => {
-                that.output_list[xIndex];
-            });
+            .text(this.output_list[xIndex]);
 
         // y-axis
-        svg.append("g")
-            .attr("class", "main_plot y axis")
-            .call(yAxis)
-            .append("text")
+        let gY = svg.append("g")
+            .attr("class", "axis axis-y")
+            .call(yAxis);
+            
+        svg.append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text(() => {
-                that.output_list[yIndex];
-            });
+            .text(this.output_list[yIndex]);
 
-        let objects = svg.append("svg")
-            .attr("class", "main_plot objects")
-            .attr("width", width)
-            .attr("height", height);
+        // Actual points and clipping
+        let scatter = svg.append("g")
+             .attr("id", "scatterplot")
+             .attr("clip-path", "url(#clip)");
 
-        //Create main 0,0 axis lines:
-        objects.append("svg:line")
-            .attr("class", "main_plot axisLine hAxisLine")
-            .attr("x1", 0)
-            .attr("y1", 0)
-            .attr("x2", width)
-            .attr("y2", 0)
-            .attr("transform", "translate(0," + (yScale(0)) + ")");
-        objects.append("svg:line")
-            .attr("class", "main_plot axisLine vAxisLine")
-            .attr("x1", 0)
-            .attr("y1", 0)
-            .attr("x2", 0)
-            .attr("y2", height)
-            .attr("transform", "translate(" + (xScale(0)) + ",0)");
-
-        let dots = objects.selectAll(".main_plot.dot")
+        let dots = scatter.selectAll(".dot")
             .data(source)
             .enter().append("circle")
-            .attr("class", "dot main_plot")
+            .attr("class", "dot")
+            .attr("cx", d => xMap(d))
+            .attr("cy", d => yMap(d))
             .attr("r", 3.3)
-            .attr("transform", function (d) {
-                let xCoord = xMap(d);
-                let yCoord = yMap(d);
-                return "translate(" + xCoord + "," + yCoord + ")";
-            })
             .style("fill", this.color.default);
 
-        
-        dots.on("mouseover", this.arch_mouseover);
-        dots.on('mouseout', this.arch_mouseout);
-
-        d3.select("#main_plot").on("click",this.unhighlight_support_panel);
-        d3.select("#support_panel").on("click",this.highlight_support_panel);
+        var that = this;
+        dots.on("mouseover", function(d) { that.arch_mouseover(d, this); });
+        dots.on("mouseout", function(d) { that.arch_mouseout(d, this); });
 
         
-//        // Set button click operations
+        // Set button click operations
         d3.select("#selection_options #cancel_selection").on("click",this.cancel_selection);
         d3.select('#interaction_modes').selectAll('.tooltip').select('div').on('click',this.toggle_selection_mode);
         d3.select("#num_of_archs").text(""+this.get_num_of_archs());
@@ -235,15 +183,11 @@ class TradespacePlot {
         this.change_interaction_mode(mode);     
     }
 
-
+    /*
+       Removes selections and/or highlights in the scatter plot
+       @param option: option to remove all selections and highlights or remove only highlights
+    */
     cancel_selection(option){
-
-        /*
-           Removes selections and/or highlights in the scatter plot
-           @param option: option to remove all selections and highlights or remove only highlights
-        */
-        
-        
         if(option==null){
             
             // Remove both highlights and selections
@@ -296,14 +240,9 @@ class TradespacePlot {
         // Reset the number of selected archs displayed
         d3.select("#num_of_selected_archs").text(""+this.get_num_of_selected_archs());
     }
-    
-    
-    
-    
-    
-    
-    change_interaction_mode(option){ // three options: zoom-pan, drag-select, de-select
 
+
+    change_interaction_mode(option) { // three options: zoom-pan, drag-select, de-select
         var margin=this.main_plot_params.margin;
         var width=this.main_plot_params.width;
         var height=this.main_plot_params.height;
@@ -508,9 +447,7 @@ class TradespacePlot {
     }
     
     
-    
-    hide_selection(){
-        
+    hide_selection() {
         var selected = d3.selectAll(".dot.main_plot.selected");
 
         selected.classed('hidden',true)
@@ -525,7 +462,6 @@ class TradespacePlot {
 
 
     show_all_archs(){
-        
         var hidden = d3.selectAll(".dot.main_plot.hidden");
         hidden.classed('hidden',false)
                 .style("opacity",1);
@@ -535,107 +471,76 @@ class TradespacePlot {
     }
 
 
-    get_num_of_archs(){
-        /*
-            Counts the number of all archs displayed
-            @return: the number of dots
-        */
-        return d3.selectAll('.main_plot.dot:not(.hidden)')[0].length;
+    /*
+        Counts the number of all archs displayed
+        @return: the number of dots
+    */
+    get_num_of_archs() {
+        return d3.selectAll('.dot:not(.hidden)').nodes().length;
     }
 
 
+    /*
+        Counts the number of selected archs
+        @return: the number of dots selected
+    */
     get_num_of_selected_archs(){
-        /*
-            Counts the number of selected archs
-            @return: the number of dots selected
-        */
-        return d3.selectAll('.dot.selected.main_plot:not(.hidden)')[0].length; 
+        return d3.selectAll('.dot.selected:not(.hidden)').nodes().length; 
     }
 
-    
-    arch_mouseover(d) {
 
-        var arch = d;
-        
-        // The support panel is active, disable hovering 
-        if(ifeed.UI_states.support_panel_active){
-            return;
-        }
+    arch_mouseover(d, object) {
+        let arch = d;
 
         // Change the color of the dot temporarily
-        d3.select(this).style("fill",this.color.mouseover);
+        d3.select(object).style("fill", this.color.mouseover);
 
         // Remove the previous info
-        d3.select("#support_panel").select("#view1").select("g").remove();
+        d3.select("#design_inspector > .panel-block").select("g").remove();
         
-        var support_panel = d3.select("#support_panel").select("#view1")
-                .append("g");
+        let design_inspector = d3.select("#design_inspector > .panel-block").append("g");
 
         // Display the current architecture info
-        var arch_info_display = support_panel.append('div')
-                .attr('id','arch_info_display')
-                .style('width','90%')
-                .style('float','left');
+        let arch_info_display = design_inspector.append("div")
+            .attr("id","arch_info_display");
 
-        
-        for(var i=0;i<ifeed.metadata.output_num;i++){
-            
+        for (let i = 0; i < this.output_list.length; i++) {
             arch_info_display.append("p")
-            
-                            .text(function(d){
-                
-                                var out = ifeed.metadata.output_list[i] + ": ";
-                                var val = arch.outputs[i];
-                
-                                if(typeof val == 'number'){
-                                    if(val>100){ val = val.toFixed(2); }
-                                    else{ val = val.toFixed(4); }
-                                }
-                
-                                return out + val;
-                            });
+                .text(d => {
+                    let out = this.output_list[i] + ": ";
+                    let val = arch.outputs[i];
+    
+                    if (typeof val == "number") {
+                        if (val > 100) {
+                            val = val.toFixed(2);
+                        }
+                        else {
+                            val = val.toFixed(4);
+                        }
+                    }
+    
+                    return out + val;
+                });
         }
 
-        ifeed.problem.display_arch_info(arch);
-        
-        document.getElementById('tab1').click();
-    }    
-    
-    
-    
-    arch_mouseout(d) {
-        
-        var dot = d3.select(this)
-        if(dot.classed('selected') && dot.classed('highlighted')){
+        PubSub.publish(ARCH_SELECTED, arch);
+    }   
+
+
+    arch_mouseout(d, object) {
+        var dot = d3.select(object);
+
+        if (dot.classed('selected') && dot.classed('highlighted')) {
             dot.style('fill', this.color.overlap);
-        }else if(dot.classed('selected')){
-            dot.style('fill',this.color.selected);  
-        }else if(dot.classed('highlighted')){
-            dot.style('fill',this.color.highlighted);
-        }else{
+        }
+        else if (dot.classed('selected')) {
+            dot.style('fill', this.color.selected);  
+        }
+        else if (dot.classed('highlighted')) {
+            dot.style('fill', this.color.highlighted);
+        }
+        else {
             dot.style("fill", this.color.default);
         }
-    }
-    
-    
-    highlight_support_panel(){
-
-        d3.select(".main_plot.figure")
-            .style("border-width","1px");
-        d3.select("#support_panel")
-            .style("border-width","3.3px");
-        
-        ifeed.UI_states.support_panel_active=true;
-    }
-
-
-    unhighlight_support_panel(){
-
-        d3.select(".main_plot.figure")
-                .style("border-width","3.3px");
-        d3.select("#support_panel")
-                .style("border-width","1px");
-        
-        ifeed.UI_states.support_panel_active=false;
     }
 }

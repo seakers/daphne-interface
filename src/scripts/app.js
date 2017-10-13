@@ -13,10 +13,15 @@ class Daphne {
         this.data_mining = null;
         this.feature_application = null;
     
-    
+        // Available functionalities
+        this.avaliable_functionalities = [
+            "design_inspector"
+        ];
+
+        this.inserted_functionalities = new Set();
+
         //Interaction states
         this.UI_states = {
-            "support_panel_active":false,
             "selection_changed":true
         };
 
@@ -53,9 +58,9 @@ class Daphne {
             let req_data = new FormData();
             req_data.append("filename", filename);
             let data_response = await fetch(
-                '/api/ifeed/import-data/',
+                "/api/ifeed/import-data/",
                 {
-                    method: 'POST',
+                    method: "POST",
                     body: req_data
                 }
             );
@@ -124,6 +129,32 @@ class Daphne {
             archs = remaining;
         }
     }
+
+
+    async add_new_functionality(functionality) {
+        function column_wrap(html) {
+            return "<div class=\"column is-one-third-desktop is-full-mobile\">" + html + "</div>\n";
+        }
+
+        if (!this.inserted_functionalities.has(functionality)) {
+            try {
+                let data_response = await fetch("./assets/data/functionalities/" + functionality + ".html");
+
+                if (data_response.ok) {
+                    let func_html = await data_response.text();
+                    $("#functionalities_list").append(column_wrap(func_html));
+                    $("#" + functionality + "_menu").addClass("active");
+                    this.inserted_functionalities.add(functionality);
+                }
+                else {
+                    console.error("Error downloading the template.");
+                }
+            }
+            catch(e) {
+                console.error("Networking error:", e);
+            }
+        }
+    }
 }
 
 (function () {
@@ -131,13 +162,15 @@ class Daphne {
     // General Code
     let daphne = new Daphne();
 
-    daphne.problem = new EOSS();
+    daphne.problem = new EOSS(daphne);
     daphne.label = new EOSSLabel(daphne.problem);
     daphne.tradespace_plot = new TradespacePlot(daphne.problem.output_list);
 
     daphne.import_new_data().then(() => {
         daphne.calculate_pareto_ranking();
     });
+
+    daphne.add_new_functionality("design_inspector");
     
 
     // Historian Code
