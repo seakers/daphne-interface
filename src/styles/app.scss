@@ -64,22 +64,16 @@ body {
   padding-right: 0;
 }
 
-.content {
-  display: block;
-  background-color: #fff;
-  padding: 40px 20px;
-}
-
 .hero .tabs ul {
     border-bottom: 1px solid #d3d6db;
 }
 
-.with-columns {
-  display: block;
-}
-
 .section.is-small {
   padding: 1rem 1.5rem;
+}
+
+.card-content.is-small {
+  padding: 0.75rem;
 }
 
 #arch_info_display_table td {

@@ -13,7 +13,7 @@
     <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
       <div>
         <div class="main">
-          <h1 class="title is-size-4">Daphne Tools</h1>
+          <h1 class="title is-size-4">Daphne</h1>
           <a href="#" class="item" id="design_inspector_menu"><span class="icon"><span class="fa fa-search"></span></span><span class="name">Design Inspector</span></a>
           <a href="#" class="item"><span class="icon"><span class="fa fa-map-marker"></span></span><span class="name">Evaluate</span></a>
           <a href="#" class="item"><span class="icon"><span class="fa fa-th-list"></span></span><span class="name">Criticize</span></a>
@@ -22,7 +22,7 @@
       </div>
     </aside>
     <div class="column is-10 admin-panel">
-      <nav class="navbar has-shadow" role="navigation" aria-label="main navigation" id="top">
+      <!--<nav class="navbar has-shadow" role="navigation" aria-label="main navigation" id="top">
         <div class="navbar-brand">
           <a class="navbar-item" href="index.html">Daphne</a>
           <span class="navbar-burger">
@@ -46,7 +46,7 @@
             Data Mining
           </a>
         </div>
-      </nav>
+      </nav>-->
       <section class="section is-small">
         <div class="columns is-mobile">
           <div class="column">
@@ -54,51 +54,91 @@
               <p class="panel-heading">
                 Tradespace exploration
               </p>
-              <div class="panel-block with-columns">
-                <div class="columns is-mobile">
-                  <div class="column">
-                    <figure id='main_plot'></figure>
+              <div class="panel-block" id="main_plot_block">
+                <div>
+                  <figure id='main_plot'></figure>
+                </div>
+                <div id="selections_block">
+                  <div class="card" id="interaction_modes">
+                    <header class="card-header">
+                      <p class="card-header-title">
+                        Mouse Selection
+                      </p>
+                    </header>
+                    <div class="card-content control is-small">
+                      <div class="tooltip">
+                      <!--<span class="tooltiptext">Zoom/Pan: This option allows zooming/panning on the scatter plot</span>-->
+                        <label class="radio">
+                          Zoom/Pan: 
+                          <input type="radio" name="mouse-selection" checked />
+                        </label>
+                      </div>
+                      <div class="tooltip">
+                      <!--<span class="tooltiptext">Drag-select: This option allows selecting designs by dragging over points</span>-->
+                        <label class="radio">
+                          Drag-select: 
+                          <input type="radio" name="mouse-selection" />
+                        </label>
+                      </div>
+                      <div class="tooltip">
+                      <!--<span class="tooltiptext">Deselect: This option allows de-selecting designs by dragging over points</span>-->
+                        <label class="radio">
+                          Deselect: 
+                          <input type="radio" name="mouse-selection" />
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                  <div class="column is-narrow">
-                    <div id='interaction_modes'>
-                    <div>Mouse Selection</div>
-                    <div class="tooltip">
-<!--                        <span class="tooltiptext">Zoom/Pan: This option allows zooming/panning on the scatter plot</span>-->
-                        <div>
-                            Zoom/Pan:
-                            <input class="main_plot interaction_mode" id="zoom-pan" type="radio" checked="True"/>
+                  <div class="card" id="selection_options">
+                    <header class="card-header">
+                      <p class="card-header-title">
+                        Range Selection
+                      </p>
+                    </header>
+                    <div class="card-content is-small">
+                      <div class="field">
+                        <label class="label">Cost range:</label>
+                        <div class="field is-grouped">
+                          <p class="control">
+                            <input id="selectArchsWithinRange_minCost" class="input" type="text" value="0" size="5">
+                          </p>
+                          <p class="control">
+                            ~
+                          </p>
+                          <p class="control">
+                            <input id="selectArchsWithinRange_maxCost" class="input" type="text" value="inf" size="5">
+                          </p>
                         </div>
-                    </div>
-                    <div class="tooltip">
-<!--                        <span class="tooltiptext">Drag-select: This option allows selecting designs by dragging over points</span>-->
-                        <div>
-                            Drag-select:
-                            <input class="main_plot interaction_mode" id="drag-select" type="radio"/>
+                      </div>
+                      <div class="field">
+                        <label class="label">Science Benefit range:</label>
+                        <div class="field is-grouped">
+                          <p class="control">
+                            <input id="selectArchsWithinRange_minScience" class="input" type="text" value="0" size="5">
+                          </p>
+                          <p class="control">
+                            ~
+                          </p>
+                          <p class="control">
+                            <input id="selectArchsWithinRange_maxScience" class="input" type="text" value="inf" size="5">
+                          </p>
                         </div>
+                      </div>
+                      <div class="field">
+                        <p class="control">
+                          <button class="button" id="selectArchsWithinRangeButton">Select Designs</button>
+                        </p>
+                      </div>
                     </div>
-                    <div class="tooltip">
-<!--                        <span class="tooltiptext">Deselect: This option allows de-selecting designs by dragging over points</span> -->
-                        <div>
-                            Deselect: 
-                            <input class="main_plot interaction_mode" id="de-select" type="radio"/>
-                        </div>
+                  </div>
+                  <div class="card">
+                    <div class="card-content is-small">
+                      <div class="field">
+                        <p class="control">
+                          <button class="button" id="cancel_selection">Cancel all selections</button>
+                        </p>
+                      </div>
                     </div>
-                </div>
-                <div id='selection_options'>
-                    <div>
-                        <div>Range Selection</div>
-                        Cost range: <br/>
-                        <input id="selectArchsWithinRange_minCost" class="select_within_range_text_box" type="text" value="0"/>&nbsp; ~&nbsp; <input id="selectArchsWithinRange_maxCost" class="select_within_range_text_box" type="text" value="inf"/>
-                        <br/>
-                        Science Benefit range: <br/>
-                        <input id="selectArchsWithinRange_minScience" class="select_within_range_text_box" type="text" value="0"/>&nbsp; ~&nbsp; <input id="selectArchsWithinRange_maxScience" class="select_within_range_text_box" type="text" value="1"/>
-                        <br/>
-                        <button type="button" id="selectArchsWithinRangeButton" >Select Designs</button>
-                    </div>
-                    <button type="button"  id="hide_selection">Hide selections</button>
-                    <button type="button"  id="show_all_archs">Show all architectures</button> 
-                    <button type="button"  id="cancel_selection">Cancel all selections</button>
-                </div>
                   </div>
                 </div>
               </div>

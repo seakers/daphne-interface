@@ -9,7 +9,7 @@ class TradespacePlot {
         this.main_plot_params = {
             "margin": {top: 20, right: 20, bottom: 30, left: 60},
             "width": 960,
-            "height": 500,
+            "height": 450,
         };
         
         this.color = {
@@ -22,8 +22,15 @@ class TradespacePlot {
 
         this.output_list = output_list;
 
+        this.data = null;
+
         PubSub.subscribe(DATA_UPDATED, (msg, data) => {
+            this.data = data;
             this.update(data, 0, 1);
+        });
+
+        window.addEventListener("resize", () => {
+            this.update(this.data, 0, 1);
         });
     }
 
@@ -40,6 +47,9 @@ class TradespacePlot {
     */
     update(source, xIndex, yIndex) {
         this.reset_main_plot();
+
+        // Update width
+        this.main_plot_params.width = document.getElementById("main_plot_block").clientWidth - document.getElementById("selections_block").offsetWidth - 30;
         
         let margin = this.main_plot_params.margin;
         let width = this.main_plot_params.width - margin.right - margin.left;
