@@ -24,9 +24,13 @@ class TradespacePlot {
 
         this.data = null;
 
+        this.transform = d3.zoomIdentity;
+
+        this.lastSelectedArch = null;
+
         PubSub.subscribe(DATA_UPDATED, (msg, data) => {
             this.data = data;
-            this.update(data, 0, 1);
+            this.update(0, 1);
         });
 
         window.addEventListener("resize", () => {
@@ -37,7 +41,8 @@ class TradespacePlot {
 
     reset_main_plot() {
         //Resets the main plot
-        d3.select("#main_plot").selectAll("svg").remove();
+        d3.select("#main_plot").select("svg").remove();
+        d3.select("#main_plot").selectAll("canvas").remove();
     }
 
 
@@ -45,85 +50,104 @@ class TradespacePlot {
         Draws the scatter plot with architecture inputs
         @param source: a JSON object array containing the basic arch info
     */
-    update(source, xIndex, yIndex) {
+    update(xIndex, yIndex) {
         this.reset_main_plot();
 
         // Update width
         this.main_plot_params.width = document.getElementById("main_plot_block").clientWidth - document.getElementById("selections_block").offsetWidth - 30;
         
         let margin = this.main_plot_params.margin;
-        let width = this.main_plot_params.width - margin.right - margin.left;
-        let height = this.main_plot_params.height - margin.top - margin.bottom;
+        this.width = this.main_plot_params.width - margin.right - margin.left;
+        this.height = this.main_plot_params.height - margin.top - margin.bottom;
 
         // setup x 
         let xValue = d => d.outputs[xIndex]; // data -> value
         
-        let xScale = d3.scaleLinear().range([0, width]); // value -> display
+        let xScale = d3.scaleLinear().range([0, this.width]); // value -> display
 
         // don't want dots overlapping axis, so add in buffer to data domain 
-        let xBuffer = (d3.max(source, xValue) - d3.min(source, xValue)) * 0.05;
-        xScale.domain([d3.min(source, xValue) - xBuffer, d3.max(source, xValue) + xBuffer]);
+        let xBuffer = (d3.max(this.data, xValue) - d3.min(this.data, xValue)) * 0.05;
+        xScale.domain([d3.min(this.data, xValue) - xBuffer, d3.max(this.data, xValue) + xBuffer]);
         
-        let xMap = d => xScale(xValue(d)); // data -> display
+        this.xMap = d => xScale(xValue(d)); // data -> display
 
         let xAxis = d3.axisBottom(xScale);
 
         // setup y
         let yValue = d => d.outputs[yIndex]; // data -> value
 
-        let yScale = d3.scaleLinear().range([height, 0]); // value -> display
+        let yScale = d3.scaleLinear().range([this.height, 0]); // value -> display
 
-        let yBuffer = (d3.max(source, yValue) - d3.min(source, yValue)) * 0.05;
-        yScale.domain([d3.min(source, yValue) - yBuffer, d3.max(source, yValue) + yBuffer]);
+        let yBuffer = (d3.max(this.data, yValue) - d3.min(this.data, yValue)) * 0.05;
+        yScale.domain([d3.min(this.data, yValue) - yBuffer, d3.max(this.data, yValue) + yBuffer]);
 
-        let yMap = d => yScale(yValue(d)); // data -> display
+        this.yMap = d => yScale(yValue(d)); // data -> display
 
         let yAxis = d3.axisLeft(yScale);
                 
         this.xScale = xScale;
         this.yScale = yScale;
-        this.xMap = xMap;
-        this.yMap = yMap;
         this.xAxis = xAxis;
         this.yAxis = yAxis;
         this.xIndex = xIndex;
         this.yIndex = yIndex;
 
-        // Create svg
+        d3.select("#main_plot")
+            .style("width", this.main_plot_params.width + "px")
+            .style("height", this.main_plot_params.height + "px");
+
+        let zoom = d3.zoom()
+            .scaleExtent([0.4, 25])
+            .on("zoom", d => {
+                this.transform = d3.event.transform;
+                gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
+                gY.call(yAxis.scale(this.transform.rescaleY(yScale)));
+
+                this.drawPoints(this.context, false);
+            });
+
         let svg = d3.select("#main_plot")
             .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .call(d3.zoom()
-                .scaleExtent([0.4, 25])
-                .on("zoom", d => {
-                    gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
-                    gY.call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
-
-                    dots.attr("transform", d3.event.transform)
-                        .attr("r", 3.3/d3.event.transform.k);
-                })
-            )
+            .style("position", "absolute")
+            .attr("width", this.width + margin.left + margin.right)
+            .attr("height", this.height + margin.top + margin.bottom)
+            .call(zoom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // Clipping area
-        let clip = svg.append("defs").append("svg:clipPath")
-            .attr("id", "clip")
-            .append("svg:rect")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("x", 0) 
-            .attr("y", 0);
+        let canvas = d3.select("#main_plot")
+            .append("canvas")
+            .style("position", "absolute")
+            .style("top", margin.top + "px")
+            .style("left", margin.left + "px")
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .call(zoom);
+
+        this.context = canvas.node().getContext("2d");
+        this.context.imageSmoothingEnabled = false;
+
+        let hiddenCanvas = d3.select('#main_plot')
+            .append("canvas")
+            .style("position", "absolute")
+            .style("top", margin.top + "px")
+            .style("left", margin.left + "px")
+            .style("display", "none")
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .call(zoom);
+
+        this.hiddenContext = hiddenCanvas.node().getContext("2d");
+        this.context.imageSmoothingEnabled = false;
 
         // x-axis
         let gX = svg.append("g")
             .attr("class", "axis axis-x")
-            .attr("transform", "translate(0, " + height + ")")
+            .attr("transform", "translate(0, " + this.height + ")")
             .call(xAxis);
             
         svg.append("text")
-            .attr("transform", "translate(" + width + ", " + height + ")")
+            .attr("transform", "translate(" + this.width + ", " + this.height + ")")
             .attr("class", "label")
             .attr("y", -6)
             .style("text-anchor", "end")
@@ -142,29 +166,58 @@ class TradespacePlot {
             .style("text-anchor", "end")
             .text(this.output_list[yIndex]);
 
-        // Actual points and clipping
-        let scatter = svg.append("g")
-             .attr("id", "scatterplot")
-             .attr("clip-path", "url(#clip)");
+        // Canvas related functions
+        let that = this;
+        // Function to create new colours for the picking.
+        let nextCol = 1;
+        function genColor(){ 
+            let ret = [];
+            if (nextCol < 16777215) {
+                ret.push(nextCol & 0xff); // R 
+                ret.push((nextCol & 0xff00) >> 8); // G 
+                ret.push((nextCol & 0xff0000) >> 16); // B
+                nextCol += 1;
+            }
+            let col = "rgb(" + ret.join(',') + ")";
+            return col;
+        }
 
-        let dots = scatter.selectAll(".dot")
-            .data(source)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("cx", d => xMap(d))
-            .attr("cy", d => yMap(d))
-            .attr("r", 3.3)
-            .style("fill", this.color.default);
+        // Add one unique color to each point and save the backreference
+        let colorMap = {};
+        this.data.forEach(function(point) {
+            point.drawingColor = that.color.default;
+            point.interactColor = genColor();
+            colorMap[point.interactColor] = point;
+        });
 
-        var that = this;
-        dots.on("mouseover", function(d) { that.arch_mouseover(d, this); });
-        dots.on("mouseout", function(d) { that.arch_mouseout(d, this); });
+        this.drawPoints(this.context, false);
+
+        // TODO: Fix for canvas
+        canvas.on("mousemove", function() { that.canvas_mousemove(colorMap); });
+        hiddenCanvas.on("mousemove", function() { that.canvas_mousemove(colorMap); });
+        //dots.on("mouseout", function(d) { that.arch_mouseout(d, this); });
 
         
         // Set button click operations
         d3.select("#selection_options #cancel_selection").on("click",this.cancel_selection);
         d3.select('#interaction_modes').selectAll('.tooltip').select('div').on('click',this.toggle_selection_mode);
         d3.select("#num_of_archs").text(""+this.get_num_of_archs());
+    }
+
+    drawPoints(context, hidden) {
+        context.clearRect(0, 0, this.width, this.height);
+        context.save();
+        
+        this.data.forEach(point => {
+            let tx = this.transform.applyX(this.xMap(point));
+            let ty = this.transform.applyY(this.yMap(point));
+            context.beginPath();
+            context.fillStyle = hidden ? point.interactColor : point.drawingColor;
+            context.arc(tx, ty, 3.3, 0, 2 * Math.PI);
+            context.fill();
+        });
+
+        context.restore();
     }
 
 
@@ -499,42 +552,93 @@ class TradespacePlot {
     }
 
 
-    arch_mouseover(d, object) {
-        let arch = d;
+    canvas_mousemove(colorMap) {
+        // Draw the hidden canvas.
+        this.drawPoints(this.hiddenContext, true);
 
-        // Change the color of the dot temporarily
-        d3.select(object).style("fill", this.color.mouseover);
+        // Get mouse positions from the main canvas.
+        let mouseX = d3.event.layerX || d3.event.offsetX; 
+        let mouseY = d3.event.layerY || d3.event.offsetY;
 
-        // Remove the previous info
-        d3.select("#design_inspector > .panel-block").select("g").remove();
-        
-        let design_inspector = d3.select("#design_inspector > .panel-block").append("g");
-
-        // Display the current architecture info
-        let arch_info_display = design_inspector.append("div")
-            .attr("id","arch_info_display");
-
-        for (let i = 0; i < this.output_list.length; i++) {
-            arch_info_display.append("p")
-                .text(d => {
-                    let out = this.output_list[i] + ": ";
-                    let val = arch.outputs[i];
-    
-                    if (typeof val == "number") {
-                        if (val > 100) {
-                            val = val.toFixed(2);
-                        }
-                        else {
-                            val = val.toFixed(4);
-                        }
-                    }
-    
-                    return out + val;
-                });
+        // Pick the colour from the mouse position and max-pool it. 
+        let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;
+        let color_list = {};
+        for (let i = 0; i < color.length; i += 4) {
+            let color_rgb = 'rgb(' + color[i] + ',' + color[i+1] + ',' + color[i+2] + ')';
+            if (color_rgb in color_list) {
+                color_list[color_rgb] += 1;
+            }
+            else {
+                color_list[color_rgb] = 1;
+            }
+        }
+        let maxcolor, maxcolor_num = 0;
+        for (let key in color_list) {
+            if (maxcolor_num < color_list[key]) {
+                maxcolor_num = color_list[key];
+                maxcolor = key;
+            }
         }
 
-        PubSub.publish(ARCH_SELECTED, arch);
-    }   
+        // Check if something changed
+        let changesHappened = false;
+
+        // Change color back to default if not selected anymore
+        if (this.lastSelectedArch in colorMap && this.lastSelectedArch != maxcolor) {
+            colorMap[this.lastSelectedArch].drawingColor = this.color.default;
+        }
+
+        // Get the data from our map!
+        if (maxcolor in colorMap) {
+            // Only update if there is a change in the selection
+            if (this.lastSelectedArch != maxcolor) {
+                let arch = colorMap[maxcolor];
+                this.lastSelectedArch = maxcolor;
+                changesHappened = true;
+                
+                // Change the color of the dot temporarily
+                arch.drawingColor = this.color.mouseover;
+
+                // Remove the previous info
+                d3.select("#design_inspector > .panel-block").select("g").remove();
+                
+                let design_inspector = d3.select("#design_inspector > .panel-block").append("g");
+
+                // Display the current architecture info
+                let arch_info_display = design_inspector.append("div")
+                    .attr("id","arch_info_display");
+
+                for (let i = 0; i < this.output_list.length; i++) {
+                    arch_info_display.append("p")
+                        .text(d => {
+                            let out = this.output_list[i] + ": ";
+                            let val = arch.outputs[i];
+                            if (typeof val == "number") {
+                                if (val > 100) {
+                                    val = val.toFixed(2);
+                                }
+                                else {
+                                    val = val.toFixed(4);
+                                }
+                            }
+                            return out + val;
+                        });
+                }
+
+                PubSub.publish(ARCH_SELECTED, arch);
+            }
+        }
+        else {
+            // In case nothing is selected just revert everything back to normal
+            this.lastSelectedArch = null;
+            changesHappened = true;
+        }
+
+        // Only redraw if there have been changes
+        if (changesHappened) {
+            this.drawPoints(this.context, false);
+        }
+    }
 
 
     arch_mouseout(d, object) {
