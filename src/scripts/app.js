@@ -12,10 +12,22 @@ class Daphne {
         
         this.data_mining = null;
         this.feature_application = null;
+
+        this.currentMode = 0;
     
         // Available functionalities
         this.avaliable_functionalities = [
-            "design_inspector"
+            "design_inspector",
+            "daphne_answer"
+        ];
+
+        this.modeCodes = [
+            'No active mode',
+            'History mode',
+            'iFEED mode',
+            'VR mode',
+            'Evaluate mode',
+            'Criticize mode'
         ];
 
         this.inserted_functionalities = new Set();
@@ -28,6 +40,118 @@ class Daphne {
         PubSub.subscribe(DATA_PROCESSED, (msg, data) => {
             this.data = data;
         });
+
+        // Voice recognition
+        if (annyang) {
+            annyang.addCallback('result', function(phrases) {
+                executeCommand(phrases[0]);
+            });
+
+            annyang.debug();
+
+            // Tell KITT to use annyang
+            SpeechKITT.annyang();
+
+            // Define a stylesheet for KITT to use
+            SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/themes/flat.css');
+
+            // Render KITT's interface
+            SpeechKITT.vroom();
+
+            SpeechKITT.startRecognition();
+        }
+
+        $("#send_command").on("click", event => {
+            this.executeCommand($("input[name=command]").val());
+        });
+
+    }
+
+    async executeCommand(command) {
+        try {
+            let req_data = new FormData();
+            req_data.append("command", command);
+            let data_response = await fetch(
+                "/api/daphne/command",
+                {
+                    method: "POST",
+                    body: req_data
+                }
+            );
+
+            if (data_response.ok) {
+                let data = await data_response.json();
+                this.processCommand(data["command"], data["command_type"], data["other_info"]);
+            }
+            else {
+                console.error("Error processing the command.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
+    }
+
+    processCommand(command, command_type, other_info) {
+        let real_command_type = command_type;
+        if (command_type == -1) {
+            real_command_type = this.currentMode;
+        }
+
+        if (real_command_type == 0) {
+            // Change mode
+            this.switchMode(other_info);
+        }
+        else if (real_command_type == 1) {
+            // Send command to history API
+            this.askHistoryQuestion(command);
+        }
+        else if (real_command_type == 2) {
+            // Send command to iFEED API
+        }
+        else if (real_command_type == 3) {
+            // Send command to VR API
+        }
+        else if (real_command_type == 4) {
+            // Send command to evaluate API
+        }
+        else if (real_command_type == 5) {
+            // Send command to criticize API
+        }
+    }
+
+    switchMode(new_mode) {
+        this.currentMode = new_mode;
+        $("h3#active-mode").html(this.modeCodes[this.currentMode]);
+        // TODO: load the active mode commands and the cheatsheet cards with hints for commands like instrument names, mission names, measurements, ifeed things, vr things, etc.
+        $("#daphne_answer > div.panel-block").html("<p>Mode changed!</p>");
+        responsiveVoice.speak("Mode changed!");
+    }
+
+    async askHistoryQuestion(question) {
+        try {
+            let req_data = new FormData();
+            req_data.append("question", question);
+            let data_response = await fetch(
+                "/api/histdb/question",
+                {
+                    method: "POST",
+                    body: req_data
+                }
+            );
+
+            if (data_response.ok) {
+                this.data = await data_response.json();
+                $("#daphne_answer > div.panel-block").html("<p>" + data['answer'] + "</p>");
+                responsiveVoice.speak(data["answer"]);
+            }
+            else {
+                console.error("Error answering the question.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
     }
 
     get_data_ids(data) {
@@ -76,7 +200,6 @@ class Daphne {
                 }
 
                 PubSub.publish(DATA_UPDATED, this.data);
-                // TODO: this.main_plot.update(ifeed.data,0,1);
             }
             else {
                 console.error("Error accessing the data.");
@@ -170,131 +293,7 @@ class Daphne {
         daphne.calculate_pareto_ranking();
     });
 
+    daphne.add_new_functionality("daphne_answer");
     daphne.add_new_functionality("design_inspector");
     
-
-    // Historian Code
-    var currentMode = 0;
-
-    var modeCodes = [
-        'No active mode',
-        'History mode',
-        'iFEED mode',
-        'VR mode',
-        'Evaluate mode',
-        'Criticize mode'
-    ];
-
-    function executeCommand(command) {
-        var formData = {
-            'command': command
-        };
-
-        $.ajax({
-            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-            url: '/api/daphne/command', // the url where we want to POST
-            data: formData, // our data object
-            dataType: 'json', // what type of data do we expect back from the server
-            encode: true
-        })
-        // using the done promise callback
-        .done(function(data) {
-            // log data to the console so we can see
-            console.log(data); 
-            // here we will handle errors and validation messages
-            processCommand(data['command'], data['command_type'], data['other_info'])
-        });
-    }
-
-    function switchMode(new_mode) {
-        currentMode = new_mode;
-        $('h3#active-mode').html(modeCodes[currentMode]);
-        // TODO: load the active mode commands and the cheatsheet cards with hints for commands like instrument names, mission names, measurements, ifeed things, vr things, etc.
-        $('div#result-box').html('<p class="text-center">Mode changed!</p>')
-        responsiveVoice.speak("Mode changed!");
-    }
-
-    function askHistoryQuestion(question) {
-        formData = {
-            'question': question
-        }
-
-        $.ajax({
-            type: 'POST', // define the type of HTTP verb we want to use (POST for our form)
-            url: '/api/histdb/question', // the url where we want to POST
-            data: formData, // our data object
-            dataType: 'json', // what type of data do we expect back from the server
-            encode: true
-        })
-        // using the done promise callback
-        .done(function(data) {
-            // log data to the console so we can see
-            console.log(data); 
-            // here we will handle errors and validation messages
-            $('div#result-box').html('<p class="text-center">' + data['answer'] + '</p>')
-            responsiveVoice.speak(data['answer']);
-        });
-    }
-
-    function processCommand(command, command_type, other_info) {
-        var real_command_type = command_type
-        if (command_type == -1) {
-            real_command_type = currentMode
-        }
-
-        if (real_command_type == 0) {
-            // Change mode
-            switchMode(other_info);
-        }
-        else if (real_command_type == 1) {
-            // Send command to history API
-            askHistoryQuestion(command);
-        }
-        else if (real_command_type == 2) {
-            // Send command to iFEED API
-        }
-        else if (real_command_type == 3) {
-            // Send command to VR API
-        }
-        else if (real_command_type == 4) {
-            // Send command to evaluate API
-        }
-        else if (real_command_type == 5) {
-            // Send command to criticize API
-        }
-    }
-
-    $('form#daphne-form').submit(function(event) {
-        executeCommand($('input[name=command]').val());
-
-        // stop the form from submitting the normal way and refreshing the page
-        event.preventDefault();
-    });
-
-    if (annyang) {
-        // // Let's define our first command. First the text we expect, and then the function it should call
-        // var commands = {
-        //     'hello': function() { alert('Hello world!'); }
-        // };
-
-        // // Add our commands to annyang
-        // annyang.addCommands(commands);
-
-        annyang.addCallback('result', function(phrases) {
-            executeCommand(phrases[0]);
-        });
-
-        annyang.debug();
-
-        // Tell KITT to use annyang
-        SpeechKITT.annyang();
-
-        // Define a stylesheet for KITT to use
-        SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/themes/flat.css');
-
-        // Render KITT's interface
-        SpeechKITT.vroom();
-
-        SpeechKITT.startRecognition();
-    }
 } ());
