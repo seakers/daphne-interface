@@ -141,7 +141,7 @@ class Daphne {
             );
 
             if (data_response.ok) {
-                this.data = await data_response.json();
+                let data = await data_response.json();
                 $("#daphne_answer > div.panel-block").html("<p>" + data['answer'] + "</p>");
                 responsiveVoice.speak(data["answer"]);
             }
@@ -280,7 +280,7 @@ class Daphne {
     }
 }
 
-(function () {
+(async function () {
 
     // General Code
     let daphne = new Daphne();
@@ -293,7 +293,7 @@ class Daphne {
         daphne.calculate_pareto_ranking();
     });
 
-    daphne.add_new_functionality("daphne_answer");
-    daphne.add_new_functionality("design_inspector");
+    await daphne.add_new_functionality("daphne_answer");
+    await daphne.add_new_functionality("design_inspector");
     
 } ());
