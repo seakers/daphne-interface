@@ -43,8 +43,8 @@ class Daphne {
 
         // Voice recognition
         if (annyang) {
-            annyang.addCallback('result', function(phrases) {
-                executeCommand(phrases[0]);
+            annyang.addCallback('result', phrase => {
+                this.executeCommand(phrases[0]);
             });
 
             annyang.debug();
