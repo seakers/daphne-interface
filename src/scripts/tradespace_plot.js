@@ -225,8 +225,9 @@ class TradespacePlot {
         this.drawPoints(this.hiddenContext, true);
 
         // Get mouse positions from the main canvas.
-        let mouseX = d3.event.layerX || d3.event.offsetX; 
-        let mouseY = d3.event.layerY || d3.event.offsetY;
+        let devicePixelRatio = window.devicePixelRatio || 1;
+        let mouseX = (d3.event.layerX || d3.event.offsetX)*devicePixelRatio; 
+        let mouseY = (d3.event.layerY || d3.event.offsetY)*devicePixelRatio;
 
         // Pick the colour from the mouse position and max-pool it. 
         let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;

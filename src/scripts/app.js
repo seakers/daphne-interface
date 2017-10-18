@@ -43,7 +43,7 @@ class Daphne {
 
         // Voice recognition
         if (annyang) {
-            annyang.addCallback('result', phrase => {
+            annyang.addCallback('result', phrases => {
                 this.executeCommand(phrases[0]);
             });
 
