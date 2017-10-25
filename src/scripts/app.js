@@ -95,7 +95,8 @@ class Daphne {
                 "/api/daphne/command",
                 {
                     method: "POST",
-                    body: req_data
+                    body: req_data,
+                    credentials: 'same-origin'
                 }
             );
 
@@ -156,7 +157,8 @@ class Daphne {
                 "/api/histdb/question",
                 {
                     method: "POST",
-                    body: req_data
+                    body: req_data,
+                    credentials: "same-origin"
                 }
             );
 
@@ -205,7 +207,8 @@ class Daphne {
                 "/api/ifeed/import-data/",
                 {
                     method: "POST",
-                    body: req_data
+                    body: req_data,
+                    credentials: "same-origin"
                 }
             );
 

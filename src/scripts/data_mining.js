@@ -10,9 +10,9 @@ class DataMining {
         this.mined_features = [];
         this.added_features = [];
         
-        this.margin = { top: 20, right: 20, bottom: 30, left: 65 };
+        this.margin = { top: 20, right: 20, bottom: 30, left: 40 };
         this.width = 770 - 35 - this.margin.left - this.margin.right;
-        this.height = 400 - 20 - this.margin.top - this.margin.bottom;
+        this.height = 333 - this.margin.top - this.margin.bottom;
         
         this.df_i = 0;
         
@@ -77,13 +77,6 @@ class DataMining {
 
 
     async run() {
-        // TODO: This never runs if coming from SELECTION_UPDATED
-        // If the target selection hasn't changed, then use previously obtained driving features to display
-        /*if (this.mined_features.length > 0) {
-            self.display_features(self.all_features);
-            return;
-        }*/
-
         // Remove all highlights in the scatter plot (retain target solutions)
         this.tradespace_plot.cancel_selection("remove_highlighted");
 
@@ -122,13 +115,12 @@ class DataMining {
                 this.confidence_threshold, this.lift_threshold);
 
             this.all_features = this.mined_features;
-            console.log(this.all_features);
             
             if (this.all_features.length === 0) {
                 return;
             }
             
-            this.display_features(this.all_features);
+            this.display_features();
         }
     }
 
@@ -146,7 +138,8 @@ class DataMining {
                 "/api/data-mining/get-driving-features/",
                 {
                     method: "POST",
-                    body: req_data
+                    body: req_data,
+                    credentials: "same-origin"
                 }
             );
 
@@ -169,66 +162,48 @@ class DataMining {
     }
 
 
-    display_features(source) {
-
-        document.getElementById('tab3').click();
-        
-        ifeed.main_plot.highlight_support_panel();
-
+    display_features() {
         // Set variables
-        df_i=0;
+        this.df_i = 0;
 
-        // Remove previous plot
-        d3.select("#view3").select("g").remove();
+        // Remove previous content
+        d3.select("#data_mining > .panel-block").select("g").remove();
 
-        var tab = d3.select('#view3').append('g');
+        let tab = d3.select("#data_mining > .panel-block")
+            .append("g")
+            .style("display", "flex")
+            .style("justify-content", "space-between")
+            .style("width", "100%");
 
         // Create plot div's
-        var feature_plot = tab.append('div')
-            .attr('class','feature_plot')
-            .style('width', self.width + self.margin.left + self.margin.right)
-            .style('height', self.height + self.margin.top + self.margin.bottom);
+        tab.append("div")
+            .attr("id", "feature_plot")
+            .style("width", "50%")
+            .style("height", "100%");
 
-        // Create a new svg
-        var svg = feature_plot.append("svg")
-            .attr('class','feature_plot figure')
-            .attr("width", self.width + self.margin.left + self.margin.right)
-            .attr("height", self.height + self.margin.top + self.margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + self.margin.left + "," + self.margin.top + ")");
-
-        feature_plot.append('div')
-            .attr('class','feature_plot venn_diagram')
-            .append('div')
-            .text('Total number of designs: ' + ifeed.main_plot.get_num_of_archs());
-        
-        
-        var objects = svg.append("svg")
-                .attr("class", "objects feature_plot")
-                .attr("width", self.width)
-                .attr("height", self.height)
-                .style('margin-bottom','30px');
+        // Create venn diagram div
+        tab.append("div")
+            .attr("id", "venn_diagram")
+            .style("width", "50%")
+            .append("p")
+                .text("Total number of designs: " + this.tradespace_plot.get_num_of_archs());
 
         // Initialize location
-        for(var i=0;i<source.length;i++){
-            source[i].x0 = -1;
-            source[i].y0 = -1;
-            source[i].id = df_i++;
+        for(let i = 0; i < this.all_features.length; i++){
+            this.all_features[i].x0 = -1;
+            this.all_features[i].y0 = -1;
+            this.all_features[i].id = this.df_i++;
         }
 
-        self.update_feature_plot(source);
+        this.update_feature_plot();
     }
-    
-    
-    
-    
 
-    update_feature_plot(source, remove_last_feature) {
-        
-        function get_utopia_point(){
+
+    update_feature_plot(remove_last_feature = false) {
+        function get_utopia_point() {
             // Utopia point
-            return d3.selectAll('.dot.feature_plot').filter(function(d){
-                if(d.name=="utopiaPoint"){
+            return objects.filter(d => {
+                if (d.name === "utopiaPoint") {
                    return true;
                 }
                 return false;
@@ -236,328 +211,258 @@ class DataMining {
         }
 
 
-        function get_current_feature(){
+        function get_current_feature() {
             // The current feature
-            return d3.selectAll('.dot.feature_plot').filter(function(d){
-                if(d.added=="0"){
+            return objects.filter(d => {
+                if (d.added === "0") {
                    return true;
                 }
                 return false;
             });
-
         }
 
+        // Set updated width
+        this.width = document.getElementById("feature_plot").clientWidth - this.margin.left - this.margin.right;
 
         // Set variables
-        var margin = self.margin;
-        var width = self.width;
-        var height = self.height;
+        let duration = 500;
 
-        var duration = 500;
+        let supps = [];
+        let lifts = [];
+        let conf1s = [];
+        let conf2s = [];
 
-        var supps = [];
-        var lifts = [];
-        var conf1s = [];
-        var conf2s = [];
-
-        var scores=[];   
-        var maxScore = -1;
+        let scores = [];   
+        let maxScore = -1;
 
         
-        for (var i=0;i<self.all_features.length;i++){
+        for (let i = 0; i < this.all_features.length; i++) {
+            supps.push(this.all_features[i].metrics[0]);
+            lifts.push(this.all_features[i].metrics[1]);
+            conf1s.push(this.all_features[i].metrics[2]);
+            conf2s.push(this.all_features[i].metrics[3]);
             
-            supps.push(self.all_features[i].metrics[0]);
-            lifts.push(self.all_features[i].metrics[1]);
-            conf1s.push(self.all_features[i].metrics[2]);
-            conf2s.push(self.all_features[i].metrics[3]);
-            
-            var score = 1-Math.sqrt(Math.pow(1-conf1s[i],2)+Math.pow(1-conf2s[i],2));
+            let score = 1 - Math.sqrt(Math.pow(1 - conf1s[i], 2) + Math.pow(1 - conf2s[i], 2));
             scores.push(score);
 
-            if(score > maxScore){
+            if (score > maxScore) {
                 maxScore = score;
             }
         }
 
         
         // Add utopia point to the list
-        var max_conf1 = Math.max.apply(null, conf1s);
-        var max_conf2 = Math.max.apply(null, conf2s);
-        var max_conf = Math.max(max_conf1, max_conf2);
+        let max_conf1 = Math.max.apply(null, conf1s);
+        let max_conf2 = Math.max.apply(null, conf2s);
+        let max_conf = Math.max(max_conf1, max_conf2);
 
         // Add utopia point
-        self.utopia_point.metrics=[Math.max.apply(null, lifts),Math.max.apply(null, supps),max_conf,max_conf];
+        this.utopia_point.metrics = [Math.max.apply(null, lifts), Math.max.apply(null, supps), max_conf, max_conf];
 
         // Insert the utopia point to the list of features
-        self.all_features.splice(0, 0, self.utopia_point);
+        this.all_features.splice(0, 0, this.utopia_point);
 
         // Add score for the utopia point (0.2 more than the best score found so far)
-        scores.splice(0,0,Math.max.apply(null,scores)+0.2); 
+        scores.splice(0, 0, Math.max.apply(null, scores) + 0.2); 
 
         
         // Set the axis to be Conf(F->S) and Conf(S->F)
-        var x = 2;
-        var y = 3;
+        let x = 2;
+        let y = 3;
 
         // setup x
         // data -> value
-        var xValue = function (d) {
-            return d.metrics[x];
-        }; 
+        let xValue = d => d.metrics[x];
+        
         // value -> display
-        var xScale = d3.scale.linear().range([0, width]); 
+        let xScale = d3.scaleLinear().range([0, this.width]);
 
         // don't want dots overlapping axis, so add in buffer to data domain 
-        var xBuffer = (d3.max(self.all_features, xValue) - d3.min(self.all_features, xValue)) * 0.05;
-
-        xScale.domain([d3.min(self.all_features, xValue) - xBuffer, d3.max(self.all_features, xValue) + xBuffer]);
-
+        let xBuffer = (d3.max(this.all_features, xValue) - d3.min(this.all_features, xValue)) * 0.05;
+        xScale.domain([d3.min(this.all_features, xValue) - xBuffer, d3.max(this.all_features, xValue) + xBuffer]);
+        
         // data -> display
-        var xMap = function (d) {
-            return xScale(xValue(d));
-        }; 
-        var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
-
+        let xMap = d => xScale(xValue(d)); 
+        let xAxis = d3.axisBottom(xScale);
 
         // setup y
         // data -> value
-        var yValue = function (d) {
-            return d.metrics[y];
-        };
-        // value -> display
-        var yScale = d3.scale.linear().range([height, 0]); 
+        let yValue = d => d.metrics[y];
 
-        var yBuffer = (d3.max(self.all_features, yValue) - d3.min(self.all_features, yValue)) * 0.05;
-        yScale.domain([d3.min(self.all_features, yValue) - yBuffer, d3.max(self.all_features, yValue) + yBuffer]);
+        // value -> display
+        let yScale = d3.scaleLinear().range([this.height, 0]);
+
+        // don't want dots overlapping axis, so add in buffer to data domain
+        let yBuffer = (d3.max(this.all_features, yValue) - d3.min(this.all_features, yValue)) * 0.05;
+        yScale.domain([d3.min(this.all_features, yValue) - yBuffer, d3.max(this.all_features, yValue) + yBuffer]);
+
         // data -> display
-        var yMap = function (d) {
-            return yScale(yValue(d));
-        }; 
-        var yAxis = d3.svg.axis().scale(yScale).orient("left");
+        let yMap = d => yScale(yValue(d)); 
+        let yAxis = d3.axisLeft(yScale);
 
         // Set the new locations of all the features
-        for(var i=0;i<self.all_features.length;i++){
-            self.all_features[i].x = xMap(self.all_features[i]);
-            self.all_features[i].y = yMap(self.all_features[i]);
-            if(!self.all_features[i].x0){
-                // If previous location has not been initialize, save the current location
-                self.all_features[i].x0 = self.all_features[i].x;
-                self.all_features[i].y0 = self.all_features[i].y;
+        for (let i = 0; i < this.all_features.length; i++) {
+            this.all_features[i].x = xMap(this.all_features[i]);
+            this.all_features[i].y = yMap(this.all_features[i]);
+            if (!this.all_features[i].x0) {
+                // If previous location has not been initialized, save the current location
+                this.all_features[i].x0 = this.all_features[i].x;
+                this.all_features[i].y0 = this.all_features[i].y;
             }
         }
         
-        self.xScale=xScale;
-        self.yScale=yScale;
-        self.xAxis=xAxis;
-        self.yAxis=yAxis;
+        this.xScale = xScale;
+        this.yScale = yScale;
+        this.xAxis = xAxis;
+        this.yAxis = yAxis;
 
 
         //Needed to map the values of the dataset to the color scale
-        self.colorInterpolateRainbow = d3.scale.linear()
-                .domain(d3.extent(scores))
-                .range([0,1]);
+        this.colorInterpolateRainbow = d3.scaleLinear()
+            .domain(d3.extent(scores))
+            .range([0,1]);
 
         // Set zoom
-        d3.select('.feature_plot.figure').call(
+        let zoom = d3.zoom()
+            .scaleExtent([0.2, 50])
+            .on("zoom", d => {
+                gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
+                gY.call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
 
-                    d3.behavior.zoom()
-                    .x(xScale)
-                    .y(yScale)
-                    .scaleExtent([0.2, 50])
-                    .on("zoom", function (d) {
+                objects.attr("transform", d => {
+                        let xCoord = d3.event.transform.applyX(xMap(d));
+                        let yCoord = d3.event.transform.applyY(yMap(d));
+                        return "translate(" + xCoord + "," + yCoord + ")";
+                    });
+            });
 
-                        var scale = d3.event.scale;
+        // Reset plot
+        d3.select("#feature_plot").select("svg").remove();
 
-                        d3.select('.feature_plot.figure').select(".x.axis").call(xAxis);
-                        d3.select('.feature_plot.figure').select(".y.axis").call(yAxis);
+        let svg = d3.select("#feature_plot").append("svg")
+            .attr("width", this.width + this.margin.left + this.margin.right)
+            .attr("height", this.height + this.margin.top + this.margin.bottom)
+            .call(zoom)
+            .append("g")
+                .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-                        d3.selectAll('.dot.feature_plot')
-                            .attr("transform", function (d) {
-                                var xCoord = xMap(d);
-                                var yCoord = yMap(d);
-                                return "translate(" + xCoord + "," + yCoord + ")";
-                            });        
-                    })
+        // Clipping area
+        let clip = svg.append("defs").append("svg:clipPath")
+            .attr("id", "feature_clip")
+            .append("svg:rect")
+            .attr("width", this.width)
+            .attr("height", this.height)
+            .attr("x", 0)
+            .attr("y", 0);
 
-                )
-                .append("g")        
-                .attr("transform", "translate(" + self.margin.left + "," + self.margin.top + ")");
+        // Actual points and clipping
+        let triangleplot = svg.append("g")
+             .attr("id", "triangleplot")
+             .attr("clip-path", "url(#feature_clip)");
 
-
-
-        var svg = d3.select('.feature_plot.figure').select('g')
-
-        d3.select('.x.axis.feature_plot').remove();
-        d3.select('.y.axis.feature_plot').remove();
-        d3.select('.axisLine.hAxisLine.feature_plot').remove();
-        d3.select('.axisLine.vAxisLine.feature_plot').remove();
-
-        // x-axis
-        svg.append('g')
-                .attr("class", "x axis feature_plot")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis)
-                .append("text")
-                .attr("class", "label feature_plot")
-                .attr("x", self.width)
-                .attr("y", -6)
-                .style("text-anchor", "end")
-                .text('Confidence(F->S)')
-                .style('font-size','15px');
-
-        // y-axis
-        svg.append('g')
-                .attr("class", "y axis feature_plot")
-                .call(yAxis)
-                .append("text")
-                .attr("class", "feature_plot label")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text('Confidence(S->F)')
-                .style('font-size','15px');
-
-
-        var objects = d3.select(".objects.feature_plot")
-
-        //Create main 0,0 axis lines:
-        objects.append("svg:line")
-                .attr("class", "axisLine hAxisLine feature_plot")
-                .attr("x1", 0)
-                .attr("y1", 0)
-                .attr("x2", self.width)
-                .attr("y2", 0)
-                .attr("transform", "translate(0," + yScale(0) + ")");
-
-        objects.append("svg:line")
-                .attr("class", "axisLine vAxisLine feature_plot")
-                .attr("x1", 0)
-                .attr("y1", 0)
-                .attr("x2", 0)
-                .attr("y2", self.height)
-                .attr("transform", "translate(" + xScale(0) + ",0)");
-
-        // Remove unnecessary points
-        objects.selectAll('.dot.feature_plot')
-                .data(self.all_features)
-                .exit()
-                .remove();
-
-        // Create new dots
-        objects.selectAll(".dot.feature_plot")
-                .data(self.all_features)
-                .enter()
-                .append('path')
-                .attr('class','point dot feature_plot')
-                .attr("d", d3.svg.symbol().type('triangle-up').size(120))
-                .attr("transform", function (d) {
-                    return "translate(" + d.x0 + "," + d.y0 + ")";
-                })
-                .style("stroke-width",1);
-
+        let objects = triangleplot.selectAll(".object")
+            .data(this.all_features)
+            .enter().append("path")
+            .attr("class", "object")
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(120))
+            .attr("transform", d => "translate(" + d.x0 + "," + d.y0 + ")")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
 
         // Utopia point: modify the shape to a star
-        get_utopia_point().attr('d',d3.symbol().type(d3.symbolStar).size(120));
+        get_utopia_point().attr("d", d3.symbol().type(d3.symbolStar).size(120));
 
-        // The current feature: modify the shape to a cross
-        var _current_feature = get_current_feature().attr('d',d3.symbol().type(d3.symbolCross).size(120));
-
-        _current_feature.shown=true;
-
-        function blink() {
-            if(_current_feature.shown) {
-                _current_feature.style("opacity",0);
-                _current_feature.shown = false;
-            } else {
-                _current_feature.style("opacity",1);
-                _current_feature.shown = true;
-            }
-        }
-
-        if(self.current_feature_blink_interval != null){
-            clearInterval(self.current_feature_blink_interval);
-            
-            d3.selectAll('.dot.feature_plot').filter(function(d){
-                if(d.added=="1"){
-                   return true;
-                }
-                return false;
-            }).style('opacity',1);
-        }
-        self.current_feature_blink_interval = setInterval(blink, 350);
-
-
-        d3.selectAll('.dot.feature_plot').filter(function(d,i){
-                if(d.name=="utopiaPoint"){
+        // Add interaction to the features on the plot
+        objects.filter((d, i) => {
+                if (d.name === "utopiaPoint") {
                     return false;
                 }
                 return true;
             })
-            .on("mouseover", self.feature_mouseover)
-            .on('mouseout', self.feature_mouseout)
-            .on('click', self.feature_click);   
-
-
-    //    var legend = svg.selectAll(".legend")
-    //      .data(color.domain())
-    //    .enter().append("g")
-    //      .attr("class", "legend")
-    //      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-    //
-    //    legend.append("rect")
-    //      .attr("x", width - 18)
-    //      .attr("width", 18)
-    //      .attr("height", 18)
-    //      .style("fill", color);
-    //
-    //    legend.append("text")
-    //      .attr("x", width - 24)
-    //      .attr("y", 9)
-    //      .attr("dy", ".35em")
-    //      .style("text-anchor", "end")
-    //      .text(function(d) { return d; });
+            .on("mouseover", () => { this.feature_mouseover(); })
+            .on("mouseout", () => { this.feature_mouseout(); })
+            .on("click", () => { this.feature_click(); });
 
 
         //Transition the colors to a rainbow
-        function updateRainbow() {
-            d3.selectAll(".dot.feature_plot")
-                .style("fill", function (d,i) { return self.colorScaleRainbow(self.colorInterpolateRainbow(scores[i])); })
+        objects.style("fill", (d, i) => this.colorScaleRainbow(this.colorInterpolateRainbow(scores[i])));
+
+        // x-axis
+        let gX = svg.append("g")
+            .attr("class", "axis axis-x")
+            .attr("transform", "translate(0, " + this.height + ")")
+            .call(xAxis);
+            
+        svg.append("text")
+            .attr("transform", "translate(" + this.width + ", " + this.height + ")")
+            .attr("class", "label")
+            .attr("y", -6)
+            .style("text-anchor", "end")
+            .text("Confidence(F->S)");
+
+        // y-axis
+        let gY = svg.append("g")
+            .attr("class", "axis axis-y")
+            .call(yAxis);
+        
+        svg.append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("y", 6)
+            .attr("dy", ".71em")
+            .style("text-anchor", "end")
+            .text("Confidence(S->F)");
+
+        // The current feature: modify the shape to a cross
+        let _current_feature = get_current_feature().attr('d',d3.symbol().type(d3.symbolCross).size(120));
+
+        _current_feature.shown = true;
+
+        function blink() {
+            if (_current_feature.shown) {
+                _current_feature.style("opacity", 0);
+                _current_feature.shown = false;
+            }
+            else {
+                _current_feature.style("opacity", 1);
+                _current_feature.shown = true;
+            }
         }
-        updateRainbow();
+
+        if (this.current_feature_blink_interval != null) {
+            clearInterval(this.current_feature_blink_interval);
+            
+            objects.filter(d => {
+                if (d.added === "1") {
+                   return true;
+                }
+                return false;
+            }).style("opacity", 1);
+        }
+        this.current_feature_blink_interval = setInterval(blink, 350);
 
         // Remove the utopia point
-        self.all_features.splice(0,1);
+        this.all_features.splice(0, 1);
 
-        if(remove_last_feature){
+        if (remove_last_feature) {
             // Remove the last feature, as it had been added temporarily to display the cursor
-            self.all_features.pop();
-            self.added_features.pop();
+            this.all_features.pop();
+            this.added_features.pop();
         }
 
         // The current feature
-        _current_feature.style('fill',"black");    
+        _current_feature.style("fill", "black");
 
-        d3.selectAll('.dot.feature_plot').transition()
+        // Animate creation of graph
+        objects.transition()
             .duration(duration)
-            .attr("transform",function(d){
+            .attr("transform", d => {
                 return "translate(" + d.x + "," + d.y + ")";
-            });   
-                
-    }
-    
-    
-    
-    
-
-    feature_click(d){
-        // Replaces the current feature expression with the stashed expression
-        ifeed.feature_application.update_feature_application('update');
+            }); 
     }
 
 
-    feature_mouseover(d){
-
+    feature_mouseover(d) {
         var id= d.id; 
         var expression = d.expression;
         var metrics = d.metrics;
@@ -639,9 +544,13 @@ class DataMining {
     }
 
 
+    feature_click(d){
+        // Replaces the current feature expression with the stashed expression
+        ifeed.feature_application.update_feature_application('update');
+    }
+
 
     feature_mouseout(d){
-
         var id = d.id;
 
         // Remove the tooltip
@@ -657,9 +566,6 @@ class DataMining {
     }
 
 
-    
-    
-    
     add_feature_to_plot(expression){
 
         function find_equivalent_feature(metrics,indices){
