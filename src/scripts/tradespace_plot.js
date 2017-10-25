@@ -226,9 +226,6 @@ class TradespacePlot {
 
         // Get mouse positions from the main canvas.
         let mouse_pos = d3.mouse(d3.select("#main_plot").select("canvas").node());
-        //let devicePixelRatio = window.devicePixelRatio || 1;
-        //let mouseX = (d3.event.layerX || d3.event.offsetX)*devicePixelRatio; 
-        //let mouseY = (d3.event.layerY || d3.event.offsetY)*devicePixelRatio;
         let mouseX = mouse_pos[0]; 
         let mouseY = mouse_pos[1];
 
