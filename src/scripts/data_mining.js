@@ -1,5 +1,4 @@
 class DataMining {
-
     constructor(tradespace_plot) {
         this.tradespace_plot = tradespace_plot;
 
@@ -20,7 +19,7 @@ class DataMining {
 
         this.current_feature = { id: null, name: null, expression: null, metrics: null, added: "0", x0: -1, y0: -1, x: -1, y: -1 };
         this.current_feature_blink_interval = null;
-        this.utopia_point = { id: null, name: 'utopiaPoint', expression: null, metrics: null, x0: -1, y0: -1, x: -1, y: -1 };
+        this.utopia_point = { id: null, name: "utopiaPoint", expression: null, metrics: null, x0: -1, y0: -1, x: -1, y: -1 };
         
 
         let coloursRainbow = ["#2c7bb6", "#00a6ca", "#00ccbc", "#90eb9d", "#ffff8c", "#f9d057", "#f29e2e", "#e76818", "#d7191c"];
@@ -54,10 +53,11 @@ class DataMining {
         
     }
 
+
     reset() {
-        d3.select("#design_inspector > .panel-block").select("g").remove();
+        d3.select("#data_mining > .panel-block").select("g").remove();
         
-        let guideline = d3.select("#design_inspector > .panel-block")
+        let guideline = d3.select("#data_mining > .panel-block")
             .append("g");
 
         guideline.append("p")
@@ -75,7 +75,8 @@ class DataMining {
         PubSub.publish("data_mining_added");
     }
 
-    run() {
+
+    async run() {
         // TODO: This never runs if coming from SELECTION_UPDATED
         // If the target selection hasn't changed, then use previously obtained driving features to display
         /*if (this.mined_features.length > 0) {
@@ -110,55 +111,62 @@ class DataMining {
             let selected = [];
             let non_selected = [];
 
-            for (arch in selectedArchs) {
+            selectedArchs.forEach(arch => {
                 selected.push(arch.id);
-            }
-            for (arch in nonSelectedArchs) {
+            });
+            nonSelectedArchs.forEach(arch => {
                 non_selected.push(arch.id);
-            }
+            });
 
-            this.mined_features = this.get_driving_features(selected, non_selected, this.support_threshold,
+            this.mined_features = await this.get_driving_features(selected, non_selected, this.support_threshold,
                 this.confidence_threshold, this.lift_threshold);
 
             this.all_features = this.mined_features;
+            console.log(this.all_features);
             
-            if(this.all_features.length == 0){
+            if (this.all_features.length === 0) {
                 return;
             }
             
             this.display_features(this.all_features);
         }
     }
-    
-    get_driving_features(selected, non_selected, support_threshold, confidence_threshold, lift_threshold) {
 
-        var output;
-        $.ajax({
-            url: "/api/data-mining/get-driving-features/",
-            type: "POST",
-            data: {ID: "get_driving_features",
-                    selected: JSON.stringify(selected),
-                    non_selected:JSON.stringify(non_selected),
-                    supp:support_threshold,
-                    conf:confidence_threshold,
-                    lift:lift_threshold
-                  },
-            async: false,
-            success: function (data, textStatus, jqXHR)
-            {
-                if(data=="[]"){
+
+    async get_driving_features(selected, non_selected, support_threshold, confidence_threshold, lift_threshold) {
+        let output;
+        try {
+            let req_data = new FormData();
+            req_data.append("selected", JSON.stringify(selected));
+            req_data.append("non_selected", JSON.stringify(non_selected));
+            req_data.append("supp", support_threshold);
+            req_data.append("conf", confidence_threshold);
+            req_data.append("lift", lift_threshold);
+            let data_response = await fetch(
+                "/api/data-mining/get-driving-features/",
+                {
+                    method: "POST",
+                    body: req_data
+                }
+            );
+
+            if (data_response.ok) {
+                let data = await data_response.json();
+                if (data === "[]") {
                     alert("No driving feature mined. Please try modifying the selection. (Try selecting more designs)");
                 }
                 output = data;
-            },
-            error: function (jqXHR, textStatus, errorThrown)
-            {alert("error");}
-        });
+            }
+            else {
+                console.error("Error obtaining the driving features.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
 
         return output;
     }
-    
-    
 
 
     display_features(source) {
