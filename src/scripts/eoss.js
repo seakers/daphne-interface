@@ -118,8 +118,8 @@ class EOSS extends Problem {
                 d.cost = 0;
                 d.science = 0;
             }
-            let outputs = [d.science, d.cost];
-            let inputs = d.bitString;
+            let outputs = d.outputs;
+            let inputs = d.inputs;
             let id = +d.id;
             
             let arch = new Architecture(id, inputs, outputs);
