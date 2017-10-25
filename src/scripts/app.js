@@ -297,6 +297,7 @@ class Daphne {
                         this.insertedFunctionalities.delete(functionality);
                         $(func_id).parent().remove();
                         $(func_id + "_menu").removeClass("active");
+                        PubSub.publish(functionality + "_removed");
                         event.preventDefault();
                     });
 
@@ -344,6 +345,7 @@ class Daphne {
                     });
 
                     // Consider it added
+                    PubSub.publish(functionality + "_added");
                     this.insertedFunctionalities.set(functionality, {size: this.avaliableFunctionalities.get(functionality).min_size});
                 }
                 else {
@@ -366,6 +368,7 @@ class Daphne {
     daphne.problem = new EOSS(daphne);
     daphne.label = new EOSSLabel(daphne.problem);
     daphne.tradespacePlot = new TradespacePlot(daphne.problem.output_list);
+    daphne.dataMining = new DataMining(daphne.tradespacePlot);
 
     daphne.import_new_data().then(() => {
         daphne.calculate_pareto_ranking();

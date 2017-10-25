@@ -3,6 +3,7 @@
 const DATA_UPDATED = "data_updated";
 const DATA_PROCESSED = "data_processed";
 const ARCH_SELECTED = "arch_selected";
+const SELECTION_UPDATED = "selection_updated";
 
 function dominates(metrics1, metrics2, objective) {
     

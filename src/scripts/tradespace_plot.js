@@ -13,16 +13,18 @@ class TradespacePlot {
         };
         
         this.color = {
-            "default": "#6E6E6E",
-            "selected": "#19BAD7",
-            "highlighted": "#F86591",
-            "overlap": "#A340F0",
-            "mouseover": "#74FF6E"
+            "default": "rgba(110,110,110,255)",
+            "selected": "rgba(25,186,215,255)",
+            "highlighted": "rgba(248,101,145,255)",
+            "overlap": "rgba(163,64,240,255)",
+            "mouseover": "rgba(116,255,110,255)",
+            "hidden": "rgba(110,110,110,22)"
         };
 
         this.output_list = output_list;
 
         this.data = null;
+        this.num_total_points = 0;
         this.num_selected_points = 0;
 
         this.transform = d3.zoomIdentity;
@@ -34,7 +36,9 @@ class TradespacePlot {
             this.data.forEach(point => {
                 point.selected = false;
                 point.highlighted = false;
+                point.hidden = false;
                 point.drawingColor = this.color.default;
+                this.num_total_points += 1;
             });
             this.update(0, 1);
         });
@@ -160,7 +164,7 @@ class TradespacePlot {
         let gY = svg.append("g")
             .attr("class", "axis axis-y")
             .call(yAxis);
-            
+        
         svg.append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
@@ -326,6 +330,7 @@ class TradespacePlot {
        @param option: option to remove all selections and highlights or remove only highlights
     */
     cancel_selection(option = "") {
+        let selection_updated = false;
         if (option === "") {
             // Remove both highlights and selections
             this.data.forEach(point => {
@@ -335,11 +340,7 @@ class TradespacePlot {
             });
             this.num_selected_points = 0;
 
-            // TODO: ???
-            /*if (!ifeed.UI_states.selection_changed) {
-                ifeed.UI_states.selection_changed=true;
-                ifeed.data_mining.initialize();
-            }*/
+            selection_updated = true;
         }
         else if (option === "remove_selection") {
             // Remove only selection
@@ -356,11 +357,7 @@ class TradespacePlot {
             });
             this.num_selected_points = 0;
 
-            // TODO: ???
-            /*if(!ifeed.UI_states.selection_changed){
-                ifeed.UI_states.selection_changed=true;
-                ifeed.data_mining.initialize();
-            }*/
+            selection_updated = true;
             
         }
         else if (option === "remove_highlighted") {
@@ -376,6 +373,10 @@ class TradespacePlot {
                     point.drawingColor = this.color.default;
                 }
             });
+        }
+        // Tell system selection has been updated
+        if (selection_updated) {
+            PubSub.publish(SELECTION_UPDATED);
         }
         // Redraw the canvas
         this.drawPoints(this.context, false);
@@ -439,6 +440,7 @@ class TradespacePlot {
             function select_mousemove() {
                 let selection = svg.select("rect.selection");
                 if (!selection.empty()) {
+                    let selection_updated = false;
                     let mouse_pos = d3.mouse(this);
 
                     let box = {
@@ -479,7 +481,7 @@ class TradespacePlot {
                             if( tx >= box.x && tx <= box.x + box.width && 
                                 ty >= box.y && ty <= box.y + box.height)
                             {
-                                if (!point.selected) {
+                                if (!point.hidden && !point.selected) {
                                     // Select
                                     point.selected = true;
                                     that.num_selected_points += 1;
@@ -493,11 +495,7 @@ class TradespacePlot {
                                         point.drawingColor = that.color.selected;
                                     }
 
-                                    // TODO: ???
-                                    /*if(!ifeed.UI_states.selection_changed){
-                                        ifeed.UI_states.selection_changed=true;
-                                        ifeed.data_mining.initialize();
-                                    }*/
+                                    selection_updated = true;
                                 }
                             }
                         });
@@ -510,7 +508,7 @@ class TradespacePlot {
                             if( tx >= box.x && tx <= box.x + box.width && 
                                 ty >= box.y && ty <= box.y + box.height)
                             {
-                                if (point.selected) {
+                                if (!point.hidden && point.selected) {
                                     point.selected = false;
                                     that.num_selected_points -= 1;
 
@@ -523,14 +521,13 @@ class TradespacePlot {
                                         point.drawingColor = that.color.default;
                                     }
 
-                                    // TODO: ???
-                                    /*if(!ifeed.UI_states.selection_changed){
-                                        ifeed.UI_states.selection_changed=true;
-                                        ifeed.data_mining.initialize();
-                                    }*/
+                                    selection_updated = true;
                                 }
                             }
                         });
+                    }
+                    if (selection_updated) {
+                        PubSub.publish(SELECTION_UPDATED);
                     }
                     d3.select("#num_selected_architectures").text(""+that.get_num_of_selected_archs());
                     that.drawPoints(that.context, false);
@@ -554,26 +551,33 @@ class TradespacePlot {
     
     
     hide_selection() {
-        var selected = d3.selectAll(".dot.main_plot.selected");
+        this.data.forEach(point => {
+            if (point.selected) {
+                point.hidden = true;
+                point.selected = false;
+                point.highlighted = false;
+                point.drawingColor = this.color.hidden;
+                this.num_selected_points -= 1;
+                this.num_total_points -= 1;
+            }
+        });
 
-        selected.classed('hidden',true)
-                .classed('selected',false)
-                .classed('highlighted',false)
-                .style('fill',this.color.default)
-                .style("opacity", 0.085);
-
-        d3.select("#num_of_selected_archs").text(""+this.get_num_of_selected_archs());
-        d3.select("#num_of_archs").text(""+this.get_num_of_archs());
+        d3.select("#num_architectures").text(""+this.get_num_of_archs());
+        d3.select("#num_selected_architectures").text(""+this.get_num_of_selected_archs());
     }
 
 
-    show_all_archs(){
-        var hidden = d3.selectAll(".dot.main_plot.hidden");
-        hidden.classed('hidden',false)
-                .style("opacity",1);
+    show_all_archs() {
+        this.data.forEach(point => {
+            if (point.hidden) {
+                point.hidden = false;
+                point.drawingColor = this.color.default;
+                this.num_total_points += 1;
+            }
+        });
 
-        d3.select("#num_of_selected_archs").text(""+this.get_num_of_selected_archs());
-        d3.select("#num_of_archs").text(""+this.get_num_of_archs());
+        d3.select("#num_architectures").text(""+this.get_num_of_archs());
+        d3.select("#num_selected_architectures").text(""+this.get_num_of_selected_archs());
     }
 
 
@@ -582,7 +586,7 @@ class TradespacePlot {
         @return: the number of dots
     */
     get_num_of_archs() {
-        return this.data.length;
+        return this.num_total_points;
     }
 
 

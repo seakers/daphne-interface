@@ -1,6 +1,8 @@
 class DataMining {
 
-    constructor(ifeed) {
+    constructor(tradespace_plot) {
+        this.tradespace_plot = tradespace_plot;
+
         this.support_threshold = 0.002;
         this.confidence_threshold = 0.2;
         this.lift_threshold = 1;  
@@ -9,30 +11,30 @@ class DataMining {
         this.mined_features = [];
         this.added_features = [];
         
-        this.margin = { top: 20, right: 20, bottom: 30, left:65 };
+        this.margin = { top: 20, right: 20, bottom: 30, left: 65 };
         this.width = 770 - 35 - this.margin.left - this.margin.right;
         this.height = 400 - 20 - this.margin.top - this.margin.bottom;
         
         this.df_i = 0;
         
 
-        this.current_feature = { id:null, name:null, expression:null, metrics:null, added:"0", x0:-1, y0:-1, x:-1, y:-1 };
+        this.current_feature = { id: null, name: null, expression: null, metrics: null, added: "0", x0: -1, y0: -1, x: -1, y: -1 };
         this.current_feature_blink_interval = null;
-        this.utopia_point = {id:null, name:'utopiaPoint', expression:null, metrics:null, x0:-1, y0:-1, x:-1, y:-1 };
+        this.utopia_point = { id: null, name: 'utopiaPoint', expression: null, metrics: null, x0: -1, y0: -1, x: -1, y: -1 };
         
 
-        coloursRainbow = ["#2c7bb6", "#00a6ca","#00ccbc","#90eb9d","#ffff8c","#f9d057","#f29e2e","#e76818","#d7191c"];
-        colourRangeRainbow = d3.range(0, 1, 1.0 / (coloursRainbow.length - 1));
+        let coloursRainbow = ["#2c7bb6", "#00a6ca", "#00ccbc", "#90eb9d", "#ffff8c", "#f9d057", "#f29e2e", "#e76818", "#d7191c"];
+        let colourRangeRainbow = d3.range(0, 1, 1.0 / (coloursRainbow.length - 1));
         colourRangeRainbow.push(1);
 
         // Create color gradient
-        this.colorScaleRainbow = d3.scale.linear()
+        this.colorScaleRainbow = d3.scaleLinear()
             .domain(colourRangeRainbow)
             .range(coloursRainbow)
             .interpolate(d3.interpolateHcl);
 
         // Needed to map the values of the dataset to the color scale
-        this.colorInterpolateRainbow = d3.scale.linear()
+        this.colorInterpolateRainbow = d3.scaleLinear()
             .domain(d3.extent([]))
             .range([0,1]);
         
@@ -42,87 +44,93 @@ class DataMining {
         this.xAxis = null;
         this.yAxis = null;
 
-        ifeed.UI_states.selection_changed = true;
+        PubSub.subscribe("data_mining_added", (msg) => {
+            d3.selectAll("#run_data_mining").on("click", () => { this.run(); });
+        });
 
-        d3.select("#support_panel").select("#view3").select("g").remove();
+        PubSub.subscribe(SELECTION_UPDATED, (msg) => {
+            this.reset();
+        });
         
-        var guideline = d3.select("#support_panel").select("#view3")
-                .append("g")
-                .append("div")
-                .style("width","900px")
-                .style("margin","auto")
+    }
+
+    reset() {
+        d3.select("#design_inspector > .panel-block").select("g").remove();
+        
+        let guideline = d3.select("#design_inspector > .panel-block")
+            .append("g");
+
+        guideline.append("p")
+            .text("To run data mining, select target solutions on the scatter plot. Then click the button below.");
 
         guideline.append("div")
-                .style("width","100%")
-                .style("font-size","21px")
-                .text("To run data mining, select target solutions on the scatter plot. Then click the button below.");
+            .classed("field", true)
+            .append("div")
+                .classed("control", true)
+                .append("a")
+                    .classed("button is-info", true)
+                    .attr("id","run_data_mining")
+                    .text("Run data mining");
 
-        guideline.append("div")
-                .style("width","300px")
-                .style("margin","auto")
-                .append("button")
-                .attr("id","run_data_mining_button")
-                .style("margin-top","30px")
-                .style("width","200px")
-                .style("font-size","19px")
-                .text("Run data mining");
-        
-        d3.selectAll("#run_data_mining_button").on("click", this.run);
+        PubSub.publish("data_mining_added");
     }
 
     run() {
-
+        // TODO: This never runs if coming from SELECTION_UPDATED
         // If the target selection hasn't changed, then use previously obtained driving features to display
-        if(ifeed.UI_states.selection_changed == false && mined_features != null){
+        /*if (this.mined_features.length > 0) {
             self.display_features(self.all_features);
             return;
-        }
+        }*/
 
         // Remove all highlights in the scatter plot (retain target solutions)
-        ifeed.main_plot.cancel_selection('remove_highlighted');
+        this.tradespace_plot.cancel_selection("remove_highlighted");
 
-        var selectedArchs = d3.selectAll(".dot.main_plot.selected:not(.hidden)")[0];
-        var nonSelectedArchs =  d3.selectAll(".dot.main_plot:not(.selected):not(.hidden)")[0];
+        let selectedArchs = [];
+        this.tradespace_plot.data.forEach(point => {
+            if (!point.hidden && point.selected) {
+                selectedArchs.push(point);
+            }
+        });
+        let nonSelectedArchs = [];
+        this.tradespace_plot.data.forEach(point => {
+            if (!point.hidden && !point.selected) {
+                nonSelectedArchs.push(point);
+            }
+        });
 
-        var numOfSelectedArchs = selectedArchs.length;
-        var numOfNonSelectedArchs = nonSelectedArchs.length;
+        let numOfSelectedArchs = selectedArchs.length;
+        let numOfNonSelectedArchs = nonSelectedArchs.length;
 
-        if (numOfSelectedArchs==0){
-            
+        if (numOfSelectedArchs == 0) {
             alert("First select target solutions!");
-            
-        }else{        
-
+        }
+        else {        
             // Store the id's of all dots
-            var selected = [];
-            var non_selected = [];
+            let selected = [];
+            let non_selected = [];
 
-            for (var i = 0; i < numOfSelectedArchs; i++) {
-                var id = selectedArchs[i].__data__.id;
-                selected.push(id);
+            for (arch in selectedArchs) {
+                selected.push(arch.id);
             }
-            for (var i = 0; i < numOfNonSelectedArchs; i++) {
-                var id = nonSelectedArchs[i].__data__.id;
-                non_selected.push(id);
+            for (arch in nonSelectedArchs) {
+                non_selected.push(arch.id);
             }
 
-            self.mined_features = self.get_driving_features(selected,non_selected,self.support_threshold,self.confidence_threshold,self.lift_threshold);
+            this.mined_features = this.get_driving_features(selected, non_selected, this.support_threshold,
+                this.confidence_threshold, this.lift_threshold);
 
-            self.all_features = self.mined_features;
+            this.all_features = this.mined_features;
             
-            if(self.all_features.length==0){
+            if(this.all_features.length == 0){
                 return;
             }
             
-            self.display_features(self.all_features);
-
-            ifeed.UI_states.selection_changed = false;
+            this.display_features(this.all_features);
         }
     }
     
-    
-    
-    get_driving_features(selected,non_selected,support_threshold,confidence_threshold,lift_threshold) {
+    get_driving_features(selected, non_selected, support_threshold, confidence_threshold, lift_threshold) {
 
         var output;
         $.ajax({
