@@ -9,11 +9,8 @@ class Daphne {
         this.label = null;
         this.tradespacePlot = null;
         this.filter = null;
-        
         this.dataMining = null;
         this.featureApplication = null;
-
-        this.currentMode = 0;
     
         // Available functionalities
         this.avaliableFunctionalities = new Map();
@@ -25,15 +22,6 @@ class Daphne {
             "one-third",
             "two-thirds",
             "full"
-        ];
-
-        this.modeCodes = [
-            "No active mode",
-            "History mode",
-            "iFEED mode",
-            "VR mode",
-            "Evaluate mode",
-            "Criticize mode"
         ];
 
         this.insertedFunctionalities = new Map();
@@ -87,6 +75,7 @@ class Daphne {
         });
     }
 
+
     async executeCommand(command) {
         try {
             let req_data = new FormData();
@@ -96,13 +85,13 @@ class Daphne {
                 {
                     method: "POST",
                     body: req_data,
-                    credentials: 'same-origin'
+                    credentials: "same-origin"
                 }
             );
 
             if (data_response.ok) {
                 let data = await data_response.json();
-                this.processCommand(data["command"], data["command_type"], data["other_info"]);
+                this.processResponse(data["response"]);
             }
             else {
                 console.error("Error processing the command.");
@@ -113,68 +102,13 @@ class Daphne {
         }
     }
 
-    processCommand(command, command_type, other_info) {
-        let real_command_type = command_type;
-        if (command_type == -1) {
-            real_command_type = this.currentMode;
-        }
 
-        if (real_command_type == 0) {
-            // Change mode
-            this.switchMode(other_info);
-        }
-        else if (real_command_type == 1) {
-            // Send command to history API
-            this.askHistoryQuestion(command);
-        }
-        else if (real_command_type == 2) {
-            // Send command to iFEED API
-        }
-        else if (real_command_type == 3) {
-            // Send command to VR API
-        }
-        else if (real_command_type == 4) {
-            // Send command to evaluate API
-        }
-        else if (real_command_type == 5) {
-            // Send command to criticize API
-        }
+    processResponse(response) {
+        // TODO: This can be more complex, but for now just paste text into text area
+        $("#daphne_answer > div.panel-block").html("<p>" + response + "</p>");
+        responsiveVoice.speak(response);
     }
 
-    switchMode(new_mode) {
-        this.currentMode = new_mode;
-        $("h3#active-mode").html(this.modeCodes[this.currentMode]);
-        // TODO: load the active mode commands and the cheatsheet cards with hints for commands like instrument names, mission names, measurements, ifeed things, vr things, etc.
-        $("#daphne_answer > div.panel-block").html("<p>Mode changed!</p>");
-        responsiveVoice.speak("Mode changed!");
-    }
-
-    async askHistoryQuestion(question) {
-        try {
-            let req_data = new FormData();
-            req_data.append("question", question);
-            let data_response = await fetch(
-                "/api/histdb/question",
-                {
-                    method: "POST",
-                    body: req_data,
-                    credentials: "same-origin"
-                }
-            );
-
-            if (data_response.ok) {
-                let data = await data_response.json();
-                $("#daphne_answer > div.panel-block").html("<p>" + data['answer'] + "</p>");
-                responsiveVoice.speak(data["answer"]);
-            }
-            else {
-                console.error("Error answering the question.");
-            }
-        }
-        catch(e) {
-            console.error("Networking error:", e);
-        }
-    }
 
     get_data_ids(data) {
         if (!data) {
@@ -371,7 +305,7 @@ class Daphne {
     daphne.problem = new EOSS(daphne);
     daphne.label = new EOSSLabel(daphne.problem);
     daphne.tradespacePlot = new TradespacePlot(daphne.problem.output_list);
-    daphne.dataMining = new DataMining(daphne.tradespacePlot);
+    daphne.dataMining = new DataMining(daphne.tradespacePlot, daphne.label);
 
     daphne.import_new_data().then(() => {
         daphne.calculate_pareto_ranking();

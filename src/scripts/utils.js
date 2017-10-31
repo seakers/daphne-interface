@@ -41,3 +41,12 @@ function dominates(metrics1, metrics2, objective) {
         return false;
     }
 }
+
+function round_num(num, decimal) {
+    if (decimal) {
+        return num.toFixed(decimal);
+    }
+    else {
+        return num.toFixed(3);   
+    }
+}

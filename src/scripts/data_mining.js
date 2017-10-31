@@ -1,6 +1,7 @@
 class DataMining {
-    constructor(tradespace_plot) {
+    constructor(tradespace_plot, label) {
         this.tradespace_plot = tradespace_plot;
+        this.label = label;
 
         this.support_threshold = 0.002;
         this.confidence_threshold = 0.2;
@@ -16,12 +17,10 @@ class DataMining {
         
         this.df_i = 0;
         
-
         this.current_feature = { id: null, name: null, expression: null, metrics: null, added: "0", x0: -1, y0: -1, x: -1, y: -1 };
         this.current_feature_blink_interval = null;
         this.utopia_point = { id: null, name: "utopiaPoint", expression: null, metrics: null, x0: -1, y0: -1, x: -1, y: -1 };
         
-
         let coloursRainbow = ["#2c7bb6", "#00a6ca", "#00ccbc", "#90eb9d", "#ffff8c", "#f9d057", "#f29e2e", "#e76818", "#d7191c"];
         let colourRangeRainbow = d3.range(0, 1, 1.0 / (coloursRainbow.length - 1));
         colourRangeRainbow.push(1);
@@ -37,7 +36,6 @@ class DataMining {
             .domain(d3.extent([]))
             .range([0,1]);
         
-
         this.xScale = null;
         this.yScale = null;
         this.xAxis = null;
@@ -210,7 +208,6 @@ class DataMining {
             });
         }
 
-
         function get_current_feature() {
             // The current feature
             return objects.filter(d => {
@@ -379,9 +376,9 @@ class DataMining {
                 }
                 return true;
             })
-            .on("mouseover", () => { this.feature_mouseover(); })
-            .on("mouseout", () => { this.feature_mouseout(); })
-            .on("click", () => { this.feature_click(); });
+            .on("mouseover", (d) => { this.feature_mouseover(d); })
+            .on("mouseout", (d) => { this.feature_mouseout(d); })
+            .on("click", (d) => { this.feature_click(d); });
 
 
         //Transition the colors to a rainbow
@@ -414,7 +411,7 @@ class DataMining {
             .text("Confidence(S->F)");
 
         // The current feature: modify the shape to a cross
-        let _current_feature = get_current_feature().attr('d',d3.symbol().type(d3.symbolCross).size(120));
+        let _current_feature = get_current_feature().attr("d", d3.symbol().type(d3.symbolCross).size(120));
 
         _current_feature.shown = true;
 
@@ -463,95 +460,91 @@ class DataMining {
 
 
     feature_mouseover(d) {
-        var id= d.id; 
-        var expression = d.expression;
-        var metrics = d.metrics;
-        var conf = d.metrics[2];
-        var conf2 = d.metrics[3];
+        let id = d.id; 
+        let expression = d.expression;
+        let metrics = d.metrics;
+        let conf = d.metrics[2];
+        let conf2 = d.metrics[3];
 
         // Set variables
-        var margin = self.margin;
-        var width = self.width;
-        var height = self.height;
+        let mousePos = d3.mouse(d3.select("#triangleplot").node());
+        let mouseLoc_x = mousePos[0];
+        let mouseLoc_y = mousePos[1];
 
-        var mouseLoc_x = d3.mouse(d3.select(".objects.feature_plot")[0][0])[0];
-        var mouseLoc_y = d3.mouse(d3.select(".objects.feature_plot")[0][0])[1];
+        let tooltip_location = { x: 0, y: 0 };
+        let tooltip_width = 360;
+        let tooltip_height = 200;
 
-        var tooltip_location = {x:0,y:0};
-        var tooltip_width = 360;
-        var tooltip_height = 200;
-
-        var h_threshold = (width + margin.left + margin.right)*0.5;
-        var v_threshold = (height + margin.top + margin.bottom)*0.55;
+        let h_threshold = (this.width + this.margin.left + this.margin.right)*0.5;
+        let v_threshold = (this.height + this.margin.top + this.margin.bottom)*0.55;
 
 
-        if(mouseLoc_x >= h_threshold){
+        if (mouseLoc_x >= h_threshold) {
             tooltip_location.x = -10 - tooltip_width;
-        } else{
+        }
+        else {
             tooltip_location.x = 10;
         }
-        if(mouseLoc_y < v_threshold){
+        if (mouseLoc_y < v_threshold) {
             tooltip_location.y = 10;
-        } else{
-            tooltip_location.y = -10 -tooltip_height;
+        }
+        else {
+            tooltip_location.y = -10 - tooltip_height;
         }
 
-        var svg = d3.select(".objects.feature_plot");
-        var tooltip = svg.append("g")
-                        .attr("id","tooltip_g");
+        let plot = d3.select("#triangleplot");
+        let tooltip = plot.append("g")
+            .attr("id", "tooltip_g");
 
         tooltip.append("rect")
-                    .attr("id","tooltip_rect")
-                    .attr("transform", function(){
-                        var x = mouseLoc_x + tooltip_location.x;
-                        var y = mouseLoc_y + tooltip_location.y;
-                        return "translate(" + x + "," + y + ")";
-                     })
-                    .attr("width",tooltip_width)
-                    .attr("height",tooltip_height)
-                    .style("fill","#4B4B4B")
-                    .style("opacity", 0.92);    
+            .attr("id", "tooltip_rect")
+            .attr("transform", () => {
+                let x = mouseLoc_x + tooltip_location.x;
+                let y = mouseLoc_y + tooltip_location.y;
+                return "translate(" + x + "," + y + ")";
+             })
+            .attr("width", tooltip_width)
+            .attr("height", tooltip_height)
+            .style("fill", "#4B4B4B")
+            .style("opacity", 0.92);
 
-        var fo = tooltip
-                        .append("foreignObject")
-                        .attr('id','tooltip_foreignObject')
-                        .attr("x",function(){
-                            return mouseLoc_x + tooltip_location.x;
-                        })
-                        .attr("y",function(){
-                           return mouseLoc_y + tooltip_location.y; 
-                        })
-                        .attr({
-                            'width':tooltip_width,
-                            'height':tooltip_height  
-                        })
-                        .data([{id:id, expression:expression, metrics:metrics}]) 
-                        .html(function(d){
-                            var output= "" + ifeed.label.pp_feature(d.expression) + "<br><br> lift: " + round_num(d.metrics[1]) + 
-                            "<br> Support: " + round_num(d.metrics[0]) + 
-                            "<br> Confidence(F->S): " + round_num(d.metrics[2]) + 
-                            "<br> Confidence(S->F): " + round_num(d.metrics[3]) +"";
-                            return output;
-                        }).style("padding","8px")
-                        .style('color','#F7FF55')
-                        .style('word-wrap','break-word');   
+        let fo = tooltip
+            .append("foreignObject")
+            .attr("id", "tooltip_foreignObject")
+            .attr("x", () => mouseLoc_x + tooltip_location.x)
+            .attr("y", () => mouseLoc_y + tooltip_location.y)
+            .attr("width", tooltip_width)
+            .attr("height", tooltip_height)
+            .data([ { id: id, expression: expression, metrics: metrics } ]) 
+            .html(d => {
+                let output = "" + this.label.pp_feature(d.expression) + "<br><br> lift: " + round_num(d.metrics[1]) + 
+                "<br> Support: " + round_num(d.metrics[0]) + 
+                "<br> Confidence(F->S): " + round_num(d.metrics[2]) + 
+                "<br> Confidence(S->F): " + round_num(d.metrics[3]);
+                return output;
+            })
+            .style("padding", "8px")
+            .style("color", "#F7FF55")
+            .style("word-wrap", "break-word");
 
 
-        // Update the placeholder with the driving feature and stash the expression    
-        ifeed.feature_application.update_feature_application('temp',expression);
-        ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
-        self.draw_venn_diagram(); 
+        // Update the placeholder with the driving feature and stash the expression
+        // TODO: Update filter and feature_application through PubSub
+        //ifeed.feature_application.update_feature_application('temp',expression);
+        //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
+        this.draw_venn_diagram(); 
     }
 
 
-    feature_click(d){
+    feature_click(d) {
         // Replaces the current feature expression with the stashed expression
-        ifeed.feature_application.update_feature_application('update');
+        // TODO: Update feature_application through PubSub
+        //ifeed.feature_application.update_feature_application('update');
     }
 
 
-    feature_mouseout(d){
-        var id = d.id;
+    feature_mouseout(d) {
+        let id = d.id;
 
         // Remove the tooltip
         d3.selectAll("#tooltip_g").remove();
@@ -559,10 +552,152 @@ class DataMining {
         // Remove all the features created temporarily
 
         // Bring back the previously stored feature expression
-        ifeed.feature_application.update_feature_application('restore');
-        ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
-        self.draw_venn_diagram();       
+        // TODO: Update filter and feature_application through PubSub
+        //ifeed.feature_application.update_feature_application('restore');
+        //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
+        this.draw_venn_diagram();
+    }
 
+    async draw_venn_diagram(){
+        let venn_diagram_container = d3.select("#venn_diagram");
+        
+        if (venn_diagram_container.node() == null) {
+            return;
+        }
+
+        venn_diagram_container.select("svg").remove();
+        
+        let svg = venn_diagram_container
+            .append("svg")
+            .style("width", "300px")
+            .style("border-width", "3px")
+            .style("height", "285px")
+            .style("border-style", "solid")
+            .style("border-color", "black")
+            .style("border-radius", "40px")
+            .style("margin-top", "10px")
+            .style("margin-bottom", "10px"); 
+
+        
+        let total = this.tradespace_plot.get_num_of_archs();
+        let intersection = this.tradespace_plot.get_num_of_intersected_archs();
+        let selected = this.tradespace_plot.get_num_of_selected_archs();
+        let highlighted = this.tradespace_plot.get_num_of_highlighted_archs();
+
+        
+        let left_margin = 50;
+        let c1x = 110;
+        // Selection has a fixed radius
+        let r1 = 70;
+        let S_size = selected;
+
+        let supp, conf, conf2, lift, F_size;
+
+        svg.append("circle")
+            .attr("id","venn_diag_c1")
+            .attr("cx", c1x)
+            .attr("cy", 180-30)
+            .attr("r", r1)
+            .style("fill", "steelblue")
+            .style("fill-opacity", ".5");
+
+        svg.append("text")
+            .attr("id","venn_diag_c1_text")
+            .attr("x",c1x-90)
+            .attr("y",180+r1+50-30)
+            .attr("font-family","sans-serif")
+            .attr("font-size","18px")
+            .attr("fill","steelblue")
+            .text("Selected:" + S_size );
+        
+
+        if (intersection == 0) {
+            supp = 0;
+            F_size = highlighted;
+        }
+        else if (highlighted == 0) {
+            supp = 0;
+            F_size = 0;
+        }
+        else {
+            let p_snf = intersection/total;
+            let p_s = selected/total;
+            let p_f = highlighted/total;
+
+            supp = p_snf;
+            conf = supp / p_f;
+            conf2 = supp / p_s;
+            lift = p_snf/(p_f*p_s); 
+
+            F_size = supp * 1/conf * total;
+            S_size = supp * 1/conf2 * total;
+
+
+            // Feature 
+            let r2 = Math.sqrt(F_size/S_size)*r1;
+            let a1 = Math.PI * Math.pow(r1,2);
+            let a2 = Math.PI * Math.pow(r2,2);
+            // Conf(F->S) * |F| = P(FnS)
+            intersection = supp * total * a1 / S_size;
+
+            let c2x;
+            if (conf2 > 0.999) {
+                c2x = c1x + r2 - r1;
+            }
+            else {
+                let dist;
+                try {
+                    let req_data = new FormData();
+                    req_data.append("a1", a1);
+                    req_data.append("a2", a2);
+                    req_data.append("intersection", intersection);
+                    let data_response = await fetch(
+                        "/api/ifeed/venn-diagram-distance/",
+                        {
+                            method: "POST",
+                            body: req_data,
+                            credentials: "same-origin"
+                        }
+                    );
+
+                    if (data_response.ok) {
+                        let dist = + await data_response.text();
+                    }
+                    else {
+                        console.error("Error computing the distances.");
+                    }
+                }
+                catch(e) {
+                    console.error("Networking error:", e);
+                }
+            }
+
+            svg.append("circle")
+                .attr("id","venn_diag_c2")
+                .attr("cx", c2x)
+                .attr("cy", 180-30)
+                .attr("r", r2)
+                .style("fill", "brown")
+                .style("fill-opacity", ".5");
+        }
+
+        svg.append("text")
+            .attr("id","venn_diag_int_text")
+            .attr("x",left_margin-10)
+            .attr("y",70-30)
+            .attr("font-family","sans-serif")
+            .attr("font-size","18px")
+            .attr("fill","black")
+            .text("Intersection: " + Math.round(supp * total));
+
+        svg.append("text")
+            .attr("id","venn_diag_c2_text")
+            .attr("x",c1x+60)
+            .attr("y",180+r1+50-30)
+            .attr("font-family","sans-serif")
+            .attr("font-size","18px")
+            .attr("fill","brown")
+            .text("Features:" + Math.round(F_size));
     }
 
 
@@ -655,141 +790,4 @@ class DataMining {
 
         }
     }
-    
-    
-    
-    
-    
-    draw_venn_diagram(){
-
-        var venn_diagram_container = d3.select('.feature_plot .venn_diagram').select('div');
-        
-        if(venn_diagram_container[0][0]==null) return;
-
-        venn_diagram_container.select("svg").remove();
-        
-        var svg = venn_diagram_container
-                                    .append("svg")
-                                    .style('width','320px')  			
-                                    .style('border-width','3px')
-                                    .style('height','305px')
-                                    .style('border-style','solid')
-                                    .style('border-color','black')
-                                    .style('border-radius','40px')
-                                    .style('margin-top','10px')
-                                    .style('margin-bottom','10px'); 
-
-        
-        var total = ifeed.main_plot.get_num_of_archs();
-        var intersection = d3.selectAll('.dot.main_plot.selected.highlighted:not(.hidden)')[0].length;
-        var selected = d3.selectAll('.dot.main_plot.selected:not(.hidden)')[0].length;
-        var highlighted = d3.selectAll('.dot.main_plot.highlighted:not(.hidden)')[0].length;
-
-        
-        var left_margin = 50;
-        var c1x = 110;
-        // Selection has a fixed radius
-        var r1 = 70;
-        var S_size = selected;
-
-        svg.append("circle")
-            .attr("id","venn_diag_c1")
-            .attr("cx", c1x)
-            .attr("cy", 180-30)
-            .attr("r", r1)
-            .style("fill", "steelblue")
-            .style("fill-opacity", ".5");
-
-        svg.append("text")
-            .attr("id","venn_diag_c1_text")
-            .attr("x",c1x-90)
-            .attr("y",180+r1+50-30)
-            .attr("font-family","sans-serif")
-            .attr("font-size","18px")
-            .attr("fill","steelblue")
-            .text("Selected:" + S_size );
-
-        var supp, conf, conf2, lift;
-
-        if(intersection==0){
-            var supp = 0;
-            var F_size = highlighted;
-        }else if(highlighted==0){
-            var supp = 0;
-            var F_size = 0;
-        }else{
-
-            var p_snf = intersection/total;
-            var p_s = selected/total;
-            var p_f = highlighted/total;
-
-            supp = p_snf;
-            conf = supp / p_f;
-            conf2 = supp / p_s;
-            lift = p_snf/(p_f*p_s); 
-
-            var F_size = supp * 1/conf * total;
-            var S_size = supp * 1/conf2 * total;
-
-
-            // Feature 
-            var	r2 = Math.sqrt(F_size/S_size)*r1;
-            var a1 = Math.PI * Math.pow(r1,2);
-            var a2 = Math.PI * Math.pow(r2,2);
-            // Conf(F->S) * |F| = P(FnS)
-            var intersection = supp * ifeed.main_plot.get_num_of_archs() * a1 / S_size;
-
-            var c2x;
-            if (conf2 > 0.999){
-                c2x = c1x + r2 - r1;
-            }else{
-                var dist;
-                $.ajax({
-                    url: "/api/ifeed/venn-diagram-distance/",
-                    type: "POST",
-                    data: {a1: a1,
-                           a2: a2,
-                           intersection: intersection},
-                    async: false,
-                    success: function (data, textStatus, jqXHR)
-                    {
-                        dist = + data;
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
-                    {alert("error");}
-                });
-                c2x = c1x + dist;
-            }
-
-            svg.append("circle")
-                .attr("id","venn_diag_c2")
-                .attr("cx", c2x)
-                .attr("cy", 180-30)
-                .attr("r", r2)
-                .style("fill", "brown")
-                .style("fill-opacity", ".5");
-
-        }
-
-
-        svg.append("text")
-            .attr("id","venn_diag_int_text")
-            .attr("x",left_margin-10)
-            .attr("y",70-30)
-            .attr("font-family","sans-serif")
-            .attr("font-size","18px")
-            .attr("fill","black")
-            .text("Intersection: " + Math.round(supp * total));
-
-
-        svg.append("text")
-            .attr("id","venn_diag_c2_text")
-            .attr("x",c1x+60)
-            .attr("y",180+r1+50-30)
-            .attr("font-family","sans-serif")
-            .attr("font-size","18px")
-            .attr("fill","brown")
-            .text("Features:" + Math.round(F_size) );
-    }
-    
 }

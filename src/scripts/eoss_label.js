@@ -260,8 +260,7 @@ class EOSSLabel extends Label {
             else if (expression[i] == '}') {
                 save = false;
                 savedString = savedString + '}';
-                feature_expression = savedString;
-                output = output + '{' + this.pp_feature_single(feature_expression) + '}';
+                output = output + '{' + this.pp_feature_single(savedString) + '}';
             }
             else {
                 if (save) {
