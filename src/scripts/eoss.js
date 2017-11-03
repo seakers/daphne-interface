@@ -45,7 +45,7 @@ class EOSS extends Problem {
     */
     async get_orbit_list() {
         try {
-            let data_response = await fetch('/api/vassar/get-orbit-list/');
+            let data_response = await fetch("/api/vassar/get-orbit-list/", {credentials: "same-origin"});
             if (data_response.ok) {
                 return data_response.json();
             }
@@ -65,7 +65,7 @@ class EOSS extends Problem {
     */
     async get_instrument_list() {
         try {
-            let data_response = await fetch('/api/vassar/get-instrument-list/');
+            let data_response = await fetch("/api/vassar/get-instrument-list/", {credentials: "same-origin"});
             if (data_response.ok) {
                 return data_response.json();
             }
