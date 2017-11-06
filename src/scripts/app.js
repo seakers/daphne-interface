@@ -105,8 +105,8 @@ class Daphne {
 
     processResponse(response) {
         // TODO: This can be more complex, but for now just paste text into text area
-        $("#daphne_answer > div.panel-block").html("<p>" + response + "</p>");
-        responsiveVoice.speak(response);
+        $("#daphne_answer > div.panel-block").html(response["visual_answer"]);
+        responsiveVoice.speak(response["voice_answer"]);
     }
 
 

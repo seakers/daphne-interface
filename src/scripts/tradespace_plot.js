@@ -291,7 +291,9 @@ class TradespacePlot {
 
                 // Display the current architecture info
                 let arch_info_display = design_inspector.append("div")
-                    .attr("id","arch_info_display");
+                    .attr("id", "arch_info_display");
+
+                arch_info_display.append("p").text(d => "Design ID: D" + arch.id);
 
                 for (let i = 0; i < this.output_list.length; i++) {
                     arch_info_display.append("p")
@@ -385,7 +387,7 @@ class TradespacePlot {
     }
 
 
-    toggle_selection_mode(){
+    toggle_selection_mode() {
         this.change_interaction_mode(document.querySelector("input[name=\"mouse-selection\"]:checked").value);     
     }
 
