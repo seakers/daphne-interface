@@ -18,6 +18,11 @@ class Daphne {
         this.avaliableFunctionalities.set("design_inspector", { min_size: "one-third" });
         this.avaliableFunctionalities.set("data_mining", { min_size: "two-thirds" });
 
+        this.responseOutput = {
+            text: this.showText,
+            list: this.showList
+        };
+
         this.sizeScale = [
             "one-third",
             "two-thirds",
@@ -76,6 +81,21 @@ class Daphne {
     }
 
 
+    showText(text) {
+        return "<p>" + text + "</p>";
+    }
+
+
+    showList(list) {
+        let ret = "<ul>";
+        list.forEach(item => {
+            ret += "<li>" + item + "</li>";
+        });
+        ret += "</ul>";
+        return ret;
+    }
+
+
     async executeCommand(command) {
         try {
             let req_data = new FormData();
@@ -105,7 +125,7 @@ class Daphne {
 
     processResponse(response) {
         // TODO: This can be more complex, but for now just paste text into text area
-        $("#daphne_answer > div.panel-block").html(response["visual_answer"]);
+        $("#daphne_answer > div.panel-block").html(this.responseOutput[response["visual_answer_type"]](response["visual_answer"]));
         responsiveVoice.speak(response["voice_answer"]);
     }
 
