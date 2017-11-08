@@ -98,28 +98,33 @@ class Daphne {
 
 
     async executeCommand(command) {
-        try {
-            let req_data = new FormData();
-            req_data.append("command", command);
-            let data_response = await fetch(
-                "/api/daphne/command",
-                {
-                    method: "POST",
-                    body: req_data,
-                    credentials: "same-origin"
-                }
-            );
-
-            if (data_response.ok) {
-                let data = await data_response.json();
-                this.processResponse(data["response"]);
-            }
-            else {
-                console.error("Error processing the command.");
-            }
+        if (command == "stop") {
+            responsiveVoice.cancel();
         }
-        catch(e) {
-            console.error("Networking error:", e);
+        else {
+            try {
+                let req_data = new FormData();
+                req_data.append("command", command);
+                let data_response = await fetch(
+                    "/api/daphne/command",
+                    {
+                        method: "POST",
+                        body: req_data,
+                        credentials: "same-origin"
+                    }
+                );
+
+                if (data_response.ok) {
+                    let data = await data_response.json();
+                    this.processResponse(data["response"]);
+                }
+                else {
+                    console.error("Error processing the command.");
+                }
+            }
+            catch(e) {
+                console.error("Networking error:", e);
+            }
         }
     }
 
