@@ -43,6 +43,7 @@ class Daphne {
         // Voice recognition
         if (annyang) {
             annyang.addCallback('result', phrases => {
+                $("input[name=command]").val(phrases[0]);
                 this.executeCommand(phrases[0]);
             });
 
@@ -329,6 +330,12 @@ class Daphne {
 
     daphne.import_new_data().then(() => {
         daphne.calculate_pareto_ranking();
+    });
+
+    let sortable_list = document.getElementById('functionalities_list');
+    Sortable.create(sortable_list, {
+        handle: '.panel-heading',
+        animation: 150
     });
 
     await daphne.add_new_functionality("design_inspector");

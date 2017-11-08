@@ -22,6 +22,7 @@
     "minjs:main": "uglifyjs src/scripts/{utils,label,eoss_label,problem,eoss,tradespace_plot,data_mining,app}.js -m -c -o dist/assets/js/app.js --source-map url=app.js.map",
     "minjs:jquery": "cp node_modules/jquery/dist/jquery.min.* dist/assets/js/",
     "minjs:pubsub": "uglifyjs node_modules/pubsub-js/src/pubsub.js -m -c -o dist/assets/js/pubsub.js",
+    "minjs:sortable": "cp node_modules/sortablejs/Sortable.min.js dist/assets/js/",
     "watch:js": "onchange \"src/scripts\" -- npm-run-all dist:scripts notify-update",
     "watch:css": "onchange \"src/styles\" -- npm-run-all dist:styles notify-update",
     "watch:fonts": "onchange \"src/fonts\" -- npm-run-all dist:fonts notify-update",
@@ -39,7 +40,8 @@
   "dependencies": {
     "bulma": "^0.5.3",
     "jquery": "^3.2.1",
-    "pubsub-js": "^1.5.7"
+    "pubsub-js": "^1.5.7",
+    "sortablejs": "^1.7.0"
   },
   "devDependencies": {
     "asset-cache-bust": "^2.2.0",
