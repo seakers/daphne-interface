@@ -163,9 +163,9 @@ class EOSS extends Problem {
             }
         }
 
-        d3.select("#design_inspector > .panel-block").select("g").select("table").remove();
+        d3.select(".design_inspector > .panel-block").select("g").select("table").remove();
 
-        let design_inspector = d3.select("#design_inspector > .panel-block").select("g");
+        let design_inspector = d3.select(".design_inspector > .panel-block").select("g");
         let table = design_inspector.append("table")
             .attr("id", "arch_info_display_table")
             .attr("class", "table");

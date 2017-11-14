@@ -53,9 +53,9 @@ class DataMining {
 
 
     reset() {
-        d3.select("#data_mining > .panel-block").select("g").remove();
+        d3.select(".data_mining > .panel-block").select("g").remove();
         
-        let guideline = d3.select("#data_mining > .panel-block")
+        let guideline = d3.select(".data_mining > .panel-block")
             .append("g");
 
         guideline.append("p")
@@ -165,9 +165,9 @@ class DataMining {
         this.df_i = 0;
 
         // Remove previous content
-        d3.select("#data_mining > .panel-block").select("g").remove();
+        d3.select(".data_mining > .panel-block").select("g").remove();
 
-        let tab = d3.select("#data_mining > .panel-block")
+        let tab = d3.select(".data_mining > .panel-block")
             .append("g")
             .style("display", "flex")
             .style("justify-content", "space-between")

@@ -285,9 +285,9 @@ class TradespacePlot {
                 arch.drawingColor = this.color.mouseover;
 
                 // Remove the previous info
-                d3.select("#design_inspector > .panel-block").select("g").remove();
+                d3.select(".design_inspector > .panel-block").select("g").remove();
                 
-                let design_inspector = d3.select("#design_inspector > .panel-block").append("g");
+                let design_inspector = d3.select(".design_inspector > .panel-block").append("g");
 
                 // Display the current architecture info
                 let arch_info_display = design_inspector.append("div")

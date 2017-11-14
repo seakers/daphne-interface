@@ -13,10 +13,11 @@ class Daphne {
         this.featureApplication = null;
     
         // Available functionalities
-        this.avaliableFunctionalities = new Map();
-        this.avaliableFunctionalities.set("daphne_answer", { min_size: "one-third" });
-        this.avaliableFunctionalities.set("design_inspector", { min_size: "one-third" });
-        this.avaliableFunctionalities.set("data_mining", { min_size: "two-thirds" });
+        this.functionalities = new Map();
+        this.functionalities.set("daphne_answer", { min_size: "one-third", max_repeat: 1, instances: new Map() });
+        this.functionalities.set("design_inspector", { min_size: "one-third", max_repeat: 1, instances: new Map() });
+        this.functionalities.set("data_mining", { min_size: "two-thirds", max_repeat: 1, instances: new Map() });
+        this.functionalities.set("cheatsheet", { min_size: "one-third", max_repeat: 1000, instances: new Map() });
 
         this.responseOutput = {
             text: this.showText,
@@ -28,8 +29,6 @@ class Daphne {
             "two-thirds",
             "full"
         ];
-
-        this.insertedFunctionalities = new Map();
 
         //Interaction states
         this.UI_states = {
@@ -73,9 +72,9 @@ class Daphne {
         });
 
         // Setup the functionalities menu
-        this.avaliableFunctionalities.forEach((value, key) => {
+        this.functionalities.forEach((value, key) => {
             document.querySelector("#" + key + "_menu").addEventListener("click", event => {
-                this.add_new_functionality(key);
+                this.addNewFunctionality(key);
                 event.preventDefault();
             });
         });
@@ -105,7 +104,7 @@ class Daphne {
             try {
                 let req_data = new FormData();
                 req_data.append("command", command);
-                let data_response = await fetch(
+                let dataResponse = await fetch(
                     "/api/daphne/command",
                     {
                         method: "POST",
@@ -114,8 +113,8 @@ class Daphne {
                     }
                 );
 
-                if (data_response.ok) {
-                    let data = await data_response.json();
+                if (dataResponse.ok) {
+                    let data = await dataResponse.json();
                     this.processResponse(data["response"]);
                 }
                 else {
@@ -130,8 +129,7 @@ class Daphne {
 
 
     processResponse(response) {
-        // TODO: This can be more complex, but for now just paste text into text area
-        $("#daphne_answer > div.panel-block").html(this.responseOutput[response["visual_answer_type"]](response["visual_answer"]));
+        $(".daphne_answer > div.panel-block").html(this.responseOutput[response["visual_answer_type"]](response["visual_answer"]));
         responsiveVoice.speak(response["voice_answer"]);
     }
 
@@ -163,7 +161,7 @@ class Daphne {
         try {
             let req_data = new FormData();
             req_data.append("filename", filename);
-            let data_response = await fetch(
+            let dataResponse = await fetch(
                 "/api/ifeed/import-data/",
                 {
                     method: "POST",
@@ -172,8 +170,8 @@ class Daphne {
                 }
             );
 
-            if (data_response.ok) {
-                this.data = await data_response.json();
+            if (dataResponse.ok) {
+                this.data = await dataResponse.json();
 
                 if (this.problem.import_callback) {
                     await this.problem.import_callback(this.data);  
@@ -192,6 +190,7 @@ class Daphne {
             console.error("Networking error:", e);
         }
     }
+
     
     calculate_pareto_ranking(limit) {  
         let rank = 0;
@@ -237,79 +236,88 @@ class Daphne {
     }
 
 
-    async add_new_functionality(functionality) {
-        function column_wrap(html, size) {
+    async addNewFunctionality(functionality) {
+        function columnWrap(html, size) {
             return "<div class=\"column is-" + size + "-desktop is-full-mobile\">" + html + "</div>\n";
         }
 
-        if (!this.insertedFunctionalities.has(functionality)) {
+        let funcInfo = this.functionalities.get(functionality);
+        if (funcInfo.instances.size < funcInfo.max_repeat) {
             try {
-                let data_response = await fetch("./assets/data/functionalities/" + functionality + ".html");
+                let dataResponse = await fetch("./assets/data/functionalities/" + functionality + ".html");
 
-                if (data_response.ok) {
+                if (dataResponse.ok) {
                     // Add the new functionality
-                    let func_html = await data_response.text();
-                    let func_id = "#" + functionality;
-                    let min_size = this.avaliableFunctionalities.get(functionality).min_size;
-                    $("#functionalities_list").append(column_wrap(func_html, min_size));
-                    $(func_id + "_menu").addClass("active");
+                    let funcHtml = await dataResponse.text();
+                    let funcId = functionality + funcInfo.instances.size;
+                    let minSize = funcInfo.min_size;
+                    let newFunc = $(columnWrap(funcHtml, minSize));
+
+                    // Write the correct values and add interactions
+                    newFunc.find("." + functionality).first().attr("id", funcId);
+                    $("#" + functionality + "_menu").addClass("active");
 
                     // Add all the interactions for the functionality
                     // Remove
-                    $(func_id + " .close-panel").on("click", event => {
-                        this.insertedFunctionalities.delete(functionality);
-                        $(func_id).parent().remove();
-                        $(func_id + "_menu").removeClass("active");
-                        PubSub.publish(functionality + "_removed");
+                    newFunc.find("." + functionality + " .close-panel").on("click", event => {
+                        funcInfo.instances.delete(funcId);
+                        $("#" + funcId).parent().remove();
+                        if (funcInfo.instances.size == 0) {
+                            $("#" + functionality + "_menu").removeClass("active");
+                        }
+                        PubSub.publish(functionality + "_removed", funcId);
                         event.preventDefault();
                     });
 
                     // Reduce
-                    $(func_id + " .reduce-panel").on("click", event => {
-                        if (!$(func_id).parent().hasClass("is-" + min_size + "-desktop")) {
+                    newFunc.find("." + functionality + " .reduce-panel").on("click", event => {
+                        if (!$("#" + funcId).parent().hasClass("is-" + minSize + "-desktop")) {
                             // Make column smaller
-                            let func_info = this.insertedFunctionalities.get(functionality);
-                            let func_size = "is-" + func_info.size + "-desktop";
-                            let smaller_size_info = this.sizeScale[this.sizeScale.indexOf(func_info.size)-1];
-                            let smaller_size = "is-" + smaller_size_info + "-desktop";
-                            $(func_id).parent().removeClass(func_size);
-                            $(func_id).parent().addClass(smaller_size);
-                            this.insertedFunctionalities.set(functionality, {size: smaller_size_info});
+                            let storedSize = funcInfo.instances.get(funcId);
+                            let funcSize = "is-" + storedSize + "-desktop";
+                            let smallerSizeInfo = this.sizeScale[this.sizeScale.indexOf(storedSize)-1];
+                            let smallerSize = "is-" + smallerSizeInfo + "-desktop";
+                            $("#" + funcId).parent().removeClass(funcSize);
+                            $("#" + funcId).parent().addClass(smallerSize);
+                            funcInfo.instances.set(funcId, smallerSizeInfo);
 
                             // Change icon to grey if needed and ensure maximize is changed back to normal
-                            if (smaller_size_info === min_size) {
-                                $(func_id + " .reduce-panel").addClass("has-text-grey");
+                            if (smallerSizeInfo === minSize) {
+                                $("#" + funcId + " .reduce-panel").addClass("has-text-grey");
                             }
-                            $(func_id + " .grow-panel").removeClass("has-text-grey");
+                            $("#" + funcId + " .grow-panel").removeClass("has-text-grey");
                         }
                         event.preventDefault();
                     });
 
                     // Grow
-                    $(func_id + " .grow-panel").on("click", event => {
+                    newFunc.find("." + functionality + " .grow-panel").on("click", event => {
                         let scalesLength = this.sizeScale.length;
-                        if (!$(func_id).parent().hasClass("is-" + this.sizeScale[scalesLength-1] + "-desktop")) {
+                        if (!$("#" + funcId).parent().hasClass("is-" + this.sizeScale[scalesLength-1] + "-desktop")) {
                             // Make column bigger
-                            let func_info = this.insertedFunctionalities.get(functionality);
-                            let func_size = "is-" + func_info.size + "-desktop";
-                            let bigger_size_info = this.sizeScale[this.sizeScale.indexOf(func_info.size)+1];
-                            let bigger_size = "is-" + bigger_size_info + "-desktop";
-                            $(func_id).parent().removeClass(func_size);
-                            $(func_id).parent().addClass(bigger_size);
-                            this.insertedFunctionalities.set(functionality, {size: bigger_size_info});
+                            let storedSize = funcInfo.instances.get(funcId);
+                            let funcSize = "is-" + storedSize + "-desktop";
+                            let biggerSizeInfo = this.sizeScale[this.sizeScale.indexOf(storedSize)+1];
+                            let biggerSize = "is-" + biggerSizeInfo + "-desktop";
+                            $("#" + funcId).parent().removeClass(funcSize);
+                            $("#" + funcId).parent().addClass(biggerSize);
+                            funcInfo.instances.set(funcId, biggerSizeInfo);
 
                             // Change icon to grey if needed and ensure minimze is changed back to normal
-                            if (bigger_size_info === this.sizeScale[scalesLength-1]) {
-                                $(func_id + " .grow-panel").addClass("has-text-grey");
+                            if (biggerSizeInfo === this.sizeScale[scalesLength-1]) {
+                                $("#" + funcId + " .grow-panel").addClass("has-text-grey");
                             }
-                            $(func_id + " .reduce-panel").removeClass("has-text-grey");
+                            $("#" + funcId + " .reduce-panel").removeClass("has-text-grey");
                         }
                         event.preventDefault();
                     });
 
+                    // Add to columns and to the array
+                    $("#functionalities_list").append(newFunc);
+                    funcInfo.instances.set(funcId, minSize);
+
                     // Consider it added
-                    PubSub.publish(functionality + "_added");
-                    this.insertedFunctionalities.set(functionality, {size: this.avaliableFunctionalities.get(functionality).min_size});
+                    PubSub.publish(functionality + "_added", funcId);
                 }
                 else {
                     console.error("Error downloading the template.");
@@ -343,7 +351,7 @@ class Daphne {
         animation: 150
     });
 
-    await daphne.add_new_functionality("design_inspector");
-    await daphne.add_new_functionality("data_mining");
-    await daphne.add_new_functionality("daphne_answer");
+    await daphne.addNewFunctionality("design_inspector");
+    await daphne.addNewFunctionality("data_mining");
+    await daphne.addNewFunctionality("daphne_answer");
 } ());
