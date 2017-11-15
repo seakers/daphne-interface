@@ -11,6 +11,7 @@ class Daphne {
         this.filter = null;
         this.dataMining = null;
         this.featureApplication = null;
+        this.cheatsheetManager = null;
     
         // Available functionalities
         this.functionalities = new Map();
@@ -82,16 +83,17 @@ class Daphne {
 
 
     showText(text) {
-        return "<p>" + text + "</p>";
+        return "<div class=\"content\"><p>" + text + "</p></div>";
     }
 
 
     showList(list) {
-        let ret = "<ul>";
-        list.forEach(item => {
+        let ret = "<div class=\"content\"><p>" + list.begin + "</p>";
+        ret += "<ul>";
+        list.list.forEach(item => {
             ret += "<li>" + item + "</li>";
         });
-        ret += "</ul>";
+        ret += "</ul></div>";
         return ret;
     }
 
@@ -340,6 +342,7 @@ class Daphne {
     daphne.label = new EOSSLabel(daphne.problem);
     daphne.tradespacePlot = new TradespacePlot(daphne.problem.output_list);
     daphne.dataMining = new DataMining(daphne.tradespacePlot, daphne.label);
+    daphne.cheatsheetManager = new CheatsheetManager();
 
     daphne.import_new_data().then(() => {
         daphne.calculate_pareto_ranking();

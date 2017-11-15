@@ -89,7 +89,13 @@ body {
 }
 
 .functionality {
-  height: 350px;
+  flex-grow: 1;
   align-items: flex-start;
   overflow: auto;
+}
+
+.func-panel {
+  display: flex;
+  flex-direction: column;
+  height: 375px;
 }
