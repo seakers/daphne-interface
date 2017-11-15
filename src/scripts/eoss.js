@@ -204,7 +204,7 @@ class EOSS extends Problem {
             .append("th")
             .attr("name", d => d.content)
             .attr("class", "arch_cell")
-            .text(d => this.context.label.actualName2DisplayName(d.content, "orbit"));
+            .text(d => d.content);
 
         let rows_cells = table.select("tbody").selectAll("tr")
             .selectAll("td")
@@ -225,6 +225,6 @@ class EOSS extends Problem {
             .append("td")
             .attr("name", d => d.content)
             .attr("class", "arch_cell")
-            .text(d => this.context.label.actualName2DisplayName(d.content, "instrument"));
+            .text(d => d.content);
     }
 }
