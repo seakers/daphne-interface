@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daphne - Architecting Earth Observing Satellite Systems</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
+</head>
+<body>
+  <div class="columns">
+    <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
+      <div>
+        <div class="main">
+          <h1 class="title is-size-4">Daphne</h1>
+          <a href="#" class="item" id="daphne_answer_menu"><span class="icon"><span class="fa fa-comments"></span></span><span class="name">Answers</span></a>
+          <a href="#" class="item" id="design_inspector_menu"><span class="icon"><span class="fa fa-search"></span></span><span class="name">Design Inspector</span></a>
+          <a href="#" class="item" id="data_mining_menu"><span class="icon"><span class="fa fa-bar-chart"></span></span><span class="name">Data Mining</span></a>
+          <a href="#" class="item" id="cheatsheet_menu"><span class="icon"><span class="fa fa-book"></span></span><span class="name">Cheatsheet</span></a>
+        </div>
+      </div>
+    </aside>
+    <div class="column is-10 admin-panel">
+      <nav class="navbar">
+        <div class="navbar-brand">
+          <a class="navbar-item" href="https://www.selva-research.com/daphne">Daphne</a>
+          <div class="navbar-burger burger">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+
+        <div class="navbar-menu">
+          <div class="navbar-start is-fullwidth">
+            <div class="navbar-item is-fullwidth">
+              <div class="field has-addons is-fullwidth">
+                <div class="control is-expanded">
+                  <input class="input" type="text" name="command" placeholder="Ask a question / Give a command / Speak it out!">
+                </div>
+                <div class="control">
+                  <a class="button is-info" id="send_command">
+                    Do it!
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <section class="section is-small">
+        <div class="columns is-mobile">
+          <div class="column">
+            <section class="panel">
+              <p class="panel-heading">
+                Tradespace exploration |
+                Number of designs: 
+                <span id="num_architectures"></span> |
+                Number of targeted designs: 
+                <span id="num_selected_architectures"></span>
+              </p>
+              <div class="panel-block" id="main_plot_block">
+                <div id="main_plot"></div>
+                <div id="selections_block">
+                  <div class="card" id="interaction_modes">
+                    <header class="card-header">
+                      <p class="card-header-title">
+                        Mouse Selection
+                      </p>
+                    </header>
+                    <div class="card-content control is-small">
+                      <div class="tooltip">
+                      <!--<span class="tooltiptext">Zoom/Pan: This option allows zooming/panning on the scatter plot</span>-->
+                        <label class="radio">
+                          Zoom/Pan: 
+                          <input type="radio" name="mouse-selection" value="zoom-pan" checked />
+                        </label>
+                      </div>
+                      <div class="tooltip">
+                      <!--<span class="tooltiptext">Drag-select: This option allows selecting designs by dragging over points</span>-->
+                        <label class="radio">
+                          Drag-select: 
+                          <input type="radio" name="mouse-selection" value="drag-select" />
+                        </label>
+                      </div>
+                      <div class="tooltip">
+                      <!--<span class="tooltiptext">Deselect: This option allows de-selecting designs by dragging over points</span>-->
+                        <label class="radio">
+                          Deselect: 
+                          <input type="radio" name="mouse-selection" value="de-select" />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card" id="selection_options">
+                    <header class="card-header">
+                      <p class="card-header-title">
+                        Range Selection
+                      </p>
+                    </header>
+                    <div class="card-content is-small">
+                      <div class="field">
+                        <label class="label">Cost range:</label>
+                        <div class="field is-grouped">
+                          <p class="control">
+                            <input id="selectArchsWithinRange_minCost" class="input" type="text" value="0" size="5">
+                          </p>
+                          <p class="control">
+                            ~
+                          </p>
+                          <p class="control">
+                            <input id="selectArchsWithinRange_maxCost" class="input" type="text" value="inf" size="5">
+                          </p>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label class="label">Science Benefit range:</label>
+                        <div class="field is-grouped">
+                          <p class="control">
+                            <input id="selectArchsWithinRange_minScience" class="input" type="text" value="0" size="5">
+                          </p>
+                          <p class="control">
+                            ~
+                          </p>
+                          <p class="control">
+                            <input id="selectArchsWithinRange_maxScience" class="input" type="text" value="inf" size="5">
+                          </p>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <p class="control">
+                          <button class="button" id="selectArchsWithinRangeButton">Select Designs</button>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <div class="card-content is-small">
+                      <div class="field">
+                        <p class="control">
+                          <button class="button" id="cancel_selection">Cancel all selections</button>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div class="columns is-mobile is-multiline" id="functionalities_list"></div>
+      </section>
+    </div>
+  </div>
+  <footer class="footer">
+    <div class="container">
+      <div class="has-text-centered">
+        <p>
+          <strong>Daphne</strong> by <a href="https://www.selva-research.com">SEAK Lab</a>. The source code is licensed
+          <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
+        </p>
+      </div>
+    </div>
+  </footer>
+  <script type="text/javascript" src="./assets/js/jquery.min.js"></script>
+  <script type="text/javascript" src="./assets/js/pubsub.js"></script>
+  <script type="text/javascript" src="./assets/js/Sortable.min.js"></script>
+  <script src="//d3js.org/d3.v4.min.js"></script>
+  <script src="//d3js.org/d3-selection-multi.v1.min.js"></script>
+  <script src='//code.responsivevoice.org/responsivevoice.js'></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/annyang/2.6.0/annyang.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/speechkitt.min.js"></script>
+  <script async type="text/javascript" src="./assets/js/app.js"></script>
+</body>
+</html>

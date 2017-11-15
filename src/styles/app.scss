@@ -1,0 +1,101 @@
+@import "../../node_modules/bulma/bulma";
+
+body {
+  height: 100%;
+}
+
+.button.is-success {
+  background-color: #2EB398;
+}
+
+.navbar.is-dark {
+  background-color: #232B2D;
+  color: #F6F7F7;
+}
+
+.navbar.is-dark .navbar-item a, .navbar.is-dark a.navbar-item {
+    color: #F6F7F7;
+}
+
+.navbar.is-dark .navbar-item a.button.is-default {
+    color: #F6F7F7;
+    background-color: transparent;
+    border-width: 2px;
+}
+
+.aside {
+  background-color: #354052;
+  margin-right: -10px;
+}
+
+.aside .main {
+  padding: 40px;
+  color: #6F7B7E;
+}
+
+.aside .title {
+  color: #6F7B7E;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.aside .main .item {
+  display: block;
+  padding: 10px 0;
+  color: #6F7B7E;
+}
+
+.aside .main .item.active {
+  color: #F6F7F7;
+}
+
+.aside .main .icon {
+  font-size: 19px;
+  padding-right: 30px;
+}
+
+.aside .main .name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.admin-panel {
+  padding-bottom: 0;
+  padding-right: 0;
+}
+
+.hero .tabs ul {
+    border-bottom: 1px solid #d3d6db;
+}
+
+.section.is-small {
+  padding: 1rem 1.5rem;
+}
+
+.card-content.is-small {
+  padding: 0.75rem;
+}
+
+#arch_info_display_table td {
+  text-align: center;
+}
+
+#main_plot {
+  position: relative;
+}
+
+.is-fullwidth {
+  width: 100%;
+}
+
+.functionality {
+  flex-grow: 1;
+  align-items: flex-start;
+  overflow: auto;
+}
+
+.func-panel {
+  display: flex;
+  flex-direction: column;
+  height: 375px;
+}
