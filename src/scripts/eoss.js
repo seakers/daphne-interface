@@ -12,7 +12,7 @@ class EOSS extends Problem {
     constructor(context) {
         // Set the problem instance
         super(
-            "EOSS_data.csv",
+            "EOSS_data_recalculated.csv",
             60,
             2,
             [],
