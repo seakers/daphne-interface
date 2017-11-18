@@ -532,6 +532,8 @@ class DataMining {
         // Update the placeholder with the driving feature and stash the expression
         // TODO: Update filter and feature_application through PubSub
         //ifeed.feature_application.update_feature_application('temp',expression);
+        PubSub.publish(APPLY_FILTER,expression);
+        
         //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
         //this.draw_venn_diagram(); 
     }
@@ -555,7 +557,7 @@ class DataMining {
         // Bring back the previously stored feature expression
         // TODO: Update filter and feature_application through PubSub
         //ifeed.feature_application.update_feature_application('restore');
-        //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
+        PubSub.publish(APPLY_FILTER,null);
         //this.draw_venn_diagram();
     }
 

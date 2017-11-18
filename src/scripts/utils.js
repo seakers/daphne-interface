@@ -4,6 +4,7 @@ const DATA_UPDATED = "data_updated";
 const DATA_PROCESSED = "data_processed";
 const ARCH_SELECTED = "arch_selected";
 const SELECTION_UPDATED = "selection_updated";
+const APPLY_FILTER = "apply_filter";
 
 function dominates(metrics1, metrics2, objective) {
     

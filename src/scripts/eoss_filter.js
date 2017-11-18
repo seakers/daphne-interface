@@ -26,13 +26,16 @@ class EOSSFilter extends Filter {
             this.reset();
         });
         
+        PubSub.subscribe(APPLY_FILTER, (msg, data) => {
+            this.apply_filter_expression(data);
+        });             
+        
     }
     
         
     reset(){
                 
         d3.select(".filter > .panel-block").select('#filter_select_menu').selectAll('option').remove();
-        
         let filter_setting = d3.select('.filter > .panel-block')
             .append('g');    
         
@@ -743,92 +746,7 @@ class EOSSFilter extends Filter {
         }else{
             return resu;
         }
-
     }
-    
-    
 
 }
         
-        
-        
-
-    
-    
-//
-//    
-//    
-//PubSub.subscribe(APPLY_FEATURE_EXPRESSION, (msg, data) => {
-//    self.apply_filter_expression(data);
-//});     
-//
-//self.initialize();
-//
-//
-
-
-
-
-
-function applyParetoFilter(arg,option){
-    if(option==="new"){
-        cancelDotSelections('remove_highlighted');
-        d3.selectAll(".dot.archPlot")[0].forEach(function (d) {
-            var rank = parseInt(d3.select(d).attr("paretoRank"));
-            if (rank <= +arg && rank >= 0){
-                
-                var dot = d3.select(d);
-                dot.classed('highlighted',true);
-                
-                if(dot.classed('selected')){
-                    // selected and highlighted
-                    dot.style("fill", overlapColor);
-                }else{
-                    // not selected
-                    dot.style("fill", highlightedColor);
-                }
-            }
-        });  
-    }else if(option==="add"){
-        d3.selectAll(".dot.archPlot:not(.highlighted)")[0].forEach(function (d) {
-            var rank = parseInt(d3.select(d).attr("paretoRank"));
-            if (rank <= +arg && rank >= 0){
-                
-                var dot = d3.select(d);
-                dot.classed('highlighted',true);
-                if(dot.classed('selected')){
-                    // selected and highlighted
-                    dot.style("fill", overlapColor);
-                }else{
-                    // not selected
-                    dot.style("fill", highlightedColor);
-                }
-            }
-        });  
-    }else if(option==="within"){
-        d3.selectAll(".dot.archPlot.highlighted")[0].forEach(function (d) {
-            var rank = parseInt(d3.select(d).attr("paretoRank"));
-            if (rank > +arg || rank < 0){
-                
-                var dot = d3.select(d);
-                dot.classed('highlighted',false);
-                
-                if(dot.classed('selected')){
-                    // was selected and highlighted
-                    dot.style("fill", selectedColor);
-                }else{
-                    // was not selected
-                    dot.style("fill", defaultColor);
-                }	
-            }
-        }); 
-    }
-}
-
-
-
-
-
-
-
-
