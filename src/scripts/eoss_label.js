@@ -1,22 +1,17 @@
-//        A          B         C          D         E        F
-// {"ACE_ORCA","ACE_POL","ACE_LID","CLAR_ERB","ACE_CPR","DESD_SAR",
-// 
-//       G        H           I            J         K              L
-// "DESD_LID","GACM_VIS","GACM_SWIR","HYSP_TIR","POSTEPS_IRS","CNES_KaRIN"};
-// 
-//      1000                2000            3000        4000            5000
-//{"LEO-600-polar-NA","SSO-600-SSO-AM","SSO-600-SSO-DD","SSO-800-SSO-DD","SSO-800-SSO-PM"};
+
+//"ACE_ORCA","ACE_POL","ACE_LID","CLAR_ERB","ACE_CPR","DESD_SAR","DESD_LID","GACM_VIS","GACM_SWIR","HYSP_TIR","POSTEPS_IRS","CNES_KaRIN"}; 
+//"LEO-600-polar-NA","SSO-600-SSO-AM","SSO-600-SSO-DD","SSO-800-SSO-DD","SSO-800-SSO-PM";
 
 
 class EOSSLabel extends Label {
 
     constructor(eoss) {
         super();
-        this.disabled = false;
+        this.disabled = true;
         
-        this.orbit_relabeled = ["1000","2000","3000","4000","5000"];
-        this.instrument_relabeled = ["A","B","C","D","E","F","G","H","I","J","K","L"];
-
+        //this.orbit_relabeled = ["1000","2000","3000","4000","5000"];
+        //this.instrument_relabeled = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+        
         this.eoss = eoss;
     }
 
@@ -34,7 +29,7 @@ class EOSSLabel extends Label {
             return this.eoss.instrument_list[index];
         }
         else {
-            return "Naming Error";
+            return "NamingError";
         }
     }
 
@@ -55,7 +50,7 @@ class EOSSLabel extends Label {
             return this.instrument_relabeled[index];
         }
         else {
-            return "Naming Error";
+            return "NamingError";
         }
     }
 
@@ -71,26 +66,26 @@ class EOSSLabel extends Label {
                     comma = "";
                 }
                 if (type == "orbit"){
-                    newName = newName + comma + eoss.orbit_list.indexOf(names[i]);
+                    newName = newName + comma + this.eoss.orbit_list.indexOf(names[i]);
                 }
                 else if (type == "instrument") {
-                    newName = newName + comma + eoss.instrument_list.indexOf(names[i]);
+                    newName = newName + comma + this.eoss.instrument_list.indexOf(names[i]);
                 }
                 else {
-                    newName = newName + comma + "Naming Error";
+                    newName = newName + comma + "NamingError";
                 }              
             }
             return newName;
         }
         else {
             if (type == "orbit") {
-                return eoss.orbit_list.indexOf(name);
+                return this.eoss.orbit_list.indexOf(name);
             }
             else if (type == "instrument") {
-                return eoss.instrument_list.indexOf(name);
+                return this.eoss.instrument_list.indexOf(name);
             }
             else {
-                return "Naming Error";
+                return "NamingError";
             }        
         }
     }
@@ -100,16 +95,13 @@ class EOSSLabel extends Label {
         if (this.disabled) {
             return this.actualName2Index(input,type);
         }
-
+        
         input = input.trim();
         let split = input.split(',');
         let output = '';
         for (let i = 0; i < split.length; i++) {
             let name = split[i];
 
-            if (this.orbit_relabeled.indexOf(name) == -1 && this.instrument_relabeled.indexOf(name) == -1) {
-                alert('Invalid input argument');
-            }
             if (i > 0)
                 output = output + ",";
 
@@ -120,7 +112,7 @@ class EOSSLabel extends Label {
                 output = output + this.instrument_relabeled.indexOf(name);
             }
             else {
-                return "Naming Error";
+                return "NamingError";
             }
         }
         return output;

@@ -75,6 +75,7 @@ class DataMining {
 
 
     async run() {
+                
         // Remove all highlights in the scatter plot (retain target solutions)
         this.tradespace_plot.cancel_selection("remove_highlighted");
 
@@ -176,15 +177,15 @@ class DataMining {
         // Create plot div's
         tab.append("div")
             .attr("id", "feature_plot")
-            .style("width", "50%")
+            .style("width", "100%")
             .style("height", "100%");
 
         // Create venn diagram div
-        tab.append("div")
-            .attr("id", "venn_diagram")
-            .style("width", "50%")
-            .append("p")
-                .text("Total number of designs: " + this.tradespace_plot.get_num_of_archs());
+//        tab.append("div")
+//            .attr("id", "venn_diagram")
+//            .style("width", "25%")
+//            .append("p")
+//                .text("Total number of designs: " + this.tradespace_plot.get_num_of_archs());
 
         // Initialize location
         for(let i = 0; i < this.all_features.length; i++){
@@ -473,7 +474,7 @@ class DataMining {
 
         let tooltip_location = { x: 0, y: 0 };
         let tooltip_width = 360;
-        let tooltip_height = 200;
+        let tooltip_height = 170;
 
         let h_threshold = (this.width + this.margin.left + this.margin.right)*0.5;
         let v_threshold = (this.height + this.margin.top + this.margin.bottom)*0.55;
@@ -532,7 +533,7 @@ class DataMining {
         // TODO: Update filter and feature_application through PubSub
         //ifeed.feature_application.update_feature_application('temp',expression);
         //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
-        this.draw_venn_diagram(); 
+        //this.draw_venn_diagram(); 
     }
 
 
@@ -555,7 +556,7 @@ class DataMining {
         // TODO: Update filter and feature_application through PubSub
         //ifeed.feature_application.update_feature_application('restore');
         //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
-        this.draw_venn_diagram();
+        //this.draw_venn_diagram();
     }
 
     async draw_venn_diagram(){

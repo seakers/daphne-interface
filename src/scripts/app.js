@@ -19,7 +19,8 @@ class Daphne {
         this.functionalities.set("design_inspector", { min_size: "one-third", max_repeat: 1, instances: new Map() });
         this.functionalities.set("data_mining", { min_size: "two-thirds", max_repeat: 1, instances: new Map() });
         this.functionalities.set("cheatsheet", { min_size: "one-third", max_repeat: 1000, instances: new Map() });
-
+        this.functionalities.set("filter", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
+        
         this.responseOutput = {
             text: this.showText,
             list: this.showList
@@ -332,16 +333,18 @@ class Daphne {
     }
 }
 
-(async function () {
 
-    // General Code
 
     let daphne = new Daphne();
 
+(async function () {
+
+    // General Code
     daphne.problem = new EOSS(daphne);
     daphne.label = new EOSSLabel(daphne.problem);
     daphne.tradespacePlot = new TradespacePlot(daphne.problem.output_list);
     daphne.dataMining = new DataMining(daphne.tradespacePlot, daphne.label);
+    daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
     daphne.cheatsheetManager = new CheatsheetManager();
 
     daphne.import_new_data().then(() => {
@@ -357,4 +360,5 @@ class Daphne {
     await daphne.addNewFunctionality("design_inspector");
     await daphne.addNewFunctionality("data_mining");
     await daphne.addNewFunctionality("daphne_answer");
+    await daphne.addNewFunctionality("filter");
 } ());
