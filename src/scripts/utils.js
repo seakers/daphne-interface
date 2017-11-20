@@ -6,6 +6,9 @@ const ARCH_SELECTED = "arch_selected";
 const SELECTION_UPDATED = "selection_updated";
 const APPLY_FILTER = "apply_filter";
 
+const INITIALIZE_FEATURE_APPLICATION = "initialize_feature_application";
+const UPDATE_FEATURE_APPLICATION = "update_feature_application";
+
 function dominates(metrics1, metrics2, objective) {
     
     let at_least_as_good_as = true;

@@ -531,7 +531,7 @@ class DataMining {
 
         // Update the placeholder with the driving feature and stash the expression
         // TODO: Update filter and feature_application through PubSub
-        //ifeed.feature_application.update_feature_application('temp',expression);
+        PubSub.publish(UPDATE_FEATURE_APPLICATION,{"option":"temp","expression":expression});
         PubSub.publish(APPLY_FILTER,expression);
         
         //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
@@ -541,8 +541,7 @@ class DataMining {
 
     feature_click(d) {
         // Replaces the current feature expression with the stashed expression
-        // TODO: Update feature_application through PubSub
-        //ifeed.feature_application.update_feature_application('update');
+        PubSub.publish(UPDATE_FEATURE_APPLICATION,{"option":"update","expression":null});
     }
 
 
@@ -552,11 +551,8 @@ class DataMining {
         // Remove the tooltip
         d3.selectAll("#tooltip_g").remove();
 
-        // Remove all the features created temporarily
-
-        // Bring back the previously stored feature expression
-        // TODO: Update filter and feature_application through PubSub
-        //ifeed.feature_application.update_feature_application('restore');
+        // Remove all the features created temporarily and bring back the previously stored feature expression
+        PubSub.publish(UPDATE_FEATURE_APPLICATION,{"option":"restore","expression":null});
         PubSub.publish(APPLY_FILTER,null);
         //this.draw_venn_diagram();
     }

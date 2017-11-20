@@ -21,8 +21,8 @@ class EOSSFilter extends Filter {
                                {value:"numOfInstruments",text:"Number of instruments",input:"numOfInstruments",hints:"This highlights all the designs with the specified number of instruments. If you specify an orbit name, it will count all instruments in that orbit. If you can also specify an instrument name, and only those instruments will be counted across all orbits. If you leave both instruments and orbits blank, all instruments across all orbits will be counted."},
                                {value:"subsetOfInstruments",text:"Num of instruments in a subset",input:"subsetOfInstruments",hints:"The specified orbit should contain at least m number and at maximum M number of instruments from the specified instrument set. m is the first entry and M is the second entry in the second field"},
                             ];  
-        
-        PubSub.subscribe(DATA_UPDATED, (msg, data) => {
+
+        PubSub.subscribe("filter_added", (msg) => {
             this.reset();
         });
         
