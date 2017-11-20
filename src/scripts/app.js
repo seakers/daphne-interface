@@ -81,6 +81,20 @@ class Daphne {
                 event.preventDefault();
             });
         });
+        
+        
+        //this.websocket = new WebSocket("ws://127.0.0.1:8001/api/daphne"); // Localhost
+        this.websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/api/daphne");
+        
+        this.websocket.onopen = function() {
+            console.log('Web Socket Conenction Made');
+        };
+
+        this.websocket.onmessage = function (data) { 
+            //ws.send(JSON.stringify(data));         
+        }        
+        
+
     }
 
 
@@ -238,8 +252,8 @@ class Daphne {
             archs = remaining;
         }
     }
-
-
+    
+    
     async addNewFunctionality(functionality) {
         function columnWrap(html, size) {
             return "<div class=\"column is-" + size + "-desktop is-full-mobile\">" + html + "</div>\n";
