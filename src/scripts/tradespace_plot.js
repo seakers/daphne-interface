@@ -42,6 +42,10 @@ class TradespacePlot {
             });
             this.update(0, 1);
         });
+        
+        PubSub.subscribe("update_target_selection", (msg) => {
+            this.update_target_selection();
+        });     
 
         window.addEventListener("resize", () => {
             this.update(0, 1);
@@ -379,6 +383,7 @@ class TradespacePlot {
         // Tell system selection has been updated
         if (selection_updated) {
             PubSub.publish(SELECTION_UPDATED);
+            PubSub.publish("update_target_selection")
         }
         // Redraw the canvas
         this.drawPoints(this.context, false);
@@ -539,6 +544,7 @@ class TradespacePlot {
             function select_mouseup() {
                 // remove selection frame
                 svg.selectAll("rect.selection").remove();
+                PubSub.publish("update_target_selection")
             }
 
             svg.on("mousedown.modes", select_mousedown)
@@ -580,6 +586,57 @@ class TradespacePlot {
 
         d3.select("#num_architectures").text(""+this.get_num_of_archs());
         d3.select("#num_selected_architectures").text(""+this.get_num_of_selected_archs());
+    }
+    
+    async update_target_selection() {
+        
+        let selectedArchs = [];
+        this.data.forEach(point => {
+            if (!point.hidden && point.selected) {
+                selectedArchs.push(point);
+            }
+        });
+        let nonSelectedArchs = [];
+        this.data.forEach(point => {
+            if (!point.hidden && !point.selected) {
+                nonSelectedArchs.push(point);
+            }
+        });
+
+        // Store the id's of all dots
+        let selected = [];
+        let non_selected = [];
+
+        selectedArchs.forEach(arch => {
+            selected.push(arch.id);
+        });
+        nonSelectedArchs.forEach(arch => {
+            non_selected.push(arch.id);
+        });        
+        
+        try {
+            let req_data = new FormData();
+            req_data.append("selected", JSON.stringify(selected));
+            req_data.append("non_selected", JSON.stringify(non_selected));
+            let data_response = await fetch(
+                "/api/ifeed/set-target/",
+                {
+                    method: "POST",
+                    body: req_data,
+                    credentials: "same-origin"
+                }
+            );
+
+            if (data_response.ok) {
+                console.log("Target selection updated")
+            }
+            else {
+                console.error("Error obtaining the driving features.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }        
     }
 
 
