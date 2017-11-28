@@ -17,7 +17,7 @@ class Daphne {
         this.functionalities = new Map();
         this.functionalities.set("daphne_answer", { min_size: "one-third", max_repeat: 1, instances: new Map() });
         this.functionalities.set("design_inspector", { min_size: "one-third", max_repeat: 1, instances: new Map() });
-        this.functionalities.set("data_mining", { min_size: "one-thirds", max_repeat: 1, instances: new Map() });
+        this.functionalities.set("data_mining", { min_size: "one-third", max_repeat: 1, instances: new Map() });
         this.functionalities.set("cheatsheet", { min_size: "one-third", max_repeat: 1000, instances: new Map() });
         this.functionalities.set("filter", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
         this.functionalities.set("feature_application", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
