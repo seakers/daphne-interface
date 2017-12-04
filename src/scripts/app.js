@@ -59,7 +59,7 @@ class Daphne {
         });
 
         // Voice recognition
-        if (annyang) {
+        /*if (annyang) {
             annyang.addCallback('result', phrases => {
                 $("input[name=command]").val(phrases[0]);
                 this.executeCommand(phrases[0]);
@@ -77,7 +77,7 @@ class Daphne {
             SpeechKITT.vroom();
 
             SpeechKITT.startRecognition();
-        }
+        }*/
 
         // Setup the Daphne command input
         $("#send_command").on("click", event => {
