@@ -171,17 +171,23 @@ class EOSS extends Problem {
         d3.select(".design_inspector > .panel-block").select("g").select("table").remove();
 
         let design_inspector = d3.select(".design_inspector > .panel-block").select("g");
-        let table = design_inspector.append("table")
+        let design_space = design_inspector
+            .append("div")
+            .classed("design_space", true);
+
+        let table = design_space
+            .append("table")
             .attr("id", "arch_info_display_table")
             .attr("class", "table");
 
         let columns = [];
-        columns.push({ columnName: "orbit" });
+        columns.push({ columnName: "Orbit" });
+        columns.push({ columnName: "Instruments" });
         
-        for (let i = 0; i < maxNInst; i++) {
+        /*for (let i = 0; i < maxNInst; i++) {
             let tmp = i + 1;
             columns.push({ columnName: "Inst " + tmp });
-        }
+        }*/
 
         // create table header
         table.append('thead').append('tr')
@@ -212,24 +218,118 @@ class EOSS extends Problem {
             .text(d => d.content);
 
         let rows_cells = table.select("tbody").selectAll("tr")
-            .selectAll("td")
+            .append("td")
+            .append("div")
+            .classed("instruments_list", true)
+            .selectAll("div")
             .data((row, i) => {
                 let thisRow = [];
                 for (let j = 0; j < json_arch[i].children.length; j++) {
                     let instObj = { type: "instrument", content: this.instrumentAlias.get(json_arch[i].children[j]), orbit: json_arch[i].orbit };
                     thisRow.push(instObj);
                 }
-                for (let j = json_arch[i].children.length; j < maxNInst; j++) {
+                /*for (let j = json_arch[i].children.length; j < maxNInst; j++) {
                     let instObj = { type: "instrument", content: "", orbit: json_arch[i].orbit };
                     thisRow.push(instObj);
-                }
+                }*/
                 return thisRow;
             });
         
         rows_cells.enter()
-            .append("td")
+            .append("div")
             .attr("name", d => d.content)
-            .attr("class", "arch_cell")
+            .attr("class", "arch_box")
             .text(d => d.content);
+
+        // Add list of instruments
+        let instruments_list = design_space
+            .append("div")
+            .attr("id", "instrument_adder_list")
+            .style("margin-left", "40px")
+            .style("max-width", "70px")
+            .selectAll("div")
+            .data(this.instrument_list)
+            .enter()
+            .append("div")
+            .classed("arch_box", true)
+            .text(d => this.instrumentAlias.get(d));
+
+        let instrument_adder_list = document.getElementById('instrument_adder_list');
+        Sortable.create(instrument_adder_list, {
+            group: {
+                name: 'instrument_adders',
+                pull: 'clone',
+                put: 'instrument_lists'
+            },
+            sort: false,
+            animation: 150,
+            onAdd: e => {
+                e.item.parentNode.removeChild(e.item);
+            }
+        });
+
+        let table_instrument_rows = document.getElementsByClassName('instruments_list');
+        Array.prototype.forEach.call(table_instrument_rows, (elem, idx) => {
+            Sortable.create(elem, {
+                group: {
+                    name: 'instrument_lists',
+                    pull: true,
+                    put: ["instrument_lists", "instrument_adders"]
+                },
+                onAdd: e => {
+                    let dragged_instr = $(e.item).text();
+                    let count = 0;
+                    $(e.item.parentNode).children(".arch_box").each((index, element) => {
+                        if (dragged_instr === $(element).text()) {
+                            count++;
+                        }
+                    });
+                    if (count > 1) {
+                        e.item.parentNode.removeChild(e.item);
+                    }
+                },
+                animation: 150,
+            });
+        });
+
+        function boolArch(instrument_num) {
+            let bitString = [];
+            for (let i = 0; i < 60; i++) {
+                bitString.push(false);
+            }
+
+            for (let i = 0; i < table_instrument_rows.length; ++i) {
+                $(table_instrument_rows[i]).children(".arch_box").each((index, element) => {
+                    let position = $(element).text().charCodeAt() - "A".charCodeAt();
+                    bitString[instrument_num*i + position] = true;
+                });
+            }
+
+            return bitString;
+        }
+
+        $("#evaluate-arch").on("click", async e => {
+            let req_data = new FormData();
+            req_data.append("inputs", JSON.stringify(boolArch(this.instrument_num)));
+            console.log(boolArch(this.instrument_num));
+            try {
+                let data_response = await fetch("/api/vassar/evaluate-architecture/", 
+                    {
+                        method: "POST",
+                        body: req_data,
+                        credentials: "same-origin"
+                    });
+                if (data_response.ok) {
+                    let eval_response = await data_response.json();
+                    PubSub.publish(ARCH_ADDED, eval_response);
+                }
+                else {
+                    console.error("Error evaluating the architecture");
+                }
+            }
+            catch(e) {
+                console.error("Networking error:", e);
+            }
+        });
     }
 }

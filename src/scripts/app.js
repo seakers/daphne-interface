@@ -42,8 +42,24 @@ class Daphne {
             this.data = data;
         });
 
+        PubSub.subscribe(ARCH_ADDED, (msg, new_arch) => {
+            let already_there = false;
+            this.data.forEach(d => {
+                if (d.outputs[0] == new_arch.outputs[0] && d.outputs[1] == new_arch.outputs[1]) {
+                    already_there = true;
+                }
+            });
+
+            if (!already_there) {
+                let proc_data = this.problem.preprocessing([new_arch]);  
+                this.data.push(proc_data[0]);
+            }
+
+            PubSub.publish(DATA_UPDATED, this.data);
+        });
+
         // Voice recognition
-        if (annyang) {
+        /*if (annyang) {
             annyang.addCallback('result', phrases => {
                 $("input[name=command]").val(phrases[0]);
                 this.executeCommand(phrases[0]);
@@ -61,7 +77,7 @@ class Daphne {
             SpeechKITT.vroom();
 
             SpeechKITT.startRecognition();
-        }
+        }*/
 
         // Setup the Daphne command input
         $("#send_command").on("click", event => {
@@ -348,9 +364,7 @@ class Daphne {
     }
 }
 
-
-
-    let daphne = new Daphne();
+let daphne = new Daphne();
 
 (async function () {
 
@@ -363,7 +377,7 @@ class Daphne {
     daphne.featureApplication = new FeatureApplication(daphne.label);
     daphne.cheatsheetManager = new CheatsheetManager();
 
-    daphne.import_new_data().then(() => {
+    daphne.import_new_data("daphne_experiment.csv").then(() => {
         daphne.calculate_pareto_ranking();
     });
 
