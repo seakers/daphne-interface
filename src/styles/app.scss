@@ -77,7 +77,7 @@ body {
 }
 
 #arch_info_display_table td {
-  text-align: center;
+  text-align: left;
 }
 
 #main_plot {
@@ -97,5 +97,33 @@ body {
 .func-panel {
   display: flex;
   flex-direction: column;
-  height: 375px;
+  height: 380px;
+}
+
+.instruments_list {
+  height: 30px;
+}
+
+.arch_cell {
+  vertical-align: middle !important;
+}
+
+
+.design_space {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.arch_box {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin-right: 5px;
+  text-align: center;
+  border: 1px solid $grey-lighter;
+}
+
+#instrument_adder_list .arch_box {
+  margin-bottom: 5px;
 }

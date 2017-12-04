@@ -80,7 +80,7 @@ class TradespacePlot {
         let xScale = d3.scaleLinear().range([0, this.width]); // value -> display
 
         // don't want dots overlapping axis, so add in buffer to data domain 
-        let xBuffer = (d3.max(this.data, xValue) - d3.min(this.data, xValue)) * 0.05;
+        let xBuffer = Math.max((d3.max(this.data, xValue) - d3.min(this.data, xValue)) * 0.05, 0.05);
         xScale.domain([d3.min(this.data, xValue) - xBuffer, d3.max(this.data, xValue) + xBuffer]);
         
         this.xMap = d => xScale(xValue(d)); // data -> display
@@ -92,7 +92,7 @@ class TradespacePlot {
 
         let yScale = d3.scaleLinear().range([this.height, 0]); // value -> display
 
-        let yBuffer = (d3.max(this.data, yValue) - d3.min(this.data, yValue)) * 0.05;
+        let yBuffer = Math.max((d3.max(this.data, yValue) - d3.min(this.data, yValue)) * 0.05, 0.05);
         yScale.domain([d3.min(this.data, yValue) - yBuffer, d3.max(this.data, yValue) + yBuffer]);
 
         this.yMap = d => yScale(yValue(d)); // data -> display
@@ -291,18 +291,19 @@ class TradespacePlot {
                 // Remove the previous info
                 d3.select(".design_inspector > .panel-block").select("g").remove();
                 
-                let design_inspector = d3.select(".design_inspector > .panel-block").append("g");
+                let design_inspector = d3.select(".design_inspector > .panel-block").append("g").style("width", "100%");
 
                 // Display the current architecture info
                 let arch_info_display = design_inspector.append("div")
                     .attr("id", "arch_info_display");
 
-                arch_info_display.append("p").text(d => "Design ID: D" + arch.id);
+                let infoPar = arch_info_display.append("p");
+                infoPar.append("span").html(d => "<b>Design ID</b>: D" + arch.id + "; ");
 
                 for (let i = 0; i < this.output_list.length; i++) {
-                    arch_info_display.append("p")
-                        .text(d => {
-                            let out = this.output_list[i] + ": ";
+                    infoPar.append("span")
+                        .html(d => {
+                            let out = "<b>" + this.output_list[i] + "</b>: ";
                             let val = arch.outputs[i];
                             if (typeof val == "number") {
                                 if (val > 100) {
@@ -312,7 +313,7 @@ class TradespacePlot {
                                     val = val.toFixed(4);
                                 }
                             }
-                            return out + val;
+                            return out + val + "; ";
                         });
                 }
 

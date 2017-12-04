@@ -363,7 +363,7 @@ class Daphne {
     daphne.featureApplication = new FeatureApplication(daphne.label);
     daphne.cheatsheetManager = new CheatsheetManager();
 
-    daphne.import_new_data().then(() => {
+    daphne.import_new_data("daphne_experiment.csv").then(() => {
         daphne.calculate_pareto_ranking();
     });
 
