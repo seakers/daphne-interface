@@ -32,6 +32,11 @@ class EOSS extends Problem {
         this.orbit_num = null;
         this.instrument_num = null;
 
+        let orbitAliasArray = [["LEO-600-polar-NA", "1"], ["SSO-600-SSO-AM", "2"], ["SSO-600-SSO-DD", "3"], ["SSO-800-SSO-DD", "4"], ["SSO-800-SSO-PM", "5"]];
+        this.orbitAlias = new Map(orbitAliasArray);
+        let instrumentAliasArray = [["ACE_ORCA", "A"], ["ACE_POL", "B"], ["ACE_LID", "C"], ["CLAR_ERB", "D"], ["ACE_CPR", "E"], ["DESD_SAR", "F"], ["DESD_LID", "G"], ["GACM_VIS", "H"], ["GACM_SWIR", "I"], ["HYSP_TIR", "J"], ["POSTEPS_IRS", "K"],["CNES_KaRIN", "L"]];
+        this.instrumentAlias = new Map(instrumentAliasArray);
+        
         this.context = context;
 
         PubSub.subscribe(ARCH_SELECTED, (msg, arch) => {
@@ -197,7 +202,7 @@ class EOSS extends Problem {
             .attr("name", d => d.orbit)
             .selectAll("th")
             .data((row, i) => {
-                return [{ type: "orbit", content: json_arch[i].orbit }];
+                return [{ type: "orbit", content: this.orbitAlias.get(json_arch[i].orbit) }];
             });
 
         rows_headers.enter()
@@ -211,7 +216,7 @@ class EOSS extends Problem {
             .data((row, i) => {
                 let thisRow = [];
                 for (let j = 0; j < json_arch[i].children.length; j++) {
-                    let instObj = { type: "instrument", content: json_arch[i].children[j], orbit: json_arch[i].orbit };
+                    let instObj = { type: "instrument", content: this.instrumentAlias.get(json_arch[i].children[j]), orbit: json_arch[i].orbit };
                     thisRow.push(instObj);
                 }
                 for (let j = json_arch[i].children.length; j < maxNInst; j++) {

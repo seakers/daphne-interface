@@ -16,11 +16,11 @@ class Daphne {
         // Available functionalities
         this.functionalities = new Map();
         this.functionalities.set("daphne_answer", { min_size: "one-third", max_repeat: 1, instances: new Map() });
-        this.functionalities.set("design_inspector", { min_size: "one-third", max_repeat: 1, instances: new Map() });
-        this.functionalities.set("data_mining", { min_size: "one-third", max_repeat: 1, instances: new Map() });
+        this.functionalities.set("design_inspector", { min_size: "two-thirds", max_repeat: 1, instances: new Map() });
+        //this.functionalities.set("data_mining", { min_size: "one-third", max_repeat: 1, instances: new Map() });
         this.functionalities.set("cheatsheet", { min_size: "one-third", max_repeat: 1000, instances: new Map() });
-        this.functionalities.set("filter", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
-        this.functionalities.set("feature_application", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
+        //this.functionalities.set("filter", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
+        //this.functionalities.set("feature_application", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
 
         this.responseOutput = {
             text: this.showText,
@@ -374,8 +374,11 @@ class Daphne {
     });
 
     await daphne.addNewFunctionality("design_inspector");
-    //await daphne.addNewFunctionality("daphne_answer");
+    await daphne.addNewFunctionality("daphne_answer");
+    await daphne.addNewFunctionality("cheatsheet");
+    await daphne.addNewFunctionality("cheatsheet");
+    await daphne.addNewFunctionality("cheatsheet");
     //await daphne.addNewFunctionality("filter");
-    await daphne.addNewFunctionality("feature_application");
-    await daphne.addNewFunctionality("data_mining");
+    //await daphne.addNewFunctionality("feature_application");
+    //await daphne.addNewFunctionality("data_mining");
 } ());
