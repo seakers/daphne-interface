@@ -276,8 +276,60 @@ class EOSS extends Problem {
                     pull: true,
                     put: ["instrument_lists", "instrument_adders"]
                 },
+                onAdd: e => {
+                    let dragged_instr = $(e.item).text();
+                    let count = 0;
+                    $(e.item.parentNode).children(".arch_box").each((index, element) => {
+                        if (dragged_instr === $(element).text()) {
+                            count++;
+                        }
+                    });
+                    if (count > 1) {
+                        e.item.parentNode.removeChild(e.item);
+                    }
+                },
                 animation: 150,
             });
+        });
+
+        function boolArch(instrument_num) {
+            let bitString = [];
+            for (let i = 0; i < 60; i++) {
+                bitString.push(false);
+            }
+
+            for (let i = 0; i < table_instrument_rows.length; ++i) {
+                $(table_instrument_rows[i]).children(".arch_box").each((index, element) => {
+                    let position = $(element).text().charCodeAt() - "A".charCodeAt();
+                    bitString[instrument_num*i + position] = true;
+                });
+            }
+
+            return bitString;
+        }
+
+        $("#evaluate-arch").on("click", async e => {
+            let req_data = new FormData();
+            req_data.append("inputs", JSON.stringify(boolArch(this.instrument_num)));
+            console.log(boolArch(this.instrument_num));
+            try {
+                let data_response = await fetch("/api/vassar/evaluate-architecture/", 
+                    {
+                        method: "POST",
+                        body: req_data,
+                        credentials: "same-origin"
+                    });
+                if (data_response.ok) {
+                    let eval_response = await data_response.json();
+                    PubSub.publish(ARCH_ADDED, eval_response);
+                }
+                else {
+                    console.error("Error evaluating the architecture");
+                }
+            }
+            catch(e) {
+                console.error("Networking error:", e);
+            }
         });
     }
 }

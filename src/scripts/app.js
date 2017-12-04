@@ -42,6 +42,22 @@ class Daphne {
             this.data = data;
         });
 
+        PubSub.subscribe(ARCH_ADDED, (msg, new_arch) => {
+            let already_there = false;
+            this.data.forEach(d => {
+                if (d.outputs[0] == new_arch.outputs[0] && d.outputs[1] == new_arch.outputs[1]) {
+                    already_there = true;
+                }
+            });
+
+            if (!already_there) {
+                let proc_data = this.problem.preprocessing([new_arch]);  
+                this.data.push(proc_data[0]);
+            }
+
+            PubSub.publish(DATA_UPDATED, this.data);
+        });
+
         // Voice recognition
         if (annyang) {
             annyang.addCallback('result', phrases => {
@@ -348,9 +364,7 @@ class Daphne {
     }
 }
 
-
-
-    let daphne = new Daphne();
+let daphne = new Daphne();
 
 (async function () {
 

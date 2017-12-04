@@ -5,6 +5,7 @@ const DATA_PROCESSED = "data_processed";
 const ARCH_SELECTED = "arch_selected";
 const SELECTION_UPDATED = "selection_updated";
 const APPLY_FILTER = "apply_filter";
+const ARCH_ADDED = "arch_added";
 
 const INITIALIZE_FEATURE_APPLICATION = "initialize_feature_application";
 const UPDATE_FEATURE_APPLICATION = "update_feature_application";

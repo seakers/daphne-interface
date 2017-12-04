@@ -297,7 +297,10 @@ class TradespacePlot {
                 let arch_info_display = design_inspector.append("div")
                     .attr("id", "arch_info_display");
 
-                let infoPar = arch_info_display.append("p");
+                let infoPar = arch_info_display.append("p")
+                    .style("vertical-align", "middle")
+                    .style("display", "table-cell")
+                    .style("line-height", "36px");
                 infoPar.append("span").html(d => "<b>Design ID</b>: D" + arch.id + "; ");
 
                 for (let i = 0; i < this.output_list.length; i++) {
@@ -316,6 +319,11 @@ class TradespacePlot {
                             return out + val + "; ";
                         });
                 }
+
+                infoPar.append("a")
+                    .classed("button", true)
+                    .attr("id", "evaluate-arch")
+                    .text("Evaluate Architecture");
 
                 PubSub.publish(ARCH_SELECTED, arch);
             }
