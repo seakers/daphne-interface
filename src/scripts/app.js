@@ -39,7 +39,7 @@ class Daphne {
         };
 
         // Experiment
-        this.duration = 10;//60*10; // 10 minutes
+        this.duration = 60;//60*10; // 10 minutes
         this.stage = 0;
         this.experiment_data = null;
 
@@ -436,10 +436,11 @@ class Daphne {
             this.cheatsheetManager.experiment_stage = false;
             $("#daphne_input_form").show();
             await daphne.addNewFunctionality("daphne_answer");
+            await daphne.addNewFunctionality("cheatsheet");
+            await daphne.addNewFunctionality("cheatsheet");
+            await daphne.addNewFunctionality("cheatsheet");
         }
-        await daphne.addNewFunctionality("cheatsheet");
-        await daphne.addNewFunctionality("cheatsheet");
-        await daphne.addNewFunctionality("cheatsheet");
+        
         this.cheatsheetManager.updateOptions();
 
         // Make clock start ticking
@@ -457,8 +458,9 @@ class Daphne {
                     // Start the experiment: run the timer and set the experimental conditions
                     // Set the stage
                     daphne.experiment_data = data;
-                    $(".modal-content").html("<p>That's it for the first stage of the experiment! Click continue to start stage 2.</p>" + 
-                        "<a class=\"button\" id=\"continue-experiment\">Continue</a>");
+
+                    $(".modal-content").html("<article class=\"message\"><div class=\"message-body\"><p>That's it for the first stage of the experiment! Click continue to start stage 2.</p>" + 
+                        "<a class=\"button\" id=\"continue-experiment\">Continue</a></div></article>");
                     $("#continue-experiment").on("click", async e => {
                         this.stage = 2;
                         try {
@@ -467,6 +469,9 @@ class Daphne {
                                 let data = await dataResponse.json();
                                 $(".modal").removeClass("is-active");
                                 daphne.experiment_data = data;
+                                await daphne.import_new_data("daphne_experiment2.csv").then(() => {
+                                    daphne.calculate_pareto_ranking();
+                                });
                                 daphne.setStageConditions();
                             }
                         }
@@ -500,8 +505,8 @@ class Daphne {
             catch(e) {
                 console.error("Networking error:", e);
             }
-            $(".modal-content").html("<p>That's it for the experiment! Click Finish to go to the end survey.</p>" + 
-                        "<a class=\"button\" href=\"link\">Finish</a>");
+            $(".modal-content").html("<article class=\"message\"><div class=\"message-body\"><p>That's it for the experiment! Click Finish to go to the end survey.</p>" + 
+                        "<a class=\"button\" href=\"https://cornell.qualtrics.com/jfe/form/SV_1Rmb4JZa4BEDX0h\">Finish</a></div></article>");
             $(".modal").addClass("is-active");
         }
     }
@@ -520,7 +525,7 @@ let daphne = new Daphne();
     daphne.featureApplication = new FeatureApplication(daphne.label);
     daphne.cheatsheetManager = new CheatsheetManager();
 
-    daphne.import_new_data("daphne_experiment.csv").then(() => {
+    daphne.import_new_data("EOSS_data_recalculated.csv").then(() => {
         daphne.calculate_pareto_ranking();
     });
 
@@ -543,6 +548,14 @@ let daphne = new Daphne();
             let data = await dataResponse.json();
             if (!data.error || data.error != "Experiment not started!") {
                 // Update stage (1 or 2, with/without Daphne CA) and clock of the experiment
+                if ("start_date2" in data) {
+                    daphne.stage = 2;
+                }
+                else {
+                    daphne.stage = 1;
+                }
+                daphne.experiment_data = data;
+                daphne.setStageConditions();
             }
         }
         else {
@@ -564,6 +577,9 @@ let daphne = new Daphne();
                 // Set the stage
                 daphne.experiment_data = data;
                 daphne.stage = 1;
+                await daphne.import_new_data("daphne_experiment1.csv").then(() => {
+                    daphne.calculate_pareto_ranking();
+                });
                 daphne.setStageConditions();
                 console.log(data);
             }
