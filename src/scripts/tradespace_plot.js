@@ -7,7 +7,7 @@ class TradespacePlot {
         this.yIndex = null;
         
         this.main_plot_params = {
-            "margin": {top: 20, right: 20, bottom: 30, left: 60},
+            "margin": {top: 20, right: 20, bottom: 30, left: 90},
             "width": 960,
             "height": 450,
         };
@@ -29,17 +29,24 @@ class TradespacePlot {
 
         this.transform = d3.zoomIdentity;
 
+        this.selectedArch = null;
         this.lastHoveredArch = null;
 
         PubSub.subscribe(DATA_UPDATED, (msg, data) => {
             this.data = data;
             this.data.forEach(point => {
+                point.inputs = point.orig_inputs;
                 point.selected = false;
                 point.highlighted = false;
                 point.hidden = false;
                 point.drawingColor = this.color.default;
+                point.shape = "circle";
                 this.num_total_points += 1;
             });
+            // Mark the last point added as the selected one
+            this.data[this.data.length-1].shape = "cross";
+            this.selectedArch = this.data[this.data.length-1];
+            this.show_info(this.selectedArch);
             this.update(0, 1);
         });
         
@@ -155,6 +162,7 @@ class TradespacePlot {
         let gX = svg.append("g")
             .attr("class", "axis axis-x")
             .attr("transform", "translate(0, " + this.height + ")")
+            .style("font-size", "16px")
             .call(xAxis);
             
         svg.append("text")
@@ -162,11 +170,13 @@ class TradespacePlot {
             .attr("class", "label")
             .attr("y", -6)
             .style("text-anchor", "end")
+            .style("font-size", "18px")
             .text(this.output_list[xIndex]);
 
         // y-axis
         let gY = svg.append("g")
             .attr("class", "axis axis-y")
+            .style("font-size", "16px")
             .call(yAxis);
         
         svg.append("text")
@@ -175,6 +185,7 @@ class TradespacePlot {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
+            .style("font-size", "18px")
             .text(this.output_list[yIndex]);
 
         // Canvas related functions
@@ -204,6 +215,7 @@ class TradespacePlot {
 
         // Canvas interaction
         canvas.on("mousemove.inspection", function() { that.canvas_mousemove(colorMap); });
+        canvas.on("click.inspection", function() { that.canvas_click(colorMap); });
         
         // Set button click operations
         d3.select("button#cancel_selection").on("click", () => { that.cancel_selection(); });
@@ -219,13 +231,36 @@ class TradespacePlot {
         this.data.forEach(point => {
             let tx = this.transform.applyX(this.xMap(point));
             let ty = this.transform.applyY(this.yMap(point));
-            context.beginPath();
             context.fillStyle = hidden ? point.interactColor : point.drawingColor;
-            context.arc(tx, ty, 3.3, 0, 2 * Math.PI);
-            context.fill();
+            if (hidden || point.shape == "circle") {
+                context.beginPath();
+                context.arc(tx, ty, 3.3, 0, 2 * Math.PI);
+                context.fill();
+            }
+            else if (point.shape == "cross") {
+                context.fillRect(tx - 4, ty - 1, 8, 2);
+                context.fillRect(tx - 1, ty - 4, 2, 8);
+            }
         });
 
         context.restore();
+    }
+
+    boolArch() {
+        let table_instrument_rows = document.getElementsByClassName('instruments_list');
+        let bitString = [];
+        for (let i = 0; i < 60; i++) {
+            bitString.push(false);
+        }
+
+        for (let i = 0; i < table_instrument_rows.length; ++i) {
+            $(table_instrument_rows[i]).children(".arch_box").each((index, element) => {
+                let position = $(element).text().charCodeAt() - "A".charCodeAt();
+                bitString[12*i + position] = true;
+            });
+        }
+
+        return bitString;
     }
 
     canvas_mousemove(colorMap) {
@@ -288,50 +323,120 @@ class TradespacePlot {
                 // Change the color of the dot temporarily
                 arch.drawingColor = this.color.mouseover;
 
-                // Remove the previous info
-                d3.select(".design_inspector > .panel-block").select("g").remove();
-                
-                let design_inspector = d3.select(".design_inspector > .panel-block").append("g").style("width", "100%");
-
-                // Display the current architecture info
-                let arch_info_display = design_inspector.append("div")
-                    .attr("id", "arch_info_display");
-
-                let infoPar = arch_info_display.append("p")
-                    .style("vertical-align", "middle")
-                    .style("display", "table-cell")
-                    .style("line-height", "36px");
-                infoPar.append("span").html(d => "<b>Design ID</b>: D" + arch.id + "; ");
-
-                for (let i = 0; i < this.output_list.length; i++) {
-                    infoPar.append("span")
-                        .html(d => {
-                            let out = "<b>" + this.output_list[i] + "</b>: ";
-                            let val = arch.outputs[i];
-                            if (typeof val == "number") {
-                                if (val > 100) {
-                                    val = val.toFixed(2);
-                                }
-                                else {
-                                    val = val.toFixed(4);
-                                }
-                            }
-                            return out + val + "; ";
-                        });
-                }
-
-                infoPar.append("a")
-                    .classed("button", true)
-                    .attr("id", "evaluate-arch")
-                    .text("Evaluate Architecture");
-
-                PubSub.publish(ARCH_SELECTED, arch);
+                this.show_info(arch, true);
             }
         }
         else {
             // In case nothing is selected just revert everything back to normal
+            if (this.lastHoveredArch != null) {
+                if (this.selectedArch != null) {
+                    this.show_info(this.selectedArch, false);
+                }
+                changesHappened = true;
+            }
             this.lastHoveredArch = null;
-            changesHappened = true;
+        }
+
+        // Only redraw if there have been changes
+        if (changesHappened) {
+            this.drawPoints(this.context, false);
+        }
+    }
+
+    show_info(arch, hovering) {
+        // Remove the previous info (and save it if we are hovering!!!)
+        if (hovering) {
+            let modified_arch = this.boolArch();
+            this.selectedArch.inputs = modified_arch;
+        }
+        d3.select(".design_inspector > .panel-block").select("g").remove();
+        
+        let design_inspector = d3.select(".design_inspector > .panel-block").append("g").style("width", "100%");
+
+        // Display the current architecture info
+        let arch_info_display = design_inspector.append("div")
+            .attr("id", "arch_info_display");
+
+        let infoPar = arch_info_display.append("p")
+            .style("vertical-align", "middle")
+            .style("display", "table-cell")
+            .style("line-height", "36px");
+        infoPar.append("span").html(d => "<b>Design ID</b>: D" + arch.id + "; ");
+
+        for (let i = 0; i < this.output_list.length; i++) {
+            infoPar.append("span")
+                .html(d => {
+                    let out = "<b>" + this.output_list[i] + "</b>: ";
+                    let val = arch.outputs[i];
+                    if (typeof val == "number") {
+                        if (val > 100) {
+                            val = val.toFixed(2);
+                        }
+                        else {
+                            val = val.toFixed(4);
+                        }
+                    }
+                    return out + val + "; ";
+                });
+        }
+
+        infoPar.append("a")
+            .classed("button", true)
+            .attr("id", "evaluate-arch")
+            .text("Evaluate Architecture");
+
+        PubSub.publish(ARCH_SELECTED, arch);
+    }
+
+    canvas_click(colorMap) {
+        // Draw the hidden canvas.
+        this.drawPoints(this.hiddenContext, true);
+
+        // Get mouse positions from the main canvas.
+        let mouse_pos = d3.mouse(d3.select("#main_plot").select("canvas").node());
+        let mouseX = mouse_pos[0]; 
+        let mouseY = mouse_pos[1];
+
+        // Pick the colour from the mouse position and max-pool it. 
+        let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;
+        let color_list = {};
+        for (let i = 0; i < color.length; i += 4) {
+            let color_rgb = "rgb(" + color[i] + "," + color[i+1] + "," + color[i+2] + ")";
+            if (color_rgb in color_list) {
+                color_list[color_rgb] += 1;
+            }
+            else {
+                color_list[color_rgb] = 1;
+            }
+        }
+        let maxcolor, maxcolor_num = 0;
+        for (let key in color_list) {
+            if (maxcolor_num < color_list[key]) {
+                maxcolor_num = color_list[key];
+                maxcolor = key;
+            }
+        }
+
+        // Check if something changed
+        let changesHappened = false;
+
+        // Get the data from our map!
+        if (maxcolor in colorMap) {
+            // Only update if there is a change in the selection
+            if (this.selectedArch != maxcolor) {
+                let arch = colorMap[maxcolor];
+
+                if (this.selectedArch != null) {
+                    this.selectedArch.inputs = this.selectedArch.orig_inputs;
+                    this.selectedArch.shape = "circle";
+                }
+                this.selectedArch = arch;
+
+                changesHappened = true;
+                
+                // Change the shape of the data point
+                arch.shape = "cross";
+            }
         }
 
         // Only redraw if there have been changes

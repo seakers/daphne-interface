@@ -51,7 +51,7 @@ class Daphne {
             });
 
             if (!already_there) {
-                let proc_data = this.problem.preprocessing([new_arch]);  
+                let proc_data = this.problem.preprocessing([new_arch]);
                 this.data.push(proc_data[0]);
             }
 
@@ -395,4 +395,38 @@ let daphne = new Daphne();
     //await daphne.addNewFunctionality("filter");
     //await daphne.addNewFunctionality("feature_application");
     //await daphne.addNewFunctionality("data_mining");
+
+    // Experiment buttons
+    $("#start-experiment").on("click", async e => {
+        try {
+            let dataResponse = await fetch("/api/experiment/start-experiment", {credentials: "same-origin"});
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                console.log(data);
+            }
+            else {
+                console.error("Error starting the experiment.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
+    });
+    $("#finish-experiment").on("click", async e => {
+        try {
+            let dataResponse = await fetch("/api/experiment/stop-experiment", {credentials: "same-origin"});
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                console.log(data);
+            }
+            else {
+                console.error("Error finishing the experiment.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
+    });
 } ());
