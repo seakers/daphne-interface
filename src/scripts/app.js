@@ -38,6 +38,11 @@ class Daphne {
             selection_changed: true
         };
 
+        // Experiment
+        this.duration = 10;//60*10; // 10 minutes
+        this.stage = 0;
+        this.experiment_data = null;
+
         PubSub.subscribe(DATA_PROCESSED, (msg, data) => {
             this.data = data;
         });
@@ -51,7 +56,7 @@ class Daphne {
             });
 
             if (!already_there) {
-                let proc_data = this.problem.preprocessing([new_arch]);  
+                let proc_data = this.problem.preprocessing([new_arch]);
                 this.data.push(proc_data[0]);
             }
 
@@ -362,6 +367,144 @@ class Daphne {
             }
         }
     }
+
+    stopTimer(){
+        clearInterval(this.timeinterval);
+    }
+
+    getTimeRemaining() {
+        let start_time;
+        if (this.stage == 1) {
+            start_time = this.experiment_data.start_date1;
+        }
+        else if (this.stage == 2) {
+            start_time = this.experiment_data.start_date2;
+        }
+        let endtime = Date.parse(start_time) + 1000*this.duration;
+        let t = endtime - Date.parse(new Date());
+        let seconds = Math.floor( (t/1000) % 60 );
+        let minutes = Math.floor( (t/1000/60) % 60 );
+        return {
+            'total': t,
+            'minutes': minutes,
+            'seconds': seconds
+        };
+    }
+
+    initializeClock() {
+        let clock = document.getElementById('clockdiv');
+
+        let minutesSpan = clock.querySelector('.minutes');
+        let secondsSpan = clock.querySelector('.seconds');
+
+        let that = this;
+
+        function updateClock(){
+            let t = that.getTimeRemaining();
+
+            minutesSpan.innerHTML = ('0' + t.minutes).slice(-2);
+            secondsSpan.innerHTML = ('0' + t.seconds).slice(-2);
+
+            if (t.total <= 0) {
+                that.stopTimer();
+                that.nextStage();
+            }
+        }
+
+        updateClock(); // run function once at first to avoid delay
+        this.timeinterval = setInterval(updateClock, 1000);
+    }
+
+    async setStageConditions() {
+        // Set experimental setup
+        let condition = "";
+        if (this.stage == 1) {
+            condition = this.experiment_data.stage1;
+        }
+        else if (this.stage == 2) {
+            condition = this.experiment_data.stage2;
+        }
+        $(".cheatsheet .close-panel").trigger("click");
+        if (condition == "without_ca") {
+            $("#daphne_answer_menu").hide();
+            this.cheatsheetManager.experiment_stage = true;
+            $("#daphne_input_form").hide();
+            $(".daphne_answer .close-panel").trigger("click");
+        }
+        else {
+            $("#daphne_answer_menu").show();
+            this.cheatsheetManager.experiment_stage = false;
+            $("#daphne_input_form").show();
+            await daphne.addNewFunctionality("daphne_answer");
+        }
+        await daphne.addNewFunctionality("cheatsheet");
+        await daphne.addNewFunctionality("cheatsheet");
+        await daphne.addNewFunctionality("cheatsheet");
+        this.cheatsheetManager.updateOptions();
+
+        // Make clock start ticking
+        this.initializeClock();
+    }
+
+    async nextStage() {
+        if (this.stage == 1) {
+            // Call end stage and create window with button to start second stage
+            try {
+                let dataResponse = await fetch("/api/experiment/finish-stage1", {credentials: "same-origin"});
+
+                if (dataResponse.ok) {
+                    let data = await dataResponse.json();
+                    // Start the experiment: run the timer and set the experimental conditions
+                    // Set the stage
+                    daphne.experiment_data = data;
+                    $(".modal-content").html("<p>That's it for the first stage of the experiment! Click continue to start stage 2.</p>" + 
+                        "<a class=\"button\" id=\"continue-experiment\">Continue</a>");
+                    $("#continue-experiment").on("click", async e => {
+                        this.stage = 2;
+                        try {
+                            let dataResponse = await fetch("/api/experiment/start-stage2", {credentials: "same-origin"});
+                            if (dataResponse.ok) {
+                                let data = await dataResponse.json();
+                                $(".modal").removeClass("is-active");
+                                daphne.experiment_data = data;
+                                daphne.setStageConditions();
+                            }
+                        }
+                        catch(e) {
+                            console.error("Networking error:", e);
+                        }
+                        
+                    });
+                    $(".modal").addClass("is-active");
+                }
+                else {
+                    console.error("Error continuing the experiment.");
+                }
+            }
+            catch(e) {
+                console.error("Networking error:", e);
+            }
+        }
+        else if (this.stage == 2) {
+            // Show end message with link to survey and call finish experiment API
+            try {
+                let dataResponse = await fetch("/api/experiment/stop-experiment", {credentials: "same-origin"});
+
+                if (dataResponse.ok) {
+                    let data = await dataResponse.json();
+                }
+                else {
+                    console.error("Error finishing the experiment.");
+                }
+            }
+            catch(e) {
+                console.error("Networking error:", e);
+            }
+            $(".modal-content").html("<p>That's it for the experiment! Click Finish to go to the end survey.</p>" + 
+                        "<a class=\"button\" href=\"link\">Finish</a>");
+            $(".modal").addClass("is-active");
+        }
+    }
 }
 
 let daphne = new Daphne();
@@ -388,11 +531,64 @@ let daphne = new Daphne();
     });
 
     await daphne.addNewFunctionality("design_inspector");
-    await daphne.addNewFunctionality("daphne_answer");
-    await daphne.addNewFunctionality("cheatsheet");
-    await daphne.addNewFunctionality("cheatsheet");
-    await daphne.addNewFunctionality("cheatsheet");
     //await daphne.addNewFunctionality("filter");
     //await daphne.addNewFunctionality("feature_application");
     //await daphne.addNewFunctionality("data_mining");
+
+    // Check if experiment already running, update everything related to it if true
+    try {
+        let dataResponse = await fetch("/api/experiment/reload-experiment", {credentials: "same-origin"});
+
+        if (dataResponse.ok) {
+            let data = await dataResponse.json();
+            if (!data.error || data.error != "Experiment not started!") {
+                // Update stage (1 or 2, with/without Daphne CA) and clock of the experiment
+            }
+        }
+        else {
+            console.error("Error starting the experiment.");
+        }
+    }
+    catch(e) {
+        console.error("Networking error:", e);
+    }
+
+    // Experiment buttons
+    $("#start-experiment").on("click", async e => {
+        try {
+            let dataResponse = await fetch("/api/experiment/start-experiment", {credentials: "same-origin"});
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                // Start the experiment: run the timer and set the experimental conditions
+                // Set the stage
+                daphne.experiment_data = data;
+                daphne.stage = 1;
+                daphne.setStageConditions();
+                console.log(data);
+            }
+            else {
+                console.error("Error starting the experiment.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
+    });
+    $("#finish-experiment").on("click", async e => {
+        try {
+            let dataResponse = await fetch("/api/experiment/stop-experiment", {credentials: "same-origin"});
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                console.log(data);
+            }
+            else {
+                console.error("Error finishing the experiment.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
+    });
 } ());

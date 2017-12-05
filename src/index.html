@@ -21,6 +21,18 @@
           <!--<a href="#" class="item" id="data_mining_menu"><span class="icon"><span class="fa fa-bar-chart"></span></span><span class="name">Data Mining</span></a>-->
           <!--<a href="#" class="item" id="feature_application_menu"><span class="icon"><span class="fa fa-sitemap"></span></span><span class="name">Feature Application</span></a>-->
           <a href="#" class="item" id="cheatsheet_menu"><span class="icon"><span class="fa fa-book"></span></span><span class="name">Cheatsheet</span></a>
+          <a class="button" id="start-experiment">Start Exp</a>
+          <a class="button" id="finish-experiment">Finish Exp</a>
+          <div id="clockdiv">
+                <div>
+                  <span class="minutes"></span>
+                  <div class="smalltext">Minutes</div>
+                </div>
+                <div>
+                  <span class="seconds"></span>
+                  <div class="smalltext">Seconds</div>
+                </div>
+          </div>
         </div>
       </div>
     </aside>
@@ -38,7 +50,7 @@
         <div class="navbar-menu">
           <div class="navbar-start is-fullwidth">
             <div class="navbar-item is-fullwidth">
-              <div class="field has-addons is-fullwidth">
+              <div id="daphne_input_form" class="field has-addons is-fullwidth">
                 <div class="control is-expanded">
                   <input class="input" type="text" name="command" placeholder="Ask a question / Give a command / Speak it out!">
                 </div>
@@ -66,7 +78,7 @@
               <div class="panel-block" id="main_plot_block">
                 <div id="main_plot"></div>
                 <div id="selections_block">
-                  <div class="card" id="interaction_modes">
+                  <!--<div class="card" id="interaction_modes">
                     <header class="card-header">
                       <p class="card-header-title">
                         Mouse Selection
@@ -74,21 +86,21 @@
                     </header>
                     <div class="card-content control is-small">
                       <div class="tooltip">
-                      <!--<span class="tooltiptext">Zoom/Pan: This option allows zooming/panning on the scatter plot</span>-->
+                      <span class="tooltiptext">Zoom/Pan: This option allows zooming/panning on the scatter plot</span>
                         <label class="radio">
                           Zoom/Pan: 
                           <input type="radio" name="mouse-selection" value="zoom-pan" checked />
                         </label>
                       </div>
                       <div class="tooltip">
-                      <!--<span class="tooltiptext">Drag-select: This option allows selecting designs by dragging over points</span>-->
+                      <span class="tooltiptext">Drag-select: This option allows selecting designs by dragging over points</span>
                         <label class="radio">
                           Drag-select: 
                           <input type="radio" name="mouse-selection" value="drag-select" />
                         </label>
                       </div>
                       <div class="tooltip">
-                      <!--<span class="tooltiptext">Deselect: This option allows de-selecting designs by dragging over points</span>-->
+                      <span class="tooltiptext">Deselect: This option allows de-selecting designs by dragging over points</span>
                         <label class="radio">
                           Deselect: 
                           <input type="radio" name="mouse-selection" value="de-select" />
@@ -97,7 +109,7 @@
                     </div>
                   </div>
                   <div class="card" id="selection_options">
-                    <!--<header class="card-header">
+                    <header class="card-header">
                       <p class="card-header-title">
                         Range Selection
                       </p>
@@ -136,7 +148,7 @@
                           <button class="button" id="selectArchsWithinRangeButton">Select Designs</button>
                         </p>
                       </div>
-                    </div>-->
+                    </div>
                   </div>
                   <div class="card">
                     <div class="card-content is-small">
@@ -146,7 +158,7 @@
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </div>-->
                 </div>
               </div>
             </section>
@@ -166,6 +178,13 @@
       </div>
     </div>
   </footer>
+  <div class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+      <!-- Any other Bulma elements you want -->
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
   <script type="text/javascript" src="./assets/js/jquery.min.js"></script>
   <script type="text/javascript" src="./assets/js/pubsub.js"></script>
   <script type="text/javascript" src="./assets/js/Sortable.min.js"></script>

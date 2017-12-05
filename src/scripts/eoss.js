@@ -128,6 +128,7 @@ class EOSS extends Problem {
             let id = +d.id;
             
             let arch = new Architecture(id, inputs, outputs);
+            arch.orig_inputs = inputs;
 
             output.push(arch);
         });
