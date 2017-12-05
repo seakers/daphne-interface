@@ -2,6 +2,8 @@
 
 class CheatsheetManager {
     constructor() {
+        this.experiment_stage = false;
+        this.hidden_items = ["general", "critic", "historian", "measurements", "missions", "technologies"];
         // Set the listener for when a new cheatsheet is added
         PubSub.subscribe("cheatsheet_added", (topic, id) => {
             let that = this;
@@ -34,6 +36,19 @@ class CheatsheetManager {
                 }
             });
         });
+    }
+
+    updateOptions() {
+        if (this.experiment_stage) {
+            for (let i = 0; i < this.hidden_items.length; ++i) {
+                $('.cheatsheet select > option[value="' + this.hidden_items[i] + '"]').hide();
+            }
+        }
+        else {
+            for (let i = 0; i < this.hidden_items.length; ++i) {
+                $('.cheatsheet select > option[value="' + this.hidden_items[i] + '"]').show();
+            }
+        }
     }
 
     printList(list) {
