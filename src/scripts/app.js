@@ -45,6 +45,9 @@ class Daphne {
         // Voice recognition
         if (annyang) {
             annyang.addCallback('result', phrases => {
+                if (responsiveVoice.isPlaying()) {
+                    return;
+                }
                 $("input[name=command]").val(phrases[0]);
                 this.executeCommand(phrases[0]);
             });
