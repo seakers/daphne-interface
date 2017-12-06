@@ -497,6 +497,7 @@ class Daphne {
 
                 if (dataResponse.ok) {
                     let data = await dataResponse.json();
+                    daphne.experiment_data = null;
                 }
                 else {
                     console.error("Error finishing the experiment.");
@@ -597,6 +598,7 @@ let daphne = new Daphne();
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
+                daphne.experiment_data = null;
                 console.log(data);
             }
             else {
