@@ -143,6 +143,8 @@ class Daphne {
             try {
                 let req_data = new FormData();
                 req_data.append("command", command);
+                // Put loader image
+                $(".daphne_answer > div.panel-block").html("<img src=\"assets/img/loader.svg\" style=\"margin: auto;\" height=\"64\" width=\"64\">")
                 let dataResponse = await fetch(
                     "/api/daphne/command",
                     {
@@ -497,6 +499,7 @@ class Daphne {
 
                 if (dataResponse.ok) {
                     let data = await dataResponse.json();
+                    daphne.experiment_data = null;
                 }
                 else {
                     console.error("Error finishing the experiment.");
@@ -598,6 +601,7 @@ let daphne = new Daphne();
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
+                daphne.experiment_data = null;
                 console.log(data);
             }
             else {

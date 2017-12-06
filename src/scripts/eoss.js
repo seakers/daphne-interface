@@ -243,13 +243,28 @@ class EOSS extends Problem {
             .text(d => d.content);
 
         // Add list of instruments
+
+        // Limit list of instruments depending on experiment phase if in experiment
+        this.shown_instrument_list = [];
+        if (this.context.experiment_data) {
+            if ("start_date2" in this.context.experiment_data) {
+                this.shown_instrument_list = this.instrument_list.slice(6, 12);
+            }
+            else {
+                this.shown_instrument_list = this.instrument_list.slice(0, 6);
+            }
+        }
+        else {
+            this.shown_instrument_list = this.instrument_list;
+        }
+        
         let instruments_list = design_space
             .append("div")
             .attr("id", "instrument_adder_list")
             .style("margin-left", "40px")
             .style("max-width", "70px")
             .selectAll("div")
-            .data(this.instrument_list)
+            .data(this.shown_instrument_list)
             .enter()
             .append("div")
             .classed("arch_box", true)
