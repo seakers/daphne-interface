@@ -19,7 +19,7 @@
     "postdist:html": "npm-run-all -p nocache:*",
     "nocache:index": "node node_modules/asset-cache-bust/bin/asset-cache-bust --asset-root dist dist/index.html",
     "scss:main": "node-sass --output-style nested src/styles/app.scss dist/assets/css/app.css",
-    "minjs:main": "uglifyjs src/scripts/{utils,label,eoss_label,problem,eoss,tradespace_plot,data_mining,filter,eoss_filter,feature_application,cheatsheet_manager,app}.js -m -c -o dist/assets/js/app.js --source-map url=app.js.map",
+    "minjs:main": "uglifyjs src/scripts/{intro,utils,label,eoss_label,problem,eoss,tradespace_plot,tutorial,data_mining,filter,eoss_filter,feature_application,cheatsheet_manager,app}.js -m -c -o dist/assets/js/app.js --source-map url=app.js.map",
     "minjs:jquery": "cp node_modules/jquery/dist/jquery.min.* dist/assets/js/",
     "minjs:pubsub": "uglifyjs node_modules/pubsub-js/src/pubsub.js -m -c -o dist/assets/js/pubsub.js",
     "minjs:sortable": "cp node_modules/sortablejs/Sortable.min.js dist/assets/js/",

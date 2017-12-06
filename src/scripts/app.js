@@ -524,6 +524,7 @@ let daphne = new Daphne();
     daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
     daphne.featureApplication = new FeatureApplication(daphne.label);
     daphne.cheatsheetManager = new CheatsheetManager();
+    daphne.tutorial = new Tutorial();
 
     daphne.import_new_data("EOSS_data_recalculated.csv").then(() => {
         daphne.calculate_pareto_ranking();
