@@ -34,6 +34,7 @@ class TradespacePlot {
 
         PubSub.subscribe(DATA_UPDATED, (msg, data) => {
             this.data = data;
+            this.num_total_points = 0;
             this.data.forEach(point => {
                 point.inputs = point.orig_inputs;
                 point.selected = false;
