@@ -1,4 +1,5 @@
 @import "../../node_modules/bulma/bulma";
+@import "introjs";
 
 body {
   height: 100%;
@@ -126,4 +127,10 @@ body {
 
 #instrument_adder_list .arch_box {
   margin-bottom: 5px;
+}
+
+.introjs_tooltip{
+    font-size:  22px;
+    max-width: 800px;
+    min-width: 600px;
 }

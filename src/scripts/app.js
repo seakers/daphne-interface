@@ -62,6 +62,11 @@ class Daphne {
 
             PubSub.publish(DATA_UPDATED, this.data);
         });
+        
+        PubSub.subscribe("start-tutorial", (msg, data) => {
+            
+            new Tutorial().run_tutorial();
+        });
 
         // Voice recognition
         /*if (annyang) {
@@ -527,7 +532,6 @@ let daphne = new Daphne();
     daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
     daphne.featureApplication = new FeatureApplication(daphne.label);
     daphne.cheatsheetManager = new CheatsheetManager();
-    daphne.tutorial = new Tutorial();
 
     daphne.import_new_data("EOSS_data_recalculated.csv").then(() => {
         daphne.calculate_pareto_ranking();
@@ -540,6 +544,8 @@ let daphne = new Daphne();
     });
 
     await daphne.addNewFunctionality("design_inspector");
+    await daphne.addNewFunctionality("daphne_answer");
+    await daphne.addNewFunctionality("cheatsheet");
     //await daphne.addNewFunctionality("filter");
     //await daphne.addNewFunctionality("feature_application");
     //await daphne.addNewFunctionality("data_mining");
@@ -559,7 +565,7 @@ let daphne = new Daphne();
                     daphne.stage = 1;
                 }
                 daphne.experiment_data = data;
-                daphne.setStageConditions();
+                await daphne.setStageConditions();
             }
         }
         else {
@@ -569,7 +575,8 @@ let daphne = new Daphne();
     catch(e) {
         console.error("Networking error:", e);
     }
-
+    
+    
     // Experiment buttons
     $("#start-experiment").on("click", async e => {
         try {
