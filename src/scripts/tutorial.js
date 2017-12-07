@@ -41,6 +41,8 @@ class Tutorial {
         console.log(steps);
         
         this.intro.setOption('showProgress', true).setOptions({steps:steps,tooltipClass:classname});
+        this.intro.setOption('exitOnOverlayClick', false);
+        this.intro.setOption('exitOnEsc', false);
         
         if(callback){
             this.intro.onchange(callback); 
