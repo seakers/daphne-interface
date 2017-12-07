@@ -388,7 +388,7 @@ class Daphne {
             start_time = this.experiment_data.start_date2;
         }
         let endtime = Date.parse(start_time) + 1000*this.duration;
-        let t = endtime - Date.parse(new Date());
+        let t = endtime - Date.now();
         let seconds = Math.floor( (t/1000) % 60 );
         let minutes = Math.floor( (t/1000/60) % 60 );
         return {
