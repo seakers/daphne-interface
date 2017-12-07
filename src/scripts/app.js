@@ -387,6 +387,7 @@ class Daphne {
         else if (this.stage == 2) {
             start_time = this.experiment_data.start_date2;
         }
+        start_time += "+00:00";
         let endtime = Date.parse(start_time) + 1000*this.duration;
         let t = endtime - Date.now();
         let seconds = Math.floor( (t/1000) % 60 );
