@@ -569,6 +569,9 @@ let daphne = new Daphne();
                 daphne.experiment_data = data;
                 await daphne.setStageConditions();
             }
+            else {
+                PubSub.publish("start-tutorial");
+            }
         }
         else {
             console.error("Error starting the experiment.");
@@ -602,8 +605,6 @@ let daphne = new Daphne();
             console.error("Networking error:", e);
         }
     });
-    
-    PubSub.publish("start-tutorial");
     
     // Experiment buttons
     $("#start-experiment").on("click", async e => {
