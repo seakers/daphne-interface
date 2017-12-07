@@ -40,7 +40,7 @@ class Daphne {
         };
 
         // Experiment
-        this.duration = 60*3;//60*10; // 10 minutes
+        this.duration = 60*10; // 10 minutes
         this.stage = 0;
         this.experiment_data = null;
 
