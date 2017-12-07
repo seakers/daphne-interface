@@ -62,15 +62,15 @@ class Tutorial {
 
         sequence.push({"highlight":null,
                             "text":"The task at hand deals with designing a constellation of satellites for Earth observation. This experiment does not require any background knowledge in this area."
-                        });        
+                        });
         
         sequence.push({"highlight":$('#arch_info_display_table')[0],
                             "text":"Each design is represented by a table as shown here. It shows which set of measurement instruments is assigned to fly in each orbit. Each row represents one spacecraft flying in a specified orbit. Orbits are defined by various parameters, such as altitude and inclination"
-                        });       
+                        });
         
         sequence.push({"highlight":$('#arch_info_display_table')[0],
                             "text":"Each column represents what measurement instruments (sensors) are onboard each of those spacecraft. The instruments include spectrometers, lidars, radars, imagers, etc."
-                        });              
+                        });
         
         sequence.push({"highlight":$('#arch_info_display_table')[0],
                             "text":"The real names of orbits and instruments were changed to numbers and alphabetical letters repectively to make the task simpler. There are total 5 candidate orbits, and 6 available measurement instruments."
@@ -78,7 +78,7 @@ class Tutorial {
         
         
         sequence.push({"highlight": $('.cheatsheet')[0], // Highlight the cheatsheet that shows orbit and instrument info
-                            "text":"Detailed information on what these orbits and instruments are is given in the cheatsheet as shown. You don't have to pay attention to this information for now, but it may come in handy later in the design task."
+                            "text":"Detailed information on what these orbits and instruments are is given in the cheatsheet when checking the Orbits and Instruments alias. You don't have to pay attention to this information for now, but it may come in handy later in the design task."
                         });
         
         sequence.push({"highlight":$('#main_plot_block')[0],
@@ -94,11 +94,11 @@ class Tutorial {
                         });
         
         sequence.push({"highlight":$('.panel.design_inspector')[0],
-                            "text":"You can move the instruments from one orbit to another orbit, add new instrument, or remove it using drag-and-drop. After modifying the design, you can evaluate it using the \"Evaluate Architecture\" button on the top-right side. After the evaluation is finished, a cross will appear on the scatter plot with its location determined by the new science score and cost."
+                            "text":"You can move the instruments from one orbit to another orbit, add new instruments, or remove them using drag-and-drop. After modifying the design, you can evaluate it using the <b>\"Evaluate Architecture\"</b> button on the top-right side. After the evaluation is finished, a cross will appear on the scatter plot with its location determined by the new science score and cost. It is very important to evaluate the new designs you make, as otherwise they won't get saved and you won't know how much you improved!"
                         });
         
         sequence.push({"highlight":$('.panel.design_inspector')[0],
-                            "text":"In one of the tasks, you will be asked to try to find good designs (maximizing science and minimizing cost), just using this method."
+                            "text":"In one of the tasks, <b>you will be asked to try to find good designs (maximizing science and minimizing cost)</b>, just using this method."
                         });
         
         sequence.push({"highlight":$('.navbar-menu')[0],
@@ -107,7 +107,7 @@ class Tutorial {
         
         
         sequence.push({"highlight":$('.navbar-menu')[0],
-                            "text":"For example, you can ask what Daphne thinks about a specific design. Then Daphne will give her thoughts on the design along with some hints on how you might want to improve it."
+                            "text":"For example, you can ask what Daphne thinks about a specific design. Then Daphne will give her thoughts on the design along with some hints on how you might want to improve it. An example question (<i>you can try it!</i>) would be: \"What do you think of design D1000?\""
                         });
 
         sequence.push({"highlight":$('.cheatsheet')[0],
@@ -115,7 +115,7 @@ class Tutorial {
                         });
 
         sequence.push({"highlight":$('.cheatsheet')[0],
-                            "text": "If you look at the historian list, you will see that there are strange looking words such as ${measurement} or ${year}. You can look at other lists such as Measurements, Missions or Technologies to know valid values for these fields. If a part of a question is inside brackets it means it is optional."
+                            "text": "If you look at the historian list, you will see that there are strange looking words such as ${measurement} or ${year}. You can look at other lists such as Measurements, Missions or Technologies to know valid values for these fields. If a part of a question is inside brackets it means it is optional. One example question would be: \"What is the most common orbit for atmospheric lidars?\""
                         });
         
         sequence.push({"highlight":$('.cheatsheet')[0],
@@ -127,7 +127,7 @@ class Tutorial {
                         });
 
         sequence.push({"highlight":null,
-                            "text": "This being said, click on done to start the experiment!"
+                            "text": "Remember, your objective is always the same: <b>increase the science score (make it go to the right) while keeping the cost as low as possible</b>. Whether you have Daphne available or not is randomized, so don't worry if you don't see it as soon as the experiment begins. With this being said, click on done to start the experiment!"
                         });
         
          
