@@ -46,7 +46,7 @@ class Tutorial {
             this.intro.onchange(callback); 
         }
         
-        this.intro.start(); 
+        this.intro.start();
     }    
     
         
@@ -71,13 +71,13 @@ class Tutorial {
                         });              
         
         sequence.push({"highlight":$('#arch_info_display_table')[0],
-                            "text":"The real names of orbits and instruments were changed to numbers and alphabetical letters repectively to make the task simpler. There are total 5 candidate orbits, and 12 available measurement instruments."
+                            "text":"The real names of orbits and instruments were changed to numbers and alphabetical letters repectively to make the task simpler. There are total 5 candidate orbits, and 6 available measurement instruments."
                         });           // 6 instead of 12?
         
         
-        sequence.push({"highlight": null, // Highlight the cheatsheet that shows orbit and instrument info
-                            "text":"Detailed information on what these orbits and instruments are is given in the cheatsheet as shown. You don't have to pay attention to these information for now, but it may come in handy later in the design task."
-                        });     
+        sequence.push({"highlight": $('.cheatsheet')[0], // Highlight the cheatsheet that shows orbit and instrument info
+                            "text":"Detailed information on what these orbits and instruments are is given in the cheatsheet as shown. You don't have to pay attention to this information for now, but it may come in handy later in the design task."
+                        });
         
         sequence.push({"highlight":$('#main_plot_block')[0],
                             "text":"This is the plot that shows the main trade-off of the designs. Each dot here is a single design, and each design has associated science score (a measure of performance) and cost. The science score represents how much value each design brings to the climate monitoring community, and the cost is a measure of how much it is going to cost (in million dollars)."
@@ -89,27 +89,46 @@ class Tutorial {
         
         sequence.push({"highlight":$('.columns > div > section')[0],
                             "text":"As you hover over each dot on the scatter plot, you can see the corresponding information being changed. If you click a dot, it is replaced by a cross. The cross means you have selected that design."
-                        });                    
+                        });
         
         sequence.push({"highlight":$('.panel.design_inspector')[0],
                             "text":"You can move the instruments from one orbit to another orbit, add new instrument, or remove it using drag-and-drop. After modifying the design, you can evaluate it using the \"Evaluate Architecture\" button on the top-right side. After the evaluation is finished, a cross will appear on the scatter plot with its location determined by the new science score and cost."
-                        });   
+                        });
         
         sequence.push({"highlight":$('.panel.design_inspector')[0],
                             "text":"In one of the tasks, you will be asked to try to find good designs (maximizing science and minimizing cost), just using this method."
-                        });    
+                        });
         
         sequence.push({"highlight":$('.navbar-menu')[0],
-                            "text":"In anohter task, a virtual assistant called Daphne will help you find good designs. You can communicate with Daphne through this text input field. You can ask various questions here."
-                        });           
+                            "text":"In another task, a virtual assistant called Daphne will help you find good designs. You can communicate with Daphne through this text input field. You can ask various questions here."
+                        });
         
         
         sequence.push({"highlight":$('.navbar-menu')[0],
                             "text":"For example, you can ask what Daphne thinks about a specific design. Then Daphne will give her thoughts on the design along with some hints on how you might want to improve it."
-                        });                   
+                        });
+
+        sequence.push({"highlight":$('.cheatsheet')[0],
+                            "text": "You can also ask about missions that have already been flown. The available questions for you are available in the lists of the cheatsheet. For example, check the Critic and Historian lists."
+                        });
+
+        sequence.push({"highlight":$('.cheatsheet')[0],
+                            "text": "If you look at the historian list, you will see that there are strange looking words such as ${measurement} or ${year}. You can look at other lists such as Measurements, Missions or Technologies to know valid values for these fields. If a part of a question is inside brackets it means it is optional."
+                        });
         
+        sequence.push({"highlight":$('.cheatsheet')[0],
+                            "text": "If you want to know the technology for one instrument of the experiment or the real name of an orbit along with its characteristics you just need to check the Orbits and Instruments alias lists."
+                        });
+
+        sequence.push({"highlight":$('#clock_div')[0],
+                            "text": "Each stage of the experiment will last for 10 minutes. It is <i>very important</i> for us that you talk about what is going through your mind during the experiment. If you don't we'll remind you about it!"
+                        });
+
+        sequence.push({"highlight":null,
+                            "text": "This being said, click on done to start the experiment!"
+                        });
         
-        
+         
         let objects = [];
         let messages = [];
         let classname = "introjs_tooltip"

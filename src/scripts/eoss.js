@@ -169,7 +169,7 @@ class EOSS extends Problem {
             }
         }
 
-        d3.select(".design_inspector > .panel-block").select("g").select("table").remove();
+        d3.select(".design_inspector > .panel-block").select("g").select("div.design_space").remove();
 
         let design_inspector = d3.select(".design_inspector > .panel-block").select("g");
         let design_space = design_inspector
@@ -323,29 +323,5 @@ class EOSS extends Problem {
 
             return bitString;
         }
-
-        $("#evaluate-arch").on("click", async e => {
-            let req_data = new FormData();
-            req_data.append("inputs", JSON.stringify(boolArch(this.instrument_num)));
-            console.log(boolArch(this.instrument_num));
-            try {
-                let data_response = await fetch("/api/vassar/evaluate-architecture/", 
-                    {
-                        method: "POST",
-                        body: req_data,
-                        credentials: "same-origin"
-                    });
-                if (data_response.ok) {
-                    let eval_response = await data_response.json();
-                    PubSub.publish(ARCH_ADDED, eval_response);
-                }
-                else {
-                    console.error("Error evaluating the architecture");
-                }
-            }
-            catch(e) {
-                console.error("Networking error:", e);
-            }
-        });
     }
 }

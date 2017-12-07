@@ -12,6 +12,7 @@ class Daphne {
         this.dataMining = null;
         this.featureApplication = null;
         this.cheatsheetManager = null;
+        this.tutorial = null;
     
         // Available functionalities
         this.functionalities = new Map();
@@ -39,7 +40,7 @@ class Daphne {
         };
 
         // Experiment
-        this.duration = 60;//60*10; // 10 minutes
+        this.duration = 60*3;//60*10; // 10 minutes
         this.stage = 0;
         this.experiment_data = null;
 
@@ -64,8 +65,7 @@ class Daphne {
         });
         
         PubSub.subscribe("start-tutorial", (msg, data) => {
-            
-            new Tutorial().run_tutorial();
+            this.tutorial.run_tutorial();
         });
 
         // Voice recognition
@@ -532,6 +532,7 @@ let daphne = new Daphne();
     daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
     daphne.featureApplication = new FeatureApplication(daphne.label);
     daphne.cheatsheetManager = new CheatsheetManager();
+    daphne.tutorial = new Tutorial();
 
     daphne.import_new_data("EOSS_data_recalculated.csv").then(() => {
         daphne.calculate_pareto_ranking();
@@ -575,7 +576,33 @@ let daphne = new Daphne();
     catch(e) {
         console.error("Networking error:", e);
     }
+
+    daphne.tutorial.intro.oncomplete(async () => {
+        try {
+            let dataResponse = await fetch("/api/experiment/start-experiment", {credentials: "same-origin"});
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                // Start the experiment: run the timer and set the experimental conditions
+                // Set the stage
+                daphne.experiment_data = data;
+                daphne.stage = 1;
+                await daphne.import_new_data("daphne_experiment1.csv").then(() => {
+                    daphne.calculate_pareto_ranking();
+                });
+                daphne.setStageConditions();
+                console.log(data);
+            }
+            else {
+                console.error("Error starting the experiment.");
+            }
+        }
+        catch(e) {
+            console.error("Networking error:", e);
+        }
+    });
     
+    PubSub.publish("start-tutorial");
     
     // Experiment buttons
     $("#start-experiment").on("click", async e => {

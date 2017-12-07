@@ -18,7 +18,8 @@ class TradespacePlot {
             "highlighted": "rgba(248,101,145,255)",
             "overlap": "rgba(163,64,240,255)",
             "mouseover": "rgba(116,255,110,255)",
-            "hidden": "rgba(110,110,110,22)"
+            "hidden": "rgba(110,110,110,22)",
+            "important": "rgba(255,0,0,255)"
         };
 
         this.output_list = output_list;
@@ -41,6 +42,7 @@ class TradespacePlot {
                 point.highlighted = false;
                 point.hidden = false;
                 point.drawingColor = this.color.default;
+                point.importantColor = this.color.important;
                 point.shape = "circle";
                 this.num_total_points += 1;
             });
@@ -239,6 +241,7 @@ class TradespacePlot {
                 context.fill();
             }
             else if (point.shape == "cross") {
+                context.fillStyle = hidden ? point.interactColor : point.importantColor;
                 context.fillRect(tx - 4, ty - 1, 8, 2);
                 context.fillRect(tx - 1, ty - 4, 2, 8);
             }
@@ -386,7 +389,37 @@ class TradespacePlot {
             .attr("id", "evaluate-arch")
             .text("Evaluate Architecture");
 
-        PubSub.publish(ARCH_SELECTED, arch);
+        $("#evaluate-arch").on("click", async e => {
+            let new_inputs = this.boolArch(this.instrument_num);
+            let eq_arrays = (new_inputs.length == this.selectedArch.inputs.length) && new_inputs.every((element, index) => {
+                return element === this.selectedArch.inputs[index]; 
+            });
+            if (!eq_arrays) {
+                let req_data = new FormData();
+                req_data.append("inputs", JSON.stringify(this.boolArch(this.instrument_num)));
+                console.log(this.boolArch(this.instrument_num));
+                try {
+                    let data_response = await fetch("/api/vassar/evaluate-architecture/", 
+                        {
+                            method: "POST",
+                            body: req_data,
+                            credentials: "same-origin"
+                        });
+                    if (data_response.ok) {
+                        let eval_response = await data_response.json();
+                        PubSub.publish(ARCH_ADDED, eval_response);
+                    }
+                    else {
+                        console.error("Error evaluating the architecture");
+                    }
+                }
+                catch(e) {
+                    console.error("Networking error:", e);
+                }
+            } 
+        });
+
+        PubSub.publishSync(ARCH_SELECTED, arch);
     }
 
     canvas_click(colorMap) {
