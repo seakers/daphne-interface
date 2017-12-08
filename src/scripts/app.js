@@ -165,6 +165,8 @@ class Daphne {
                 }
                 else {
                     console.error("Error processing the command.");
+                    $(".daphne_answer > div.panel-block").html("<div class=\"content\"><p>I didn't understand the question.</p></div>");
+                    responsiveVoice.speak("I didn't understand the question.");
                 }
             }
             catch(e) {
