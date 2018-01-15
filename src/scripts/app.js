@@ -3,7 +3,7 @@
 class Daphne {
     constructor() {
         this.data = null; // Array containing the imported data
-    
+
         // Instances of Classes
         this.problem = null; // Problem-specific class
         this.label = null;
@@ -12,15 +12,15 @@ class Daphne {
         this.dataMining = null;
         this.featureApplication = null;
         this.cheatsheetManager = null;
-    
+
         // Available functionalities
         this.functionalities = new Map();
         this.functionalities.set("daphne_answer", { min_size: "one-third", max_repeat: 1, instances: new Map() });
         this.functionalities.set("design_inspector", { min_size: "one-third", max_repeat: 1, instances: new Map() });
         this.functionalities.set("data_mining", { min_size: "one-third", max_repeat: 1, instances: new Map() });
         this.functionalities.set("cheatsheet", { min_size: "one-third", max_repeat: 1000, instances: new Map() });
-        this.functionalities.set("filter", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
-        this.functionalities.set("feature_application", { min_size: "one-third", max_repeat: 1, instances: new Map() }); 
+        this.functionalities.set("filter", { min_size: "one-third", max_repeat: 1, instances: new Map() });
+        this.functionalities.set("feature_application", { min_size: "one-third", max_repeat: 1, instances: new Map() });
 
         this.responseOutput = {
             text: this.showText,
@@ -84,19 +84,19 @@ class Daphne {
                 event.preventDefault();
             });
         });
-        
-        
+
+
         //this.websocket = new WebSocket("ws://127.0.0.1:8001/api/daphne"); // Localhost
         this.websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/api/daphne");
-        
+
         this.websocket.onopen = function() {
             console.log('Web Socket Conenction Made');
         };
 
-        this.websocket.onmessage = function (data) { 
-            //ws.send(JSON.stringify(data));         
-        }        
-        
+        this.websocket.onmessage = function (data) {
+            //ws.send(JSON.stringify(data));
+        }
+
 
     }
 
@@ -159,14 +159,14 @@ class Daphne {
         if (!data) {
             data = this.data;
         }
-        
+
         let ids = [];
         for(let i = 0; i < data.length; i++) {
             ids.push(data[i].id);
         }
         return ids;
     }
-    
+
 
     /*
     Imports a new data from a file
@@ -176,7 +176,7 @@ class Daphne {
         console.log('Importing data...');
 
         if (!filename) {
-            filename = this.problem.result_filename; 
+            filename = this.problem.result_filename;
         }
 
         try {
@@ -195,7 +195,7 @@ class Daphne {
                 this.data = await dataResponse.json();
 
                 if (this.problem.import_callback) {
-                    await this.problem.import_callback(this.data);  
+                    await this.problem.import_callback(this.data);
                 }
                 else {
                     console.log("Data preprocessing not defined.");
@@ -212,16 +212,16 @@ class Daphne {
         }
     }
 
-    
-    calculate_pareto_ranking(limit) {  
+
+    calculate_pareto_ranking(limit) {
         let rank = 0;
-        
+
         if (!limit) {
             limit = 15;
         }
-        
+
         let archs = this.data;
-        
+
         while (archs.length > 0) {
             let remaining = [];
             let n = archs.length;
@@ -233,7 +233,7 @@ class Daphne {
             for (let i = 0; i < n; i++) {
                 let non_dominated = true;
                 let this_arch = archs[i];
-                
+
                 for (let j = 0; j < n; j++) {
                     if (i === j) {
                         continue;
@@ -255,8 +255,8 @@ class Daphne {
             archs = remaining;
         }
     }
-    
-    
+
+
     async addNewFunctionality(functionality) {
         function columnWrap(html, size) {
             return "<div class=\"column is-" + size + "-desktop is-full-mobile\">" + html + "</div>\n";
@@ -381,4 +381,6 @@ class Daphne {
     //await daphne.addNewFunctionality("filter");
     await daphne.addNewFunctionality("feature_application");
     await daphne.addNewFunctionality("data_mining");
+
+
 } ());
