@@ -1,0 +1,12 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 Firefox versions", "last 2 Chrome versions"]
+      },
+      "exclude": ["transform-es2015-arrow-functions"],
+      "debug": true,
+      "modules": false
+    }]
+  ]
+}

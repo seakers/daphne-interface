@@ -1,12 +1,12 @@
-class Filter {
-    
+export default class Filter {
+
     constructor() {
         this.preset_options = [];
     }
-    
+
 //    reset() {
 //        d3.select(".data_mining > .panel-block").select("g").remove();
-//        
+//
 //        let guideline = d3.select(".data_mining > .panel-block")
 //            .append("g");
 //
@@ -23,16 +23,16 @@ class Filter {
 //                    .text("Run data mining");
 //
 //        PubSub.publish("data_mining_added");
-//    }    
-    
+//    }
 
-    
 
-    
-    
+
+
+
+
 }
-        
-        
+
+
 //
 //
 //    self.get_preset_option = function(option){
@@ -43,20 +43,20 @@ class Filter {
 //        }
 //        return null;
 //    }
-//    
-//    
+//
+//
 //
 //    self.initialize_preset_filter_input = function(option){
-//        
-//        
+//
+//
 //        d3.selectAll('.filter.inputs.div').selectAll('div').remove();
 //        d3.selectAll('.filter.hints.div').selectAll('div').remove();
-//        
+//
 //        if (option==="not_selected"){
 //            return;
-//            
+//
 //        }else if(option=="paretoFront"){
-//            
+//
 //            d3.select('.filter.inputs.div')
 //                .append("div")
 //                .attr("id","filter_input_1")
@@ -64,60 +64,60 @@ class Filter {
 //                .text("Input Pareto Ranking (Integer number between 0-15): ")
 //                .append("input")
 //                .attr("type","text");
-//            
+//
 //        }else{
-//            
+//
 //            var inputType = self.get_preset_option(option).input;
-//            
+//
 //            var filter_inputs = d3.select('.filter.inputs.div');
-//            
+//
 //            var filter_input_1 = filter_inputs.append('div')
 //                                                .attr('id','filter_input_1')
 //                                                .attr('class','filter inputs text');
-//            
+//
 //            var filter_input_2 = filter_inputs.append('div')
 //                                                .attr('id','filter_input_2')
 //                                                .attr('class','filter inputs text');
-//            
+//
 //            var filter_input_3 = filter_inputs.append('div')
 //                                                .attr('id','filter_input_3')
 //                                                .attr('class','filter inputs text');
-//            
+//
 //            switch(inputType) {
-//                    
+//
 //                case "singleInst":
 //                    filter_input_1.text("Input single instrument name: ");
 //                    filter_input_1.append("input")
 //                                .attr("type","text");
 //                    break;
-//                    
+//
 //                case "orbitAndMultipleInstInput":
 //                    filter_input_1.text("Input orbit name: ");
 //                    filter_input_1.append("input")
 //                                .attr("type","text");
-//                    
+//
 //                    filter_input_2.text("Input instrument names (minimum 1, and maximum 3) separated by comma: ");
 //                    filter_input_2.append("input")
 //                                .attr("type","text");
 //                    break;
-//                    
+//
 //                case "orbitInput":
 //                    filter_input_1.text("Input orbit name: ");
 //                    filter_input_1.append("input")
 //                                .attr("type","text");
 //                    break;
-//                    
+//
 //                case "numOrbit":
 //                    filter_input_1.text("Input number of orbits");
 //                    filter_input_1.append("input")
 //                                .attr("type","text");
 //                    break;
-//                
+//
 //                case "numOfInstruments":
 //                    filter_input_1.text("Input an orbit name (Could be N/A): ");
 //                    filter_input_1.append("input")
 //                                .attr("type","text")
-//                                .attr("value","N/A");    
+//                                .attr("value","N/A");
 //                    filter_input_2.text("Input instrument name (Could be N/A): ");
 //                    filter_input_2.append("input")
 //                                .attr("type","text")
@@ -127,11 +127,11 @@ class Filter {
 //                                .attr("type","text")
 //                                .attr("value","N/A");
 //                    break;
-//                
+//
 //                case "subsetOfInstruments":
 //                    filter_input_1.text("Input orbit name: ");
 //                    filter_input_1.append("input")
-//                                .attr("type","text");    
+//                                .attr("type","text");
 //                    filter_input_2.text("Input the min and the max (optional) number of instruments in the subset, separated by comma: ");
 //                    filter_input_2.append("input")
 //                                .attr("type","text");
@@ -139,14 +139,14 @@ class Filter {
 //                    filter_input_3.append("input")
 //                                .attr("type","text");
 //                    break;
-//                    
-//                    
+//
+//
 //                case "multipleInstInput":
 //                    filter_input_1.text("Input instrument names (2 or 3) separated by comma:");
 //                    filter_input_1.append("input")
 //                        .attr("type","text");
 //                    break;
-//                    
+//
 //                default:
 //                    break;
 //            }
@@ -155,35 +155,35 @@ class Filter {
 //        d3.select(".filter.hints.div")
 //            .append("div")
 //            .html('<p>Valid orbit names: 1000, 2000, 3000, 4000, 5000</p>'
-//                    +'Valid instrument names: A, B, C, D, E, F, G, H, I, J, K, L');      
-//            
+//                    +'Valid instrument names: A, B, C, D, E, F, G, H, I, J, K, L');
+//
 //    }
-//    
-//    
+//
+//
 //    self.get_number_of_inputs = function(){
 //        return d3.selectAll('.filter.inputs.div').selectAll('input').length;
 //    }
-//    
-//    
-//    
+//
+//
+//
 //    self.applyFilter = function(){
 //
 //        var invalid_input = false;
-//        
+//
 //        var dropdown = d3.select(".filter.options.dropdown")[0][0].value;
-//        
+//
 //        var filter_expression;
-//        
+//
 //        var matchedArchIDs = [];
 //
 //        var numInputs = self.get_number_of_inputs();
-//        
+//
 //        var input_textbox = [];
 //        var input_select = [];
 //        var inputDiv =  d3.selectAll('.filter.inputs.div').selectAll('div')[0];
 //
 //        inputDiv.forEach(function(d,i){
-//            
+//
 //            var textboxObj = d3.select(d).select('input')[0][0];
 //            var selectObj = d3.select(d).select('select')[0][0];
 //
@@ -204,69 +204,69 @@ class Filter {
 //        });
 //
 //
-//        // Example of an filter expression: {presetName[orbits;instruments;numbers]} 
+//        // Example of an filter expression: {presetName[orbits;instruments;numbers]}
 //        var option = dropdown;
-//        
+//
 //        if(option=="present" || option=="absent" || option=="together" || option=="separate"){
-//            
+//
 //            var instrument = input_textbox[0];
 //            var inst_relabel = ifeed.label.displayName2Index(instrument.toUpperCase(),"instrument");
 //            if(inst_relabel==null){
 //                invalid_input=true;
 //            }
 //            filter_expression = option + "[;" + inst_relabel + ";]";
-//            
+//
 //        }else if(option == "inOrbit" || option == "notInOrbit"){
-//            
+//
 //            var orbit = input_textbox[0].trim();
 //            var instrument = input_textbox[1];
-//            
+//
 //            var orb_relabel = ifeed.label.displayName2Index(orbit,"orbit");
 //            var inst_relabel = ifeed.label.displayName2Index(instrument.toUpperCase(),"instrument");
 //            if(inst_relabel==null || orb_relabel==null){
 //                invalid_input=true;
-//            }            
-//            
+//            }
+//
 //            filter_expression = option + "["+ orb_relabel + ";" + inst_relabel + ";]";
-//            
+//
 //        }else if(option =="emptyOrbit"){
-//            
+//
 //            var orbit = input_textbox[0].trim();
-//            
+//
 //            var orb_relabel = ifeed.label.displayName2Index(orbit,"orbit");
 //            if(orb_relabel==null){
 //                invalid_input=true;
-//            }         
-//            
+//            }
+//
 //            filter_expression = option + "[" + orb_relabel + ";;]";
-//            
+//
 //        }else if(option=="numOrbits"){
-//            
+//
 //            var number = input_textbox[0].trim();
 //            filter_expression = option + "[;;" + number + "]";
-//            
+//
 //        }else if(option=="subsetOfInstruments"){
-//            
+//
 //            var orbit = input_textbox[0].trim();
 //            var instrument = input_textbox[2];
-//            
+//
 //            var orb_relabel = ifeed.label.displayName2Index(orbit,"orbit");
 //            var inst_relabel = ifeed.label.displayName2Index(instrument.toUpperCase(),"instrument");
 //            if(inst_relabel==null || orb_relabel==null){
 //                invalid_input=true;
-//            }                    
-//            
+//            }
+//
 //            var numbers = input_textbox[1].trim().replace(/\s+/g, "");
 //            filter_expression = option + "["+ orb_relabel + ";" + inst_relabel + ";"+ numbers+"]";
-//            
+//
 //        }else if(option=="numOfInstruments"){
-//            
+//
 //            var orbit = input_textbox[0];
 //            var instrument = input_textbox[1];
 //            var number = input_textbox[2];
 //            // There are 3 possibilities
 //
-//            var orbitEmpty = false; 
+//            var orbitEmpty = false;
 //            var instrumentEmpty = false;
 //
 //            if(orbit=="N/A" || orbit.length==0){
@@ -280,40 +280,40 @@ class Filter {
 //                filter_expression=option + "[;;" + number + "]";
 //            }else if(orbitEmpty){
 //                // Count the number of specified instrument
-//                
+//
 //                var inst_relabel = ifeed.label.displayName2Index(instrument.toUpperCase(),"instrument");
 //                if(inst_relabel==null){
 //                    invalid_input=true;
-//                }                
+//                }
 //                filter_expression=option + "[;" + inst_relabel + ";" + number + "]";
-//                
+//
 //            }else if(instrumentEmpty){
 //                // Count the number of instruments in an orbit
 //                orbit = orbit.trim();
-//                
+//
 //                var orb_relabel = ifeed.label.displayName2Index(orbit,"orbit");
 //                if(orb_relabel==null){
 //                    invalid_input=true;
-//                }                   
+//                }
 //                filter_expression=option + "[" + orb_relabel + ";;" + number + "]";
 //            }
-//            
+//
 //        } else if(dropdown==="paretoFront"){
 //
-//            // To be implemented    
+//            // To be implemented
 //            var input = d3.selectAll('.filter.inputs.div').select('div').select('input')[0][0].value
 //            filter_expression = "paretoFront["+input+"]";
 //
 //        }else{// not selected
 //            return;
 //        }
-//        
+//
 //        filter_expression = "{" + filter_expression + "}";
-//        
+//
 //        if(invalid_input){
 //            alert("Invalid input argument");
 //            return false;
-//        }        
+//        }
 //
 //        if(filter_expression.indexOf('paretoFront')!=-1){
 //            self.apply_filter_expression(filter_expression);
@@ -327,13 +327,13 @@ class Filter {
 //        document.getElementById('tab2').click();
 //        return true;
 //    }
-//    
 //
-//    
-//    
-//    
+//
+//
+//
+//
 //    self.apply_filter_expression = function(input_expression){
-//        
+//
 //        var feature_expression = input_expression;
 //
 //        // Cancel all previous selections
@@ -341,11 +341,11 @@ class Filter {
 //
 //        // If filter expression is empty, return
 //        if(feature_expression==="" || !feature_expression){
-//            
+//
 //            return;
-//            
+//
 //        }else{
-//            
+//
 //            // Note that indices and ids are different!
 //            var filtered_data = self.process_filter_expression(feature_expression, ifeed.data, "&&");
 //
@@ -363,20 +363,20 @@ class Filter {
 //                        dot.style("fill", ifeed.main_plot.color.overlap);
 //                    }else{
 //                        // not selected
-//                        dot.style("fill", ifeed.main_plot.color.highlighted);            		
+//                        dot.style("fill", ifeed.main_plot.color.highlighted);
 //                    }
 //                }
-//            });     
+//            });
 //        }
 //
 //        d3.select("#num_of_selected_archs").text(""+ifeed.main_plot.get_num_of_selected_archs());
 //    }
-//    
-//    
-//    
-//    
+//
+//
+//
+//
 //    self.process_filter_expression = function(expression, data, logic){
-//        
+//
 //        var e,_e;
 //
 //        e=expression;
@@ -431,7 +431,7 @@ class Filter {
 //            var or = _e.indexOf("||");
 //            if(and==-1 && or==-1){
 //                next = "";
-//            } else if(and==-1){ 
+//            } else if(and==-1){
 //                next = "||";
 //            } else if(or==-1){
 //                next = "&&";
@@ -463,19 +463,19 @@ class Filter {
 //                }
 //
 //            }else{
-//                filtered = self.process_filter_expression(e_temp,filtered,logic); 
+//                filtered = self.process_filter_expression(e_temp,filtered,logic);
 //            }
 //
 //        }
 //        return filtered;
 //    }
-//    
-//    
-//    
-//    
-//    
-//    
-//    
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //    /*
@@ -487,8 +487,8 @@ class Filter {
 //    self.apply_preset_filter = function(input_expression,data){
 //
 //        var expression = remove_outer_parentheses(input_expression);
-//        
-//        // Preset filter: {presetName[orbits;instruments;numbers]}   
+//
+//        // Preset filter: {presetName[orbits;instruments;numbers]}
 //        expression = expression.substring(1,expression.length-1);
 //
 //        var flip=false;
@@ -496,14 +496,14 @@ class Filter {
 //            flip=true;
 //            expression = expression.substring(1,expression.length);
 //        }
-//        
+//
 //        var norb = ifeed.problem.orbit_num;
 //        var ninstr = ifeed.problem.instrument_num;
 //        var type = expression.split("[")[0];
 //        var bitString = data.inputs;
 //
 //        if(type==="paretoFront"){
-//            
+//
 //            if(data.pareto_ranking || data.pareto_ranking==0){
 //                var rank = +data.pareto_ranking;
 //                var arg = +expression.substring(0,expression.length-1).split("[")[1];
@@ -537,7 +537,7 @@ class Filter {
 //            break;
 //        case "absent":
 //            if(instr==-1) return false;
-//                
+//
 //            resu=true;
 //            instr = + instr;
 //            for(var i=0;i<norb;i++){
@@ -546,7 +546,7 @@ class Filter {
 //                }
 //            }
 //            break;
-//                
+//
 //        case "inOrbit":
 //            orbit = + orbit;
 //            if(instr.indexOf(',')==-1){
@@ -556,7 +556,7 @@ class Filter {
 //                if(bitString[orbit*ninstr + instr]===true){
 //                    resu=true;
 //                }
-//                break;    		
+//                break;
 //            }else{
 //                // Multiple instruments
 //                resu=true;
@@ -566,7 +566,7 @@ class Filter {
 //                    if(bitString[orbit*ninstr + temp]===false){
 //                        resu= false;break;
 //                    }
-//                }    		
+//                }
 //            }
 //            break;
 //        case "notInOrbit":
@@ -578,7 +578,7 @@ class Filter {
 //                if(bitString[orbit*ninstr + instr]===true){
 //                    resu=false;
 //                }
-//                break;    		
+//                break;
 //            }else{
 //                // Multiple instruments
 //                resu=true;
@@ -588,9 +588,9 @@ class Filter {
 //                    if(bitString[orbit*ninstr + temp]===true){
 //                        resu= false;break;
 //                    }
-//                }    		
+//                }
 //            }
-//            break; 
+//            break;
 //        case "together":
 //            resu=false;
 //            var instruments = instr.split(",");
@@ -611,11 +611,11 @@ class Filter {
 //        case "separate":
 //            resu=true;
 //            var instruments = instr.split(",");
-//            
+//
 //            for(var i=0;i<norb;i++){
-//                
+//
 //                var found = false;
-//                
+//
 //                for(var j=0;j<instruments.length;j++){
 //                    var temp = +instruments[j];
 //                    if(bitString[i*ninstr+temp]===true){
@@ -659,7 +659,7 @@ class Filter {
 //            break;
 //
 //        case "subsetOfInstruments":
-//            var count = 0;    	
+//            var count = 0;
 //            var instruments = instr.split(",");
 //            var numbers = numb.split(",");
 //            orbit = +orbit;
@@ -728,14 +728,14 @@ class Filter {
 //        }
 //
 //    }
-//    
-//    
+//
+//
 //    PubSub.subscribe(APPLY_FEATURE_EXPRESSION, (msg, data) => {
 //        self.apply_filter_expression(data);
-//    });     
-//    
+//    });
+//
 //    self.initialize();
-//    
+//
 //}
 //
 //
@@ -755,10 +755,10 @@ class Filter {
 //        d3.selectAll(".dot.archPlot")[0].forEach(function (d) {
 //            var rank = parseInt(d3.select(d).attr("paretoRank"));
 //            if (rank <= +arg && rank >= 0){
-//                
+//
 //                var dot = d3.select(d);
 //                dot.classed('highlighted',true);
-//                
+//
 //                if(dot.classed('selected')){
 //                    // selected and highlighted
 //                    dot.style("fill", overlapColor);
@@ -767,12 +767,12 @@ class Filter {
 //                    dot.style("fill", highlightedColor);
 //                }
 //            }
-//        });  
+//        });
 //    }else if(option==="add"){
 //        d3.selectAll(".dot.archPlot:not(.highlighted)")[0].forEach(function (d) {
 //            var rank = parseInt(d3.select(d).attr("paretoRank"));
 //            if (rank <= +arg && rank >= 0){
-//                
+//
 //                var dot = d3.select(d);
 //                dot.classed('highlighted',true);
 //                if(dot.classed('selected')){
@@ -783,24 +783,24 @@ class Filter {
 //                    dot.style("fill", highlightedColor);
 //                }
 //            }
-//        });  
+//        });
 //    }else if(option==="within"){
 //        d3.selectAll(".dot.archPlot.highlighted")[0].forEach(function (d) {
 //            var rank = parseInt(d3.select(d).attr("paretoRank"));
 //            if (rank > +arg || rank < 0){
-//                
+//
 //                var dot = d3.select(d);
 //                dot.classed('highlighted',false);
-//                
+//
 //                if(dot.classed('selected')){
 //                    // was selected and highlighted
 //                    dot.style("fill", selectedColor);
 //                }else{
 //                    // was not selected
 //                    dot.style("fill", defaultColor);
-//                }	
+//                }
 //            }
-//        }); 
+//        });
 //    }
 //}
 //

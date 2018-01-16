@@ -1,17 +1,20 @@
-class TradespacePlot {
+import * as utils from './utils';
+let PubSub = require('pubsub-js');
+
+export default class TradespacePlot {
 
     constructor(output_list) {
         this.translate = [0,0];
         this.scale = 1;
         this.xIndex = null;
         this.yIndex = null;
-        
+
         this.main_plot_params = {
             "margin": {top: 20, right: 20, bottom: 30, left: 60},
             "width": 960,
             "height": 450,
         };
-        
+
         this.color = {
             "default": "rgba(110,110,110,255)",
             "selected": "rgba(25,186,215,255)",
@@ -31,7 +34,7 @@ class TradespacePlot {
 
         this.lastHoveredArch = null;
 
-        PubSub.subscribe(DATA_UPDATED, (msg, data) => {
+        PubSub.subscribe(utils.DATA_UPDATED, (msg, data) => {
             this.data = data;
             this.data.forEach(point => {
                 point.selected = false;
@@ -42,10 +45,10 @@ class TradespacePlot {
             });
             this.update(0, 1);
         });
-        
+
         PubSub.subscribe("update_target_selection", (msg) => {
             this.update_target_selection();
-        });     
+        });
 
         window.addEventListener("resize", () => {
             this.update(0, 1);
@@ -69,20 +72,20 @@ class TradespacePlot {
 
         // Update width
         this.main_plot_params.width = document.getElementById("main_plot_block").clientWidth - document.getElementById("selections_block").offsetWidth - 30;
-        
+
         let margin = this.main_plot_params.margin;
         this.width = this.main_plot_params.width - margin.right - margin.left;
         this.height = this.main_plot_params.height - margin.top - margin.bottom;
 
-        // setup x 
+        // setup x
         let xValue = d => d.outputs[xIndex]; // data -> value
-        
+
         let xScale = d3.scaleLinear().range([0, this.width]); // value -> display
 
-        // don't want dots overlapping axis, so add in buffer to data domain 
+        // don't want dots overlapping axis, so add in buffer to data domain
         let xBuffer = (d3.max(this.data, xValue) - d3.min(this.data, xValue)) * 0.05;
         xScale.domain([d3.min(this.data, xValue) - xBuffer, d3.max(this.data, xValue) + xBuffer]);
-        
+
         this.xMap = d => xScale(xValue(d)); // data -> display
 
         let xAxis = d3.axisBottom(xScale);
@@ -98,7 +101,7 @@ class TradespacePlot {
         this.yMap = d => yScale(yValue(d)); // data -> display
 
         let yAxis = d3.axisLeft(yScale);
-                
+
         this.xScale = xScale;
         this.yScale = yScale;
         this.xAxis = xAxis;
@@ -156,7 +159,7 @@ class TradespacePlot {
             .attr("class", "axis axis-x")
             .attr("transform", "translate(0, " + this.height + ")")
             .call(xAxis);
-            
+
         svg.append("text")
             .attr("transform", "translate(" + this.width + ", " + this.height + ")")
             .attr("class", "label")
@@ -168,7 +171,7 @@ class TradespacePlot {
         let gY = svg.append("g")
             .attr("class", "axis axis-y")
             .call(yAxis);
-        
+
         svg.append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
@@ -181,11 +184,11 @@ class TradespacePlot {
         let that = this;
         // Function to create new colours for the picking.
         let nextCol = 1;
-        function genColor(){ 
+        function genColor(){
             let ret = [];
             if (nextCol < 16777215) {
-                ret.push(nextCol & 0xff); // R 
-                ret.push((nextCol & 0xff00) >> 8); // G 
+                ret.push(nextCol & 0xff); // R
+                ret.push((nextCol & 0xff00) >> 8); // G
                 ret.push((nextCol & 0xff0000) >> 16); // B
                 nextCol += 1;
             }
@@ -204,7 +207,7 @@ class TradespacePlot {
 
         // Canvas interaction
         canvas.on("mousemove.inspection", function() { that.canvas_mousemove(colorMap); });
-        
+
         // Set button click operations
         d3.select("button#cancel_selection").on("click", () => { that.cancel_selection(); });
         d3.select('#interaction_modes').selectAll("label").on("click", () => { that.toggle_selection_mode(); });
@@ -215,7 +218,7 @@ class TradespacePlot {
     drawPoints(context, hidden) {
         context.clearRect(0, 0, this.width, this.height);
         context.save();
-        
+
         this.data.forEach(point => {
             let tx = this.transform.applyX(this.xMap(point));
             let ty = this.transform.applyY(this.yMap(point));
@@ -234,10 +237,10 @@ class TradespacePlot {
 
         // Get mouse positions from the main canvas.
         let mouse_pos = d3.mouse(d3.select("#main_plot").select("canvas").node());
-        let mouseX = mouse_pos[0]; 
+        let mouseX = mouse_pos[0];
         let mouseY = mouse_pos[1];
 
-        // Pick the colour from the mouse position and max-pool it. 
+        // Pick the colour from the mouse position and max-pool it.
         let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;
         let color_list = {};
         for (let i = 0; i < color.length; i += 4) {
@@ -284,13 +287,13 @@ class TradespacePlot {
                 let arch = colorMap[maxcolor];
                 this.lastHoveredArch = maxcolor;
                 changesHappened = true;
-                
+
                 // Change the color of the dot temporarily
                 arch.drawingColor = this.color.mouseover;
 
                 // Remove the previous info
                 d3.select(".design_inspector > .panel-block").select("g").remove();
-                
+
                 let design_inspector = d3.select(".design_inspector > .panel-block").append("g");
 
                 // Display the current architecture info
@@ -316,7 +319,7 @@ class TradespacePlot {
                         });
                 }
 
-                PubSub.publish(ARCH_SELECTED, arch);
+                PubSub.publish(utils.ARCH_SELECTED, arch);
             }
         }
         else {
@@ -364,7 +367,7 @@ class TradespacePlot {
             this.num_selected_points = 0;
 
             selection_updated = true;
-            
+
         }
         else if (option === "remove_highlighted") {
             // Remove only highlights
@@ -382,7 +385,7 @@ class TradespacePlot {
         }
         // Tell system selection has been updated
         if (selection_updated) {
-            PubSub.publish(SELECTION_UPDATED);
+            PubSub.publish(utils.SELECTION_UPDATED);
             PubSub.publish("update_target_selection")
         }
         // Redraw the canvas
@@ -393,7 +396,7 @@ class TradespacePlot {
 
 
     toggle_selection_mode() {
-        this.change_interaction_mode(document.querySelector("input[name=\"mouse-selection\"]:checked").value);     
+        this.change_interaction_mode(document.querySelector("input[name=\"mouse-selection\"]:checked").value);
     }
 
 
@@ -471,7 +474,7 @@ class TradespacePlot {
                     }
                     if (move.y < 0) {
                         box.y = box.y0 + move.y;
-                    } 
+                    }
                     else {
                         box.y = box.y0;
                     }
@@ -485,7 +488,7 @@ class TradespacePlot {
                             let tx = that.transform.applyX(that.xMap(point));
                             let ty = that.transform.applyY(that.yMap(point));
 
-                            if( tx >= box.x && tx <= box.x + box.width && 
+                            if( tx >= box.x && tx <= box.x + box.width &&
                                 ty >= box.y && ty <= box.y + box.height)
                             {
                                 if (!point.hidden && !point.selected) {
@@ -512,7 +515,7 @@ class TradespacePlot {
                             let tx = that.transform.applyX(that.xMap(point));
                             let ty = that.transform.applyY(that.yMap(point));
 
-                            if( tx >= box.x && tx <= box.x + box.width && 
+                            if( tx >= box.x && tx <= box.x + box.width &&
                                 ty >= box.y && ty <= box.y + box.height)
                             {
                                 if (!point.hidden && point.selected) {
@@ -534,7 +537,7 @@ class TradespacePlot {
                         });
                     }
                     if (selection_updated) {
-                        PubSub.publish(SELECTION_UPDATED);
+                        PubSub.publish(utils.SELECTION_UPDATED);
                     }
                     d3.select("#num_selected_architectures").text(""+that.get_num_of_selected_archs());
                     that.drawPoints(that.context, false);
@@ -556,8 +559,8 @@ class TradespacePlot {
                 .on("mouseup.modes", select_mouseup);
         }
     }
-    
-    
+
+
     hide_selection() {
         this.data.forEach(point => {
             if (point.selected) {
@@ -587,9 +590,9 @@ class TradespacePlot {
         d3.select("#num_architectures").text(""+this.get_num_of_archs());
         d3.select("#num_selected_architectures").text(""+this.get_num_of_selected_archs());
     }
-    
+
     async update_target_selection() {
-        
+
         let selectedArchs = [];
         this.data.forEach(point => {
             if (!point.hidden && point.selected) {
@@ -612,8 +615,8 @@ class TradespacePlot {
         });
         nonSelectedArchs.forEach(arch => {
             non_selected.push(arch.id);
-        });        
-        
+        });
+
         try {
             let req_data = new FormData();
             req_data.append("selected", JSON.stringify(selected));
@@ -636,7 +639,7 @@ class TradespacePlot {
         }
         catch(e) {
             console.error("Networking error:", e);
-        }        
+        }
     }
 
 
@@ -654,7 +657,7 @@ class TradespacePlot {
         @return: the number of dots selected
     */
     get_num_of_selected_archs() {
-        return this.num_selected_points; 
+        return this.num_selected_points;
     }
 
 
@@ -669,7 +672,7 @@ class TradespacePlot {
                 num++;
             }
         });
-        return num; 
+        return num;
     }
 
 
@@ -684,6 +687,6 @@ class TradespacePlot {
                 num++;
             }
         });
-        return num; 
+        return num;
     }
 }

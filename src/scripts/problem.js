@@ -1,6 +1,4 @@
-"use strict";
-
-class Problem {
+export default class Problem {
     constructor(result_filename, input_num, output_num, input_list, output_list, output_obj, import_callback) {
         this.result_filename = result_filename; // String
         this.input_num = input_num;

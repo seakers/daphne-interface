@@ -1,4 +1,4 @@
-class Label {
+export default class Label {
     constructor() { }
 
     displayName2Index(input, type) {

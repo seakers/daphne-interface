@@ -1,19 +1,21 @@
-class FeatureApplication{
+import * as utils from './utils';
+
+export default class FeatureApplication {
     constructor(label){
-        
+
         this.label = label;
-        
+
         this.color = {"default":"#616161",
                      "logic":"#2383FF",
                      "add":"#FF7979",
                      "deactivated":"#E3E3E3",
                      "temp":"#C6F3B6"};
-        
+
         this.stashed_root = null;
         this.stashed_node_ids = null;
 
         this.tree = null;
-        this.data = null; 
+        this.data = null;
         this.i=0;
 
         this.last_modified_tree_node = null;
@@ -27,55 +29,55 @@ class FeatureApplication{
         this.draggingNode = null;
         this.selectedNode = null;
         this.dragStarted = false;
-        this.contextMenu = null;  
-        
+        this.contextMenu = null;
+
 //        this.dragListener = d3.behavior.drag()
 //                        .on('dragstart',this.dragStart)
 //                        .on('drag',this.drag)
 //                        .on('dragend',this.dragEnd);
-        
+
 //    PubSub.subscribe(CANCEL_ADD_FEATURE, (msg, data) => {
-//        
+//
 //        self.visit_nodes(self.root, function(d){
 //            // Find the node to which to add new features
 //            if(d.add){
 //                d.add=false;
 //                return d;
-//            }     
+//            }
 //        });
-//        self.update(); 
-//    }); 
-//    
-//    
-        PubSub.subscribe(INITIALIZE_FEATURE_APPLICATION, (msg, data) => {
+//        self.update();
+//    });
+//
+//
+        PubSub.subscribe(utils.INITIALIZE_FEATURE_APPLICATION, (msg, data) => {
             this.clear_feature_application()
-        });   
+        });
 
-        PubSub.subscribe(UPDATE_FEATURE_APPLICATION, (msg, data) => {
+        PubSub.subscribe(utils.UPDATE_FEATURE_APPLICATION, (msg, data) => {
             this.update_feature_application(data.option,data.expression);
-        });       
-//    
+        });
+//
 //    // Remove all features
-//    d3.select('#clear_all_features').on('click',self.clear_feature_application); 
-//        
+//    d3.select('#clear_all_features').on('click',self.clear_feature_application);
+//
 //    d3.select('#conjunctive_local_search').on('click',function(){
 //        ifeed.data_mining.run();
-//    }); 
-//    
+//    });
+//
 //    d3.select('#disjunctive_local_search').on('click',function(d){
 //        ifeed.data_mining.run("asdf");
-//    }); 
-        
-    }
-    
+//    });
 
-    
+    }
+
+
+
     draw_feature_application_tree(expression){
 
         var margin = this.margin;
         var width = this.width;
         var height = this.height;
-        
+
         this.tree = d3.tree().size([height, width]);
 
         d3.select('#feature_application_panel').select('svg').remove();
@@ -88,63 +90,63 @@ class FeatureApplication{
                     .attr('transform','translate('+ margin.left + "," + margin.top + ")");
 
         this.i=0;
-        
-        this.data = this.construct_tree(expression);         
-                
+
+        this.data = this.construct_tree(expression);
+
         let that = this;
-        
+
         this.visit_nodes(this.data,function(d){
             d.temp=true;
             d.id = that.i++;
         });
 
-        this.update();  
+        this.update();
     }
-    
-    
+
+
     update(){
-                
+
         if(this.data==null){
             d3.selectAll('.node').remove();
             d3.selectAll('.link').remove();
             //PubSub.publish(APPLY_FEATURE_EXPRESSION, null);
             return;
-        }    
+        }
         //this.check_tree_structure();
-                
+
         //PubSub.publish(APPLY_FEATURE_EXPRESSION, self.parse_tree(self.root));
-        
+
         let duration = d3.event && d3.event.altKey ? 5000 : 500;
         let margin = this.margin;
-        
-        let root = d3.hierarchy(this.data, function(d) { return d.children; });        
+
+        let root = d3.hierarchy(this.data, function(d) { return d.children; });
         root.x0 = this.height / 2;
-        root.y0 = 0;           
-        
+        root.y0 = 0;
+
         let treeStructure = this.tree(root);
-        
+
         // Compute the new tree layout.
         var nodes = treeStructure.descendants();
         var links = treeStructure.descendants().slice(1);
-        
+
         // Normalize for fixed-depth.
         nodes.forEach(function(d) { d.y = d.depth * 180; });
-        
+
         var svg = d3.select('#feature_application_panel')
                         .select('svg').select('g');
-        
+
         var diagonal = this.diagonal;
-                
-        var that = this;                
+
+        var that = this;
 
         // Update the nodes…
         var node = svg.selectAll("g.node")
                         .data(nodes, function(d) {return d.id || (d.id = d.data.id); });
-        
+
         // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
-            .attr("transform", function(d) { 
+            .attr("transform", function(d) {
                 //return 'translate(' + (root.y0 + margin.top) + ',' + (root.x0 + margin.left) + ')';
                 if(d.depth==0) return "translate(" + d.y0 + "," + d.x0 + ")";
                 else return "translate(" + d.parent.y0+ "," + d.parent.x0 + ")";
@@ -160,7 +162,7 @@ class FeatureApplication{
             .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
             //.text(function(d){d.name})
             .style("fill-opacity", 1e-6);
-        
+
         nodeEnter.filter(function(d){
                 if(d.data.type=="leaf"){return false};
                 return true;
@@ -172,22 +174,22 @@ class FeatureApplication{
             .style('fill','red')
             .attr('pointer-events','mouseover')
             .on('mouseover',function(d){
-                that.selectedNode=d;  
+                that.selectedNode=d;
             })
             .on('mouseout',function(d){
                 that.selectedNode=null;
             });
-        
+
         // Transition nodes to their new position.
         var nodeUpdate = nodeEnter.merge(node);
-        
+
         nodeUpdate.transition()
             .duration(duration)
             .attr("transform", function(d) { return "translate(" + d.y+ "," + d.x + ")"; });
-        
+
         nodeUpdate.select("circle")
             .attr("r", 9.5)
-            .style("fill", function(d) { 
+            .style("fill", function(d) {
                 if(d.data.deactivated){
                     return that.color.deactivated;
                 }else if(d.data.temp){
@@ -211,7 +213,7 @@ class FeatureApplication{
                 if(d.children){ return -10; }
                 else{ return 10; }
             })
-            .attr("text-anchor", function(d) { 
+            .attr("text-anchor", function(d) {
                 if(d.children){ return "end"; }
                 else{ return "start"; }
             })
@@ -226,16 +228,16 @@ class FeatureApplication{
                 }
             })
             .style("font-size",23)
-            .style("fill-opacity", 1);        
+            .style("fill-opacity", 1);
 
         // Transition exiting nodes to the parent's new position.
         var nodeExit = node.exit().transition()
             .duration(duration)
-            .attr("transform", function(d) { 
+            .attr("transform", function(d) {
                 if(d.depth==0) return "translate(" + d.y + "," + d.x + ")";
-                else return "translate(" + d.parent.y + "," + d.parent.x + ")";                
+                else return "translate(" + d.parent.y + "," + d.parent.x + ")";
             })
-            .remove();          
+            .remove();
 
         nodeExit.select("circle")
             .attr("r", 1e-6);
@@ -243,7 +245,7 @@ class FeatureApplication{
         nodeExit.select("text")
             .style("fill-opacity", 1e-6);
 
-        
+
         // Update the links…
         var link = svg.selectAll("path.link")
             .data(links, function(d){
@@ -262,9 +264,9 @@ class FeatureApplication{
                 })
             .style("fill-opacity", 0.94)
             .style('fill','none');
-        
+
         var linkUpdate = linkEnter.merge(link);
-        
+
         linkUpdate.transition()
             .duration(duration)
             .attr("d", function(d) {
@@ -274,7 +276,7 @@ class FeatureApplication{
                 if(d.data.deactivated){
                     return that.color.deactivated;
                 }else if(d.data.temp){
-                    return that.color.temp; 
+                    return that.color.temp;
                 }else{
                     return that.color.default;
                 }
@@ -297,7 +299,7 @@ class FeatureApplication{
                 that.last_modified_tree_node=d;
             }
 
-        });    
+        });
 
         // TODO: Implement drag listener
 //        d3.selectAll('.treeNode')
@@ -305,40 +307,40 @@ class FeatureApplication{
 
         // TODO: Implement context menu
 //        d3.selectAll('.treeNode')
-//            .on('contextmenu', function(d){ 
-//            
+//            .on('contextmenu', function(d){
+//
 //                d3.event.preventDefault();
-//                var coord = d3.mouse($('#feature_application_panel > svg > g').get(0)); 
+//                var coord = d3.mouse($('#feature_application_panel > svg > g').get(0));
 //                var context = d.type;
-//            
+//
 //                if(!that.contextMenu){
 //                    that.contextMenu = new ContextMenu();
 //                }
-//                
+//
 //                self.contextMenu.showMenu(d, coord);
-//            
+//
 //            });
 
-        
+
         // Highlight the node in which to add new features
 //        d3.selectAll('.treeNode')[0].forEach(function(d){
 //            if(d.__data__.add){
 //               d3.select(d).select('circle').style('fill',that.color.add);
 //            }
-//        });    
+//        });
 
         //self.update_feature_expression(self.parse_tree(self.root));
     }
-        
-    
-    
+
+
+
     dragStart(d){
-        
+
         // Dragging disabled in the root node
         if(d==this.data){return;}
         if(d3.event.sourceEvent.which != 1){return;}
 
-        this.dragStarted=true;    
+        this.dragStarted=true;
 
         d3.event.sourceEvent.stopPropagation();
 
@@ -351,7 +353,7 @@ class FeatureApplication{
                 return true;
             }else{
                 return false;
-            }        
+            }
         }).remove();
 
         d3.selectAll('.nodeRange').filter(function(d){
@@ -379,11 +381,11 @@ class FeatureApplication{
 
     drag(d){
 
-        if(this.dragStarted){        
-            var coord = d3.mouse($('#feature_application_panel > svg > g').get(0));   
+        if(this.dragStarted){
+            var coord = d3.mouse($('#feature_application_panel > svg > g').get(0));
 
             d.x0 += coord[0];
-            d.y0 += coord[1];        
+            d.y0 += coord[1];
 
             var node = d3.select(this);
             node.attr("transform","translate("+ coord[0] + "," + coord[1] + ")");
@@ -391,7 +393,7 @@ class FeatureApplication{
             var target = {};
             target.x = coord[0];
             target.y = coord[1];
-            this.updateTempConnector(target);            
+            this.updateTempConnector(target);
         }
 
     }
@@ -405,7 +407,7 @@ class FeatureApplication{
 
             d3.select(this).attr('pointer-events', '');
 
-            d3.selectAll(".tempTreeLink").remove();  
+            d3.selectAll(".tempTreeLink").remove();
 
 
             if(this.selectedNode){
@@ -422,14 +424,14 @@ class FeatureApplication{
                     this.selectedNode.children.push(this.draggingNode);
                 }
             }else{
-                //console.log('selectedNode undefined');            
+                //console.log('selectedNode undefined');
             }
 
             this.update();
-            
+
             PubSub.publish(ADD_FEATURE, this.parse_tree(this.data));
-            //this.update_feature_expression(this.parse_tree(this.data));            
-            //ifeed.data_mining.draw_venn_diagram();  
+            //this.update_feature_expression(this.parse_tree(this.data));
+            //ifeed.data_mining.draw_venn_diagram();
 
             this.dragStarted= false;
             this.draggingNode=null;
@@ -442,7 +444,7 @@ class FeatureApplication{
 
         if(self.root==null){
             return;
-        }   
+        }
 
         var delete_logic_node_without_children = function(node){
 
@@ -460,16 +462,16 @@ class FeatureApplication{
                         node.parent.children.splice(index, 1);
                     }
                 }
-            }        
+            }
         }
 
         var remove_redundant_logical_connectives = function(node){
 
             if(!node){
-                return;      
-                
+                return;
+
             }else if(node.type=="logic" && node.parent){
-                
+
                 if(node.name==node.parent.name){
 
                     var children = node.children;
@@ -504,7 +506,7 @@ class FeatureApplication{
                     var this_feature = children[i];
 
                     if(list_of_features.indexOf(this_feature.name)==-1){
-                        list_of_features.push(this_feature.name);                    
+                        list_of_features.push(this_feature.name);
                     }else{
                         indices_to_delete.push(i);
                     }
@@ -522,22 +524,22 @@ class FeatureApplication{
 
         that.visit_nodes(self.root, delete_logic_node_without_children);
         that.visit_nodes(self.root, remove_redundant_logical_connectives);
-        that.visit_nodes(self.root, remove_redundant_features); 
-        
+        that.visit_nodes(self.root, remove_redundant_features);
+
     }
 
- 
+
     visit_nodes(source,func,reverse){
         var re;
         if(typeof func != 'undefined'){
             re = func(source);
             // If func is a function that returns something, stop traversing tree and return. Otherwise, apply func and keep traversing the tree
-            if(re) return re; 
+            if(re) return re;
         }
         if(reverse){
             if(source.parent){
                 re = this.visit_nodes(source.parent,func,true);
-                if(re) return re;  
+                if(re) return re;
             }
         }else{
             if(source){
@@ -545,15 +547,15 @@ class FeatureApplication{
                     for(var i=0;i<source.children.length;i++){
                         re = this.visit_nodes(source.children[i],func)
                         if(re) return re;
-                    }   
-                }  
+                    }
+                }
             }
         }
         return null;
     }
-    
+
     update_feature_application(option,expression){
-        
+
         var get_node_to_add_features = function(d){
             // Find the node to which to add new features
             if(d.add){
@@ -564,19 +566,19 @@ class FeatureApplication{
         }
 
         var direct_update = false;
-        
+
         if(option=='direct-update'){ // Make the direct update to the feature application status
             option='temp';
             direct_update = true;
         }
-        
+
         let that = this;
-                
+
         if(option=='temp'){
             // Mouseover on the feature plot
 
             var parentNode = null;
-            
+
             if(this.data){
                 // There already exists a tree: Find the node to add new features and append children temporarily
                 parentNode = this.visit_nodes(this.data, get_node_to_add_features)
@@ -589,23 +591,23 @@ class FeatureApplication{
 
                     // Construct a subtree and append it as a child to the parent node
                     var subtree = this.construct_tree(expression,parentNode.depth+1);
-                    
+
                     if(!direct_update){
                         this.visit_nodes(subtree,function(d){
                             d.temp=true;
                             d.id = that.i++;
-                        })                        
+                        })
                     }
 
                     // Add to the parent node
-                    parentNode.children.push(subtree); 
-                    
-                    this.update();  
-                }else{    
+                    parentNode.children.push(subtree);
+
+                    this.update();
+                }else{
                     // No parentNode
 
-                    // Stash the current root 
-                    this.stashed_root = this.construct_tree(this.parse_tree(this.data));  
+                    // Stash the current root
+                    this.stashed_root = this.construct_tree(this.parse_tree(this.data));
 
                     // Re-draw the whole tree
                     this.draw_feature_application_tree(expression);
@@ -617,23 +619,23 @@ class FeatureApplication{
                 this.stashed_root = {};
                 this.draw_feature_application_tree(expression)
             }
-            
-            
+
+
             if(direct_update){ // Make a direct update to the feature application status; not temporary
                 // Remove the stashed information
-                
+
                 this.stashed_node_ids = null;
-                this.stashed_root = null;    
-                
+                this.stashed_root = null;
+
                 //PubSub.publish(ADD_FEATURE, self.parse_tree(self.root));
                 //PubSub.publish(CANCEL_ADD_FEATURE, null);
             }
-            
+
 
         }else if(option=='restore'){
             // Restore the stashed tree
 
-            if(this.stashed_root != null && this.stashed_node_ids != null){ 
+            if(this.stashed_root != null && this.stashed_node_ids != null){
 
                 if(jQuery.isEmptyObject(this.stashed_root) && this.stashed_node_ids.length==0){
                     // There was no tree before
@@ -641,18 +643,18 @@ class FeatureApplication{
                 }
 
             }else if(this.stashed_root != null){
-                
+
                 // The whole tree is stashed
-                this.data = this.stashed_root;  
+                this.data = this.stashed_root;
 
             }else if(this.stashed_node_ids != null){
                 // Tree has been modified by the temporary update
-                // Visit each node, and if node.indexOf(id)==-1, remove the index        
+                // Visit each node, and if node.indexOf(id)==-1, remove the index
 
                 var parentNode = null;
                 indices = [];
 
-                this.visit_nodes(this.data,function(d){  
+                this.visit_nodes(this.data,function(d){
                     if(this.stashed_node_ids.indexOf(d.id)==-1){
                         parentNode = d.parent;
                         var index = d.parent.children.indexOf(d);
@@ -689,16 +691,16 @@ class FeatureApplication{
             this.visit_nodes(this.data,function(d){
                 d.temp=false;
             })
-            
+
 //            PubSub.publish(ADD_FEATURE, self.parse_tree(self.root));
 //            PubSub.publish(CANCEL_ADD_FEATURE, null);
         }
-        
+
 
         //this.update_feature_expression(this.parse_tree(this.data));
-        //ifeed.data_mining.draw_venn_diagram();   
+        //ifeed.data_mining.draw_venn_diagram();
     }
-    
+
     get_node_ids(source,IDList){
 
         if(!source){
@@ -717,9 +719,9 @@ class FeatureApplication{
         }
         return IDList;
     }
-    
 
-    
+
+
     remove_descendants(nodeID){
 
         var childrenNodeID = [];
@@ -730,7 +732,7 @@ class FeatureApplication{
                 return true;
             }else{
                 return false;
-            }        
+            }
         }).remove();
 
         if(childrenNodeID.length==0){
@@ -780,7 +782,7 @@ class FeatureApplication{
         }else{
             // Hide the nested structure by replacing whatever's inside parentheses with special characters (currently using X's).
             _e = collapse_paren_into_symbol(e);
-        }    
+        }
 
         var first = true;
         var logic = null;
@@ -803,7 +805,7 @@ class FeatureApplication{
                 }else{
                     logic = "||";
                     name="OR";
-                }            
+                }
                 thisNode = {depth:d,type:"logic",name:name,children:[]};
 
             }else{
@@ -829,20 +831,20 @@ class FeatureApplication{
 
                 // Get the rest of the expression for the next loop
                 _e = _e.substring(_temp.length);
-                e = e.substring(temp.length);            
+                e = e.substring(temp.length);
             }
 
         }
         return thisNode;
     }
-    
+
     parse_tree(root, placeholderNode){
 
         function deactivated(node){
             // Check if all of the children nodes have been deactivated. If so, then the current node is also deactivated
             if(node.deactivated){
                 return true;
-                
+
             }else{
                 if(node.children){
 
@@ -863,13 +865,13 @@ class FeatureApplication{
             }
             return false;
         }
-        
-        
+
+
 
         var expression = null;
 
         if(!root){
-            // If the current node is null, return null    
+            // If the current node is null, return null
             expression = null;
 
         }else if(root.type=="leaf"){
@@ -877,29 +879,29 @@ class FeatureApplication{
 
             if(deactivated(root)){
                 expression="";
-                
+
             }else{
-                
+
                 if(placeholderNode){
                     // If placeholder exists
-                    if(placeholderNode==root.parent && root.parent.children.indexOf(root)==0){ 
+                    if(placeholderNode==root.parent && root.parent.children.indexOf(root)==0){
                         // If the current node is the first child of the placeholderNode
-                        
+
                         if(root.parent.name=="AND"){
                             expression="{PLACEHOLDER}&&"+root.name;
                         }else{
                             expression="{PLACEHOLDER}||"+root.name;
-                        }                        
-                                                
+                        }
+
                     }else if(placeholderNode==root){ // If the current node is the placeholderNode itself
-                        
+
                         if(root.parent.name=="AND"){
                             // When a leaf node is set as a placeholderNode, change the logical connective
                             expression="({PLACEHOLDER}||"+root.name + ")";
                         }else{
                             expression="({PLACEHOLDER}&&"+root.name + ")";
-                        } 
-                        
+                        }
+
                     }else{
                         // If the current node has nothing to do with the placeholder
                         expression=root.name;
@@ -934,17 +936,17 @@ class FeatureApplication{
                 if(expression!="" && new_expression!=""){
                     expression = expression + logic;
                 }
-                expression = expression + new_expression;    
+                expression = expression + new_expression;
             }
 
             if(expression!=""){
-                expression = "(" + expression + ")"; 
+                expression = "(" + expression + ")";
             }
         }
-        
+
         return expression;
-    }    
-  
+    }
+
     updateTempConnector(target){
 
         var data = [];
@@ -975,7 +977,7 @@ class FeatureApplication{
             .style('stroke-width','3px');
 
         link.attr("d", d3.svg.diagonal());
-        link.exit().remove();  
+        link.exit().remove();
     }
 
 
@@ -987,7 +989,7 @@ class FeatureApplication{
 //        var bracket_color = "#FF0000";
 //
 //        if(expression==null){
-//            
+//
 //            expression=="";
 //
 //        }else if(expression != ""){
@@ -1004,19 +1006,19 @@ class FeatureApplication{
 //
 //        d3.select('#feature_expression').html("<p>"+expression+"</p>");
 //    }
-    
-    
+
+
     clear_feature_application(){
-        
+
         this.data = null;
         this.update();
-        
+
         //this.update_feature_expression(null);
         //PubSub.publish(ADD_FEATURE, null);
-        //ifeed.data_mining.draw_venn_diagram(); 
+        //ifeed.data_mining.draw_venn_diagram();
     }
-    
-    
+
+
     diagonal(s, d) {
         let path = `M ${s.y} ${s.x}
                 C ${(s.y + d.y) / 2} ${s.x},
@@ -1024,9 +1026,9 @@ class FeatureApplication{
                   ${d.y} ${d.x}`;
         return path
     }
-    
-    
-    
 
-    
+
+
+
+
 }

@@ -1,6 +1,7 @@
-"use strict";
+let PubSub = require('pubsub-js');
+let $ = require('jquery');
 
-class CheatsheetManager {
+export default class CheatsheetManager {
     constructor() {
         // Set the listener for when a new cheatsheet is added
         PubSub.subscribe("cheatsheet_added", (topic, id) => {

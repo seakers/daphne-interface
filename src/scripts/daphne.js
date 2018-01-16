@@ -1,6 +1,19 @@
-"use strict";
+import * as utils from './utils';
+let PubSub = require('pubsub-js');
+let $ = require('jquery');
+let annyang = require('annyang');
+let SpeechKITT = window.SpeechKITT;
+let responsiveVoice = window.responsiveVoice;
 
-class Daphne {
+// Import templates
+import cheatsheet from '../data/functionalities/cheatsheet.html';
+import daphne_answer from '../data/functionalities/daphne_answer.html';
+import data_mining from '../data/functionalities/data_mining.html';
+import design_inspector from '../data/functionalities/design_inspector.html';
+import feature_application from '../data/functionalities/feature_application.html';
+import filter from '../data/functionalities/filter.html';
+
+export default class Daphne {
     constructor() {
         this.data = null; // Array containing the imported data
 
@@ -38,7 +51,7 @@ class Daphne {
             selection_changed: true
         };
 
-        PubSub.subscribe(DATA_PROCESSED, (msg, data) => {
+        PubSub.subscribe(utils.DATA_PROCESSED, (msg, data) => {
             this.data = data;
         });
 
@@ -201,7 +214,7 @@ class Daphne {
                     console.log("Data preprocessing not defined.");
                 }
 
-                PubSub.publish(DATA_UPDATED, this.data);
+                PubSub.publish(utils.DATA_UPDATED, this.data);
             }
             else {
                 console.error("Error accessing the data.");
@@ -238,7 +251,7 @@ class Daphne {
                     if (i === j) {
                         continue;
                     }
-                    else if (dominates(archs[j].outputs, this_arch.outputs, this.problem.output_obj)){
+                    else if (utils.dominates(archs[j].outputs, this_arch.outputs, this.problem.output_obj)){
                         non_dominated = false;
                     }
                 }
@@ -350,37 +363,3 @@ class Daphne {
         }
     }
 }
-
-
-
-    let daphne = new Daphne();
-
-(async function () {
-
-    // General Code
-    daphne.problem = new EOSS(daphne);
-    daphne.label = new EOSSLabel(daphne.problem);
-    daphne.tradespacePlot = new TradespacePlot(daphne.problem.output_list);
-    daphne.dataMining = new DataMining(daphne.tradespacePlot, daphne.label);
-    daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
-    daphne.featureApplication = new FeatureApplication(daphne.label);
-    daphne.cheatsheetManager = new CheatsheetManager();
-
-    daphne.import_new_data().then(() => {
-        daphne.calculate_pareto_ranking();
-    });
-
-    let sortable_list = document.getElementById('functionalities_list');
-    Sortable.create(sortable_list, {
-        handle: '.panel-heading',
-        animation: 150
-    });
-
-    await daphne.addNewFunctionality("design_inspector");
-    //await daphne.addNewFunctionality("daphne_answer");
-    //await daphne.addNewFunctionality("filter");
-    await daphne.addNewFunctionality("feature_application");
-    await daphne.addNewFunctionality("data_mining");
-
-
-} ());

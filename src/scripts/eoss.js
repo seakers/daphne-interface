@@ -1,14 +1,17 @@
-"use strict";
+import Problem from './problem';
+import * as utils from './utils';
+
+let PubSub = require('pubsub-js');
 
 class Architecture {
     constructor(id, inputs, outputs) {
         this.id = id;
         this.inputs = inputs;
-        this.outputs = outputs; 
+        this.outputs = outputs;
     }
 }
 
-class EOSS extends Problem {
+export default class EOSS extends Problem {
     constructor(context) {
         // Set the problem instance
         super(
@@ -22,11 +25,11 @@ class EOSS extends Problem {
                 [this.orbit_list, this.instrument_list] = await Promise.all([this.get_orbit_list(), this.get_instrument_list()]);
                 this.orbit_num = this.orbit_list.length;
                 this.instrument_num = this.instrument_list.length;
-                PubSub.publishSync(DATA_PROCESSED, this.preprocessing(data));
+                PubSub.publishSync(utils.DATA_PROCESSED, this.preprocessing(data));
             }
         );
 
-        // Initialize the member attributes 
+        // Initialize the member attributes
         this.orbit_list = [];
         this.instrument_list = [];
         this.orbit_num = null;
@@ -34,7 +37,7 @@ class EOSS extends Problem {
 
         this.context = context;
 
-        PubSub.subscribe(ARCH_SELECTED, (msg, arch) => {
+        PubSub.subscribe(utils.ARCH_SELECTED, (msg, arch) => {
             this.display_arch_info(arch);
         });
     }
@@ -57,7 +60,7 @@ class EOSS extends Problem {
             console.error("Networking error:", e);
         }
     }
-    
+
 
     /*
     Returns the list of instruments
@@ -77,8 +80,8 @@ class EOSS extends Problem {
             console.error("Networking error:", e);
         }
     }
-    
-    
+
+
     booleanArray2String(boolArray) {
         let bitString = "";
         for (let i = 0; i < boolArray.length; i++) {
@@ -106,8 +109,8 @@ class EOSS extends Problem {
         }
         return boolArray;
     }
-    
-    
+
+
     preprocessing(data) {
         let output = [];
         data.forEach(d => {
@@ -121,12 +124,12 @@ class EOSS extends Problem {
             let outputs = d.outputs;
             let inputs = d.inputs;
             let id = +d.id;
-            
+
             let arch = new Architecture(id, inputs, outputs);
 
             output.push(arch);
         });
-        
+
         return output;
     }
 
@@ -134,11 +137,11 @@ class EOSS extends Problem {
     display_arch_info(data) {
         let bitString = this.booleanArray2String(data.inputs);
         let json_arch = [];
-        
+
         for (let i = 0; i < this.orbit_num; i++) {
             let orbit = this.orbit_list[i];
             let assigned = [];
-            
+
             for (let j = 0; j < this.instrument_num; j++) {
                 if (bitString[i*this.instrument_num + j] == '1') {
                     let instrument = this.instrument_list[j];
@@ -148,9 +151,9 @@ class EOSS extends Problem {
             }
             // Store the name of the orbit and the assigned instruments
             json_arch.push({ "orbit": orbit, "children": assigned });
-        }        
-    
-        
+        }
+
+
         let norb = json_arch.length;
         let maxNInst = 0;
         let totalNInst = 0;
@@ -172,7 +175,7 @@ class EOSS extends Problem {
 
         let columns = [];
         columns.push({ columnName: "orbit" });
-        
+
         for (let i = 0; i < maxNInst; i++) {
             let tmp = i + 1;
             columns.push({ columnName: "Inst " + tmp });
@@ -220,7 +223,7 @@ class EOSS extends Problem {
                 }
                 return thisRow;
             });
-        
+
         rows_cells.enter()
             .append("td")
             .attr("name", d => d.content)

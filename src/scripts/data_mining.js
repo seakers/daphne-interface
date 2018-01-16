@@ -1,26 +1,28 @@
-class DataMining {
+import * as utils from './utils';
+
+export default class DataMining {
     constructor(tradespace_plot, label) {
         this.tradespace_plot = tradespace_plot;
         this.label = label;
 
         this.support_threshold = 0.002;
         this.confidence_threshold = 0.2;
-        this.lift_threshold = 1;  
-        
+        this.lift_threshold = 1;
+
         this.all_features = [];
         this.mined_features = [];
         this.added_features = [];
-        
+
         this.margin = { top: 20, right: 20, bottom: 30, left: 40 };
         this.width = 770 - 35 - this.margin.left - this.margin.right;
         this.height = 333 - this.margin.top - this.margin.bottom;
-        
+
         this.df_i = 0;
-        
+
         this.current_feature = { id: null, name: null, expression: null, metrics: null, added: "0", x0: -1, y0: -1, x: -1, y: -1 };
         this.current_feature_blink_interval = null;
         this.utopia_point = { id: null, name: "utopiaPoint", expression: null, metrics: null, x0: -1, y0: -1, x: -1, y: -1 };
-        
+
         let coloursRainbow = ["#2c7bb6", "#00a6ca", "#00ccbc", "#90eb9d", "#ffff8c", "#f9d057", "#f29e2e", "#e76818", "#d7191c"];
         let colourRangeRainbow = d3.range(0, 1, 1.0 / (coloursRainbow.length - 1));
         colourRangeRainbow.push(1);
@@ -35,7 +37,7 @@ class DataMining {
         this.colorInterpolateRainbow = d3.scaleLinear()
             .domain(d3.extent([]))
             .range([0,1]);
-        
+
         this.xScale = null;
         this.yScale = null;
         this.xAxis = null;
@@ -45,16 +47,16 @@ class DataMining {
             d3.selectAll("#run_data_mining").on("click", () => { this.run(); });
         });
 
-        PubSub.subscribe(SELECTION_UPDATED, (msg) => {
+        PubSub.subscribe(utils.SELECTION_UPDATED, (msg) => {
             this.reset();
         });
-        
+
     }
 
 
     reset() {
         d3.select(".data_mining > .panel-block").select("g").remove();
-        
+
         let guideline = d3.select(".data_mining > .panel-block")
             .append("g");
 
@@ -64,18 +66,18 @@ class DataMining {
         guideline.append("div")
             .classed("field", true)
             .append("div")
-                .classed("control", true)
-                .append("a")
-                    .classed("button is-info", true)
-                    .attr("id","run_data_mining")
-                    .text("Run data mining");
+            .classed("control", true)
+            .append("a")
+            .classed("button is-info", true)
+            .attr("id","run_data_mining")
+            .text("Run data mining");
 
         PubSub.publish("data_mining_added");
     }
 
 
     async run() {
-                
+
         // Remove all highlights in the scatter plot (retain target solutions)
         this.tradespace_plot.cancel_selection("remove_highlighted");
 
@@ -98,7 +100,7 @@ class DataMining {
         if (numOfSelectedArchs == 0) {
             alert("First select target solutions!");
         }
-        else {        
+        else {
             // Store the id's of all dots
             let selected = [];
             let non_selected = [];
@@ -114,11 +116,11 @@ class DataMining {
                 this.confidence_threshold, this.lift_threshold);
 
             this.all_features = this.mined_features;
-            
+
             if (this.all_features.length === 0) {
                 return;
             }
-            
+
             this.display_features();
         }
     }
@@ -230,16 +232,16 @@ class DataMining {
         let conf1s = [];
         let conf2s = [];
 
-        let scores = [];   
+        let scores = [];
         let maxScore = -1;
 
-        
+
         for (let i = 0; i < this.all_features.length; i++) {
             supps.push(this.all_features[i].metrics[0]);
             lifts.push(this.all_features[i].metrics[1]);
             conf1s.push(this.all_features[i].metrics[2]);
             conf2s.push(this.all_features[i].metrics[3]);
-            
+
             let score = 1 - Math.sqrt(Math.pow(1 - conf1s[i], 2) + Math.pow(1 - conf2s[i], 2));
             scores.push(score);
 
@@ -248,7 +250,7 @@ class DataMining {
             }
         }
 
-        
+
         // Add utopia point to the list
         let max_conf1 = Math.max.apply(null, conf1s);
         let max_conf2 = Math.max.apply(null, conf2s);
@@ -261,9 +263,9 @@ class DataMining {
         this.all_features.splice(0, 0, this.utopia_point);
 
         // Add score for the utopia point (0.2 more than the best score found so far)
-        scores.splice(0, 0, Math.max.apply(null, scores) + 0.2); 
+        scores.splice(0, 0, Math.max.apply(null, scores) + 0.2);
 
-        
+
         // Set the axis to be Conf(F->S) and Conf(S->F)
         let x = 2;
         let y = 3;
@@ -271,16 +273,16 @@ class DataMining {
         // setup x
         // data -> value
         let xValue = d => d.metrics[x];
-        
+
         // value -> display
         let xScale = d3.scaleLinear().range([0, this.width]);
 
-        // don't want dots overlapping axis, so add in buffer to data domain 
+        // don't want dots overlapping axis, so add in buffer to data domain
         let xBuffer = (d3.max(this.all_features, xValue) - d3.min(this.all_features, xValue)) * 0.05;
         xScale.domain([d3.min(this.all_features, xValue) - xBuffer, d3.max(this.all_features, xValue) + xBuffer]);
-        
+
         // data -> display
-        let xMap = d => xScale(xValue(d)); 
+        let xMap = d => xScale(xValue(d));
         let xAxis = d3.axisBottom(xScale);
 
         // setup y
@@ -295,7 +297,7 @@ class DataMining {
         yScale.domain([d3.min(this.all_features, yValue) - yBuffer, d3.max(this.all_features, yValue) + yBuffer]);
 
         // data -> display
-        let yMap = d => yScale(yValue(d)); 
+        let yMap = d => yScale(yValue(d));
         let yAxis = d3.axisLeft(yScale);
 
         // Set the new locations of all the features
@@ -308,7 +310,7 @@ class DataMining {
                 this.all_features[i].y0 = this.all_features[i].y;
             }
         }
-        
+
         this.xScale = xScale;
         this.yScale = yScale;
         this.xAxis = xAxis;
@@ -390,7 +392,7 @@ class DataMining {
             .attr("class", "axis axis-x")
             .attr("transform", "translate(0, " + this.height + ")")
             .call(xAxis);
-            
+
         svg.append("text")
             .attr("transform", "translate(" + this.width + ", " + this.height + ")")
             .attr("class", "label")
@@ -402,7 +404,7 @@ class DataMining {
         let gY = svg.append("g")
             .attr("class", "axis axis-y")
             .call(yAxis);
-        
+
         svg.append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
@@ -429,7 +431,7 @@ class DataMining {
 
         if (this.current_feature_blink_interval != null) {
             clearInterval(this.current_feature_blink_interval);
-            
+
             objects.filter(d => {
                 if (d.added === "1") {
                    return true;
@@ -456,12 +458,12 @@ class DataMining {
             .duration(duration)
             .attr("transform", d => {
                 return "translate(" + d.x + "," + d.y + ")";
-            }); 
+            });
     }
 
 
     feature_mouseover(d) {
-        let id = d.id; 
+        let id = d.id;
         let expression = d.expression;
         let metrics = d.metrics;
         let conf = d.metrics[2];
@@ -516,11 +518,11 @@ class DataMining {
             .attr("y", () => mouseLoc_y + tooltip_location.y)
             .attr("width", tooltip_width)
             .attr("height", tooltip_height)
-            .data([ { id: id, expression: expression, metrics: metrics } ]) 
+            .data([ { id: id, expression: expression, metrics: metrics } ])
             .html(d => {
-                let output = "" + this.label.pp_feature(d.expression) + "<br><br> lift: " + round_num(d.metrics[1]) + 
-                "<br> Support: " + round_num(d.metrics[0]) + 
-                "<br> Confidence(F->S): " + round_num(d.metrics[2]) + 
+                let output = "" + this.label.pp_feature(d.expression) + "<br><br> lift: " + round_num(d.metrics[1]) +
+                "<br> Support: " + round_num(d.metrics[0]) +
+                "<br> Confidence(F->S): " + round_num(d.metrics[2]) +
                 "<br> Confidence(S->F): " + round_num(d.metrics[3]);
                 return output;
             })
@@ -533,9 +535,9 @@ class DataMining {
         // TODO: Update filter and feature_application through PubSub
         PubSub.publish(UPDATE_FEATURE_APPLICATION,{"option":"temp","expression":expression});
         PubSub.publish(APPLY_FILTER,expression);
-        
+
         //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
-        //this.draw_venn_diagram(); 
+        //this.draw_venn_diagram();
     }
 
 
@@ -559,13 +561,13 @@ class DataMining {
 
     async draw_venn_diagram(){
         let venn_diagram_container = d3.select("#venn_diagram");
-        
+
         if (venn_diagram_container.node() == null) {
             return;
         }
 
         venn_diagram_container.select("svg").remove();
-        
+
         let svg = venn_diagram_container
             .append("svg")
             .style("width", "300px")
@@ -575,15 +577,15 @@ class DataMining {
             .style("border-color", "black")
             .style("border-radius", "40px")
             .style("margin-top", "10px")
-            .style("margin-bottom", "10px"); 
+            .style("margin-bottom", "10px");
 
-        
+
         let total = this.tradespace_plot.get_num_of_archs();
         let intersection = this.tradespace_plot.get_num_of_intersected_archs();
         let selected = this.tradespace_plot.get_num_of_selected_archs();
         let highlighted = this.tradespace_plot.get_num_of_highlighted_archs();
 
-        
+
         let left_margin = 50;
         let c1x = 110;
         // Selection has a fixed radius
@@ -608,7 +610,7 @@ class DataMining {
             .attr("font-size","18px")
             .attr("fill","steelblue")
             .text("Selected:" + S_size );
-        
+
 
         if (intersection == 0) {
             supp = 0;
@@ -626,13 +628,13 @@ class DataMining {
             supp = p_snf;
             conf = supp / p_f;
             conf2 = supp / p_s;
-            lift = p_snf/(p_f*p_s); 
+            lift = p_snf/(p_f*p_s);
 
             F_size = supp * 1/conf * total;
             S_size = supp * 1/conf2 * total;
 
 
-            // Feature 
+            // Feature
             let r2 = Math.sqrt(F_size/S_size)*r1;
             let a1 = Math.PI * Math.pow(r1,2);
             let a2 = Math.PI * Math.pow(r2,2);
@@ -719,21 +721,21 @@ class DataMining {
             }
             return null;
         }
-        
-        
+
+
         ifeed.filter.apply_filter_expression(expression);
-        
+
 
         if(!expression || expression==""){
 
             // Assign new indices for the added features
             for(var i=0;i<self.added_features.length;i++){
                 self.all_features[self.all_features.length-self.added_features.length+i].added = ""+self.added_features.length-i + 1;
-            }        
-            
+            }
+
             self.update_feature_plot([self.current_feature],false);
 
-        }else{        
+        }else{
 
             // Compute the metrics of a feature
             var total = ifeed.main_plot.get_num_of_archs();
@@ -748,7 +750,7 @@ class DataMining {
             var supp = p_snf;
             var conf = supp / p_f;
             var conf2 = supp / p_s;
-            var lift = p_snf/(p_f*p_s); 
+            var lift = p_snf/(p_f*p_s);
             var metrics = [supp, lift, conf, conf2];
 
             // Stash the previous location
@@ -759,11 +761,11 @@ class DataMining {
             self.current_feature = {id:df_i++,name:expression,expression:expression,metrics:metrics,added:"0",x0:x,x:x,y0:y,y:y};
 
             // Check if there exists a feature whose metrics match with the current feature's metrics
-            var matched = find_equivalent_feature(metrics,[2,3]);       
+            var matched = find_equivalent_feature(metrics,[2,3]);
 
             // Add new feature to the list of added features
             self.added_features.push(self.current_feature);
-            self.all_features.push(self.current_feature);  
+            self.all_features.push(self.current_feature);
 
             // Stash the previous locations of all features
             for(var i=0;i<self.all_features.length;i++){
@@ -777,11 +779,11 @@ class DataMining {
             }
 
             document.getElementById('tab3').click();
-            
+
             ifeed.main_plot.highlight_support_panel();
 
             // Display the driving features with newly added feature
-            if(matched){ 
+            if(matched){
                 self.update_feature_plot([self.current_feature],true);
             }else{
                 self.update_feature_plot([self.current_feature],false);

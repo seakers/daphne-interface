@@ -23,9 +23,16 @@ module.exports = {
     module: {
         rules: [
             // script-loader with 'env' preset
-            { test: /\.js$/, include: /src/, exclude: /node_modules/, use: { loader: "script-loader" } },
+            {
+                test: /\.js$/,
+                include: /src/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
+                }
+            },
             // html-loader
-            { test: /\.html$/, use: ['html-loader'] },
+            { test: /\.html$/, exclude: /src\/data/, use: ['html-loader'] },
             // sass-loader with sourceMap activated
             {
                 test: /\.scss$/,
@@ -51,7 +58,21 @@ module.exports = {
             // file-loader(for images)
             { test: /\.(jpg|png|gif|svg)$/, use: [ { loader: 'file-loader', options: { name: '[name].[ext]', outputPath: './assets/img/' } } ] },
             // file-loader(for fonts)
-            { test: /\.(woff|woff2|eot|ttf|otf)$/, use: ['file-loader'] }
+            { test: /\.(woff|woff2|eot|ttf|otf)$/, use: ['file-loader'] },
+            // file-loader (for templates)
+            {
+                test: /\.html$/,
+                exclude: /src\/index\.html/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[name].[ext]',
+                            outputPath: './assets/data/functionalities/'
+                        }
+                    }
+                ]
+            }
         ]
     },
 
@@ -62,8 +83,15 @@ module.exports = {
             template: 'index.html'
         }),
         // extract-text-webpack-plugin instance
-        extractPlugin
+        extractPlugin,
+        new webpack.optimize.ModuleConcatenationPlugin()
     ],
+
+    resolve: {
+        alias: {
+            'vue$': 'vue/dist/vue.esm.js'
+        }
+    },
 
     devtool: 'inline-source-map',
 };

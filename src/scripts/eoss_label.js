@@ -1,17 +1,17 @@
-
-//"ACE_ORCA","ACE_POL","ACE_LID","CLAR_ERB","ACE_CPR","DESD_SAR","DESD_LID","GACM_VIS","GACM_SWIR","HYSP_TIR","POSTEPS_IRS","CNES_KaRIN"}; 
+import Label from './label';
+//"ACE_ORCA","ACE_POL","ACE_LID","CLAR_ERB","ACE_CPR","DESD_SAR","DESD_LID","GACM_VIS","GACM_SWIR","HYSP_TIR","POSTEPS_IRS","CNES_KaRIN"};
 //"LEO-600-polar-NA","SSO-600-SSO-AM","SSO-600-SSO-DD","SSO-800-SSO-DD","SSO-800-SSO-PM";
 
 
-class EOSSLabel extends Label {
+export default class EOSSLabel extends Label {
 
     constructor(eoss) {
         super();
         this.disabled = true;
-        
+
         //this.orbit_relabeled = ["1000","2000","3000","4000","5000"];
         //this.instrument_relabeled = ["A","B","C","D","E","F","G","H","I","J","K","L"];
-        
+
         this.eoss = eoss;
     }
 
@@ -73,7 +73,7 @@ class EOSSLabel extends Label {
                 }
                 else {
                     newName = newName + comma + "NamingError";
-                }              
+                }
             }
             return newName;
         }
@@ -86,7 +86,7 @@ class EOSSLabel extends Label {
             }
             else {
                 return "NamingError";
-            }        
+            }
         }
     }
 
@@ -95,7 +95,7 @@ class EOSSLabel extends Label {
         if (this.disabled) {
             return this.actualName2Index(input,type);
         }
-        
+
         input = input.trim();
         let split = input.split(',');
         let output = '';
@@ -129,7 +129,7 @@ class EOSSLabel extends Label {
             if (nth == -1) { // Couldn't find the name from the list
                 return name;
             }
-            return this.orbit_relabeled[nth]; 
+            return this.orbit_relabeled[nth];
         }
         else if (type == "instrument") {
             let nth = this.eoss.instrument_list.indexOf(name);
@@ -234,7 +234,7 @@ class EOSSLabel extends Label {
             ppinstruments = ppinstruments + this.index2DisplayName(instruments[i], "instrument");
         }
         let ppexpression = featureName + "[" + pporbits + ";" + ppinstruments + ";" + numbers + "]";
-        
+
         return ppexpression;
     }
 
