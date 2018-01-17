@@ -1,5 +1,7 @@
 import Vue from 'vue';
 
+import FunctionalityList from './components/FunctionalityList';
+
 import Daphne from './scripts/daphne';
 import EOSS from './scripts/eoss';
 import EOSSLabel from './scripts/eoss_label';
@@ -8,6 +10,7 @@ import DataMining from './scripts/data_mining';
 import EOSSFilter from './scripts/eoss_filter';
 import FeatureApplication from './scripts/feature_application';
 import CheatsheetManager from './scripts/cheatsheet_manager';
+let styles = require('./styles/app.scss');
 let Sortable = require('sortablejs');
 
 let daphne = new Daphne();
@@ -25,12 +28,6 @@ daphne.import_new_data().then(() => {
     daphne.calculate_pareto_ranking();
 });
 
-let sortable_list = document.getElementById('functionalities_list');
-Sortable.create(sortable_list, {
-    handle: '.panel-heading',
-    animation: 150
-});
-
 daphne.addNewFunctionality("design_inspector");
 //await daphne.addNewFunctionality("daphne_answer");
 //await daphne.addNewFunctionality("filter");
@@ -43,6 +40,12 @@ new Vue({
             message: 'Webpack and Vue setup'
         }
     },
-    el: '#admin-panel'
+    el: '#admin-panel',
+    components: { FunctionalityList }
 });
 
+let sortable_list = document.getElementById('functionalities_list');
+Sortable.create(sortable_list, {
+    handle: '.panel-heading',
+    animation: 150
+});

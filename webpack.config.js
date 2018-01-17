@@ -12,7 +12,7 @@ module.exports = {
     context: path.resolve(__dirname, "src"),
 
     entry: {
-        app: ['./app.js', './styles/app.scss']
+        app: ['./app.js']
     },
 
     output: {
@@ -72,7 +72,27 @@ module.exports = {
                         }
                     }
                 ]
-            }
+            },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader',
+                options: {
+                    loaders: {
+                        'scss': [
+                            'vue-style-loader',
+                            'css-loader',
+                            'sass-loader'
+                        ],
+                        'sass': [
+                            'vue-style-loader',
+                            'css-loader',
+                            'sass-loader?indentedSyntax'
+                        ]
+                    },
+                    extractCSS: true
+                    // other vue-loader options go here
+                }
+},
         ]
     },
 
@@ -88,6 +108,7 @@ module.exports = {
     ],
 
     resolve: {
+        extensions: ['.js', '.vue'],
         alias: {
             'vue$': 'vue/dist/vue.esm.js'
         }
