@@ -9,17 +9,17 @@
   <link rel="stylesheet" type="text/css" href="./assets/css/app.css">
 </head>
 <body>
-  <div class="columns">
+  <div class="columns" id="app">
     <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
       <div>
         <div class="main">
           <h1 class="title is-size-4">Daphne</h1>
-          <a href="#" class="item" id="daphne_answer_menu"><span class="icon"><span class="fa fa-comments"></span></span><span class="name">Answers</span></a>
-          <a href="#" class="item" id="design_inspector_menu"><span class="icon"><span class="fa fa-search"></span></span><span class="name">Design Inspector</span></a>
-          <a href="#" class="item" id="filter_menu"><span class="icon"><span class="fa fa-filter"></span></span><span class="name">Filter</span></a>
-          <a href="#" class="item" id="data_mining_menu"><span class="icon"><span class="fa fa-bar-chart"></span></span><span class="name">Data Mining</span></a>
-          <a href="#" class="item" id="feature_application_menu"><span class="icon"><span class="fa fa-sitemap"></span></span><span class="name">Feature Application</span></a>
-          <a href="#" class="item" id="cheatsheet_menu"><span class="icon"><span class="fa fa-book"></span></span><span class="name">Cheatsheet</span></a>
+          <a href="#" class="item" v-on:click="addFunctionality('DaphneAnswer')"><span class="icon"><span class="fa fa-comments"></span></span><span class="name">Answers</span></a>
+          <a href="#" class="item" v-on:click="addFunctionality('DesignInspector')"><span class="icon"><span class="fa fa-search"></span></span><span class="name">Design Inspector</span></a>
+          <a href="#" class="item" v-on:click="addFunctionality('Filter')"><span class="icon"><span class="fa fa-filter"></span></span><span class="name">Filter</span></a>
+          <a href="#" class="item" v-on:click="addFunctionality('DataMining')"><span class="icon"><span class="fa fa-bar-chart"></span></span><span class="name">Data Mining</span></a>
+          <a href="#" class="item" v-on:click="addFunctionality('FeatureApplication')"><span class="icon"><span class="fa fa-sitemap"></span></span><span class="name">Feature Application</span></a>
+          <a href="#" class="item" v-on:click="addFunctionality('Cheatsheet')"><span class="icon"><span class="fa fa-book"></span></span><span class="name">Cheatsheet</span></a>
         </div>
       </div>
     </aside>

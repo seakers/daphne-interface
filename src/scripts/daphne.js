@@ -24,16 +24,15 @@ export default class Daphne {
         this.filter = null;
         this.dataMining = null;
         this.featureApplication = null;
-        this.cheatsheetManager = null;
 
         // Available functionalities
         this.functionalities = new Map();
-        this.functionalities.set("daphne_answer", { min_size: "one-third", max_repeat: 1, instances: new Map() });
-        this.functionalities.set("design_inspector", { min_size: "one-third", max_repeat: 1, instances: new Map() });
-        this.functionalities.set("data_mining", { min_size: "one-third", max_repeat: 1, instances: new Map() });
-        this.functionalities.set("cheatsheet", { min_size: "one-third", max_repeat: 1000, instances: new Map() });
-        this.functionalities.set("filter", { min_size: "one-third", max_repeat: 1, instances: new Map() });
-        this.functionalities.set("feature_application", { min_size: "one-third", max_repeat: 1, instances: new Map() });
+        this.functionalities.set("daphne_answer", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
+        this.functionalities.set("design_inspector", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
+        this.functionalities.set("data_mining", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
+        this.functionalities.set("cheatsheet", { minSize: "one-third", maxRepeat: 1000, instances: new Map() });
+        this.functionalities.set("filter", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
+        this.functionalities.set("feature_application", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
 
         this.responseOutput = {
             text: this.showText,
@@ -91,12 +90,12 @@ export default class Daphne {
         });
 
         // Setup the functionalities menu
-        this.functionalities.forEach((value, key) => {
+        /*this.functionalities.forEach((value, key) => {
             document.querySelector("#" + key + "_menu").addEventListener("click", event => {
                 this.addNewFunctionality(key);
                 event.preventDefault();
             });
-        });
+        });*/
 
 
         //this.websocket = new WebSocket("ws://127.0.0.1:8001/api/daphne"); // Localhost
@@ -276,7 +275,7 @@ export default class Daphne {
         }
 
         let funcInfo = this.functionalities.get(functionality);
-        if (funcInfo.instances.size < funcInfo.max_repeat) {
+        if (funcInfo.instances.size < funcInfo.maxRepeat) {
             try {
                 let dataResponse = await fetch("./assets/data/functionalities/" + functionality + ".html");
 
@@ -284,7 +283,7 @@ export default class Daphne {
                     // Add the new functionality
                     let funcHtml = await dataResponse.text();
                     let funcId = functionality + funcInfo.instances.size;
-                    let minSize = funcInfo.min_size;
+                    let minSize = funcInfo.minSize;
                     let newFunc = $(columnWrap(funcHtml, minSize));
 
                     // Write the correct values and add interactions
