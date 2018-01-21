@@ -14,12 +14,12 @@
       <div>
         <div class="main">
           <h1 class="title is-size-4">Daphne</h1>
-          <a href="#" class="item" v-on:click="addFunctionality('DaphneAnswer')"><span class="icon"><span class="fa fa-comments"></span></span><span class="name">Answers</span></a>
-          <a href="#" class="item" v-on:click="addFunctionality('DesignInspector')"><span class="icon"><span class="fa fa-search"></span></span><span class="name">Design Inspector</span></a>
-          <a href="#" class="item" v-on:click="addFunctionality('Filter')"><span class="icon"><span class="fa fa-filter"></span></span><span class="name">Filter</span></a>
-          <a href="#" class="item" v-on:click="addFunctionality('DataMining')"><span class="icon"><span class="fa fa-bar-chart"></span></span><span class="name">Data Mining</span></a>
-          <a href="#" class="item" v-on:click="addFunctionality('FeatureApplication')"><span class="icon"><span class="fa fa-sitemap"></span></span><span class="name">Feature Application</span></a>
-          <a href="#" class="item" v-on:click="addFunctionality('Cheatsheet')"><span class="icon"><span class="fa fa-book"></span></span><span class="name">Cheatsheet</span></a>
+          <a href="#" class="item" v-bind:class="{ active: isActive('DaphneAnswer') }" v-on:click.prevent="addFunctionality('DaphneAnswer')"><span class="icon"><span class="fa fa-comments"></span></span><span class="name">Answers</span></a>
+          <a href="#" class="item" v-bind:class="{ active: isActive('DesignInspector') }" v-on:click.prevent="addFunctionality('DesignInspector')"><span class="icon"><span class="fa fa-search"></span></span><span class="name">Design Inspector</span></a>
+          <a href="#" class="item" v-bind:class="{ active: isActive('Filter') }" v-on:click.prevent="addFunctionality('Filter')"><span class="icon"><span class="fa fa-filter"></span></span><span class="name">Filter</span></a>
+          <a href="#" class="item" v-bind:class="{ active: isActive('DataMining') }" v-on:click.prevent="addFunctionality('DataMining')"><span class="icon"><span class="fa fa-bar-chart"></span></span><span class="name">Data Mining</span></a>
+          <a href="#" class="item" v-bind:class="{ active: isActive('FeatureApplication') }" v-on:click.prevent="addFunctionality('FeatureApplication')"><span class="icon"><span class="fa fa-sitemap"></span></span><span class="name">Feature Application</span></a>
+          <a href="#" class="item" v-bind:class="{ active: isActive('Cheatsheet') }" v-on:click.prevent="addFunctionality('Cheatsheet')"><span class="icon"><span class="fa fa-book"></span></span><span class="name">Cheatsheet</span></a>
         </div>
       </div>
     </aside>
@@ -151,7 +151,7 @@
             </section>
           </div>
         </div>
-        <functionality-list/>
+        <functionality-list v-on:count-change="updateCount"/>
       </section>
     </div>
   </div>

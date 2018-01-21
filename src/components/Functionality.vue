@@ -2,11 +2,11 @@
     <div class="column is-full-mobile" v-bind:class="sizeClass">
         <section class="panel func-panel cheatsheet">
             <p class="panel-heading">
-                <span>{{name}}</span>
+                <span>{{title}}</span>
                 <span style="float:right;">
-                    <a href="#" class="reduce-panel has-text-grey"><span class="icon"><span class="fa fa-window-minimize"></span></span></a>
-                    <a href="#" class="grow-panel"><span class="icon"><span class="fa fa-window-maximize"></span></span></a>
-                    <a href="#" class="close-panel"><span class="icon"><span class="fa fa-times"></span></span></a>
+                    <a href="#" class="reduce-panel" v-bind:class="{ 'has-text-grey': isMinSize }" v-on:click.prevent="reduce"><span class="icon"><span class="fa fa-window-minimize"></span></span></a>
+                    <a href="#" class="grow-panel" v-bind:class="{ 'has-text-grey': isMaxSize }" v-on:click.prevent="grow"><span class="icon"><span class="fa fa-window-maximize"></span></span></a>
+                    <a href="#" class="close-panel" v-on:click.prevent="remove"><span class="icon"><span class="fa fa-times"></span></span></a>
                 </span>
             </p>
             <component v-bind:is="chosenFunctionality"></component>
@@ -17,9 +17,15 @@
 <script>
     import Cheatsheet from './Cheatsheet';
 
+    let sizeScale = [
+        'one-third',
+        'two-thirds',
+        'full'
+    ];
+
     export default {
-        name: "functionality",
-        props: ['name', 'initialSize'],
+        name: 'functionality',
+        props: ['name', 'title', 'initialSize'],
         data () {
             return {
                 size: this.initialSize,
@@ -32,6 +38,30 @@
         computed: {
             sizeClass: function () {
                 return 'is-' + this.size + '-desktop';
+            },
+            isMinSize: function () {
+                return this.size === this.initialSize;
+            },
+            isMaxSize: function () {
+                return this.size === sizeScale[sizeScale.length - 1];
+            }
+        },
+        methods: {
+            remove: function() {
+                this.$emit('close-elem');
+                // PubSub.publish(functionality + '_removed', funcId);
+            },
+            reduce: function() {
+                if (!this.isMinSize) {
+                    // Make column smaller
+                    this.size = sizeScale[sizeScale.indexOf(this.size) - 1];
+                }
+            },
+            grow: function() {
+                if (!this.isMaxSize) {
+                    // Make column bigger
+                    this.size = sizeScale[sizeScale.indexOf(this.size) + 1];
+                }
             }
         }
     }

@@ -6,7 +6,6 @@ let SpeechKITT = window.SpeechKITT;
 let responsiveVoice = window.responsiveVoice;
 
 // Import templates
-import cheatsheet from '../data/functionalities/cheatsheet.html';
 import daphne_answer from '../data/functionalities/daphne_answer.html';
 import data_mining from '../data/functionalities/data_mining.html';
 import design_inspector from '../data/functionalities/design_inspector.html';
@@ -39,11 +38,7 @@ export default class Daphne {
             list: this.showList
         };
 
-        this.sizeScale = [
-            "one-third",
-            "two-thirds",
-            "full"
-        ];
+
 
         //Interaction states
         this.UI_states = {
@@ -88,15 +83,6 @@ export default class Daphne {
             document.querySelector("#send_command").click();
             event.preventDefault();
         });
-
-        // Setup the functionalities menu
-        /*this.functionalities.forEach((value, key) => {
-            document.querySelector("#" + key + "_menu").addEventListener("click", event => {
-                this.addNewFunctionality(key);
-                event.preventDefault();
-            });
-        });*/
-
 
         //this.websocket = new WebSocket("ws://127.0.0.1:8001/api/daphne"); // Localhost
         this.websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/api/daphne");

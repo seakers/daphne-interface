@@ -3,8 +3,10 @@
         <functionality
             v-for="functionality in functionalities"
             v-bind:name="functionality.name"
+            v-bind:title="functionality.title"
             v-bind:initial-size="functionality.initialSize"
-            v-bind:key="functionality.id">
+            v-bind:key="functionality.id"
+            v-on:close-elem="closeFunctionality(functionality.id)">
         </functionality>
     </div>
 </template>
@@ -14,12 +16,12 @@
     import EventBus from '../scripts/event-bus';
 
     let functionalityTypes = new Map();
-    functionalityTypes.set("DaphneAnswer", { minSize: "one-third", maxRepeat: 1});
-    functionalityTypes.set("DesignInspector", { minSize: "one-third", maxRepeat: 1});
-    functionalityTypes.set("DataMining", { minSize: "one-third", maxRepeat: 1});
-    functionalityTypes.set("Cheatsheet", { minSize: "one-third", maxRepeat: 1000});
-    functionalityTypes.set("Filter", { minSize: "one-third", maxRepeat: 1});
-    functionalityTypes.set("FeatureApplication", { minSize: "one-third", maxRepeat: 1});
+    functionalityTypes.set("DaphneAnswer", { title: "Answers", minSize: "one-third", maxRepeat: 1});
+    functionalityTypes.set("DesignInspector", { title: "Design Inspector", minSize: "one-third", maxRepeat: 1});
+    functionalityTypes.set("DataMining", { title: "Data Mining", minSize: "one-third", maxRepeat: 1});
+    functionalityTypes.set("Cheatsheet", { title: "Cheatsheet", minSize: "one-third", maxRepeat: 1000});
+    functionalityTypes.set("Filter", { title: "Filter", minSize: "one-third", maxRepeat: 1});
+    functionalityTypes.set("FeatureApplication", { title: "Feature Application", minSize: "one-third", maxRepeat: 1});
 
     let newFunctionalityId = 0;
 
@@ -52,74 +54,23 @@
                     // Add to columns and to the array
                     this.functionalities.push({
                         name: functionality,
+                        title: funcInfo.title,
                         initialSize: funcInfo.minSize,
                         id: newFunctionalityId++
                     });
                     this.functionalityCount[functionality]++;
 
                     // Consider it added
-                    PubSub.publish(functionality + "_added", newFunctionalityId-1);
-                    /*try {
-
-                            // Write the correct values and add interactions
-                            newFunc.find("." + functionality).first().attr("id", funcId);
-                            $("#" + functionality + "_menu").addClass("active");
-
-                            // Add all the interactions for the functionality
-                            // Remove
-                            newFunc.find("." + functionality + " .close-panel").on("click", event => {
-                                funcInfo.instances.delete(funcId);
-                                $("#" + funcId).parent().remove();
-                                if (funcInfo.instances.size == 0) {
-                                    $("#" + functionality + "_menu").removeClass("active");
-                                }
-                                PubSub.publish(functionality + "_removed", funcId);
-                                event.preventDefault();
-                            });
-
-                            // Reduce
-                            newFunc.find("." + functionality + " .reduce-panel").on("click", event => {
-                                if (!$("#" + funcId).parent().hasClass("is-" + minSize + "-desktop")) {
-                                    // Make column smaller
-                                    let storedSize = funcInfo.instances.get(funcId);
-                                    let funcSize = "is-" + storedSize + "-desktop";
-                                    let smallerSizeInfo = this.sizeScale[this.sizeScale.indexOf(storedSize)-1];
-                                    let smallerSize = "is-" + smallerSizeInfo + "-desktop";
-                                    $("#" + funcId).parent().removeClass(funcSize);
-                                    $("#" + funcId).parent().addClass(smallerSize);
-                                    funcInfo.instances.set(funcId, smallerSizeInfo);
-
-                                    // Change icon to grey if needed and ensure maximize is changed back to normal
-                                    if (smallerSizeInfo === minSize) {
-                                        $("#" + funcId + " .reduce-panel").addClass("has-text-grey");
-                                    }
-                                    $("#" + funcId + " .grow-panel").removeClass("has-text-grey");
-                                }
-                                event.preventDefault();
-                            });
-
-                            // Grow
-                            newFunc.find("." + functionality + " .grow-panel").on("click", event => {
-                                let scalesLength = this.sizeScale.length;
-                                if (!$("#" + funcId).parent().hasClass("is-" + this.sizeScale[scalesLength-1] + "-desktop")) {
-                                    // Make column bigger
-                                    let storedSize = funcInfo.instances.get(funcId);
-                                    let funcSize = "is-" + storedSize + "-desktop";
-                                    let biggerSizeInfo = this.sizeScale[this.sizeScale.indexOf(storedSize)+1];
-                                    let biggerSize = "is-" + biggerSizeInfo + "-desktop";
-                                    $("#" + funcId).parent().removeClass(funcSize);
-                                    $("#" + funcId).parent().addClass(biggerSize);
-                                    funcInfo.instances.set(funcId, biggerSizeInfo);
-
-                                    // Change icon to grey if needed and ensure minimze is changed back to normal
-                                    if (biggerSizeInfo === this.sizeScale[scalesLength-1]) {
-                                        $("#" + funcId + " .grow-panel").addClass("has-text-grey");
-                                    }
-                                    $("#" + funcId + " .reduce-panel").removeClass("has-text-grey");
-                                }
-                                event.preventDefault();
-                            });*/
+                    // PubSub.publish(functionality + "_added", newFunctionalityId-1);
+                    this.$emit('count-change', this.functionalityCount);
                 }
+            },
+            closeFunctionality(funcId) {
+                let funcIndex = this.functionalities.findIndex((elem) => elem.id === funcId);
+                let funcName = this.functionalities[funcIndex].name;
+                this.functionalities.splice(funcIndex, 1);
+                this.functionalityCount[funcName]--;
+                this.$emit('count-change', this.functionalityCount);
             }
         }
     }
