@@ -1,5 +1,6 @@
 import Vue from 'vue';
 
+import MainMenu from './components/MainMenu';
 import FunctionalityList from './components/FunctionalityList';
 
 import Daphne from './scripts/daphne';
@@ -12,34 +13,22 @@ import FeatureApplication from './scripts/feature_application';
 let styles = require('./styles/app.scss');
 let Sortable = require('sortablejs');
 
-import EventBus from './scripts/event-bus';
+import store from './store';
 
 new Vue({
     el: '#app',
+    store,
     data: function () {
         return {
-            functionalityCount: {
-                'DaphneAnswer': 0,
-                'DesignInspector': 0,
-                'DataMining': 0,
-                'Cheatsheet': 0,
-                'Filter': 0,
-                'FeatureApplication': 0
-            }
+
         }
     },
     methods: {
-        addFunctionality(functionality) {
-            EventBus.$emit('add-functionality', functionality);
-        },
-        isActive(functionality) {
-            return this.functionalityCount[functionality] > 0;
-        },
         updateCount(functionalityCount) {
             this.functionalityCount = Vue.util.extend({}, functionalityCount);
         }
     },
-    components: { FunctionalityList }
+    components: { MainMenu, FunctionalityList }
 
 });
 

@@ -12,15 +12,7 @@
   <div class="columns" id="app">
     <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
       <div>
-        <div class="main">
-          <h1 class="title is-size-4">Daphne</h1>
-          <a href="#" class="item" v-bind:class="{ active: isActive('DaphneAnswer') }" v-on:click.prevent="addFunctionality('DaphneAnswer')"><span class="icon"><span class="fa fa-comments"></span></span><span class="name">Answers</span></a>
-          <a href="#" class="item" v-bind:class="{ active: isActive('DesignInspector') }" v-on:click.prevent="addFunctionality('DesignInspector')"><span class="icon"><span class="fa fa-search"></span></span><span class="name">Design Inspector</span></a>
-          <a href="#" class="item" v-bind:class="{ active: isActive('Filter') }" v-on:click.prevent="addFunctionality('Filter')"><span class="icon"><span class="fa fa-filter"></span></span><span class="name">Filter</span></a>
-          <a href="#" class="item" v-bind:class="{ active: isActive('DataMining') }" v-on:click.prevent="addFunctionality('DataMining')"><span class="icon"><span class="fa fa-bar-chart"></span></span><span class="name">Data Mining</span></a>
-          <a href="#" class="item" v-bind:class="{ active: isActive('FeatureApplication') }" v-on:click.prevent="addFunctionality('FeatureApplication')"><span class="icon"><span class="fa fa-sitemap"></span></span><span class="name">Feature Application</span></a>
-          <a href="#" class="item" v-bind:class="{ active: isActive('Cheatsheet') }" v-on:click.prevent="addFunctionality('Cheatsheet')"><span class="icon"><span class="fa fa-book"></span></span><span class="name">Cheatsheet</span></a>
-        </div>
+        <main-menu></main-menu>
       </div>
     </aside>
     <div class="column is-10" id="admin-panel">
