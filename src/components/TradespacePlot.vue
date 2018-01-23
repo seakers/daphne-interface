@@ -57,7 +57,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapMutations } from 'vuex';
     import * as d3 from 'd3';
 
     export default {
@@ -73,13 +73,18 @@
                 transform: d3.zoomIdentity,
                 zoom: {},
                 xMap: {},
-                yMap: {}
+                yMap: {},
+                context: {},
+                hiddenContext: {}
             }
         },
         computed: {
             ...mapGetters({
                 problemData: 'getProblemData',
-                plotData: 'getPlotData'
+                plotData: 'getPlotData',
+                colorMap: 'getColorMap',
+                hoveredArch: 'getHoveredArch',
+                clickedArch: 'getClickedArch'
             }),
             plotWidth() {
                 return this.mainPlotParams.width - this.mainPlotParams.margin.right - this.mainPlotParams.margin.left;
@@ -90,6 +95,10 @@
             
         },
         methods: {
+            ...mapMutations([
+                'updateClickedArch',
+                'updateHoveredArch',
+            ]),
             resetMainPlot() {
                 //Resets the main plot
                 d3.select('#main_plot').select('svg').remove();
@@ -203,8 +212,8 @@
                 let that = this;
 
                 // TODO: Add functions
-                //canvas.on('mousemove.inspection', function() { that.canvas_mousemove(colorMap); });
-                //canvas.on('click.inspection', function() { that.canvas_click(colorMap); });
+                canvas.on('mousemove.inspection', function() { that.canvasMousemove(); });
+                canvas.on('click.inspection', function() { that.canvasClick(); });
 
                 // Set button click operations TODO: Add functions
                 //d3.select('button#cancel_selection').on('click', () => { that.cancel_selection(); });
@@ -219,25 +228,102 @@
                 context.clearRect(0, 0, this.plotWidth, this.plotHeight);
                 context.save();
 
-                this.plotData.forEach(point => {
+                this.plotData.forEach((point, index) => {
+                    let pointColor = this.$store.getters.getPointColor(index);
+                    let pointShape = this.$store.getters.getPointShape(index);
                     let tx = this.transform.applyX(this.xMap(point));
                     let ty = this.transform.applyY(this.yMap(point));
-                    context.fillStyle = hidden ? point.interactColor : point.drawingColor;
-                    // TODO: Change if to check selected arch instead of shape
-                    if (hidden || point.shape === 'circle') {
+                    context.fillStyle = hidden ? point.interactColor : pointColor;
+                    if (hidden || pointShape === 'circle') {
                         context.beginPath();
                         context.arc(tx, ty, 3.3, 0, 2 * Math.PI);
                         context.fill();
                     }
-                    else if (point.shape === 'cross') {
-                        context.fillStyle = hidden ? point.interactColor : point.importantColor;
+                    else if (pointShape === 'cross') {
                         context.fillRect(tx - 4, ty - 1, 8, 2);
                         context.fillRect(tx - 1, ty - 4, 2, 8);
                     }
                 });
 
                 context.restore();
+            },
+
+            getPointUnderMouse() {
+                // Draw the hidden canvas.
+                this.drawPoints(this.hiddenContext, true);
+
+                // Get mouse positions from the main canvas.
+                let mousePos = d3.mouse(d3.select("#main_plot").select("canvas").node());
+                let mouseX = mousePos[0];
+                let mouseY = mousePos[1];
+
+                // Pick the colour from the mouse position and max-pool it.
+                let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;
+                let colorList = {};
+                for (let i = 0; i < color.length; i += 4) {
+                    let colorRgb = "rgb(" + color[i] + "," + color[i+1] + "," + color[i+2] + ")";
+                    if (colorRgb in colorList) {
+                        colorList[colorRgb] += 1;
+                    }
+                    else {
+                        colorList[colorRgb] = 1;
+                    }
+                }
+                let maxcolor = -1;
+                let maxcolor_num = 0;
+                for (let key in colorList) {
+                    if (maxcolor_num < colorList[key]) {
+                        maxcolor_num = colorList[key];
+                        maxcolor = key;
+                    }
+                }
+                if (maxcolor === 0) {
+                    maxcolor = -1;
+                }
+                return maxcolor;
+            },
+
+            canvasMousemove() {
+                let pointColor = this.getPointUnderMouse();
+
+                // Get the data from our map!
+                if (pointColor in this.colorMap) {
+                    let point = this.colorMap[pointColor];
+                    // Only update if there is a change in the selection
+                    if (this.hoveredArch !== point) {
+                        this.updateHoveredArch(point);
+                        // TODO: Turn into Vue reactive
+                        //this.show_info(arch, true);
+                    }
+                }
+                else {
+                    // In case nothing is selected just revert everything back to normal
+                    // TODO: Turn into Vue reactive component
+                    /*if (this.lastHoveredArch !== -1) {
+                        if (this.selectedArch != null) {
+                            this.show_info(this.selectedArch, false);
+                        }
+                        changesHappened = true;
+                    }*/
+                    if (this.hoveredArch !== -1) {
+                        this.updateHoveredArch(-1);
+                    }
+                }
+            },
+
+            canvasClick() {
+                let pointColor = this.getPointUnderMouse();
+
+                // Get the data from our map!
+                if (pointColor in this.colorMap) {
+                    let point = this.colorMap[pointColor];
+                    // Only update if there is a change in the selection
+                    if (this.clickedArch !== point) {
+                        this.updateClickedArch(point);
+                    }
+                }
             }
+
         },
         watch: {
             problemData: function(val, oldVal) {
@@ -245,6 +331,12 @@
             },
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
+            },
+            hoveredArch: function(val, oldVal) {
+                this.drawPoints(this.context, false);
+            },
+            clickedArch: function(val, oldVal) {
+                this.drawPoints(this.context, false);
             }
         }
     }

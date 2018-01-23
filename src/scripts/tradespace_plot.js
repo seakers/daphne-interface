@@ -9,25 +9,6 @@ export default class TradespacePlot {
         this.xIndex = null;
         this.yIndex = null;
 
-        this.main_plot_params = {
-            "margin": {top: 20, right: 20, bottom: 30, left: 90},
-            "width": 960,
-            "height": 450,
-        };
-
-        this.color = {
-            "default": "rgba(110,110,110,255)",
-            "selected": "rgba(25,186,215,255)",
-            "highlighted": "rgba(248,101,145,255)",
-            "overlap": "rgba(163,64,240,255)",
-            "mouseover": "rgba(116,255,110,255)",
-            "hidden": "rgba(110,110,110,22)",
-            "important": "rgba(255,0,0,255)"
-        };
-
-        this.outputList = output_list;
-
-        this.data = null;
         this.num_total_points = 0;
         this.num_selected_points = 0;
 
@@ -66,85 +47,6 @@ export default class TradespacePlot {
         return bitString;
     }
 
-    canvas_mousemove(colorMap) {
-        // Draw the hidden canvas.
-        this.drawPoints(this.hiddenContext, true);
-
-        // Get mouse positions from the main canvas.
-        let mouse_pos = d3.mouse(d3.select("#main_plot").select("canvas").node());
-        let mouseX = mouse_pos[0];
-        let mouseY = mouse_pos[1];
-
-        // Pick the colour from the mouse position and max-pool it.
-        let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;
-        let color_list = {};
-        for (let i = 0; i < color.length; i += 4) {
-            let color_rgb = "rgb(" + color[i] + "," + color[i+1] + "," + color[i+2] + ")";
-            if (color_rgb in color_list) {
-                color_list[color_rgb] += 1;
-            }
-            else {
-                color_list[color_rgb] = 1;
-            }
-        }
-        let maxcolor, maxcolor_num = 0;
-        for (let key in color_list) {
-            if (maxcolor_num < color_list[key]) {
-                maxcolor_num = color_list[key];
-                maxcolor = key;
-            }
-        }
-
-        // Check if something changed
-        let changesHappened = false;
-
-        // Change color back to default if not selected anymore
-        if (this.lastHoveredArch in colorMap && this.lastHoveredArch != maxcolor) {
-            let oldPoint = colorMap[this.lastHoveredArch];
-            if (oldPoint.selected && oldPoint.highlighted) {
-                oldPoint.drawingColor = this.color.overlap;
-            }
-            else if (oldPoint.selected) {
-                oldPoint.drawingColor = this.color.selected;
-            }
-            else if (oldPoint.highlighted) {
-                oldPoint.drawingColor = this.color.highlighted;
-            }
-            else {
-                oldPoint.drawingColor = this.color.default;
-            }
-        }
-
-        // Get the data from our map!
-        if (maxcolor in colorMap) {
-            // Only update if there is a change in the selection
-            if (this.lastHoveredArch != maxcolor) {
-                let arch = colorMap[maxcolor];
-                this.lastHoveredArch = maxcolor;
-                changesHappened = true;
-
-                // Change the color of the dot temporarily
-                arch.drawingColor = this.color.mouseover;
-
-                this.show_info(arch, true);
-            }
-        }
-        else {
-            // In case nothing is selected just revert everything back to normal
-            if (this.lastHoveredArch != null) {
-                if (this.selectedArch != null) {
-                    this.show_info(this.selectedArch, false);
-                }
-                changesHappened = true;
-            }
-            this.lastHoveredArch = null;
-        }
-
-        // Only redraw if there have been changes
-        if (changesHappened) {
-            this.drawPoints(this.context, false);
-        }
-    }
 
     show_info(arch, hovering) {
         // Remove the previous info (and save it if we are hovering!!!)
@@ -171,7 +73,7 @@ export default class TradespacePlot {
                 .html(d => {
                     let out = "<b>" + this.outputList[i] + "</b>: ";
                     let val = arch.outputs[i];
-                    if (typeof val == "number") {
+                    if (typeof val === "number") {
                         if (val > 100) {
                             val = val.toFixed(2);
                         }
@@ -219,63 +121,6 @@ export default class TradespacePlot {
         });
 
         PubSub.publishSync(ARCH_SELECTED, arch);
-    }
-
-    canvas_click(colorMap) {
-        // Draw the hidden canvas.
-        this.drawPoints(this.hiddenContext, true);
-
-        // Get mouse positions from the main canvas.
-        let mouse_pos = d3.mouse(d3.select("#main_plot").select("canvas").node());
-        let mouseX = mouse_pos[0];
-        let mouseY = mouse_pos[1];
-
-        // Pick the colour from the mouse position and max-pool it.
-        let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;
-        let color_list = {};
-        for (let i = 0; i < color.length; i += 4) {
-            let color_rgb = "rgb(" + color[i] + "," + color[i+1] + "," + color[i+2] + ")";
-            if (color_rgb in color_list) {
-                color_list[color_rgb] += 1;
-            }
-            else {
-                color_list[color_rgb] = 1;
-            }
-        }
-        let maxcolor, maxcolor_num = 0;
-        for (let key in color_list) {
-            if (maxcolor_num < color_list[key]) {
-                maxcolor_num = color_list[key];
-                maxcolor = key;
-            }
-        }
-
-        // Check if something changed
-        let changesHappened = false;
-
-        // Get the data from our map!
-        if (maxcolor in colorMap) {
-            // Only update if there is a change in the selection
-            if (this.selectedArch != maxcolor) {
-                let arch = colorMap[maxcolor];
-
-                if (this.selectedArch != null) {
-                    this.selectedArch.inputs = this.selectedArch.orig_inputs;
-                    this.selectedArch.shape = "circle";
-                }
-                this.selectedArch = arch;
-
-                changesHappened = true;
-
-                // Change the shape of the data point
-                arch.shape = "cross";
-            }
-        }
-
-        // Only redraw if there have been changes
-        if (changesHappened) {
-            this.drawPoints(this.context, false);
-        }
     }
 
     /*

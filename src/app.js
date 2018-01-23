@@ -18,7 +18,7 @@ let Sortable = require('sortablejs');
 
 import store from './store';
 
-new Vue({
+let app = new Vue({
     el: '#app',
     store,
     data: function () {
@@ -28,7 +28,7 @@ new Vue({
     methods: {
     },
     components: { MainMenu, TradespacePlot, FunctionalityList },
-    beforeMount() {
+    mounted() {
         // Set up initial state
         this.$store.commit('setProblem', EOSS);
         this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');

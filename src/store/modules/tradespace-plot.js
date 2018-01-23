@@ -11,7 +11,9 @@ const state = {
         hidden: 'rgba(110,110,110,22)',
         important: 'rgba(255,0,0,255)'
     },
-    selectedArch: -1,
+    clickedArch: -1,
+    clickedArchInputs: [],
+    hoveredArch: -1,
     colorMap: {}
 };
 
@@ -25,6 +27,45 @@ const getters = {
     },
     getNumPoints(state) {
         return state.plotData.length;
+    },
+    getHoveredArch(state) {
+        return state.hoveredArch;
+    },
+    getClickedArch(state) {
+        return state.clickedArch;
+    },
+    getPointColor: (state) => (index) => {
+        let point = state.plotData[index];
+        if (state.clickedArch === index) {
+            return state.colorList.important;
+        }
+        else {
+            if (state.hoveredArch === index) {
+                return state.colorList.mouseover;
+            }
+            else {
+                if (point.selected && point.highlighted) {
+                    return state.colorList.overlap;
+                }
+                else if (point.selected) {
+                    return state.colorList.selected;
+                }
+                else if (point.highlighted) {
+                    return state.colorList.highlighted;
+                }
+                else {
+                    return state.colorList.default;
+                }
+            }
+        }
+    },
+    getPointShape: (state) => (index) => {
+        if (state.clickedArch === index) {
+            return 'cross';
+        }
+        else {
+            return 'circle';
+        }
     }
 };
 
@@ -37,18 +78,13 @@ const mutations = {
     updatePlotData(state, problemData) {
         let plotData = JSON.parse(JSON.stringify(problemData));
         plotData.forEach(point => {
-            point.modifiedInputs = point.inputs;
             point.selected = false;
             point.highlighted = false;
             point.hidden = false;
-            point.drawingColor = state.colorList.default;
-            point.importantColor = state.colorList.important;
-            point.shape = 'circle';
         });
         // Mark the last point added as the selected one
-        plotData[plotData.length-1].shape = 'cross';
-        state.plotData = plotData;
-        state.selectedArch = state.plotData[state.plotData.length-1];
+        state.clickedArch = plotData.length - 1;
+        state.clickedArchInputs = plotData[state.clickedArch].inputs;
 
         // Function to create new colours for the picking.
         let nextCol = 1;
@@ -65,10 +101,22 @@ const mutations = {
 
         // Add one unique color to each point and save the backreference
         state.colorMap = {};
-        state.plotData.forEach(point => {
+        plotData.forEach((point, index) => {
             point.interactColor = genColor();
-            state.colorMap[point.interactColor] = point;
+            state.colorMap[point.interactColor] = index;
         });
+
+        state.plotData = plotData;
+    },
+    updateClickedArch(state, clickedArch) {
+        state.clickedArch = clickedArch;
+        state.clickedArchInputs = state.plotData[state.clickedArch].inputs;
+    },
+    updateHoveredArch(state, hoveredArch) {
+        state.hoveredArch = hoveredArch;
+    },
+    updateClickedArchInputs(state, inputs) {
+        state.clickedArchInputs = inputs;
     }
 };
 
