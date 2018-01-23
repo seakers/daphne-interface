@@ -14,10 +14,10 @@ const state = {
     availableFunctionalities: [
         { name: 'DaphneAnswer', title: 'Answers', icon: 'fa-comments' },
         { name: 'DesignInspector', title: 'Design Inspector', icon: 'fa-search' },
-        { name: 'DataMining', title: 'Data Mining', icon: 'fa-filter' },
-        { name: 'Cheatsheet', title: 'Cheatsheet', icon: 'fa-bar-chart' },
-        { name: 'Filter', title: 'Filter', icon: 'fa-sitemap' },
-        { name: 'FeatureApplication', title: 'Feature Application', icon: 'fa-book' }
+        { name: 'DataMining', title: 'Data Mining', icon: 'fa-bar-chart' },
+        { name: 'Cheatsheet', title: 'Cheatsheet', icon: 'fa-book' },
+        { name: 'Filter', title: 'Filter', icon: 'fa-filter' },
+        { name: 'FeatureApplication', title: 'Feature Application', icon: 'fa-sitemap' }
     ],
     functionalities: [],
     functionalityCount: {

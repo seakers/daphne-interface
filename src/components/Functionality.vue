@@ -48,7 +48,7 @@
         },
         methods: {
             remove: function() {
-                this.$emit('close-elem');
+                this.$store.commit('closeFunctionality', this.$vnode.key);
                 // PubSub.publish(functionality + '_removed', funcId);
             },
             reduce: function() {

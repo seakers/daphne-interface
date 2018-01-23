@@ -23,10 +23,10 @@ export default class EOSSLabel extends Label {
      */
     index2ActualName(index, type) {
         if (type == "orbit") {
-            return this.eoss.orbit_list[index];
+            return this.eoss.orbitList[index];
         }
         else if (type == "instrument") {
-            return this.eoss.instrument_list[index];
+            return this.eoss.instrumentList[index];
         }
         else {
             return "NamingError";
@@ -66,10 +66,10 @@ export default class EOSSLabel extends Label {
                     comma = "";
                 }
                 if (type == "orbit"){
-                    newName = newName + comma + this.eoss.orbit_list.indexOf(names[i]);
+                    newName = newName + comma + this.eoss.orbitList.indexOf(names[i]);
                 }
                 else if (type == "instrument") {
-                    newName = newName + comma + this.eoss.instrument_list.indexOf(names[i]);
+                    newName = newName + comma + this.eoss.instrumentList.indexOf(names[i]);
                 }
                 else {
                     newName = newName + comma + "NamingError";
@@ -79,10 +79,10 @@ export default class EOSSLabel extends Label {
         }
         else {
             if (type == "orbit") {
-                return this.eoss.orbit_list.indexOf(name);
+                return this.eoss.orbitList.indexOf(name);
             }
             else if (type == "instrument") {
-                return this.eoss.instrument_list.indexOf(name);
+                return this.eoss.instrumentList.indexOf(name);
             }
             else {
                 return "NamingError";
@@ -125,14 +125,14 @@ export default class EOSSLabel extends Label {
         }
         name = name.trim();
         if (type == "orbit") {
-            let nth = this.eoss.orbit_list.indexOf(name);
+            let nth = this.eoss.orbitList.indexOf(name);
             if (nth == -1) { // Couldn't find the name from the list
                 return name;
             }
             return this.orbit_relabeled[nth];
         }
         else if (type == "instrument") {
-            let nth = this.eoss.instrument_list.indexOf(name);
+            let nth = this.eoss.instrumentList.indexOf(name);
             if (nth == -1) { // Couldn't find the name from the list
                 return name;
             }
@@ -154,14 +154,14 @@ export default class EOSSLabel extends Label {
             if (nth==-1) { // Couldn't find the name from the list
                 return name;
             }
-            return this.eoss.orbit_list[nth];
+            return this.eoss.orbitList[nth];
         }
         else if (type=="instrument") {
             let nth = this.instrument_relabeled.indexOf(name);
             if (nth == -1) { // Couldn't find the name from the list
                 return name;
             }
-            return this.eoss.instrument_list[nth];
+            return this.eoss.instrumentList[nth];
         }
         else {
             return name;

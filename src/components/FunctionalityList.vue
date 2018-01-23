@@ -5,15 +5,14 @@
             v-bind:name="functionality.name"
             v-bind:title="functionality.title"
             v-bind:initial-size="functionality.initialSize"
-            v-bind:key="functionality.id"
-            v-on:close-elem="closeFunctionality(functionality.id)">
+            v-bind:key="functionality.id">
         </functionality>
     </div>
 </template>
 
 <script>
     import Functionality from './Functionality';
-    import { mapState, mapMutations } from 'vuex';
+    import { mapState } from 'vuex';
 
     export default {
         components: {Functionality},
@@ -25,11 +24,6 @@
         computed: {
             ...mapState({
                 functionalities: state => state.functionalityList.functionalities
-            })
-        },
-        methods: {
-            ...mapMutations({
-                closeFunctionality: 'closeFunctionality'
             })
         }
     }
