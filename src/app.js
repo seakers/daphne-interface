@@ -41,7 +41,6 @@ let daphne = new Daphne();
 // General Code
 daphne.problem = new EOSSOld(daphne);
 daphne.label = new EOSSLabel(daphne.problem);
-daphne.tradespacePlot = new TradespacePlotOld(daphne.problem.outputList);
 daphne.dataMining = new DataMining(daphne.tradespacePlot, daphne.label);
 daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
 daphne.featureApplication = new FeatureApplication(daphne.label);

@@ -1,7 +1,4 @@
 // initial state
-// shape: [{ id, quantity }]
-import * as utils from "../../scripts/utils";
-
 const state = {
     problemData: [],
     resultFilename: '', // String
@@ -21,6 +18,9 @@ const state = {
 
 // getters
 const getters = {
+    getProblemData(state) {
+        return state.problemData;
+    }
 };
 
 // actions
@@ -41,9 +41,9 @@ const actions = {
             );
 
             if (dataResponse.ok) {
-                problemData = await dataResponse.json();
+                let data = await dataResponse.json();
 
-                let {problemData, extra} = await state.importCallback(problemData);
+                let {problemData, extra} = await state.importCallback(data);
                 commit('updateExtra', extra);
                 commit('updateProblemData', problemData);
             }

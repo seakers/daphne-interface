@@ -19,7 +19,6 @@ export default class Daphne {
         // Instances of Classes
         this.problem = null; // Problem-specific class
         this.label = null;
-        this.tradespacePlot = null;
         this.filter = null;
         this.dataMining = null;
         this.featureApplication = null;
@@ -29,7 +28,6 @@ export default class Daphne {
         this.functionalities.set("daphne_answer", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("design_inspector", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("data_mining", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
-        this.functionalities.set("cheatsheet", { minSize: "one-third", maxRepeat: 1000, instances: new Map() });
         this.functionalities.set("filter", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("feature_application", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
 

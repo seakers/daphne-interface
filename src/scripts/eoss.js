@@ -21,7 +21,7 @@ export default {
         [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(), getInstrumentList()]);
         extra.orbitNum = extra.orbitList.length;
         extra.instrumentNum = extra.instrumentList.length;
-        let problemData = this.preprocessing(data);
+        let problemData = preprocessing(data);
         return {
             problemData: problemData,
             extra: extra
