@@ -3,10 +3,7 @@
         <section class="panel">
             <p class="panel-heading">
                 Tradespace exploration |
-                Number of designs:
-                <span id="num_architectures"></span> |
-                Number of targeted designs:
-                <span id="num_selected_architectures"></span>
+                Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}
             </p>
             <div class="panel-block" id="main_plot_block">
                 <div id="main_plot"></div>
@@ -84,13 +81,17 @@
                 plotData: 'getPlotData',
                 colorMap: 'getColorMap',
                 hoveredArch: 'getHoveredArch',
-                clickedArch: 'getClickedArch'
+                clickedArch: 'getClickedArch',
+                numPoints: 'getNumPoints'
             }),
             plotWidth() {
                 return this.mainPlotParams.width - this.mainPlotParams.margin.right - this.mainPlotParams.margin.left;
             },
             plotHeight() {
                 return this.mainPlotParams.height - this.mainPlotParams.margin.top - this.mainPlotParams.margin.bottom;
+            },
+            numSelectedPoints() {
+                return this.plotData.filter(point => point.selected).length;
             }
             
         },
@@ -211,17 +212,12 @@
                 // Canvas interaction
                 let that = this;
 
-                // TODO: Add functions
                 canvas.on('mousemove.inspection', function() { that.canvasMousemove(); });
                 canvas.on('click.inspection', function() { that.canvasClick(); });
 
                 // Set button click operations TODO: Add functions
                 //d3.select('button#cancel_selection').on('click', () => { that.cancel_selection(); });
                 //d3.select('#interaction_modes').selectAll('label').on('click', () => { that.toggle_selection_mode(); });
-
-                // TODO: Change into Vue computed properties
-                //d3.select('#num_architectures').text(''+this.get_num_of_archs());
-                //d3.select('#num_selected_architectures').text(''+this.get_num_of_selected_archs());
             },
 
             drawPoints(context, hidden) {
@@ -292,19 +288,10 @@
                     // Only update if there is a change in the selection
                     if (this.hoveredArch !== point) {
                         this.updateHoveredArch(point);
-                        // TODO: Turn into Vue reactive
-                        //this.show_info(arch, true);
                     }
                 }
                 else {
                     // In case nothing is selected just revert everything back to normal
-                    // TODO: Turn into Vue reactive component
-                    /*if (this.lastHoveredArch !== -1) {
-                        if (this.selectedArch != null) {
-                            this.show_info(this.selectedArch, false);
-                        }
-                        changesHappened = true;
-                    }*/
                     if (this.hoveredArch !== -1) {
                         this.updateHoveredArch(-1);
                     }

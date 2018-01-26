@@ -17,7 +17,6 @@ export default class Daphne {
         this.data = null; // Array containing the imported data
 
         // Instances of Classes
-        this.problem = null; // Problem-specific class
         this.label = null;
         this.filter = null;
         this.dataMining = null;
@@ -36,16 +35,10 @@ export default class Daphne {
             list: this.showList
         };
 
-
-
         //Interaction states
         this.UI_states = {
             selection_changed: true
         };
-
-        PubSub.subscribe(utils.DATA_PROCESSED, (msg, data) => {
-            this.data = data;
-        });
 
         // Voice recognition
         if (annyang) {

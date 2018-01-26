@@ -7,6 +7,7 @@ const state = {
     inputList: [],
     outputList: [],
     outputObj: [], // 1 for larger-is-better, -1 for smaller-is-better
+    displayComponent: '',
     importCallback: (data) => {
         return {
             problemData: data,
@@ -20,6 +21,9 @@ const state = {
 const getters = {
     getProblemData(state) {
         return state.problemData;
+    },
+    getExtraInfo(state) {
+        return state.extra;
     }
 };
 
@@ -66,6 +70,7 @@ const mutations = {
         state.inputList = problemInfo.inputList;
         state.outputList = problemInfo.outputList;
         state.outputObj = problemInfo.outputObj;
+        state.displayComponent = problemInfo.displayComponent;
         state.importCallback = problemInfo.importCallback;
         state.extra = problemInfo.extra;
     },

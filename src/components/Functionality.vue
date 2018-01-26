@@ -16,6 +16,7 @@
 
 <script>
     import Cheatsheet from './Cheatsheet';
+    import DesignBuilder from './DesignBuilder';
 
     let sizeScale = [
         'one-third',
@@ -33,7 +34,8 @@
             }
         },
         components: {
-            Cheatsheet
+            Cheatsheet,
+            DesignBuilder
         },
         computed: {
             sizeClass: function () {

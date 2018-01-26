@@ -1,6 +1,6 @@
 let functionalityTypes = new Map();
 functionalityTypes.set('DaphneAnswer', { title: 'Answers', minSize: 'one-third', maxRepeat: 1});
-functionalityTypes.set('DesignInspector', { title: 'Design Inspector', minSize: 'one-third', maxRepeat: 1});
+functionalityTypes.set('DesignBuilder', { title: 'Design Builder', minSize: 'one-third', maxRepeat: 1});
 functionalityTypes.set('DataMining', { title: 'Data Mining', minSize: 'one-third', maxRepeat: 1});
 functionalityTypes.set('Cheatsheet', { title: 'Cheatsheet', minSize: 'one-third', maxRepeat: 1000});
 functionalityTypes.set('Filter', { title: 'Filter', minSize: 'one-third', maxRepeat: 1});
@@ -13,7 +13,7 @@ let newFunctionalityId = 0;
 const state = {
     availableFunctionalities: [
         { name: 'DaphneAnswer', title: 'Answers', icon: 'fa-comments' },
-        { name: 'DesignInspector', title: 'Design Inspector', icon: 'fa-search' },
+        { name: 'DesignBuilder', title: 'Design Builder', icon: 'fa-search' },
         { name: 'DataMining', title: 'Data Mining', icon: 'fa-bar-chart' },
         { name: 'Cheatsheet', title: 'Cheatsheet', icon: 'fa-book' },
         { name: 'Filter', title: 'Filter', icon: 'fa-filter' },
@@ -22,7 +22,7 @@ const state = {
     functionalities: [],
     functionalityCount: {
         'DaphneAnswer': 0,
-        'DesignInspector': 0,
+        'DesignBuilder': 0,
         'DataMining': 0,
         'Cheatsheet': 0,
         'Filter': 0,
