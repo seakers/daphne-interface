@@ -84,17 +84,20 @@
                 clickedArch: 'getClickedArch',
                 numPoints: 'getNumPoints'
             }),
+
             plotWidth() {
                 return this.mainPlotParams.width - this.mainPlotParams.margin.right - this.mainPlotParams.margin.left;
             },
+
             plotHeight() {
                 return this.mainPlotParams.height - this.mainPlotParams.margin.top - this.mainPlotParams.margin.bottom;
             },
+
             numSelectedPoints() {
                 return this.plotData.filter(point => point.selected).length;
             }
-            
         },
+
         methods: {
             ...mapMutations([
                 'updateClickedArch',
@@ -312,19 +315,29 @@
             }
 
         },
+
         watch: {
             problemData: function(val, oldVal) {
                 this.$store.commit('updatePlotData', val);
             },
+
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
             },
+
             hoveredArch: function(val, oldVal) {
                 this.drawPoints(this.context, false);
             },
+
             clickedArch: function(val, oldVal) {
                 this.drawPoints(this.context, false);
             }
+        },
+
+        mounted() {
+            window.addEventListener('resize', () => {
+                this.update(0, 1);
+            });
         }
     }
 </script>

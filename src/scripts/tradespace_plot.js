@@ -3,13 +3,9 @@ import * as d3 from "d3";
 let PubSub = require('pubsub-js');
 
 export default class TradespacePlot {
-    constructor(output_list) {
+    constructor() {
         PubSub.subscribe("update_target_selection", (msg) => {
             this.update_target_selection();
-        });
-
-        window.addEventListener("resize", () => {
-            this.update(0, 1);
         });
     }
 

@@ -82,29 +82,6 @@
                         console.error("Networking error:", e);
                     }
                 }
-            },
-            show_info(arch, hovering) {
-                // Remove the previous info (and save it if we are hovering!!!)
-                if (hovering) {
-                    let modified_arch = this.boolArch();
-                    this.selectedArch.inputs = modified_arch;
-                }
-            },
-            boolArch() {
-                let table_instrument_rows = document.getElementsByClassName('instruments_list');
-                let bitString = [];
-                for (let i = 0; i < 60; i++) {
-                    bitString.push(false);
-                }
-
-                for (let i = 0; i < table_instrument_rows.length; ++i) {
-                    $(table_instrument_rows[i]).children(".arch_box").each((index, element) => {
-                        let position = $(element).text().charCodeAt() - "A".charCodeAt();
-                        bitString[12*i + position] = true;
-                    });
-                }
-
-                return bitString;
             }
         }
     }
