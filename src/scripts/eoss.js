@@ -1,7 +1,3 @@
-import * as utils from './utils';
-
-let PubSub = require('pubsub-js');
-
 class Architecture {
     constructor(id, inputs, outputs) {
         this.id = id;

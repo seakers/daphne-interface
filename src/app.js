@@ -1,10 +1,16 @@
 import Vue from 'vue';
 
 import MainMenu from './components/MainMenu';
+import QuestionBar from './components/QuestionBar';
 import TradespacePlot from './components/TradespacePlot';
 import FunctionalityList from './components/FunctionalityList';
 
 import EOSS from './scripts/eoss';
+
+let annyang = require('annyang');
+let SpeechKITT = window.SpeechKITT;
+let responsiveVoice = window.responsiveVoice;
+
 // Old stuff
 import Daphne from './scripts/daphne';
 import EOSSLabel from './scripts/eoss_label';
@@ -16,7 +22,7 @@ let Sortable = require('sortablejs');
 
 import store from './store';
 
-new Vue({
+let app = new Vue({
     el: '#app',
     store,
     data: function () {
@@ -25,7 +31,7 @@ new Vue({
     },
     methods: {
     },
-    components: { MainMenu, TradespacePlot, FunctionalityList },
+    components: { MainMenu, QuestionBar, TradespacePlot, FunctionalityList },
     mounted() {
         // Set up initial state
         this.$store.commit('setProblem', EOSS);
@@ -53,3 +59,27 @@ Sortable.create(sortable_list, {
     handle: '.panel-heading',
     animation: 150
 });
+
+// Voice recognition
+if (annyang) {
+    annyang.addCallback('result', phrases => {
+        if (responsiveVoice.isPlaying()) {
+            return;
+        }
+        app.$store.commit('setCommand', phrases[0]);
+        app.$store.dispatch('executeCommand');
+    });
+
+    annyang.debug();
+
+    // Tell KITT to use annyang
+    SpeechKITT.annyang();
+
+    // Define a stylesheet for KITT to use
+    SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/themes/flat.css');
+
+    // Render KITT's interface
+    SpeechKITT.vroom();
+
+    SpeechKITT.startRecognition();
+}

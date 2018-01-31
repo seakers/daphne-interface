@@ -1,9 +1,5 @@
-import * as utils from './utils';
 let PubSub = require('pubsub-js');
 let $ = require('jquery');
-let annyang = require('annyang');
-let SpeechKITT = window.SpeechKITT;
-let responsiveVoice = window.responsiveVoice;
 
 // Import templates
 import daphne_answer from '../data/functionalities/daphne_answer.html';
@@ -29,46 +25,6 @@ export default class Daphne {
         this.functionalities.set("filter", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("feature_application", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
 
-        this.responseOutput = {
-            text: this.showText,
-            list: this.showList
-        };
-
-        // Voice recognition
-        if (annyang) {
-            annyang.addCallback('result', phrases => {
-                if (responsiveVoice.isPlaying()) {
-                    return;
-                }
-                $("input[name=command]").val(phrases[0]);
-                this.executeCommand(phrases[0]);
-            });
-
-            annyang.debug();
-
-            // Tell KITT to use annyang
-            SpeechKITT.annyang();
-
-            // Define a stylesheet for KITT to use
-            SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/themes/flat.css');
-
-            // Render KITT's interface
-            SpeechKITT.vroom();
-
-            SpeechKITT.startRecognition();
-        }
-
-        // Setup the Daphne command input
-        $("#send_command").on("click", event => {
-            this.executeCommand($("input[name=command]").val());
-        });
-
-        document.querySelector("input[name=command]").addEventListener("keyup", event => {
-            if(event.key !== "Enter") return;
-            document.querySelector("#send_command").click();
-            event.preventDefault();
-        });
-
         this.websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/api/daphne");
 
         this.websocket.onopen = function() {
@@ -78,75 +34,6 @@ export default class Daphne {
         this.websocket.onmessage = function (data) {
             //ws.send(JSON.stringify(data));
         }
-
-
-    }
-
-
-    showText(text) {
-        return "<div class=\"content\"><p>" + text + "</p></div>";
-    }
-
-
-    showList(list) {
-        let ret = "<div class=\"content\"><p>" + list.begin + "</p>";
-        ret += "<ul>";
-        list.list.forEach(item => {
-            ret += "<li>" + item + "</li>";
-        });
-        ret += "</ul></div>";
-        return ret;
-    }
-
-
-    async executeCommand(command) {
-        if (command == "stop") {
-            responsiveVoice.cancel();
-        }
-        else {
-            try {
-                let req_data = new FormData();
-                req_data.append("command", command);
-                let dataResponse = await fetch(
-                    "/api/daphne/command",
-                    {
-                        method: "POST",
-                        body: req_data,
-                        credentials: "same-origin"
-                    }
-                );
-
-                if (dataResponse.ok) {
-                    let data = await dataResponse.json();
-                    this.processResponse(data["response"]);
-                }
-                else {
-                    console.error("Error processing the command.");
-                }
-            }
-            catch(e) {
-                console.error("Networking error:", e);
-            }
-        }
-    }
-
-
-    processResponse(response) {
-        $(".daphne_answer > div.panel-block").html(this.responseOutput[response["visual_answer_type"]](response["visual_answer"]));
-        responsiveVoice.speak(response["voice_answer"]);
-    }
-
-
-    get_data_ids(data) {
-        if (!data) {
-            data = this.data;
-        }
-
-        let ids = [];
-        for(let i = 0; i < data.length; i++) {
-            ids.push(data[i].id);
-        }
-        return ids;
     }
 
     async addNewFunctionality(functionality) {
