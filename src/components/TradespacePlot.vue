@@ -336,7 +336,7 @@
 
         mounted() {
             window.addEventListener('resize', () => {
-                this.update(0, 1);
+                this.updatePlot(0, 1);
             });
         }
     }

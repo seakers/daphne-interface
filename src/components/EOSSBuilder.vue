@@ -89,7 +89,6 @@
                     // Store the name of the orbit and the assigned instruments
                     jsonArchitecture.push({ 'orbit': orbit, 'children': assigned });
                 }
-                console.log(jsonArchitecture);
                 return jsonArchitecture;
             }
         },
@@ -144,13 +143,11 @@
                             }
                         }
                     }
-                    console.log(event.item, event.from, event.to);
                     if (count > 1) {
                         list.removeChild(event.item);
                     }
                     else {
                         this.$store.commit('updateClickedArchInputs', this.boolArch());
-                        this.$forceUpdate();
                     }
                 }
 

@@ -55,31 +55,32 @@
                 }
             },
             async evaluateArch(event) {
-                let new_inputs = this.boolArch(this.instrument_num);
-                let eq_arrays = (new_inputs.length === this.selectedArch.inputs.length) && new_inputs.every((element, index) => {
-                    return element === this.selectedArch.inputs[index];
+                let newInputs = this.$store.state.tradespacePlot.clickedArchInputs;
+                let oldInputs = this.getProblemData[this.pointID].inputs;
+                let arraysAreEq = (newInputs.length === oldInputs.length) && newInputs.every((element, index) => {
+                    return element === oldInputs[index];
                 });
-                if (!eq_arrays) {
-                    let req_data = new FormData();
-                    req_data.append("inputs", JSON.stringify(this.boolArch(this.instrument_num)));
-                    console.log(this.boolArch(this.instrument_num));
+                if (!arraysAreEq) {
+                    let reqData = new FormData();
+                    reqData.append('inputs', JSON.stringify(newInputs));
+                    console.log(newInputs);
                     try {
-                        let data_response = await fetch("/api/vassar/evaluate-architecture/",
+                        let dataResponse = await fetch('/api/vassar/evaluate-architecture/',
                             {
-                                method: "POST",
-                                body: req_data,
-                                credentials: "same-origin"
+                                method: 'POST',
+                                body: reqData,
+                                credentials: 'same-origin'
                             });
-                        if (data_response.ok) {
-                            let eval_response = await data_response.json();
-                            PubSub.publish(ARCH_ADDED, eval_response);
+                        if (dataResponse.ok) {
+                            let newArch = await dataResponse.json();
+                            this.$store.dispatch('addNewData', newArch);
                         }
                         else {
-                            console.error("Error evaluating the architecture");
+                            console.error('Error evaluating the architecture');
                         }
                     }
                     catch(e) {
-                        console.error("Networking error:", e);
+                        console.error('Networking error:', e);
                     }
                 }
             }

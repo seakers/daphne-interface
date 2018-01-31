@@ -97,22 +97,3 @@ function preprocessing(data) {
 
     return output;
 }
-
-
-export class EOSSOld {
-    constructor() {
-    }
-
-    string2BooleanArray(bitString) {
-        let boolArray = [];
-        boolArray.length = 0;
-        for (let i = 0; i < bitString.length; i++) {
-            if (bitString.charAt(i) == '1') {
-                boolArray.push(true);
-            } else {
-                boolArray.push(false);
-            }
-        }
-        return boolArray;
-    }
-}

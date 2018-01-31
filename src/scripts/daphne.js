@@ -25,7 +25,6 @@ export default class Daphne {
         // Available functionalities
         this.functionalities = new Map();
         this.functionalities.set("daphne_answer", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
-        this.functionalities.set("design_inspector", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("data_mining", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("filter", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("feature_application", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
@@ -75,7 +74,6 @@ export default class Daphne {
             event.preventDefault();
         });
 
-        //this.websocket = new WebSocket("ws://127.0.0.1:8001/api/daphne"); // Localhost
         this.websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/api/daphne");
 
         this.websocket.onopen = function() {

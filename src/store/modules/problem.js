@@ -58,6 +58,19 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
+    },
+    async addNewData({ state, commit }, newData) {
+        let dataAlreadyThere = false;
+        state.problemData.forEach(d => {
+            if (d.outputs[0] === newData.outputs[0] && d.outputs[1] === newData.outputs[1]) {
+                dataAlreadyThere = true;
+            }
+        });
+
+        if (!dataAlreadyThere) {
+            let procData = await state.importCallback([newData]);
+            commit('addProblemData', procData.problemData[0]);
+        }
     }
 };
 
@@ -79,6 +92,9 @@ const mutations = {
     },
     updateProblemData(state, problemData) {
         state.problemData = problemData;
+    },
+    addProblemData(state, newData) {
+        state.problemData.push(newData);
     }
 };
 
