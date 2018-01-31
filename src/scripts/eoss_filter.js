@@ -377,7 +377,7 @@ export default class EOSSFilter extends Filter {
         var feature_expression = input_expression;
 
         // Cancel all previous selections
-        this.tradespace_plot.cancel_selection('remove_highlighted');
+        this.tradespace_plot.cancelSelection('remove_highlighted');
 
         // If filter expression is empty, return
         if(feature_expression==="" || !feature_expression){

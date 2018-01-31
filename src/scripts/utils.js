@@ -1,6 +1,3 @@
-export const DATA_UPDATED = "data_updated";
-export const DATA_PROCESSED = "data_processed";
-export const ARCH_SELECTED = "arch_selected";
 export const SELECTION_UPDATED = "selection_updated";
 export const APPLY_FILTER = "apply_filter";
 

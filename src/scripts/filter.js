@@ -337,7 +337,7 @@ export default class Filter {
 //        var feature_expression = input_expression;
 //
 //        // Cancel all previous selections
-//        ifeed.main_plot.cancel_selection('remove_highlighted');
+//        ifeed.main_plot.cancelSelection('remove_highlighted');
 //
 //        // If filter expression is empty, return
 //        if(feature_expression==="" || !feature_expression){

@@ -14,7 +14,11 @@ const state = {
     clickedArch: -1,
     clickedArchInputs: [],
     hoveredArch: -1,
-    colorMap: {}
+    colorMap: {},
+    selectionMode: 'zoom-pan',
+    selectedArchs: [],
+    highlightedArchs: [],
+    hiddenArchs: []
 };
 
 // getters
@@ -35,7 +39,6 @@ const getters = {
         return state.clickedArch;
     },
     getPointColor: (state) => (index) => {
-        let point = state.plotData[index];
         if (state.clickedArch === index) {
             return state.colorList.important;
         }
@@ -44,13 +47,13 @@ const getters = {
                 return state.colorList.mouseover;
             }
             else {
-                if (point.selected && point.highlighted) {
+                if (state.selectedArchs[index] && state.highlightedArchs[index]) {
                     return state.colorList.overlap;
                 }
-                else if (point.selected) {
+                else if (state.selectedArchs[index]) {
                     return state.colorList.selected;
                 }
-                else if (point.highlighted) {
+                else if (state.highlightedArchs[index]) {
                     return state.colorList.highlighted;
                 }
                 else {
@@ -66,6 +69,15 @@ const getters = {
         else {
             return 'circle';
         }
+    },
+    getSelectedArchs(state) {
+        return state.selectedArchs;
+    },
+    getHighlightedArchs(state) {
+        return state.highlightedArchs;
+    },
+    getHiddenArchs(state) {
+        return state.hiddenArchs;
     }
 };
 
@@ -77,11 +89,16 @@ const actions = {
 const mutations = {
     updatePlotData(state, problemData) {
         let plotData = JSON.parse(JSON.stringify(problemData));
-        plotData.forEach(point => {
-            point.selected = false;
-            point.highlighted = false;
-            point.hidden = false;
-        });
+        // Create aux arrays
+        state.selectedArchs = [];
+        state.selectedArchs.length = plotData.length;
+        state.selectedArchs.fill(false);
+        state.highlightedArchs = [];
+        state.highlightedArchs.length = plotData.length;
+        state.highlightedArchs.fill(false);
+        state.hiddenArchs = [];
+        state.hiddenArchs.length = plotData.length;
+        state.hiddenArchs.fill(false);
         // Mark the last point added as the selected one
         state.clickedArch = plotData.length - 1;
         state.clickedArchInputs = plotData[state.clickedArch].inputs;
@@ -117,6 +134,15 @@ const mutations = {
     },
     updateClickedArchInputs(state, inputs) {
         state.clickedArchInputs = inputs;
+    },
+    updateSelectionMode(state, selectionMode) {
+        state.selectionMode = selectionMode;
+    },
+    updateSelectedArchs(state, selectedArchs) {
+        state.selectedArchs = selectedArchs;
+    },
+    updateHighlightedArchs(state, highlightedArchs) {
+        state.highlightedArchs = highlightedArchs;
     }
 };
 

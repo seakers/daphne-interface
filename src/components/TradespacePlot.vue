@@ -5,9 +5,9 @@
                 Tradespace exploration |
                 Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}
             </p>
-            <div class="panel-block" id="main_plot_block">
-                <div id="main_plot"></div>
-                <div id="selections_block">
+            <div class="panel-block" id="main-plot-block">
+                <div id="main-plot"></div>
+                <div id="selections-block">
                     <div class="card" id="interaction_modes">
                         <header class="card-header">
                             <p class="card-header-title">
@@ -19,21 +19,21 @@
                                 <!--<span class="tooltiptext">Zoom/Pan: This option allows zooming/panning on the scatter plot</span>-->
                                 <label class="radio">
                                     Zoom/Pan:
-                                    <input type="radio" name="mouse-selection" value="zoom-pan" checked />
+                                    <input type="radio" name="mouse-selection" value="zoom-pan" v-model="selectionMode" />
                                 </label>
                             </div>
                             <div class="tooltip">
                                 <!--<span class="tooltiptext">Drag-select: This option allows selecting designs by dragging over points</span>-->
                                 <label class="radio">
                                     Drag-select:
-                                    <input type="radio" name="mouse-selection" value="drag-select" />
+                                    <input type="radio" name="mouse-selection" value="drag-select" v-model="selectionMode" />
                                 </label>
                             </div>
                             <div class="tooltip">
                                 <!--<span class="tooltiptext">Deselect: This option allows de-selecting designs by dragging over points</span>-->
                                 <label class="radio">
                                     Deselect:
-                                    <input type="radio" name="mouse-selection" value="de-select" />
+                                    <input type="radio" name="mouse-selection" value="de-select" v-model="selectionMode" />
                                 </label>
                             </div>
                         </div>
@@ -42,7 +42,7 @@
                         <div class="card-content is-small">
                             <div class="field">
                                 <p class="control">
-                                    <button class="button" id="cancel_selection">Cancel all selections</button>
+                                    <button class="button" id="cancel-selection" v-on:click="cancelSelection()">Cancel all selections</button>
                                 </p>
                             </div>
                         </div>
@@ -56,6 +56,7 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import * as d3 from 'd3';
+    import 'd3-selection-multi';
 
     export default {
         name: 'tradespace-plot',
@@ -82,7 +83,10 @@
                 colorMap: 'getColorMap',
                 hoveredArch: 'getHoveredArch',
                 clickedArch: 'getClickedArch',
-                numPoints: 'getNumPoints'
+                numPoints: 'getNumPoints',
+                selectedArchs: 'getSelectedArchs',
+                highlightedArchs: 'getHighlightedArchs',
+                hiddenArchs: 'getHiddenArchs'
             }),
 
             plotWidth() {
@@ -94,7 +98,16 @@
             },
 
             numSelectedPoints() {
-                return this.plotData.filter(point => point.selected).length;
+                return this.selectedArchs.filter(point => point).length;
+            },
+
+            selectionMode: {
+                get() {
+                    return this.$store.state.tradespacePlot.selectionMode;
+                },
+                set(newSelectionMode) {
+                    this.$store.commit('updateSelectionMode', newSelectionMode);
+                }
             }
         },
 
@@ -105,16 +118,16 @@
             ]),
             resetMainPlot() {
                 //Resets the main plot
-                d3.select('#main_plot').select('svg').remove();
-                d3.select('#main_plot').selectAll('canvas').remove();
+                d3.select('#main-plot').select('svg').remove();
+                d3.select('#main-plot').selectAll('canvas').remove();
             },
             
             updatePlot(xIndex, yIndex) {
                 this.resetMainPlot();
 
                 // Update width
-                this.mainPlotParams.width = document.getElementById('main_plot_block').clientWidth
-                    - document.getElementById('selections_block').offsetWidth - 30;
+                this.mainPlotParams.width = document.getElementById('main-plot-block').clientWidth
+                    - document.getElementById('selections-block').offsetWidth - 30;
                 let margin = this.mainPlotParams.margin;
 
                 // setup x
@@ -134,7 +147,7 @@
                 this.yMap = d => yScale(yValue(d)); // data -> display
                 let yAxis = d3.axisLeft(yScale);
 
-                d3.select('#main_plot')
+                d3.select('#main-plot')
                     .style('width', this.mainPlotParams.width + 'px')
                     .style('height', this.mainPlotParams.height + 'px');
 
@@ -148,7 +161,7 @@
                         this.drawPoints(this.context, false);
                     });
 
-                let svg = d3.select('#main_plot')
+                let svg = d3.select('#main-plot')
                     .append('svg')
                     .style('position', 'absolute')
                     .attr('width', this.plotWidth + margin.left + margin.right)
@@ -157,7 +170,7 @@
                     .append('g')
                     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-                let canvas = d3.select('#main_plot')
+                let canvas = d3.select('#main-plot')
                     .append('canvas')
                     .style('position', 'absolute')
                     .style('top', margin.top + 'px')
@@ -168,7 +181,7 @@
 
                 this.context = canvas.node().getContext('2d');
 
-                let hiddenCanvas = d3.select('#main_plot')
+                let hiddenCanvas = d3.select('#main-plot')
                     .append('canvas')
                     .style('position', 'absolute')
                     .style('top', margin.top + 'px')
@@ -213,14 +226,10 @@
                 this.drawPoints(this.context, false);
 
                 // Canvas interaction
-                let that = this;
+                let self = this;
 
-                canvas.on('mousemove.inspection', function() { that.canvasMousemove(); });
-                canvas.on('click.inspection', function() { that.canvasClick(); });
-
-                // Set button click operations TODO: Add functions
-                //d3.select('button#cancel_selection').on('click', () => { that.cancel_selection(); });
-                //d3.select('#interaction_modes').selectAll('label').on('click', () => { that.toggle_selection_mode(); });
+                canvas.on('mousemove.inspection', function() { self.canvasMousemove(); });
+                canvas.on('click.inspection', function() { self.canvasClick(); });
             },
 
             drawPoints(context, hidden) {
@@ -252,7 +261,7 @@
                 this.drawPoints(this.hiddenContext, true);
 
                 // Get mouse positions from the main canvas.
-                let mousePos = d3.mouse(d3.select("#main_plot").select("canvas").node());
+                let mousePos = d3.mouse(d3.select('#main-plot').select('canvas').node());
                 let mouseX = mousePos[0];
                 let mouseY = mousePos[1];
 
@@ -260,7 +269,7 @@
                 let color = this.hiddenContext.getImageData(mouseX-3, mouseY-3, 6, 6).data;
                 let colorList = {};
                 for (let i = 0; i < color.length; i += 4) {
-                    let colorRgb = "rgb(" + color[i] + "," + color[i+1] + "," + color[i+2] + ")";
+                    let colorRgb = 'rgb(' + color[i] + ',' + color[i+1] + ',' + color[i+2] + ')';
                     if (colorRgb in colorList) {
                         colorList[colorRgb] += 1;
                     }
@@ -312,8 +321,43 @@
                         this.updateClickedArch(point);
                     }
                 }
-            }
+            },
 
+            /*
+               Removes selections and/or highlights in the scatter plot
+               @param option: option to remove all selections and highlights or remove only highlights
+            */
+            cancelSelection(option = '') {
+                if (option === '') {
+                    // Remove both highlights and selections
+                    let selectedArchs = [];
+                    selectedArchs.length = this.plotData.length;
+                    selectedArchs.fill(false);
+                    let highlightedArchs = [];
+                    highlightedArchs.length = this.plotData.length;
+                    highlightedArchs.fill(false);
+
+                    this.$store.commit('updateSelectedArchs', selectedArchs);
+                    this.$store.commit('updateHighlightedArchs', highlightedArchs);
+                }
+                else if (option === 'remove_selection') {
+                    // Remove only selection
+                    let selectedArchs = [];
+                    selectedArchs.length = this.plotData.length;
+                    selectedArchs.fill(false);
+
+                    this.$store.commit('updateSelectedArchs', selectedArchs);
+                }
+                else if (option === 'remove_highlighted') {
+                    // Remove only highlights
+                    let highlightedArchs = [];
+                    highlightedArchs.length = this.plotData.length;
+                    highlightedArchs.fill(false);
+
+                    this.$store.commit('updateHighlightedArchs', highlightedArchs);
+
+                }
+            }
         },
 
         watch: {
@@ -331,6 +375,154 @@
 
             clickedArch: function(val, oldVal) {
                 this.drawPoints(this.context, false);
+            },
+
+            selectionMode: function(val, oldVal) {
+                let margin = this.mainPlotParams.margin;
+                let width  = this.mainPlotParams.width;
+                let height = this.mainPlotParams.height;
+
+                if (this.selectionMode === 'zoom-pan') { // Zoom
+                    d3.select('#main-plot').select('svg')
+                        .on('mousedown.modes',null)
+                        .on('mousemove.modes',null)
+                        .on('mouseup.modes',null)
+                        .call(this.zoom);
+
+                    d3.select('#main-plot').selectAll('canvas')
+                        .on('mousedown.modes',null)
+                        .on('mousemove.modes',null)
+                        .on('mouseup.modes.modes',null)
+                        .call(this.zoom);
+                }
+                else {
+                    let svg = d3.select('#main-plot').select('svg')
+                        .on('.zoom', null);
+
+                    let canvases = d3.select('#main-plot').selectAll('canvas')
+                        .on('.zoom', null);
+
+                    let self = this;
+
+                    function selectMousedown() {
+                        let mousePos = d3.mouse(this);
+                        svg.append('rect')
+                            .attrs(
+                                {
+                                    rx     : 0,
+                                    ry     : 0,
+                                    class  : 'selection',
+                                    x      : mousePos[0],
+                                    y      : mousePos[1],
+                                    width  : 0,
+                                    height : 0,
+                                    x0     : mousePos[0],
+                                    y0     : mousePos[1]
+                                })
+                            .style('background-color', '#EEEEEE')
+                            .style('opacity', 0.18)
+                            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                    }
+
+                    function selectMousemove() {
+                        let selection = svg.select('rect.selection');
+                        if (!selection.empty()) {
+                            let selectionUpdated = false;
+                            let mousePos = d3.mouse(this);
+
+                            let box = {
+                                x      : parseInt(selection.attr('x'), 10),
+                                y      : parseInt(selection.attr('y'), 10),
+                                x0     : parseInt(selection.attr('x0'), 10),
+                                y0     : parseInt(selection.attr('y0'), 10),
+                                width  : parseInt(selection.attr('width'), 10),
+                                height : parseInt(selection.attr('height'), 10)
+                            };
+
+                            let move = {
+                                x : mousePos[0] - box.x0,
+                                y : mousePos[1] - box.y0
+                            };
+
+                            if (move.x < 0) {
+                                box.x = box.x0 + move.x;
+                            }
+                            else {
+                                box.x = box.x0;
+                            }
+
+                            if (move.y < 0) {
+                                box.y = box.y0 + move.y;
+                            }
+                            else {
+                                box.y = box.y0;
+                            }
+
+                            box.width = Math.abs(move.x);
+                            box.height = Math.abs(move.y);
+
+                            selection.attrs(box);
+
+                            let newSelectedArchs = self.selectedArchs.slice();
+
+                            if (self.selectionMode === 'drag-select') { // Make selection
+                                self.plotData.forEach((point, index) => {
+                                    let tx = self.transform.applyX(self.xMap(point));
+                                    let ty = self.transform.applyY(self.yMap(point));
+
+                                    if( tx >= box.x && tx <= box.x + box.width &&
+                                        ty >= box.y && ty <= box.y + box.height)
+                                    {
+                                        if (!self.hiddenArchs[index] && !self.selectedArchs[index]) {
+                                            // Select
+                                            newSelectedArchs[index] = true;
+                                            selectionUpdated = true;
+                                        }
+                                    }
+                                });
+                            }
+                            else {  // De-select
+                                self.plotData.forEach((point, index) => {
+                                    let tx = self.transform.applyX(self.xMap(point));
+                                    let ty = self.transform.applyY(self.yMap(point));
+
+                                    if( tx >= box.x && tx <= box.x + box.width &&
+                                        ty >= box.y && ty <= box.y + box.height)
+                                    {
+                                        if (!self.hiddenArchs[index] && self.selectedArchs[index]) {
+                                            newSelectedArchs[index] = false;
+                                            selectionUpdated = true;
+                                        }
+                                    }
+                                });
+                            }
+
+                            if (selectionUpdated) {
+                                self.$store.commit('updateSelectedArchs', newSelectedArchs);
+                            }
+                        }
+                    }
+
+                    function selectMouseup() {
+                        // remove selection frame
+                        svg.selectAll('rect.selection').remove();
+                    }
+
+                    svg.on('mousedown.modes', selectMousedown)
+                        .on('mousemove.modes', selectMousemove)
+                        .on('mouseup.modes', selectMouseup);
+
+                    canvases.on('mousedown.modes', selectMousedown)
+                        .on('mousemove.modes', selectMousemove)
+                        .on('mouseup.modes', selectMouseup);
+                }
+            },
+
+            selectedArchs: function(val, oldVal) {
+                this.drawPoints(this.context, false);
+                // TODO: Vueify this
+                //PubSub.publish(SELECTION_UPDATED);
+                //PubSub.publish('update_target_selection');
             }
         },
 

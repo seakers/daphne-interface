@@ -34,11 +34,6 @@ export default class Daphne {
             list: this.showList
         };
 
-        //Interaction states
-        this.UI_states = {
-            selection_changed: true
-        };
-
         // Voice recognition
         if (annyang) {
             annyang.addCallback('result', phrases => {

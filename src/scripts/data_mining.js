@@ -48,6 +48,7 @@ export default class DataMining {
             d3.selectAll("#run_data_mining").on("click", () => { this.run(); });
         });
 
+        // TODO: adapt to Vuew system with reactivity to state
         PubSub.subscribe(utils.SELECTION_UPDATED, (msg) => {
             this.reset();
         });
@@ -80,7 +81,7 @@ export default class DataMining {
     async run() {
 
         // Remove all highlights in the scatter plot (retain target solutions)
-        this.tradespace_plot.cancel_selection("remove_highlighted");
+        this.tradespace_plot.cancelSelection("remove_highlighted");
 
         let selectedArchs = [];
         this.tradespace_plot.data.forEach(point => {
