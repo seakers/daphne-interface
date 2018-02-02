@@ -1,14 +1,7 @@
-import * as utils from './utils';
-import * as d3 from 'd3';
-
-export default class DataMining {
+class DataMining {
     constructor(tradespace_plot, label) {
         this.tradespace_plot = tradespace_plot;
         this.label = label;
-
-        this.support_threshold = 0.002;
-        this.confidence_threshold = 0.2;
-        this.lift_threshold = 1;
 
         this.all_features = [];
         this.mined_features = [];
@@ -43,171 +36,14 @@ export default class DataMining {
         this.yScale = null;
         this.xAxis = null;
         this.yAxis = null;
-
-        PubSub.subscribe("data_mining_added", (msg) => {
-            d3.selectAll("#run_data_mining").on("click", () => { this.run(); });
-        });
-
-        // TODO: adapt to Vuew system with reactivity to state
-        PubSub.subscribe(utils.SELECTION_UPDATED, (msg) => {
-            this.reset();
-        });
-
     }
-
-
-    reset() {
-        d3.select(".data_mining > .panel-block").select("g").remove();
-
-        let guideline = d3.select(".data_mining > .panel-block")
-            .append("g");
-
-        guideline.append("p")
-            .text("To run data mining, select target solutions on the scatter plot. Then click the button below.");
-
-        guideline.append("div")
-            .classed("field", true)
-            .append("div")
-            .classed("control", true)
-            .append("a")
-            .classed("button is-info", true)
-            .attr("id","run_data_mining")
-            .text("Run data mining");
-
-        PubSub.publish("data_mining_added");
-    }
-
-
-    async run() {
-
-        // Remove all highlights in the scatter plot (retain target solutions)
-        this.tradespace_plot.cancelSelection("remove_highlighted");
-
-        let selectedArchs = [];
-        this.tradespace_plot.data.forEach(point => {
-            if (!point.hidden && point.selected) {
-                selectedArchs.push(point);
-            }
-        });
-        let nonSelectedArchs = [];
-        this.tradespace_plot.data.forEach(point => {
-            if (!point.hidden && !point.selected) {
-                nonSelectedArchs.push(point);
-            }
-        });
-
-        let numOfSelectedArchs = selectedArchs.length;
-        let numOfNonSelectedArchs = nonSelectedArchs.length;
-
-        if (numOfSelectedArchs == 0) {
-            alert("First select target solutions!");
-        }
-        else {
-            // Store the id's of all dots
-            let selected = [];
-            let non_selected = [];
-
-            selectedArchs.forEach(arch => {
-                selected.push(arch.id);
-            });
-            nonSelectedArchs.forEach(arch => {
-                non_selected.push(arch.id);
-            });
-
-            this.mined_features = await this.get_driving_features(selected, non_selected, this.support_threshold,
-                this.confidence_threshold, this.lift_threshold);
-
-            this.all_features = this.mined_features;
-
-            if (this.all_features.length === 0) {
-                return;
-            }
-
-            this.display_features();
-        }
-    }
-
-
-    async get_driving_features(selected, non_selected, support_threshold, confidence_threshold, lift_threshold) {
-        let output;
-        try {
-            let req_data = new FormData();
-            req_data.append("selected", JSON.stringify(selected));
-            req_data.append("non_selected", JSON.stringify(non_selected));
-            req_data.append("supp", support_threshold);
-            req_data.append("conf", confidence_threshold);
-            req_data.append("lift", lift_threshold);
-            let data_response = await fetch(
-                "/api/data-mining/get-driving-features/",
-                {
-                    method: "POST",
-                    body: req_data,
-                    credentials: "same-origin"
-                }
-            );
-
-            if (data_response.ok) {
-                let data = await data_response.json();
-                if (data === "[]") {
-                    alert("No driving feature mined. Please try modifying the selection. (Try selecting more designs)");
-                }
-                output = data;
-            }
-            else {
-                console.error("Error obtaining the driving features.");
-            }
-        }
-        catch(e) {
-            console.error("Networking error:", e);
-        }
-
-        return output;
-    }
-
-
-    display_features() {
-        // Set variables
-        this.df_i = 0;
-
-        // Remove previous content
-        d3.select(".data_mining > .panel-block").select("g").remove();
-
-        let tab = d3.select(".data_mining > .panel-block")
-            .append("g")
-            .style("display", "flex")
-            .style("justify-content", "space-between")
-            .style("width", "100%");
-
-        // Create plot div's
-        tab.append("div")
-            .attr("id", "feature_plot")
-            .style("width", "100%")
-            .style("height", "100%");
-
-        // Create venn diagram div
-//        tab.append("div")
-//            .attr("id", "venn_diagram")
-//            .style("width", "25%")
-//            .append("p")
-//                .text("Total number of designs: " + this.tradespace_plot.get_num_of_archs());
-
-        // Initialize location
-        for(let i = 0; i < this.all_features.length; i++){
-            this.all_features[i].x0 = -1;
-            this.all_features[i].y0 = -1;
-            this.all_features[i].id = this.df_i++;
-        }
-
-        this.update_feature_plot();
-    }
-
 
     update_feature_plot(remove_last_feature = false) {
         function get_utopia_point() {
             // Utopia point
             return objects.filter(d => {
                 if (d.name === "utopiaPoint") {
-                   return true;
+                    return true;
                 }
                 return false;
             });
@@ -217,7 +53,7 @@ export default class DataMining {
             // The current feature
             return objects.filter(d => {
                 if (d.added === "0") {
-                   return true;
+                    return true;
                 }
                 return false;
             });
@@ -332,10 +168,10 @@ export default class DataMining {
                 gY.call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
 
                 objects.attr("transform", d => {
-                        let xCoord = d3.event.transform.applyX(xMap(d));
-                        let yCoord = d3.event.transform.applyY(yMap(d));
-                        return "translate(" + xCoord + "," + yCoord + ")";
-                    });
+                    let xCoord = d3.event.transform.applyX(xMap(d));
+                    let yCoord = d3.event.transform.applyY(yMap(d));
+                    return "translate(" + xCoord + "," + yCoord + ")";
+                });
             });
 
         // Reset plot
@@ -346,7 +182,7 @@ export default class DataMining {
             .attr("height", this.height + this.margin.top + this.margin.bottom)
             .call(zoom)
             .append("g")
-                .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+            .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
         // Clipping area
         let clip = svg.append("defs").append("svg:clipPath")
@@ -359,8 +195,8 @@ export default class DataMining {
 
         // Actual points and clipping
         let triangleplot = svg.append("g")
-             .attr("id", "triangleplot")
-             .attr("clip-path", "url(#feature_clip)");
+            .attr("id", "triangleplot")
+            .attr("clip-path", "url(#feature_clip)");
 
         let objects = triangleplot.selectAll(".object")
             .data(this.all_features)
@@ -376,11 +212,11 @@ export default class DataMining {
 
         // Add interaction to the features on the plot
         objects.filter((d, i) => {
-                if (d.name === "utopiaPoint") {
-                    return false;
-                }
-                return true;
-            })
+            if (d.name === "utopiaPoint") {
+                return false;
+            }
+            return true;
+        })
             .on("mouseover", (d) => { this.feature_mouseover(d); })
             .on("mouseout", (d) => { this.feature_mouseout(d); })
             .on("click", (d) => { this.feature_click(d); });
@@ -436,7 +272,7 @@ export default class DataMining {
 
             objects.filter(d => {
                 if (d.added === "1") {
-                   return true;
+                    return true;
                 }
                 return false;
             }).style("opacity", 1);
@@ -507,7 +343,7 @@ export default class DataMining {
                 let x = mouseLoc_x + tooltip_location.x;
                 let y = mouseLoc_y + tooltip_location.y;
                 return "translate(" + x + "," + y + ")";
-             })
+            })
             .attr("width", tooltip_width)
             .attr("height", tooltip_height)
             .style("fill", "#4B4B4B")
@@ -523,9 +359,9 @@ export default class DataMining {
             .data([ { id: id, expression: expression, metrics: metrics } ])
             .html(d => {
                 let output = "" + this.label.pp_feature(d.expression) + "<br><br> lift: " + round_num(d.metrics[1]) +
-                "<br> Support: " + round_num(d.metrics[0]) +
-                "<br> Confidence(F->S): " + round_num(d.metrics[2]) +
-                "<br> Confidence(S->F): " + round_num(d.metrics[3]);
+                    "<br> Support: " + round_num(d.metrics[0]) +
+                    "<br> Confidence(F->S): " + round_num(d.metrics[2]) +
+                    "<br> Confidence(S->F): " + round_num(d.metrics[3]);
                 return output;
             })
             .style("padding", "8px")

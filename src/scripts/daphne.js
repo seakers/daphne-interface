@@ -2,9 +2,6 @@ let PubSub = require('pubsub-js');
 let $ = require('jquery');
 
 // Import templates
-import daphne_answer from '../data/functionalities/daphne_answer.html';
-import data_mining from '../data/functionalities/data_mining.html';
-import design_inspector from '../data/functionalities/design_inspector.html';
 import feature_application from '../data/functionalities/feature_application.html';
 import filter from '../data/functionalities/filter.html';
 
@@ -20,7 +17,6 @@ export default class Daphne {
 
         // Available functionalities
         this.functionalities = new Map();
-        this.functionalities.set("daphne_answer", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("data_mining", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("filter", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("feature_application", { minSize: "one-third", maxRepeat: 1, instances: new Map() });

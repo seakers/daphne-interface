@@ -4,6 +4,7 @@ import problem from './modules/problem';
 import tradespacePlot from './modules/tradespace-plot';
 import functionalityList from './modules/functionality-list';
 import daphne from './modules/daphne';
+import dataMining from './modules/data-mining';
 
 Vue.use(Vuex);
 
@@ -15,7 +16,8 @@ export default new Vuex.Store({
         daphne,
         problem,
         tradespacePlot,
-        functionalityList
+        functionalityList,
+        dataMining
     },
     strict: debug
 });

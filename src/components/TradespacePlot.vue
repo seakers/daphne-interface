@@ -42,7 +42,7 @@
                         <div class="card-content is-small">
                             <div class="field">
                                 <p class="control">
-                                    <button class="button" id="cancel-selection" v-on:click="cancelSelection()">Cancel all selections</button>
+                                    <button class="button" id="cancel-selection" v-on:click="cancelSelection">Cancel all selections</button>
                                 </p>
                             </div>
                         </div>
@@ -56,6 +56,7 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import * as d3 from 'd3';
+    import {debounce} from 'lodash-es';
     import 'd3-selection-multi';
 
     export default {
@@ -327,35 +328,46 @@
                Removes selections and/or highlights in the scatter plot
                @param option: option to remove all selections and highlights or remove only highlights
             */
-            cancelSelection(option = '') {
-                if (option === '') {
-                    // Remove both highlights and selections
-                    let selectedArchs = [];
-                    selectedArchs.length = this.plotData.length;
-                    selectedArchs.fill(false);
-                    let highlightedArchs = [];
-                    highlightedArchs.length = this.plotData.length;
-                    highlightedArchs.fill(false);
+            cancelSelection() {
+                // Remove both highlights and selections
+                this.$store.commit('clearSelectedArchs');
+                this.$store.commit('clearHighlightedArchs');
+            },
 
-                    this.$store.commit('updateSelectedArchs', selectedArchs);
-                    this.$store.commit('updateHighlightedArchs', highlightedArchs);
+            async updateTargetSelection() {
+                let selectedIds = [];
+                let nonSelectedIds = [];
+                this.selectedArchs.forEach((point, index) => {
+                    if (point) {
+                        selectedIds.push(index);
+                    }
+                    else {
+                        nonSelectedIds.push(index);
+                    }
+                });
+
+                try {
+                    let reqData = new FormData();
+                    reqData.append('selected', JSON.stringify(selected));
+                    reqData.append('non_selected', JSON.stringify(non_selected));
+                    let dataResponse = await fetch(
+                        '/api/ifeed/set-target/',
+                        {
+                            method: 'POST',
+                            body: reqData,
+                            credentials: 'same-origin'
+                        }
+                    );
+
+                    if (dataResponse.ok) {
+                        console.log('Target selection updated')
+                    }
+                    else {
+                        console.error('Error obtaining the driving features.');
+                    }
                 }
-                else if (option === 'remove_selection') {
-                    // Remove only selection
-                    let selectedArchs = [];
-                    selectedArchs.length = this.plotData.length;
-                    selectedArchs.fill(false);
-
-                    this.$store.commit('updateSelectedArchs', selectedArchs);
-                }
-                else if (option === 'remove_highlighted') {
-                    // Remove only highlights
-                    let highlightedArchs = [];
-                    highlightedArchs.length = this.plotData.length;
-                    highlightedArchs.fill(false);
-
-                    this.$store.commit('updateHighlightedArchs', highlightedArchs);
-
+                catch(e) {
+                    console.error('Networking error:', e);
                 }
             }
         },
@@ -464,6 +476,7 @@
                             selection.attrs(box);
 
                             let newSelectedArchs = self.selectedArchs.slice();
+                            let justSelectedArchs = new Set();
 
                             if (self.selectionMode === 'drag-select') { // Make selection
                                 self.plotData.forEach((point, index) => {
@@ -476,6 +489,15 @@
                                         if (!self.hiddenArchs[index] && !self.selectedArchs[index]) {
                                             // Select
                                             newSelectedArchs[index] = true;
+                                            justSelectedArchs.add(index);
+                                            selectionUpdated = true;
+                                        }
+                                    }
+                                    else {
+                                        if (!self.hiddenArchs[index] && justSelectedArchs.has(index)) {
+                                            // Select
+                                            newSelectedArchs[index] = false;
+                                            justSelectedArchs.remove(index);
                                             selectionUpdated = true;
                                         }
                                     }
@@ -491,6 +513,14 @@
                                     {
                                         if (!self.hiddenArchs[index] && self.selectedArchs[index]) {
                                             newSelectedArchs[index] = false;
+                                            justSelectedArchs.add(index);
+                                            selectionUpdated = true;
+                                        }
+                                    }
+                                    else {
+                                        if (!self.hiddenArchs[index] && justSelectedArchs.has(index)) {
+                                            newSelectedArchs[index] = true;
+                                            justSelectedArchs.remove(index);
                                             selectionUpdated = true;
                                         }
                                     }
@@ -520,9 +550,7 @@
 
             selectedArchs: function(val, oldVal) {
                 this.drawPoints(this.context, false);
-                // TODO: Vueify this
-                //PubSub.publish(SELECTION_UPDATED);
-                //PubSub.publish('update_target_selection');
+                debounce(this.updateTargetSelection, 1000);
             }
         },
 

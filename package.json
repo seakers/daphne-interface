@@ -20,6 +20,7 @@
     "d3": "^4.12.2",
     "d3-selection-multi": "^1.0.1",
     "jquery": "^3.2.1",
+    "lodash-es": "^4.17.4",
     "pubsub-js": "^1.5.8",
     "sortablejs": "^1.7.0",
     "speechkitt": "^1.0.0",

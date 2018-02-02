@@ -143,6 +143,16 @@ const mutations = {
     },
     updateHighlightedArchs(state, highlightedArchs) {
         state.highlightedArchs = highlightedArchs;
+    },
+    clearSelectedArchs(state) {
+        state.selectedArchs = [];
+        state.selectedArchs.length = state.plotData.length;
+        state.selectedArchs.fill(false);
+    },
+    clearHighlightedArchs(state) {
+        state.highlightedArchs = [];
+        state.highlightedArchs.length = state.plotData.length;
+        state.highlightedArchs.fill(false);
     }
 };
 
