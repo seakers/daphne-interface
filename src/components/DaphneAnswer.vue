@@ -1,35 +1,42 @@
 <template>
-    <div class="panel-block functionality">
-        <p>The answers from Daphne will be displayed here.</p>
+    <div class="panel-block functionality content">
+        <img src="assets/img/loader.svg" style="margin: auto;" height="64" width="64" v-if="isLoading">
+        <template v-else>
+            <component v-if="getResponse !== {}" v-bind:is="responseTypes[getResponse['visual_answer_type']]"></component>
+            <p v-else>The answers from Daphne will be displayed here.</p>
+        </template>
     </div>
 </template>
 
 <script>
-    responseOutput = {
-        text: this.showText,
-        list: this.showList
-    };
+    import { mapGetters } from 'vuex';
+    import TextResponse from './TextResponse';
+    import ListResponse from './ListResponse';
 
-    function showText(text) {
-        return "<div class=\"content\"><p>" + text + "</p></div>";
-    }
-
-    function showList(list) {
-        let ret = "<div class=\"content\"><p>" + list.begin + "</p>";
-        ret += "<ul>";
-        list.list.forEach(item => {
-            ret += "<li>" + item + "</li>";
-        });
-        ret += "</ul></div>";
-        return ret;
-    }
-
-    processResponse(response) {
-        $(".daphne_answer > div.panel-block").html(responseOutput[response["visual_answer_type"]](response["visual_answer"]));
-    }
+    let loaderImage = require('../images/loader.svg');
 
     export default {
-        name: 'daphne-answer'
+        name: 'daphne-answer',
+        data() {
+            return {
+                responseTypes: {
+                    text: 'TextResponse',
+                    list: 'ListResponse'
+                }
+            }
+        },
+        computed: {
+            ...mapGetters([
+                'getResponse'
+            ]),
+            isLoading() {
+                return this.$store.state.daphne.isLoading;
+            }
+        },
+        components: {
+            TextResponse,
+            ListResponse
+        }
     }
 </script>
 

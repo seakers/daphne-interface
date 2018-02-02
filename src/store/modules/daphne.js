@@ -1,7 +1,8 @@
 // initial state
 const state = {
     command: '',
-    response: {}
+    response: {},
+    isLoading: false
 };
 
 // getters
@@ -14,6 +15,7 @@ const getters = {
 // actions
 const actions = {
     async executeCommand({ state, commit }) {
+        commit('setIsLoading', true);
         try {
             let reqData = new FormData();
             reqData.append('command', state.command);
@@ -37,6 +39,7 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
+        commit('setIsLoading', false);
     }
 };
 
@@ -47,6 +50,9 @@ const mutations = {
     },
     setResponse(state, response) {
         state.response = response;
+    },
+    setIsLoading(state, isLoading) {
+        state.isLoading = isLoading;
     }
 };
 

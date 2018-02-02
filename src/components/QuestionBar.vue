@@ -30,7 +30,7 @@
         },
         methods: {
             sendCommand(event) {
-                if (command === 'stop') {
+                if (this.command === 'stop') {
                     responsiveVoice.cancel();
                 }
                 else {
@@ -40,7 +40,7 @@
         },
         watch: {
             getResponse: function(val, oldVal) {
-                responsiveVoice.speak(getResponse['voice_answer']);
+                responsiveVoice.speak(this.getResponse['voice_answer']);
             }
         }
     }
