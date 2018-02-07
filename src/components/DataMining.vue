@@ -2,12 +2,14 @@
     <div class="panel-block functionality">
         <div id="feature-plot" v-show="features.length !== 0"></div>
         <template v-if="features.length === 0">
-            <p>To run data mining, select target solutions on the scatter plot. Then click the button below.</p>
-            <div class="field">
-                <div class="control">
-                    <a class="button is-info" id="run_data_mining" v-on:click="run">
-                        Run data mining
-                    </a>
+            <div class="content">
+                <p>To run data mining, select target solutions on the scatter plot. Then click the button below.</p>
+                <div class="field">
+                    <div class="control">
+                        <a class="button is-info" id="run_data_mining" v-on:click="run">
+                            Run data mining
+                        </a>
+                    </div>
                 </div>
             </div>
         </template>

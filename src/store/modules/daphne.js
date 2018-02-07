@@ -9,6 +9,9 @@ const state = {
 const getters = {
     getResponse(state) {
         return state.response;
+    },
+    getIsLoading(state) {
+        return state.isLoading;
     }
 };
 

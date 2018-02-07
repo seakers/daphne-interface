@@ -6,7 +6,7 @@
   "scripts": {
     "build": "./node_modules/.bin/webpack --display-optimization-bailout --config webpack.dev.js",
     "build:prod": "./node_modules/.bin/webpack --display-optimization-bailout --config webpack.prod.js",
-    "watch": "./node_modules/.bin/webpack --watch",
+    "watch": "./node_modules/.bin/webpack --watch --config webpack.dev.js",
     "serve": "firefox http://localhost:8000/dist/index.html",
     "dist:data": "cp -R src/data dist/assets/",
     "nocache:index": "node node_modules/asset-cache-bust/bin/asset-cache-bust --asset-root dist dist/index.html",

@@ -121,6 +121,7 @@
                 //Resets the main plot
                 d3.select('#main-plot').select('svg').remove();
                 d3.select('#main-plot').selectAll('canvas').remove();
+                d3.select('#main-plot').style('width', 0 + 'px');
             },
             
             updatePlot(xIndex, yIndex) {
@@ -415,6 +416,7 @@
                         .on('.zoom', null);
 
                     let self = this;
+                    let justSelectedArchs = new Set();
 
                     function selectMousedown() {
                         let mousePos = d3.mouse(this);
@@ -434,6 +436,7 @@
                             .style('background-color', '#EEEEEE')
                             .style('opacity', 0.18)
                             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+                        justSelectedArchs = new Set();
                     }
 
                     function selectMousemove() {
@@ -476,7 +479,6 @@
                             selection.attrs(box);
 
                             let newSelectedArchs = self.selectedArchs.slice();
-                            let justSelectedArchs = new Set();
 
                             if (self.selectionMode === 'drag-select') { // Make selection
                                 self.plotData.forEach((point, index) => {
@@ -491,13 +493,14 @@
                                             newSelectedArchs[index] = true;
                                             justSelectedArchs.add(index);
                                             selectionUpdated = true;
+
                                         }
                                     }
                                     else {
                                         if (!self.hiddenArchs[index] && justSelectedArchs.has(index)) {
                                             // Select
                                             newSelectedArchs[index] = false;
-                                            justSelectedArchs.remove(index);
+                                            justSelectedArchs.delete(index);
                                             selectionUpdated = true;
                                         }
                                     }
@@ -520,7 +523,7 @@
                                     else {
                                         if (!self.hiddenArchs[index] && justSelectedArchs.has(index)) {
                                             newSelectedArchs[index] = true;
-                                            justSelectedArchs.remove(index);
+                                            justSelectedArchs.delete(index);
                                             selectionUpdated = true;
                                         }
                                     }
@@ -536,6 +539,7 @@
                     function selectMouseup() {
                         // remove selection frame
                         svg.selectAll('rect.selection').remove();
+                        justSelectedArchs.clear();
                     }
 
                     svg.on('mousedown.modes', selectMousedown)
