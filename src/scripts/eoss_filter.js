@@ -2,7 +2,6 @@ import Filter from './filter';
 import * as utils from './utils';
 
 export default class EOSSFilter extends Filter {
-
     constructor(eoss, tradespace_plot, label) {
 
         super();
@@ -12,24 +11,24 @@ export default class EOSSFilter extends Filter {
         this.label = label;
 
         this.preset_options = [{value:"not_selected",text:"Preset Filters"},
-                               {value:"paretoFront",text:"Pareto front"},
-                               {value:"present",text:"Present",input:"singleInst",hints:"Designs that have the specified instrument are selected"},
-                               {value:"absent",text:"Absent",input:"singleInst",hints:"Designs that do not have the specified instrument are selected"},
-                               {value:"inOrbit",text:"In orbit",input:"orbitAndMultipleInstInput",hints:"Designs that have the specified instruments inside the chosen orbit are selected"},
-                               {value:"notInOrbit",text:"Not in orbit",input:"orbitAndMultipleInstInput",hints:"Designs that do not have the specified instruments inside the chosen orbit are selected",},
-                               {value:"together",text:"Together",input:"multipleInstInput",hints:"Designs that have the specified instruments in any one orbit are chose"},
-                               {value:"separate",text:"Separate",input:"multipleInstInput",hints:"Designs that do not have the specified instruments in the same orbit are chosen"},
-                               {value:"emptyOrbit",text:"Empty orbit",input:"orbitInput",hints:"Designs that have no instrument inside the specified orbit are chosen"},
-                               {value:"numOrbits",text:"Number of orbit used",input:"numOrbit",hints:"Designs that have the specified number of non-empty orbits are chosen"},
-                               {value:"numOfInstruments",text:"Number of instruments",input:"numOfInstruments",hints:"This highlights all the designs with the specified number of instruments. If you specify an orbit name, it will count all instruments in that orbit. If you can also specify an instrument name, and only those instruments will be counted across all orbits. If you leave both instruments and orbits blank, all instruments across all orbits will be counted."},
-                               {value:"subsetOfInstruments",text:"Num of instruments in a subset",input:"subsetOfInstruments",hints:"The specified orbit should contain at least m number and at maximum M number of instruments from the specified instrument set. m is the first entry and M is the second entry in the second field"},
-                            ];
+            {value:"paretoFront",text:"Pareto front"},
+            {value:"present",text:"Present",input:"singleInst",hints:"Designs that have the specified instrument are selected"},
+            {value:"absent",text:"Absent",input:"singleInst",hints:"Designs that do not have the specified instrument are selected"},
+            {value:"inOrbit",text:"In orbit",input:"orbitAndMultipleInstInput",hints:"Designs that have the specified instruments inside the chosen orbit are selected"},
+            {value:"notInOrbit",text:"Not in orbit",input:"orbitAndMultipleInstInput",hints:"Designs that do not have the specified instruments inside the chosen orbit are selected",},
+            {value:"together",text:"Together",input:"multipleInstInput",hints:"Designs that have the specified instruments in any one orbit are chose"},
+            {value:"separate",text:"Separate",input:"multipleInstInput",hints:"Designs that do not have the specified instruments in the same orbit are chosen"},
+            {value:"emptyOrbit",text:"Empty orbit",input:"orbitInput",hints:"Designs that have no instrument inside the specified orbit are chosen"},
+            {value:"numOrbits",text:"Number of orbit used",input:"numOrbit",hints:"Designs that have the specified number of non-empty orbits are chosen"},
+            {value:"numOfInstruments",text:"Number of instruments",input:"numOfInstruments",hints:"This highlights all the designs with the specified number of instruments. If you specify an orbit name, it will count all instruments in that orbit. If you can also specify an instrument name, and only those instruments will be counted across all orbits. If you leave both instruments and orbits blank, all instruments across all orbits will be counted."},
+            {value:"subsetOfInstruments",text:"Num of instruments in a subset",input:"subsetOfInstruments",hints:"The specified orbit should contain at least m number and at maximum M number of instruments from the specified instrument set. m is the first entry and M is the second entry in the second field"},
+        ];
 
         PubSub.subscribe("filter_added", (msg) => {
             this.reset();
         });
 
-        PubSub.subscribe(utils.APPLY_FILTER, (msg, data) => {
+        PubSub.subscribe(APPLY_FILTER, (msg, data) => {
             this.apply_filter_expression(data);
         });
 
@@ -43,16 +42,16 @@ export default class EOSSFilter extends Filter {
             .append('g');
 
         d3.select('#filter_select_menu')
-                .selectAll('option')
-                .data(this.preset_options)
-                .enter()
-                .append("option")
-                .attr("value",function(d){
-                    return d.value;
-                })
-                .text(function(d){
-                    return d.text;
-                });
+            .selectAll('option')
+            .data(this.preset_options)
+            .enter()
+            .append("option")
+            .attr("value",function(d){
+                return d.value;
+            })
+            .text(function(d){
+                return d.text;
+            });
 
         let that = this;
 
@@ -109,9 +108,9 @@ export default class EOSSFilter extends Filter {
             .attr('aria-label','delete');
 
         filter_message_hint.append('div')
-                .attr('class','message-body')
-                .append('div')
-                .attr('id','filter_hints');
+            .attr('class','message-body')
+            .append('div')
+            .attr('id','filter_hints');
 
 
 
@@ -130,69 +129,69 @@ export default class EOSSFilter extends Filter {
             var filter_inputs = d3.select('#filter_inputs');
 
             var filter_input_1 = filter_inputs.append('div')
-                                                .attr('id','filter_input_1');
+                .attr('id','filter_input_1');
 
             var filter_input_2 = filter_inputs.append('div')
-                                                .attr('id','filter_input_2');
+                .attr('id','filter_input_2');
 
             var filter_input_3 = filter_inputs.append('div')
-                                                .attr('id','filter_input_3');
+                .attr('id','filter_input_3');
 
             switch(inputType) {
 
                 case "singleInst":
                     filter_input_1.text("Input single instrument name: ");
                     filter_input_1.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
                     break;
 
                 case "orbitAndMultipleInstInput":
                     filter_input_1.text("Input orbit name: ");
                     filter_input_1.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
 
                     filter_input_2.text("Input instrument names (minimum 1, and maximum 3) separated by comma: ");
                     filter_input_2.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
                     break;
 
                 case "orbitInput":
                     filter_input_1.text("Input orbit name: ");
                     filter_input_1.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
                     break;
 
                 case "numOrbit":
                     filter_input_1.text("Input number of orbits");
                     filter_input_1.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
                     break;
 
                 case "numOfInstruments":
                     filter_input_1.text("Input an orbit name (Could be N/A): ");
                     filter_input_1.append("input")
-                                .attr("type","text")
-                                .attr("value","N/A");
+                        .attr("type","text")
+                        .attr("value","N/A");
                     filter_input_2.text("Input instrument name (Could be N/A): ");
                     filter_input_2.append("input")
-                                .attr("type","text")
-                                .attr("value","N/A");
+                        .attr("type","text")
+                        .attr("value","N/A");
                     filter_input_3.text("Input a number of instrument used (should be greater than or equal to 0): ");
                     filter_input_3.append("input")
-                                .attr("type","text")
-                                .attr("value","N/A");
+                        .attr("type","text")
+                        .attr("value","N/A");
                     break;
 
                 case "subsetOfInstruments":
                     filter_input_1.text("Input orbit name: ");
                     filter_input_1.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
                     filter_input_2.text("Input the min and the max (optional) number of instruments in the subset, separated by comma: ");
                     filter_input_2.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
                     filter_input_3.text("Input a set of instrument names, separated by comma: ");
                     filter_input_3.append("input")
-                                .attr("type","text");
+                        .attr("type","text");
                     break;
 
 
@@ -210,7 +209,7 @@ export default class EOSSFilter extends Filter {
         d3.select("#filter_hints")
             .append("div")
             .html('<p>Valid orbit names: LEO-600-polar-NA, SSO-600-SSO-AM, SSO-600-SSO-DD, SSO-800-SSO-DD, SSO-800-SSO-PM</p>'
-                    +'Valid instrument names: ACE_ORCA, ACE_POL, ACE_LID, CLAR_ERB, ACE_CPR, DESD_SAR, DESD_LID, GACM_VIS, GACM_SWIR, HYSP_TIR, POSTEPS_IRS, CNES_KaRIN');
+                +'Valid instrument names: ACE_ORCA, ACE_POL, ACE_LID, CLAR_ERB, ACE_CPR, DESD_SAR, DESD_LID, GACM_VIS, GACM_SWIR, HYSP_TIR, POSTEPS_IRS, CNES_KaRIN');
     }
 
 
@@ -377,7 +376,7 @@ export default class EOSSFilter extends Filter {
         var feature_expression = input_expression;
 
         // Cancel all previous selections
-        this.tradespace_plot.cancelSelection('remove_highlighted');
+        this.tradespace_plot.cancel_selection('remove_highlighted');
 
         // If filter expression is empty, return
         if(feature_expression==="" || !feature_expression){
@@ -548,200 +547,200 @@ export default class EOSSFilter extends Filter {
 
         var resu;
         switch(type) {
-        case "present":
-            if(instr=='-1') return false;
-            resu=false;
-            instr = +instr;
-            for(var i=0;i<norb;i++){
-                if(bitString[ninstr*i+instr]){
-                    resu=true;break;
-                }
-            }
-            break;
-        case "absent":
-            if(instr==-1) return false;
-
-            resu=true;
-            instr = + instr;
-            for(var i=0;i<norb;i++){
-                if(bitString[ninstr*i+instr]){
-                    resu=false;break;
-                }
-            }
-            break;
-
-        case "inOrbit":
-            orbit = + orbit;
-            if(instr.indexOf(',')==-1){
-                // One instrument
+            case "present":
+                if(instr=='-1') return false;
                 resu=false;
-                instr = + instr;
-                if(bitString[orbit*ninstr + instr]){
-                    resu=true;
+                instr = +instr;
+                for(var i=0;i<norb;i++){
+                    if(bitString[ninstr*i+instr]){
+                        resu=true;break;
+                    }
                 }
                 break;
-            }else{
-                // Multiple instruments
+            case "absent":
+                if(instr==-1) return false;
+
+                resu=true;
+                instr = + instr;
+                for(var i=0;i<norb;i++){
+                    if(bitString[ninstr*i+instr]){
+                        resu=false;break;
+                    }
+                }
+                break;
+
+            case "inOrbit":
+                orbit = + orbit;
+                if(instr.indexOf(',')==-1){
+                    // One instrument
+                    resu=false;
+                    instr = + instr;
+                    if(bitString[orbit*ninstr + instr]){
+                        resu=true;
+                    }
+                    break;
+                }else{
+                    // Multiple instruments
+                    resu=true;
+                    var instruments = instr.split(",");
+                    for(var j=0;j<instruments.length;j++){
+                        var temp = +instruments[j];
+                        if(!bitString[orbit*ninstr + temp]){
+                            resu= false;break;
+                        }
+                    }
+                }
+                break;
+            case "notInOrbit":
+                orbit = + orbit;
+                if(instr.indexOf(',')==-1){
+                    // One instrument
+                    instr = + instr;
+                    resu=true;
+                    if(bitString[orbit*ninstr + instr]){
+                        resu=false;
+                    }
+                    break;
+                }else{
+                    // Multiple instruments
+                    resu=true;
+                    var instruments = instr.split(",");
+                    for(var j=0;j<instruments.length;j++){
+                        var temp = +instruments[j];
+                        if(bitString[orbit*ninstr + temp]){
+                            resu= false;break;
+                        }
+                    }
+                }
+                break;
+            case "together":
+                resu=false;
+                var instruments = instr.split(",");
+                for(var i=0;i<norb;i++){
+                    var found = true;
+                    for(var j=0;j<instruments.length;j++){
+                        var temp = +instruments[j];
+                        if(!bitString[i*ninstr+temp]){
+                            found=false;
+                        }
+                    }
+                    if(found===true){
+                        resu=true;break;
+                    }
+                }
+                break;
+
+            case "separate":
                 resu=true;
                 var instruments = instr.split(",");
-                for(var j=0;j<instruments.length;j++){
-                    var temp = +instruments[j];
-                    if(!bitString[orbit*ninstr + temp]){
+
+                for(var i=0;i<norb;i++){
+
+                    var found = false;
+
+                    for(var j=0;j<instruments.length;j++){
+                        var temp = +instruments[j];
+                        if(bitString[i*ninstr+temp]){
+                            if(found){
+                                resu=false;
+                                break;
+                            }else{
+                                found=true;
+                            }
+                        }
+                    }
+                    if(resu===false) break;
+                }
+                break;
+
+            case "emptyOrbit":
+                resu=true;
+                orbit = +orbit;
+                for(var i=0;i<ninstr;i++){
+                    if(bitString[orbit*ninstr+i]){
                         resu= false;break;
                     }
                 }
-            }
-            break;
-        case "notInOrbit":
-            orbit = + orbit;
-            if(instr.indexOf(',')==-1){
-                // One instrument
-                instr = + instr;
-                resu=true;
-                if(bitString[orbit*ninstr + instr]){
-                    resu=false;
+                break;
+
+            case "numOrbits":
+                var count=0;
+                resu=false;
+                numb = + numb;
+                for(var i=0;i<norb;i++){
+                    for(var j=0;j<ninstr;j++){
+                        if(bitString[i*ninstr+j]){
+                            count++;
+                            break;
+                        }
+                    }
+                }
+                if(numb===count){
+                    resu= true;
                 }
                 break;
-            }else{
-                // Multiple instruments
-                resu=true;
+
+            case "subsetOfInstruments":
+                var count = 0;
                 var instruments = instr.split(",");
+                var numbers = numb.split(",");
+                orbit = +orbit;
+                resu=false;
+
                 for(var j=0;j<instruments.length;j++){
                     var temp = +instruments[j];
                     if(bitString[orbit*ninstr + temp]){
-                        resu= false;break;
-                    }
-                }
-            }
-            break;
-        case "together":
-            resu=false;
-            var instruments = instr.split(",");
-            for(var i=0;i<norb;i++){
-                var found = true;
-                for(var j=0;j<instruments.length;j++){
-                    var temp = +instruments[j];
-                    if(!bitString[i*ninstr+temp]){
-                        found=false;
-                    }
-                }
-                if(found===true){
-                    resu=true;break;
-                }
-            }
-            break;
-
-        case "separate":
-            resu=true;
-            var instruments = instr.split(",");
-
-            for(var i=0;i<norb;i++){
-
-                var found = false;
-
-                for(var j=0;j<instruments.length;j++){
-                    var temp = +instruments[j];
-                    if(bitString[i*ninstr+temp]){
-                        if(found){
-                            resu=false;
-                            break;
-                        }else{
-                            found=true;
-                        }
-                    }
-                }
-                if(resu===false) break;
-            }
-            break;
-
-        case "emptyOrbit":
-            resu=true;
-            orbit = +orbit;
-            for(var i=0;i<ninstr;i++){
-                if(bitString[orbit*ninstr+i]){
-                    resu= false;break;
-                }
-            }
-            break;
-
-        case "numOrbits":
-            var count=0;
-            resu=false;
-            numb = + numb;
-            for(var i=0;i<norb;i++){
-                for(var j=0;j<ninstr;j++){
-                    if(bitString[i*ninstr+j]){
                         count++;
-                        break;
                     }
                 }
-            }
-            if(numb===count){
-                resu= true;
-            }
-            break;
-
-        case "subsetOfInstruments":
-            var count = 0;
-            var instruments = instr.split(",");
-            var numbers = numb.split(",");
-            orbit = +orbit;
-            resu=false;
-
-            for(var j=0;j<instruments.length;j++){
-                var temp = +instruments[j];
-                if(bitString[orbit*ninstr + temp]){
-                    count++;
+                if(numbers.length==1){
+                    if(count >= +numbers[0]){
+                        resu= true;
+                    }
+                }else{
+                    if(count >= +numbers[0] && count <= +numbers[1]){
+                        resu= true;
+                    }
                 }
-            }
-            if(numbers.length==1){
-                if(count >= +numbers[0]){
-                    resu= true;
-                }
-            }else{
-                if(count >= +numbers[0] && count <= +numbers[1]){
-                    resu= true;
-                }
-            }
-            break;
+                break;
 
-        case "numOfInstruments":
-            var count=0;
-            resu=false;
-            numb = +numb;
+            case "numOfInstruments":
+                var count=0;
+                resu=false;
+                numb = +numb;
 
-            if(orbit===""){
-                // num of instruments across all orbits
-                if(instr===""){
-                    // num of specified instrument
-                    for(var i=0;i<norb;i++){
-                        for(var j=0;j<ninstr;j++){
-                            if(bitString[i*ninstr+j]) count++;
+                if(orbit===""){
+                    // num of instruments across all orbits
+                    if(instr===""){
+                        // num of specified instrument
+                        for(var i=0;i<norb;i++){
+                            for(var j=0;j<ninstr;j++){
+                                if(bitString[i*ninstr+j]) count++;
+                            }
+                        }
+                    }else{
+                        instr = +instr;
+                        // num of all instruments
+                        for(var i=0;i<norb;i++){
+                            if(bitString[i*ninstr+instr]){
+                                count++;
+                            }
                         }
                     }
                 }else{
-                    instr = +instr;
-                    // num of all instruments
-                    for(var i=0;i<norb;i++){
-                        if(bitString[i*ninstr+instr]){
+                    orbit = +orbit;
+                    // number of instruments in a specified orbit
+                    for(var i=0;i<ninstr;i++){
+                        if(bitString[orbit*ninstr+i]){
                             count++;
                         }
                     }
                 }
-            }else{
-                orbit = +orbit;
-                // number of instruments in a specified orbit
-                for(var i=0;i<ninstr;i++){
-                    if(bitString[orbit*ninstr+i]){
-                        count++;
-                    }
-                }
-            }
-            if(count===numb) resu= true;
-            break;
+                if(count===numb) resu= true;
+                break;
 
-        default:
-            return false;
+            default:
+                return false;
         }
 
         if(flip==true){

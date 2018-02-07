@@ -1,24 +1,32 @@
 <template>
-    <div class="columns is-mobile is-multiline" id="functionalities_list">
+    <draggable id="functionalities-list" class="columns is-mobile is-multiline" v-bind:options="funcListOptions">
         <functionality
-            v-for="functionality in functionalities"
-            v-bind:name="functionality.name"
-            v-bind:title="functionality.title"
-            v-bind:initial-size="functionality.initialSize"
-            v-bind:key="functionality.id">
+                v-for="functionality in functionalities"
+                v-bind:name="functionality.name"
+                v-bind:title="functionality.title"
+                v-bind:initial-size="functionality.initialSize"
+                v-bind:key="functionality.id">
         </functionality>
-    </div>
+    </draggable>
 </template>
 
 <script>
     import Functionality from './Functionality';
     import { mapState } from 'vuex';
+    import draggable from 'vuedraggable';
 
     export default {
-        components: {Functionality},
+        components: {
+            draggable,
+            Functionality
+        },
         name: 'functionality-list',
         data () {
             return {
+                funcListOptions: {
+                    handle: '.panel-heading',
+                    animation: 150
+                }
             };
         },
         computed: {

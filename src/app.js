@@ -14,11 +14,9 @@ let responsiveVoice = window.responsiveVoice;
 // Old stuff
 import Daphne from './scripts/daphne';
 import EOSSLabel from './scripts/eoss_label';
-import DataMining from './scripts/data_mining';
 import EOSSFilter from './scripts/eoss_filter';
 import FeatureApplication from './scripts/feature_application';
 let styles = require('./styles/app.scss');
-let Sortable = require('sortablejs');
 
 import store from './store';
 
@@ -46,18 +44,12 @@ let app = new Vue({
 let daphne = new Daphne();
 
 // General Code
-daphne.label = new EOSSLabel(daphne.problem);
-daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
-daphne.featureApplication = new FeatureApplication(daphne.label);
+//daphne.label = new EOSSLabel(daphne.problem);
+//daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
+//daphne.featureApplication = new FeatureApplication(daphne.label);
 
 //await daphne.addNewFunctionality('filter');
 //daphne.addNewFunctionality('feature_application');
-
-let sortable_list = document.getElementById('functionalities_list');
-Sortable.create(sortable_list, {
-    handle: '.panel-heading',
-    animation: 150
-});
 
 // Voice recognition
 if (annyang) {

@@ -132,7 +132,6 @@
                 //PubSub.publish(APPLY_FILTER,expression);
 
                 //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
-                //this.draw_venn_diagram();
             },
 
             featureClick(d) {
@@ -149,7 +148,6 @@
                 // TODO: Change to Vue
                 //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'restore','expression':null});
                 //PubSub.publish(APPLY_FILTER,null);
-                //this.draw_venn_diagram();
             }
 
         },
