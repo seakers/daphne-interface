@@ -9,7 +9,7 @@ const path = require('path'),
 const extractPlugin = new ExtractTextPlugin({ filename: './assets/css/app.css' });
 
 module.exports = {
-    context: path.resolve(__dirname, "src"),
+    context: path.resolve(__dirname, 'src'),
 
     entry: {
         app: ['./app.js']
@@ -112,7 +112,5 @@ module.exports = {
         alias: {
             'vue$': 'vue/dist/vue.esm.js'
         }
-    },
-
-    devtool: 'inline-source-map',
+    }
 };

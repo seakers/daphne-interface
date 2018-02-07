@@ -4,8 +4,8 @@
   "description": "Daphne unified interface",
   "main": "dist/index.html",
   "scripts": {
-    "build": "./node_modules/.bin/webpack --display-optimization-bailout",
-    "build:prod": "./node_modules/.bin/webpack -p",
+    "build": "./node_modules/.bin/webpack --display-optimization-bailout --config webpack.dev.js",
+    "build:prod": "./node_modules/.bin/webpack --display-optimization-bailout --config webpack.prod.js",
     "watch": "./node_modules/.bin/webpack --watch",
     "serve": "firefox http://localhost:8000/dist/index.html",
     "dist:data": "cp -R src/data dist/assets/",
@@ -47,8 +47,10 @@
     "sass-loader": "^6.0.6",
     "script-loader": "^0.7.2",
     "style-loader": "^0.19.1",
+    "uglifyjs-webpack-plugin": "^1.1.8",
     "vue-loader": "^13.7.0",
     "vue-template-compiler": "^2.5.13",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+    "webpack-merge": "^4.1.1"
   }
 }

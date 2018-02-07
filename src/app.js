@@ -51,7 +51,7 @@ daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.labe
 daphne.featureApplication = new FeatureApplication(daphne.label);
 
 //await daphne.addNewFunctionality('filter');
-daphne.addNewFunctionality('feature_application');
+//daphne.addNewFunctionality('feature_application');
 
 let sortable_list = document.getElementById('functionalities_list');
 Sortable.create(sortable_list, {
