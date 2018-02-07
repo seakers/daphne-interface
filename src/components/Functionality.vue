@@ -18,6 +18,7 @@
     import Cheatsheet from './Cheatsheet';
     import DesignBuilder from './DesignBuilder';
     import DaphneAnswer from './DaphneAnswer';
+    import DataMining from'./DataMining';
 
     let sizeScale = [
         'one-third',
@@ -37,7 +38,8 @@
         components: {
             Cheatsheet,
             DesignBuilder,
-            DaphneAnswer
+            DaphneAnswer,
+            DataMining
         },
         computed: {
             sizeClass: function () {

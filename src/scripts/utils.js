@@ -41,7 +41,7 @@ export function dominates(metrics1, metrics2, objective) {
     }
 }
 
-export function round_num(num, decimal) {
+export function roundNum(num, decimal) {
     if (decimal) {
         return num.toFixed(decimal);
     }

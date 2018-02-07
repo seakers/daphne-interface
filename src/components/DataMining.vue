@@ -1,9 +1,7 @@
 <template>
     <div class="panel-block functionality">
-        <template v-if="features.length !== 0">
-            <div id="feature-plot"></div>
-        </template>
-        <template v-else>
+        <div id="feature-plot" v-show="features.length !== 0"></div>
+        <template v-if="features.length === 0">
             <p>To run data mining, select target solutions on the scatter plot. Then click the button below.</p>
             <div class="field">
                 <div class="control">
@@ -18,33 +16,31 @@
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
-
-    function display_features() {
-        // Set variables
-        this.df_i = 0;
-
-        // Initialize location
-        for(let i = 0; i < this.all_features.length; i++){
-            this.all_features[i].x0 = -1;
-            this.all_features[i].y0 = -1;
-            this.all_features[i].id = this.df_i++;
-        }
-
-        this.update_feature_plot();
-    }
+    import * as d3 from 'd3';
+    import { roundNum } from '../scripts/utils';
 
     export default {
         name: 'data-mining',
         data() {
             return {
-
+                margin: { top: 20, right: 20, bottom: 30, left: 40 },
+                width: 770,
+                height: 300,
+                xMap: {},
+                yMap: {},
+                svg: {}
             }
+        },
+        beforeMount() {
+            this.width =  770 - 35 - this.margin.left - this.margin.right;
+            this.height = 310 - this.margin.top - this.margin.bottom;
         },
         computed: {
             ...mapGetters({
                 plotData: 'getPlotData',
                 selectedArchs: 'getSelectedArchs',
-                features: 'getFeatures'
+                features: 'getFeatures',
+                scores: 'getScores'
             }),
             numSelectedPoints() {
                 return this.selectedArchs.filter(point => point).length;
@@ -60,13 +56,298 @@
                 }
                 else {
                     this.$store.dispatch('getDrivingFeatures');
-                    this.display_features();
                 }
+            },
+
+            featureMouseover(d) {
+                let id = d.id;
+                let expression = d.expression;
+                let metrics = d.metrics;
+
+                // Set variables
+                let mousePos = d3.mouse(this.svg.node());
+                let mouseLocX = mousePos[0];
+                let mouseLocY = mousePos[1];
+
+                let tooltipLocation = { x: 0, y: 0 };
+                let tooltipWidth = 360;
+                let tooltipHeight = 170;
+
+                let hThreshold = (this.width + this.margin.left + this.margin.right)*0.5;
+                let vThreshold = (this.height + this.margin.top + this.margin.bottom)*0.55;
+
+
+                if (mouseLocX >= hThreshold) {
+                    tooltipLocation.x = -10 - tooltipWidth;
+                }
+                else {
+                    tooltipLocation.x = 10;
+                }
+                if (mouseLocY < vThreshold) {
+                    tooltipLocation.y = 10;
+                }
+                else {
+                    tooltipLocation.y = -10 - tooltipHeight;
+                }
+
+                let tooltipGroup = this.svg.append('g')
+                    .attr('id', 'tooltip-g');
+
+                tooltipGroup.append('rect')
+                    .attr('id', 'tooltip-rect')
+                    .attr('transform', () => {
+                        let x = mouseLocX + tooltipLocation.x;
+                        let y = mouseLocY + tooltipLocation.y;
+                        return 'translate(' + x + ',' + y + ')';
+                    })
+                    .attr('width', tooltipWidth)
+                    .attr('height', tooltipHeight)
+                    .style('fill', '#4B4B4B')
+                    .style('opacity', 0.92);
+
+                let fo = tooltipGroup
+                    .append('foreignObject')
+                    .attr('id', 'tooltip-foreignObject')
+                    .attr('x', () => mouseLocX + tooltipLocation.x)
+                    .attr('y', () => mouseLocY + tooltipLocation.y)
+                    .attr('width', tooltipWidth)
+                    .attr('height', tooltipHeight)
+                    .data([ { id: id, expression: expression, metrics: metrics } ])
+                    .html(d => {
+                        return "lift: " + roundNum(d.metrics[1]) +
+                            "<br> Support: " + roundNum(d.metrics[0]) +
+                            "<br> Confidence(F->S): " + roundNum(d.metrics[2]) +
+                            "<br> Confidence(S->F): " + roundNum(d.metrics[3]) +"";
+                    })
+                    .style('padding', '8px')
+                    .style('color', '#F7FF55')
+                    .style('word-wrap', 'break-word');
+
+
+                // Update the placeholder with the driving feature and stash the expression
+                // TODO: Update filter and feature_application through PubSub && Change to Vue
+                //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'temp','expression':expression});
+                //PubSub.publish(APPLY_FILTER,expression);
+
+                //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
+                //this.draw_venn_diagram();
+            },
+
+            featureClick(d) {
+                // Replaces the current feature expression with the stashed expression
+                // TODO: Change to Vue
+                //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'update','expression':null});
+            },
+
+            featureMouseout(d) {
+                // Remove the tooltip
+                d3.selectAll('#tooltip-g').remove();
+
+                // Remove all the features created temporarily and bring back the previously stored feature expression
+                // TODO: Change to Vue
+                //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'restore','expression':null});
+                //PubSub.publish(APPLY_FILTER,null);
+                //this.draw_venn_diagram();
             }
+
         },
         watch: {
             selectedArchs: function(val, oldVal) {
-                this.$store.commit('setFeatures', []);
+                this.$store.commit('clearFeatures');
+            },
+
+            features: function(val, oldVal) {
+                if (this.features.length > 0) {
+                    function getUtopiaPoint() {
+                        // Utopia point
+                        return objects.filter(d => d.name === 'utopiaPoint');
+                    }
+
+                    function get_current_feature() {
+                        // The current feature
+                        return objects.filter(d => d.added === '0');
+                    }
+
+                    // Set updated width
+                    this.width = document.getElementById('feature-plot').parentNode.clientWidth -
+                        this.margin.left - this.margin.right - 25;
+
+                    // Set the axis to be Conf(F->S) and Conf(S->F)
+                    let x = 2;
+                    let y = 3;
+
+                    // setup x
+                    // data -> value
+                    let xValue = d => d.metrics[x];
+                    // value -> display
+                    let xScale = d3.scaleLinear().range([0, this.width]);
+                    // don't want dots overlapping axis, so add in buffer to data domain
+                    let xBuffer = (d3.max(this.features, xValue) - d3.min(this.features, xValue)) * 0.05;
+                    xScale.domain([d3.min(this.features, xValue) - xBuffer, d3.max(this.features, xValue) + xBuffer]);
+                    // data -> display
+                    this.xMap = d => xScale(xValue(d));
+                    let xAxis = d3.axisBottom(xScale);
+
+                    // setup y
+                    // data -> value
+                    let yValue = d => d.metrics[y];
+                    // value -> display
+                    let yScale = d3.scaleLinear().range([this.height, 0]);
+                    // don't want dots overlapping axis, so add in buffer to data domain
+                    let yBuffer = (d3.max(this.features, yValue) - d3.min(this.features, yValue)) * 0.05;
+                    yScale.domain([d3.min(this.features, yValue) - yBuffer, d3.max(this.features, yValue) + yBuffer]);
+                    // data -> display
+                    this.yMap = d => yScale(yValue(d));
+                    let yAxis = d3.axisLeft(yScale);
+
+                    // Colors for the plot
+                    let colorsRainbow = ['#2c7bb6', '#00a6ca', '#00ccbc', '#90eb9d', '#ffff8c', '#f9d057', '#f29e2e', '#e76818', '#d7191c'];
+                    let colorRangeRainbow = d3.range(0, 1, 1.0 / (colorsRainbow.length - 1));
+                    colorRangeRainbow.push(1);
+
+                    //Needed to map the values of the dataset to the color scale
+                    let colorInterpolateRainbow = d3.scaleLinear()
+                        .domain(d3.extent(this.scores))
+                        .range([0, 1]);
+
+                    // Create color gradient
+                    let colorScaleRainbow = d3.scaleLinear()
+                        .domain(colorRangeRainbow)
+                        .range(colorsRainbow)
+                        .interpolate(d3.interpolateHcl);
+
+                    // Set zoom
+                    let zoom = d3.zoom()
+                        .scaleExtent([0.2, 50])
+                        .on('zoom', d => {
+                            gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
+                            gY.call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
+
+                            objects.attr('transform', d => {
+                                let xCoord = d3.event.transform.applyX(this.xMap(d));
+                                let yCoord = d3.event.transform.applyY(this.yMap(d));
+                                return 'translate(' + xCoord + ',' + yCoord + ')';
+                            });
+                        });
+
+                    // Reset plot
+                    d3.select('#feature-plot').select('svg').remove();
+
+                    this.svg = d3.select('#feature-plot').append('svg')
+                        .attr('width', this.width + this.margin.left + this.margin.right)
+                        .attr('height', this.height + this.margin.top + this.margin.bottom)
+                        .call(zoom)
+                        .append('g')
+                        .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+
+                    // Clipping area
+                    let clip = this.svg.append('defs').append('svg:clipPath')
+                        .attr('id', 'feature-clip')
+                        .append('svg:rect')
+                        .attr('width', this.width)
+                        .attr('height', this.height)
+                        .attr('x', 0)
+                        .attr('y', 0);
+
+                    // Actual points and clipping
+                    let triangleplot = this.svg.append('g')
+                        .attr('id', 'triangleplot')
+                        .attr('clip-path', 'url(#feature-clip)');
+
+                    let objects = triangleplot.selectAll('.object')
+                        .data(this.features)
+                        .enter().append('path')
+                        .attr('class', 'object')
+                        .attr('d', d3.symbol().type(d3.symbolTriangle).size(120))
+                        .attr('transform', d => 'translate(' + 0 + ',' + 0 + ')')
+                        .attr('stroke', 'black')
+                        .attr('stroke-width', 1);
+
+                    // Utopia point: modify the shape to a star
+                    getUtopiaPoint().attr('d', d3.symbol().type(d3.symbolStar).size(120));
+
+                    // Add interaction to the features on the plot
+                    objects.filter(d => d.name !== 'utopiaPoint')
+                        .on('mouseover', d => { this.featureMouseover(d); })
+                        .on('mouseout', d => { this.featureMouseout(d); })
+                        .on('click', d => { this.featureClick(d); });
+
+                    //Transition the colors to a rainbow
+                    objects.style('fill', (d, i) => colorScaleRainbow(colorInterpolateRainbow(this.scores[i])));
+
+                    // x-axis
+                    let gX = this.svg.append('g')
+                        .attr('class', 'axis axis-x')
+                        .attr('transform', 'translate(0, ' + this.height + ')')
+                        .call(xAxis);
+
+                    this.svg.append('text')
+                        .attr('transform', 'translate(' + this.width + ', ' + this.height + ')')
+                        .attr('class', 'label')
+                        .attr('y', -6)
+                        .style('text-anchor', 'end')
+                        .text('Confidence(F->S)');
+
+                    // y-axis
+                    let gY = this.svg.append('g')
+                        .attr('class', 'axis axis-y')
+                        .call(yAxis);
+
+                    this.svg.append('text')
+                        .attr('class', 'label')
+                        .attr('transform', 'rotate(-90)')
+                        .attr('y', 6)
+                        .attr('dy', '.71em')
+                        .style('text-anchor', 'end')
+                        .text('Confidence(S->F)');
+
+                    // TODO: Check what happens here
+                    /*// The current feature: modify the shape to a cross
+                    let _current_feature = get_current_feature().attr('d', d3.symbol().type(d3.symbolCross).size(120));
+
+                    _current_feature.shown = true;
+
+                    function blink() {
+                        if (_current_feature.shown) {
+                            _current_feature.style('opacity', 0);
+                            _current_feature.shown = false;
+                        }
+                        else {
+                            _current_feature.style('opacity', 1);
+                            _current_feature.shown = true;
+                        }
+                    }
+
+                    if (this.current_feature_blink_interval != null) {
+                        clearInterval(this.current_feature_blink_interval);
+
+                        objects.filter(d => {
+                            if (d.added === '1') {
+                                return true;
+                            }
+                            return false;
+                        }).style('opacity', 1);
+                    }
+                    this.current_feature_blink_interval = setInterval(blink, 350);
+
+                    if (remove_last_feature) {
+                        // Remove the last feature, as it had been added temporarily to display the cursor
+                        this.features.pop();
+                        this.added_features.pop();
+                    }
+
+                    // The current feature
+                    _current_feature.style('fill', 'black');*/
+
+                    // Animate creation of graph
+                    let duration = 500;
+                    objects.transition()
+                        .duration(duration)
+                        .attr('transform', d => {
+                            return 'translate(' + this.xMap(d) + ',' + this.yMap(d) + ')';
+                        });
+                }
+
             }
         }
     }
