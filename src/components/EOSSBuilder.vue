@@ -157,7 +157,7 @@
 </script>
 
 <style scoped lang="scss">
-    @import "../../node_modules/bulma/bulma";
+    @import "../../node_modules/bulma/sass/utilities/initial-variables";
 
     .instruments-list {
         height: 30px;

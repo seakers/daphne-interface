@@ -106,7 +106,6 @@ module.exports = {
         // extract-text-webpack-plugin instance
         extractPlugin,
         new webpack.optimize.ModuleConcatenationPlugin(),
-        new BundleAnalyzerPlugin()
     ],
 
     resolve: {
