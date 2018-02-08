@@ -10,7 +10,7 @@
             <tbody>
                 <tr v-for="(row, index) in jsonArch" v-bind:key="index" v-bind:name="row.orbit">
                     <th class="arch-cell" v-bind:name="orbitDisplayName(row.orbit)">{{ orbitDisplayName(row.orbit) }}</th>
-                    <draggable class="instruments-list" :element="'td'" v-bind:options="instrumentListOptions" @end="onEndInstrList">
+                    <draggable class="instruments-list" :element="'td'" v-bind:options="instrumentListOptions" @add="onAddInstrList">
                         <div v-for="(instrument, childIndex) in row.children" class="arch-box" v-bind:key="instrument + index" v-bind:name="instrDisplayName(instrument)">
                             {{ instrDisplayName(instrument) }}
                         </div>
@@ -18,7 +18,7 @@
                 </tr>
             </tbody>
         </table>
-        <draggable id="instrument-adder-list" v-bind:options="instrumentAdderOptions" @end="onEndInstrAdder">
+        <draggable id="instrument-adder-list" v-bind:options="instrumentAdderOptions" @add="onAddInstrAdder">
             <div v-for="instrument in getExtraInfo.instrumentList" class="arch-box" v-bind:key="instrument" v-bind:name="instrDisplayName(instrument)">
                 {{ instrDisplayName(instrument) }}
             </div>
@@ -123,31 +123,34 @@
                 return bitString;
             },
 
-            onEndInstrAdder(event) {
-                if (event.from !== event.to) {
-                    event.item.remove();
-                    this.$store.commit('updateClickedArchInputs', this.boolArch());
+            getBoolArrayIndex(list, element) {
+                let tableInstrumentRows = document.getElementsByClassName('instruments-list');
+                for (let i = 0; i < tableInstrumentRows.length; ++i) {
+                    if (tableInstrumentRows[i] === list) {
+                        let position = element.textContent.trim().charCodeAt() - 'A'.charCodeAt();
+                        return 12*i + position;
+                    }
                 }
             },
 
-            onEndInstrList(event) {
+            onAddInstrAdder(event) {
                 if (event.from !== event.to) {
-                    let draggedInstr = event.item.textContent.trim();
-                    let list = event.to;
-                    let count = 0;
-                    for (let i = 0; i < list.children.length; ++i) {
-                        let child = list.children[i];
-                        if (child.classList.contains('arch-box')) {
-                            if (draggedInstr === child.textContent.trim()) {
-                                count++;
-                            }
-                        }
-                    }
-                    if (count > 1) {
-                        list.removeChild(event.item);
-                    }
-                    else {
-                        this.$store.commit('updateClickedArchInputs', this.boolArch());
+                    let newIndex = this.getBoolArrayIndex(event.from, event.item);
+                    event.item.remove();
+                    let boolArch = this.boolArch();
+                    boolArch[newIndex] = false;
+                    this.$store.commit('updateClickedArchInputs', boolArch);
+                }
+            },
+
+            onAddInstrList(event) {
+                if (event.from !== event.to) {
+                    let newIndex = this.getBoolArrayIndex(event.to, event.item);
+                    event.item.remove();
+                    let boolArch = this.boolArch();
+                    if (!boolArch[newIndex]) {
+                        boolArch[newIndex] = true;
+                        this.$store.commit('updateClickedArchInputs', boolArch);
                     }
                 }
 

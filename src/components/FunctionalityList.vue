@@ -24,6 +24,11 @@
         data () {
             return {
                 funcListOptions: {
+                    group: {
+                        name: 'functionality_list',
+                        pull: false,
+                        put: false
+                    },
                     handle: '.panel-heading',
                     animation: 150
                 }
@@ -37,6 +42,4 @@
     }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
