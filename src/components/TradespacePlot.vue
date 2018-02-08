@@ -56,7 +56,7 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import * as d3 from 'd3';
-    import {debounce} from 'lodash-es';
+    import * as _ from 'lodash-es';
     import 'd3-selection-multi';
 
     export default {
@@ -554,7 +554,7 @@
 
             selectedArchs: function(val, oldVal) {
                 this.drawPoints(this.context, false);
-                debounce(this.updateTargetSelection, 1000);
+                _.debounce(this.updateTargetSelection, 1000);
             }
         },
 

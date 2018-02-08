@@ -765,11 +765,11 @@ export default class FeatureApplication {
         var _e = null;
 
         // Remove outer parenthesis
-        var parentheses_removed = remove_outer_parentheses(e,d);
+        var parentheses_removed = removeOuterParentheses(e,d);
         e = parentheses_removed.expression;
         d = +parentheses_removed.level;
 
-        if(get_nested_parenthesis_depth(e)==0){ // Given expression does not have a nested structure
+        if(getNestedParenthesisDepth(e)==0){ // Given expression does not have a nested structure
 
             if(e.indexOf("&&") == -1 && e.indexOf("||") == -1){
                 // There is no logical connective: return single feature (leaf node)
@@ -781,7 +781,7 @@ export default class FeatureApplication {
 
         }else{
             // Hide the nested structure by replacing whatever's inside parentheses with special characters (currently using X's).
-            _e = collapse_paren_into_symbol(e);
+            _e = collapseParenIntoSymbol(e);
         }
 
         var first = true;

@@ -18,7 +18,8 @@
     import Cheatsheet from './Cheatsheet';
     import DesignBuilder from './DesignBuilder';
     import DaphneAnswer from './DaphneAnswer';
-    import DataMining from'./DataMining';
+    import DataMining from './DataMining';
+    import EOSSFilter from './EOSSFilter';
 
     let sizeScale = [
         'one-third',
@@ -39,7 +40,8 @@
             Cheatsheet,
             DesignBuilder,
             DaphneAnswer,
-            DataMining
+            DataMining,
+            EOSSFilter
         },
         computed: {
             sizeClass: function () {

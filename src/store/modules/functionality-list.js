@@ -3,7 +3,7 @@ functionalityTypes.set('DaphneAnswer', { title: 'Answers', minSize: 'one-third',
 functionalityTypes.set('DesignBuilder', { title: 'Design Builder', minSize: 'one-third', maxRepeat: 1});
 functionalityTypes.set('DataMining', { title: 'Data Mining', minSize: 'one-third', maxRepeat: 1});
 functionalityTypes.set('Cheatsheet', { title: 'Cheatsheet', minSize: 'one-third', maxRepeat: 1000});
-functionalityTypes.set('Filter', { title: 'Filter', minSize: 'one-third', maxRepeat: 1});
+functionalityTypes.set('EOSSFilter', { title: 'Filter', minSize: 'one-third', maxRepeat: 1});
 functionalityTypes.set('FeatureApplication', { title: 'Feature Application', minSize: 'one-third', maxRepeat: 1});
 
 let newFunctionalityId = 0;
@@ -16,7 +16,7 @@ const state = {
         { name: 'DesignBuilder', title: 'Design Builder', icon: 'fa-search' },
         { name: 'DataMining', title: 'Data Mining', icon: 'fa-bar-chart' },
         { name: 'Cheatsheet', title: 'Cheatsheet', icon: 'fa-book' },
-        { name: 'Filter', title: 'Filter', icon: 'fa-filter' },
+        { name: 'EOSSFilter', title: 'Filter', icon: 'fa-filter' },
         { name: 'FeatureApplication', title: 'Feature Application', icon: 'fa-sitemap' }
     ],
     functionalities: [],
@@ -25,7 +25,7 @@ const state = {
         'DesignBuilder': 0,
         'DataMining': 0,
         'Cheatsheet': 0,
-        'Filter': 0,
+        'EOSSFilter': 0,
         'FeatureApplication': 0
     }
 };

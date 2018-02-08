@@ -6,6 +6,7 @@ import TradespacePlot from './components/TradespacePlot';
 import FunctionalityList from './components/FunctionalityList';
 
 import EOSS from './scripts/eoss';
+import EOSSFilter from './scripts/eoss-filter';
 
 let annyang = require('annyang');
 let SpeechKITT = window.SpeechKITT;
@@ -14,7 +15,6 @@ let responsiveVoice = window.responsiveVoice;
 // Old stuff
 import Daphne from './scripts/daphne';
 import EOSSLabel from './scripts/eoss_label';
-import EOSSFilter from './scripts/eoss_filter';
 import FeatureApplication from './scripts/feature_application';
 let styles = require('./styles/app.scss');
 
@@ -33,6 +33,7 @@ let app = new Vue({
     mounted() {
         // Set up initial state
         this.$store.commit('setProblem', EOSS);
+        this.$store.commit('setFilter', EOSSFilter);
         this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
         this.$store.commit('addFunctionality', 'DesignBuilder');
         this.$store.commit('addFunctionality', 'DataMining');
@@ -45,10 +46,8 @@ let daphne = new Daphne();
 
 // General Code
 //daphne.label = new EOSSLabel(daphne.problem);
-//daphne.filter = new EOSSFilter(daphne.problem,daphne.tradespacePlot, daphne.label);
 //daphne.featureApplication = new FeatureApplication(daphne.label);
 
-//await daphne.addNewFunctionality('filter');
 //daphne.addNewFunctionality('feature_application');
 
 // Voice recognition

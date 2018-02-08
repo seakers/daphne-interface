@@ -92,6 +92,7 @@ body {
   flex-grow: 1;
   align-items: flex-start;
   overflow: auto;
+  flex-direction: column;
 }
 
 .func-panel {

@@ -1,44 +1,53 @@
-export const SELECTION_UPDATED = "selection_updated";
 export const APPLY_FILTER = "apply_filter";
 
 export const INITIALIZE_FEATURE_APPLICATION = "initialize_feature_application";
 export const UPDATE_FEATURE_APPLICATION = "update_feature_application";
 
-export function dominates(metrics1, metrics2, objective) {
+import * as _ from 'lodash-es';
+import store from '../store';
 
-    let at_least_as_good_as = true;
-    let better_than_in_one = false;
+export function calculateParetoRanking(data) {
+    let n = data.length;
+    let dominationCounter = _.fill(Array(data.length), 0);
+    for (let i = 0; i < n; ++i) {
+        for (let j = i + 1; j < n; ++j) {
+            // Check each objective for dominance
+            if (dominates(data[j].outputs, data[i].outputs, store.state.problem.outputObj)) {
+                dominationCounter[i] += 1;
+            }
+            else {
+                dominationCounter[j] += 1;
+            }
+        }
+    }
+    for (let i = 0; i < n; ++i) {
+        data[i].paretoRanking = dominationCounter[i];
+    }
+}
 
+function dominates(metrics1, metrics2, objective) {
+    let atLeastAsGoodAs = true;
+    let betterThanInOne = false;
     if (!objective) {
         objective = [];
         for (let i = 0; i < metrics1.length; i++) {
             objective.push(1);
         }
     }
-
     for (let i = 0; i < metrics1.length; i++) {
-
         let val1 = objective[i] * metrics1[i];
         let val2 = objective[i] * metrics2[i];
 
         if (val1 > val2) {
             // First better than Second
-            better_than_in_one = true;
-
+            betterThanInOne = true;
         }
         else if (val1 < val2) {
             // First is worse than Second
-            at_least_as_good_as = false;
+            atLeastAsGoodAs = false;
         }
     }
-
-
-    if (at_least_as_good_as && better_than_in_one) {
-        return true; // First dominates Second
-    }
-    else {
-        return false;
-    }
+    return atLeastAsGoodAs && betterThanInOne; // First dominates Second
 }
 
 export function roundNum(num, decimal) {
@@ -54,84 +63,53 @@ export function roundNum(num, decimal) {
 /*
     Removes the outermost parentheses from the expression
 */
-export function remove_outer_parentheses(expression, outer_level){
-
-    var new_expression = expression;
-    var out = {expression:new_expression,level:outer_level};
-
-
-    if(expression===null){
-        return '';
+export function removeOuterParentheses(expression) {
+    let cleanExpression = _.clone(expression);
+    while (cleanExpression[0] === '(' && cleanExpression[cleanExpression.length-1] === ')') {
+        cleanExpression = cleanExpression.substring(1, cleanExpression.length-1);
     }
-    else if(expression[0]!="(" || expression[expression.length-1]!=")"){
-        // Return if the expression does not start with "(" or ")".
-    }else{
-        var leng = expression.length;
-        var level = 0;
-        var paren_end = -1;
-        for(var i=0;i<leng;i++){
-            if(expression[i]==="("){
-                level++;
-            }
-            else if(expression[i]===")"){
-                level--;
-                if(level==0){
-                    paren_end = i;
-                    break;
-                }
-            }
-        }
-        if(paren_end == leng-1){
-            new_expression = expression.substring(1,leng-1);
-            out = remove_outer_parentheses(new_expression, outer_level+1);
-        }
-    }
-
-    if(typeof outer_level === "undefined" || outer_level === null){
-        // If outer_level is undefined, return string expression
-        return new_expression;
-    }else{
-        // If outer_level is given, return dict
-        return out;
-    }
+    return cleanExpression;
 }
 
-export function get_nested_parenthesis_depth(expression){
-    var leng = expression.length;
-    var level = 0;
-    var maxLevel = 0;
-    for(var i=0;i<leng;i++){
-        if(expression[i]==="("){
+export function getNestedParenthesisDepth(expression) {
+    let len = expression.length;
+    let level = 0;
+    let maxLevel = 0;
+    for (let i = 0; i < len; i++) {
+        if (expression[i] === '(') {
             level++;
-            if(level>maxLevel) maxLevel=level;
+            if (level > maxLevel) {
+                maxLevel = level;
+            }
         }
-        else if(expression[i]===")"){
+        else if (expression[i] === ')') {
             level--;
         }
     }
     return maxLevel;
 }
 
-export function collapse_paren_into_symbol(expression){
-    var leng = expression.length;
-    var modified_expression = "";
-    var level = 0;
-    for(var i=0;i<leng;i++){
+export function collapseParenIntoSymbol(expression) {
+    let len = expression.length;
+    let modifiedExpression = '';
+    let level = 0;
+    for (let i = 0; i < len; i++) {
 
-        if(expression[i]==="("){
+        if (expression[i] === '(') {
             level++;
         }
-        else if(expression[i]===")"){
+        else if (expression[i] === ')') {
             level--;
         }
-        if(expression[i]==="(" && level==1){
-            modified_expression=modified_expression + expression[i];
+        if (expression[i] === '(' && level === 1) {
+            modifiedExpression += expression[i];
         }
-        else if(level>=1){
-            modified_expression=modified_expression + "X";
-        }else{
-            modified_expression=modified_expression + expression[i];
+        else if(level >= 1) {
+            modifiedExpression += 'X';
+        }
+        else {
+            modifiedExpression += expression[i];
         }
     }
-    return modified_expression;
+    return modifiedExpression;
 }

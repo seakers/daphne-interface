@@ -1,6 +1,5 @@
 // Import templates
 import feature_application from '../data/functionalities/feature_application.html';
-import filter from '../data/functionalities/filter.html';
 
 export default class Daphne {
     constructor() {
@@ -13,7 +12,6 @@ export default class Daphne {
 
         // Available functionalities
         this.functionalities = new Map();
-        this.functionalities.set("filter", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
         this.functionalities.set("feature_application", { minSize: "one-third", maxRepeat: 1, instances: new Map() });
 
         this.websocket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/api/daphne");

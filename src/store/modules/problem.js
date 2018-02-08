@@ -1,3 +1,5 @@
+import { calculateParetoRanking } from '../../scripts/utils';
+
 // initial state
 const state = {
     problemData: [],
@@ -46,8 +48,8 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-
                 let {problemData, extra} = await state.importCallback(data);
+                calculateParetoRanking(problemData);
                 commit('updateExtra', extra);
                 commit('updateProblemData', problemData);
             }
