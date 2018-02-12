@@ -55,8 +55,8 @@
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
-    import * as d3 from 'd3';
     import * as _ from 'lodash-es';
+    import * as d3 from 'd3';
     import 'd3-selection-multi';
 
     export default {
@@ -87,7 +87,8 @@
                 numPoints: 'getNumPoints',
                 selectedArchs: 'getSelectedArchs',
                 highlightedArchs: 'getHighlightedArchs',
-                hiddenArchs: 'getHiddenArchs'
+                hiddenArchs: 'getHiddenArchs',
+                currentExpression: 'getCurrentExpression'
             }),
 
             plotWidth() {
@@ -555,6 +556,24 @@
             selectedArchs: function(val, oldVal) {
                 this.drawPoints(this.context, false);
                 _.debounce(this.updateTargetSelection, 1000);
+            },
+
+            highlightedArchs: function(val, oldVal) {
+                this.drawPoints(this.context, false);
+            },
+
+            currentExpression: function(val, oldVal) {
+                let featureExpression = val;
+                this.$store.commit('clearHighlightedArchs');
+
+                // If filter expression is not empty, do something
+                let highlightedArchs = _.clone(this.highlightedArchs);
+                if (featureExpression !== '' || featureExpression) {
+                    this.plotData.forEach((point, index) => {
+                        highlightedArchs[index] = this.$store.state.filter.processFilterExpression(point, featureExpression, '&&');
+                    });
+                }
+                this.$store.commit('updateHighlightedArchs', highlightedArchs);
             }
         },
 

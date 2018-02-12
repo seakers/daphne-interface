@@ -102,7 +102,6 @@ function computeScores(features) {
 // mutations
 const mutations = {
     setFeatures(state, features) {
-        console.log(features);
         state.features = features;
         state.scores = computeScores(features);
 

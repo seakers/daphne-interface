@@ -2,6 +2,7 @@
 const state = {
     presetOptions: [],
     selectedFilter: '',
+    currentExpression: '',
     processFilterExpression: (point, expression, logic) => false // Should return true if a datapoint conforms to expression
 };
 
@@ -9,6 +10,9 @@ const state = {
 const getters = {
     getPresetOptions(state) {
         return state.presetOptions;
+    },
+    getCurrentExpression(state) {
+        return state.currentExpression;
     }
 };
 
@@ -26,6 +30,9 @@ const mutations = {
     },
     setSelectedFilter(state, selectedFilter) {
         state.selectedFilter = selectedFilter;
+    },
+    setCurrentExpression(state, currentExpression) {
+        state.currentExpression = currentExpression;
     }
 };
 

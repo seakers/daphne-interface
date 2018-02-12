@@ -40,21 +40,17 @@ export default {
             _e = collapseParenIntoSymbol(e);
         }
 
+        let filterResult = true;
         while (!last) {
             let e_temp, _e_temp;
 
-            if (first) {
-                // The first filter in a series to be applied
-                filtered = data;
-                first = false;
-            }
-            else {
+            if (!first) {
                 logic = _e.substring(0, 2);
                 _e = _e.substring(2);
                 e = e.substring(2);
             }
 
-            let next; // The imediate next logical connective
+            let next; // The immediate next logical connective
             let and = _e.indexOf('&&');
             let or = _e.indexOf('||');
             if (and === -1 && or === -1) {
@@ -73,7 +69,7 @@ export default {
                 next = '||';
             }
 
-            if (next) {
+            if (next !== '') {
                 _e_temp = _e.split(next, 1)[0];
                 e_temp = e.substring(0, _e_temp.length);
 
@@ -86,21 +82,22 @@ export default {
                 last = true;
             }
 
-            if (logic === '||') {
-                let filtered_temp = this.processFilterExpression(point, e_temp, logic);
-                for(let j=0;j<filtered_temp.length;j++){
-                    if(filtered.indexOf(filtered_temp[j])==-1){
-                        filtered.push(filtered_temp[j]);
-                    }
-                }
-
+            let subFilter = this.processFilterExpression(point, e_temp, logic);
+            if (first) {
+                // The first filter in a series to be applied
+                filterResult = subFilter;
+                first = false;
             }
             else {
-                filtered = this.processFilterExpression(e_temp,filtered,logic);
+                if (logic === '||') {
+                    filterResult = filterResult || subFilter;
+                }
+                else {
+                    filterResult = filterResult && subFilter;
+                }
             }
-
         }
-        return filtered;
+        return filterResult;
     }
 };
 
@@ -239,7 +236,7 @@ function applyPresetFilter(inputExpression, data) {
         break;
     }
     case 'separate': {
-        result=true;
+        result = true;
         let instruments = instr.split(',');
         for (let i = 0; i < numOrbits; i++) {
             let found = false;
@@ -366,45 +363,4 @@ function applyPresetFilter(inputExpression, data) {
     else {
         return result;
     }
-}
-
-
-class EOSSFilter {
-    constructor() {
-        PubSub.subscribe(APPLY_FILTER, (msg, data) => {
-            this.apply_filter_expression(data);
-        });
-
-    }
-
-    apply_filter_expression(input_expression) {
-
-        let feature_expression = input_expression;
-
-        // Cancel all previous selections
-        this.tradespace_plot.cancel_selection('remove_highlighted');
-
-        // If filter expression is empty, return
-        if(feature_expression==="" || !feature_expression){
-            return;
-
-        }else{
-
-            let filtered_data = this.process_filter_expression(feature_expression, this.tradespace_plot.data, "&&");
-
-            filtered_data.forEach(point => {
-                point.highlighted = true;
-                if (point.selected) {
-                    point.drawingColor = this.tradespace_plot.color.overlap;
-                }else{
-                    point.drawingColor = this.tradespace_plot.color.highlighted;
-                }
-            });
-            this.tradespace_plot.update(0, 1);
-        }
-
-        d3.select("#num_of_selected_archs").text(""+this.tradespace_plot.get_num_of_selected_archs());
-    }
-
-
 }
