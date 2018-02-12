@@ -1,18 +1,6 @@
-import Label from './label';
-//"ACE_ORCA","ACE_POL","ACE_LID","CLAR_ERB","ACE_CPR","DESD_SAR","DESD_LID","GACM_VIS","GACM_SWIR","HYSP_TIR","POSTEPS_IRS","CNES_KaRIN"};
-//"LEO-600-polar-NA","SSO-600-SSO-AM","SSO-600-SSO-DD","SSO-800-SSO-DD","SSO-800-SSO-PM";
-
-
-export default class EOSSLabel extends Label {
+class EOSSLabel {
 
     constructor(eoss) {
-        super();
-        this.disabled = true;
-
-        //this.orbit_relabeled = ["1000","2000","3000","4000","5000"];
-        //this.instrument_relabeled = ["A","B","C","D","E","F","G","H","I","J","K","L"];
-
-        this.eoss = eoss;
     }
 
 
@@ -53,71 +41,6 @@ export default class EOSSLabel extends Label {
             return "NamingError";
         }
     }
-
-
-    actualName2Index(name, type) {
-        name = name.trim();
-        if (name.indexOf(",") != -1) {
-            let names = name.split(",");
-            let newName = "";
-            for (let i = 0; i < names.length; i++) {
-                let comma = ",";
-                if (i == 0){
-                    comma = "";
-                }
-                if (type == "orbit"){
-                    newName = newName + comma + this.eoss.orbitList.indexOf(names[i]);
-                }
-                else if (type == "instrument") {
-                    newName = newName + comma + this.eoss.instrumentList.indexOf(names[i]);
-                }
-                else {
-                    newName = newName + comma + "NamingError";
-                }
-            }
-            return newName;
-        }
-        else {
-            if (type == "orbit") {
-                return this.eoss.orbitList.indexOf(name);
-            }
-            else if (type == "instrument") {
-                return this.eoss.instrumentList.indexOf(name);
-            }
-            else {
-                return "NamingError";
-            }
-        }
-    }
-
-
-    displayName2Index(input, type) {
-        if (this.disabled) {
-            return this.actualName2Index(input,type);
-        }
-
-        input = input.trim();
-        let split = input.split(',');
-        let output = '';
-        for (let i = 0; i < split.length; i++) {
-            let name = split[i];
-
-            if (i > 0)
-                output = output + ",";
-
-            if (type == "orbit") {
-                output = output + this.orbit_relabeled.indexOf(name);
-            }
-            else if (type == "instrument") {
-                output = output + this.instrument_relabeled.indexOf(name);
-            }
-            else {
-                return "NamingError";
-            }
-        }
-        return output;
-    }
-
 
     actualName2DisplayName(name, type) {
         if (this.disabled) {

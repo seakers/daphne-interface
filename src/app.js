@@ -14,7 +14,6 @@ let responsiveVoice = window.responsiveVoice;
 
 // Old stuff
 import Daphne from './scripts/daphne';
-import EOSSLabel from './scripts/eoss_label';
 import FeatureApplication from './scripts/feature_application';
 let styles = require('./styles/app.scss');
 
@@ -25,6 +24,7 @@ let app = new Vue({
     store,
     data: function () {
         return {
+            websocket: {}
         }
     },
     methods: {
@@ -37,17 +37,25 @@ let app = new Vue({
         this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
         this.$store.commit('addFunctionality', 'DesignBuilder');
         this.$store.commit('addFunctionality', 'DataMining');
+        this.$store.commit('addFunctionality', 'EOSSFilter');
         this.$store.commit('addFunctionality', 'DaphneAnswer');
         this.$store.commit('addFunctionality', 'Cheatsheet');
+
+        // Websocket connection
+        this.websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
+        this.websocket.onopen = function() {
+            console.log('Web Socket Conenction Made');
+        };
+        this.websocket.onmessage = function (data) {
+            //ws.send(JSON.stringify(data));
+        }
     }
 });
 
 let daphne = new Daphne();
 
 // General Code
-//daphne.label = new EOSSLabel(daphne.problem);
 //daphne.featureApplication = new FeatureApplication(daphne.label);
-
 //daphne.addNewFunctionality('feature_application');
 
 // Voice recognition

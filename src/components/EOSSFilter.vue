@@ -26,8 +26,8 @@
                 <button class="delete" aria-label="delete"></button>
             </div>
             <div id="filter-hints" class="message-body">
-                <p>Valid orbit names: LEO-600-polar-NA, SSO-600-SSO-AM, SSO-600-SSO-DD, SSO-800-SSO-DD, SSO-800-SSO-PM</p>
-                <p>Valid instrument names: ACE_ORCA, ACE_POL, ACE_LID, CLAR_ERB, ACE_CPR, DESD_SAR, DESD_LID, GACM_VIS, GACM_SWIR, HYSP_TIR, POSTEPS_IRS, CNES_KaRIN</p>
+                <p>Valid orbit names: {{ printOrbitList }}</p>
+                <p>Valid instrument names: {{ printInstrumentList }}</p>
             </div>
         </article>
     </div>
@@ -161,10 +161,19 @@
                             return [];
                     }
                 }
+            },
+            printOrbitList() {
+                const eossInfo = this.$store.state.problem.extra;
+                return eossInfo.orbitList.map(orbit => eossInfo.orbitAlias.get(orbit)).join(', ');
+            },
+            printInstrumentList() {
+                const eossInfo = this.$store.state.problem.extra;
+                return eossInfo.instrumentList.map(orbit => eossInfo.instrumentAlias.get(orbit)).join(', ');
             }
         },
         methods: {
             applyFilter() {
+                const problem = this.$store.state.problem;
                 let invalidInput = false;
                 let filterExpression;
 
@@ -186,7 +195,7 @@
                 if (this.selectedFilter === 'present' || this.selectedFilter === 'absent' ||
                     this.selectedFilter === 'together' || this.selectedFilter === 'separate') {
                     let instrument = inputText[0];
-                    let instRelabel = this.label.displayName2Index(instrument.toUpperCase(), 'instrument');
+                    let instRelabel = problem.displayName2Index(instrument.toUpperCase(), 'instrument');
                     if (instRelabel === null) {
                         invalidInput = true;
                     }
@@ -196,8 +205,8 @@
                     let orbit = inputText[0].trim();
                     let instrument = inputText[1];
 
-                    let orbRelabel = this.label.displayName2Index(orbit, 'orbit');
-                    let instRelabel = this.label.displayName2Index(instrument.toUpperCase(), 'instrument');
+                    let orbRelabel = problem.displayName2Index(orbit, 'orbit');
+                    let instRelabel = problem.displayName2Index(instrument.toUpperCase(), 'instrument');
                     if (instRelabel === null || orbRelabel === null) {
                         invalidInput = true;
                     }
@@ -205,8 +214,8 @@
                 }
                 else if (this.selectedFilter === 'emptyOrbit') {
                     let orbit = inputText[0].trim();
-                    let orbRelabel = this.label.displayName2Index(orbit, 'orbit');
-                    if (orbRelabel==null) {
+                    let orbRelabel = problem.displayName2Index(orbit, 'orbit');
+                    if (orbRelabel === null) {
                         invalidInput = true;
                     }
                     filterExpression = this.selectedFilter + '[' + orbRelabel + ';;]';
@@ -219,8 +228,8 @@
                 else if (this.selectedFilter === 'subsetOfInstruments') {
                     let orbit = inputText[0].trim();
                     let instrument = inputText[2];
-                    let orbRelabel = this.label.displayName2Index(orbit, 'orbit');
-                    let instRelabel = this.label.displayName2Index(instrument.toUpperCase(), 'instrument');
+                    let orbRelabel = problem.displayName2Index(orbit, 'orbit');
+                    let instRelabel = problem.displayName2Index(instrument.toUpperCase(), 'instrument');
                     if (instRelabel === null || orbRelabel === null) {
                         invalidInput = true;
                     }
@@ -248,7 +257,7 @@
                     }
                     else if (orbitEmpty) {
                         // Count the number of specified instrument
-                        let instRelabel = this.label.displayName2Index(instrument.toUpperCase(), 'instrument');
+                        let instRelabel = problem.displayName2Index(instrument.toUpperCase(), 'instrument');
                         if (instRelabel == null) {
                             invalidInput = true;
                         }
@@ -258,7 +267,7 @@
                         // Count the number of instruments in an orbit
                         orbit = orbit.trim();
 
-                        let orbRelabel = this.label.displayName2Index(orbit,'orbit');
+                        let orbRelabel = problem.displayName2Index(orbit,'orbit');
                         if (orbRelabel === null) {
                             invalidInput = true;
                         }
@@ -280,16 +289,12 @@
                     return false;
                 }
 
-                if (filterExpression.indexOf('paretoFront') !== -1) {
-                    this.apply_filter_expression(filterExpression);
-
-                }else{
+                if (filterExpression.indexOf('paretoFront') === -1) {
+                    // TODO: Port to Vue
                     //PubSub.publish(UPDATE_FEATURE_APPLICATION, {'option':'direct-update','expression':filterExpression});
                     //ifeed.feature_application.update_feature_application('direct-update',filterExpression);
-                    this.apply_filter_expression(filterExpression);
                 }
-
-                return true;
+                this.$store.commit('setCurrentExpression', filterExpression);
             }
         }
     }

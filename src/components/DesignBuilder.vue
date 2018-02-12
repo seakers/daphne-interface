@@ -63,7 +63,6 @@
                 if (!arraysAreEq) {
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
-                    console.log(newInputs);
                     try {
                         let dataResponse = await fetch('/api/vassar/evaluate-architecture/',
                             {

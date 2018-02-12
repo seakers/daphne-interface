@@ -16,7 +16,9 @@ const state = {
             extra: {}
         };
     }, // Callback function to be called after importing data (preprocessing)
-    extra: {} // Data that is exclusive to the problem at hand at won't be used for the general interfaces
+    extra: {}, // Data that is exclusive to the problem at hand at won't be used for the general interfaces
+    actualName2Index: (name, type) => -1, // To be implemented
+    displayName2Index: (input, type) => -1 // To be implemented
 };
 
 // getters
@@ -88,6 +90,8 @@ const mutations = {
         state.displayComponent = problemInfo.displayComponent;
         state.importCallback = problemInfo.importCallback;
         state.extra = problemInfo.extra;
+        state.actualName2Index = problemInfo.actualName2Index;
+        state.displayName2Index = problemInfo.displayName2Index;
     },
     updateExtra(state, extra) {
         state.extra = extra;
