@@ -13,8 +13,6 @@ let SpeechKITT = window.SpeechKITT;
 let responsiveVoice = window.responsiveVoice;
 
 // Old stuff
-import Daphne from './scripts/daphne';
-import FeatureApplication from './scripts/feature_application';
 let styles = require('./styles/app.scss');
 
 import store from './store';
@@ -37,6 +35,7 @@ let app = new Vue({
         this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
         this.$store.commit('addFunctionality', 'DesignBuilder');
         this.$store.commit('addFunctionality', 'DataMining');
+        this.$store.commit('addFunctionality', 'FeatureApplication');
         this.$store.commit('addFunctionality', 'EOSSFilter');
         this.$store.commit('addFunctionality', 'DaphneAnswer');
         this.$store.commit('addFunctionality', 'Cheatsheet');
@@ -51,12 +50,6 @@ let app = new Vue({
         }
     }
 });
-
-let daphne = new Daphne();
-
-// General Code
-//daphne.featureApplication = new FeatureApplication(daphne.label);
-//daphne.addNewFunctionality('feature_application');
 
 // Voice recognition
 if (annyang) {

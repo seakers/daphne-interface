@@ -20,6 +20,7 @@
     import DaphneAnswer from './DaphneAnswer';
     import DataMining from './DataMining';
     import EOSSFilter from './EOSSFilter';
+    import FeatureApplication from './FeatureApplication';
 
     let sizeScale = [
         'one-third',
@@ -41,7 +42,8 @@
             DesignBuilder,
             DaphneAnswer,
             DataMining,
-            EOSSFilter
+            EOSSFilter,
+            FeatureApplication
         },
         computed: {
             sizeClass: function () {

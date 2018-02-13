@@ -292,7 +292,6 @@
                 if (filterExpression.indexOf('paretoFront') === -1) {
                     // TODO: Port to Vue
                     //PubSub.publish(UPDATE_FEATURE_APPLICATION, {'option':'direct-update','expression':filterExpression});
-                    //ifeed.feature_application.update_feature_application('direct-update',filterExpression);
                 }
                 this.$store.commit('setCurrentExpression', filterExpression);
             }
