@@ -129,6 +129,7 @@
                 // Update the placeholder with the driving feature and stash the expression
                 // TODO: Update filter and feature_application through PubSub && Change to Vue
                 this.$store.commit('setCurrentExpression', expression);
+                this.$store.commit('setHoveredExpression', expression);
                 //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'temp','expression':expression});
 
                 //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
@@ -137,6 +138,7 @@
             featureClick(d) {
                 // Replaces the current feature expression with the stashed expression
                 // TODO: Change to Vue
+                this.$store.commit('setClickedExpression', this.$store.state.featureApplication.hoveredExpression);
                 //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'update','expression':null});
             },
 
@@ -147,6 +149,7 @@
                 // Remove all the features created temporarily and bring back the previously stored feature expression
                 // TODO: Change to Vue
                 this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setHoveredExpression', '');
                 //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'restore','expression':null});
             }
 

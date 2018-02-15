@@ -6,6 +6,7 @@ import functionalityList from './modules/functionality-list';
 import daphne from './modules/daphne';
 import dataMining from './modules/data-mining';
 import filter from './modules/filter';
+import featureApplication from './modules/feature-application';
 
 Vue.use(Vuex);
 
@@ -19,7 +20,8 @@ export default new Vuex.Store({
         tradespacePlot,
         functionalityList,
         dataMining,
-        filter
+        filter,
+        featureApplication
     },
     strict: debug
 });

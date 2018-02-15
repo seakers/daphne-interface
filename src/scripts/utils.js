@@ -61,12 +61,28 @@ export function roundNum(num, decimal) {
 /*
     Removes the outermost parentheses from the expression
 */
-export function removeOuterParentheses(expression) {
+export function removeOuterParentheses(expression, outerLevel) {
     let cleanExpression = _.clone(expression);
+    let newOuterLevel;
+    if (outerLevel !== undefined) {
+        newOuterLevel = outerLevel;
+    }
+    else {
+        newOuterLevel = 0;
+    }
     while (cleanExpression[0] === '(' && cleanExpression[cleanExpression.length-1] === ')') {
         cleanExpression = cleanExpression.substring(1, cleanExpression.length-1);
+        newOuterLevel++;
     }
-    return cleanExpression;
+    if (outerLevel !== undefined) {
+        return {
+            expression: cleanExpression,
+            level: newOuterLevel
+        }
+    }
+    else {
+        return cleanExpression;
+    }
 }
 
 export function getNestedParenthesisDepth(expression) {

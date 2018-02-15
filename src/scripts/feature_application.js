@@ -5,11 +5,7 @@ export default class FeatureApplication {
 
         this.label = label;
 
-        this.color = {"default":"#616161",
-                     "logic":"#2383FF",
-                     "add":"#FF7979",
-                     "deactivated":"#E3E3E3",
-                     "temp":"#C6F3B6"};
+
 
         this.stashed_root = null;
         this.stashed_node_ids = null;
@@ -17,14 +13,6 @@ export default class FeatureApplication {
         this.tree = null;
         this.data = null;
         this.i=0;
-
-        this.last_modified_tree_node = null;
-
-        // top  right bottem left
-        this.margin = {left:70,right:20,top:10,bottom:20},
-        this.width = 1500 - this.margin.left - this.margin.right,
-        this.height = 320 - this.margin.top - this.margin.bottom;
-
 
         this.draggingNode = null;
         this.selectedNode = null;
@@ -39,270 +27,6 @@ export default class FeatureApplication {
             this.update_feature_application(data.option,data.expression);
         });
     }
-
-
-
-    draw_feature_application_tree(expression){
-
-        var margin = this.margin;
-        var width = this.width;
-        var height = this.height;
-
-        this.tree = d3.tree().size([height, width]);
-
-        d3.select('#feature_application_panel').select('svg').remove();
-
-        var svg = d3.select('#feature_application_panel')
-                    .append('svg')
-                    .attr('width',width + margin.left + margin.right)
-                    .attr('height',height + margin.bottom + margin.top)
-                    .append('g')
-                    .attr('transform','translate('+ margin.left + "," + margin.top + ")");
-
-        this.i=0;
-
-        this.data = this.construct_tree(expression);
-
-        let that = this;
-
-        this.visit_nodes(this.data,function(d){
-            d.temp=true;
-            d.id = that.i++;
-        });
-
-        this.update();
-    }
-
-
-    update(){
-
-        if(this.data==null){
-            d3.selectAll('.node').remove();
-            d3.selectAll('.link').remove();
-            //PubSub.publish(APPLY_FEATURE_EXPRESSION, null);
-            return;
-        }
-        //this.check_tree_structure();
-
-        //PubSub.publish(APPLY_FEATURE_EXPRESSION, self.parse_tree(self.root));
-
-        let duration = d3.event && d3.event.altKey ? 5000 : 500;
-        let margin = this.margin;
-
-        let root = d3.hierarchy(this.data, function(d) { return d.children; });
-        root.x0 = this.height / 2;
-        root.y0 = 0;
-
-        let treeStructure = this.tree(root);
-
-        // Compute the new tree layout.
-        var nodes = treeStructure.descendants();
-        var links = treeStructure.descendants().slice(1);
-
-        // Normalize for fixed-depth.
-        nodes.forEach(function(d) { d.y = d.depth * 180; });
-
-        var svg = d3.select('#feature_application_panel')
-                        .select('svg').select('g');
-
-        var diagonal = this.diagonal;
-
-        var that = this;
-
-        // Update the nodes…
-        var node = svg.selectAll("g.node")
-                        .data(nodes, function(d) {return d.id || (d.id = d.data.id); });
-
-        // Enter any new nodes at the parent's previous position.
-        var nodeEnter = node.enter().append("g")
-            .attr("class", "node")
-            .attr("transform", function(d) {
-                //return 'translate(' + (root.y0 + margin.top) + ',' + (root.x0 + margin.left) + ')';
-                if(d.depth==0) return "translate(" + d.y0 + "," + d.x0 + ")";
-                else return "translate(" + d.parent.y0+ "," + d.parent.x0 + ")";
-            });
-
-        nodeEnter.append("circle")
-            .attr("r", 1e-6);
-
-        nodeEnter.append("svg:text")
-            .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
-            .attr("dy", ".40em")
-            .style("font-size","14px")
-            .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-            //.text(function(d){d.name})
-            .style("fill-opacity", 1e-6);
-
-        nodeEnter.filter(function(d){
-                if(d.data.type=="leaf"){return false};
-                return true;
-            })
-            .append('circle')
-            .attr('class','nodeRange')
-            .attr('r',40)
-            .attr('opacity',0)
-            .style('fill','red')
-            .attr('pointer-events','mouseover')
-            .on('mouseover',function(d){
-                that.selectedNode=d;
-            })
-            .on('mouseout',function(d){
-                that.selectedNode=null;
-            });
-
-        // Transition nodes to their new position.
-        var nodeUpdate = nodeEnter.merge(node);
-
-        nodeUpdate.transition()
-            .duration(duration)
-            .attr("transform", function(d) { return "translate(" + d.y+ "," + d.x + ")"; });
-
-        nodeUpdate.select("circle")
-            .attr("r", 9.5)
-            .style("fill", function(d) {
-                if(d.data.deactivated){
-                    return that.color.deactivated;
-                }else if(d.data.temp){
-                    return that.color.temp;
-                }else{
-                     if(d.data.type=="logic"){
-                         if(d.data.add){
-                             return that.color.add;
-                         }
-                         else{
-                             return that.color.logic;
-                         }
-                     }else{
-                        return that.color.default;
-                     }
-                }
-             });
-
-        nodeUpdate.select("text")
-            .attr("x",function(d){
-                if(d.children){ return -10; }
-                else{ return 10; }
-            })
-            .attr("text-anchor", function(d) {
-                if(d.children){ return "end"; }
-                else{ return "start"; }
-            })
-            .text(function(d) {
-                return that.label.pp_feature_single(d.data.name);
-            })
-            .style("fill",function(d){
-                if(d.data.type=="logic" && d.data.add){
-                    return that.color.add;
-                }else{
-                    return "black";
-                }
-            })
-            .style("font-size",23)
-            .style("fill-opacity", 1);
-
-        // Transition exiting nodes to the parent's new position.
-        var nodeExit = node.exit().transition()
-            .duration(duration)
-            .attr("transform", function(d) {
-                if(d.depth==0) return "translate(" + d.y + "," + d.x + ")";
-                else return "translate(" + d.parent.y + "," + d.parent.x + ")";
-            })
-            .remove();
-
-        nodeExit.select("circle")
-            .attr("r", 1e-6);
-
-        nodeExit.select("text")
-            .style("fill-opacity", 1e-6);
-
-
-        // Update the links…
-        var link = svg.selectAll("path.link")
-            .data(links, function(d){
-                    return d.id;
-                });
-
-        // Enter any new links at the parent's previous position.
-        let linkEnter = link.enter().insert("path", "g")
-            .attr("class", "link")
-            .attr("d", function(d) {
-                var o = {x: root.x0, y: root.y0};
-                return diagonal(o,o);
-            })
-            .style("stroke-width",function(d){
-                    return 8;
-                })
-            .style("fill-opacity", 0.94)
-            .style('fill','none');
-
-        var linkUpdate = linkEnter.merge(link);
-
-        linkUpdate.transition()
-            .duration(duration)
-            .attr("d", function(d) {
-              return diagonal(d,d.parent);
-            })
-            .style("stroke",function(d){
-                if(d.data.deactivated){
-                    return that.color.deactivated;
-                }else if(d.data.temp){
-                    return that.color.temp;
-                }else{
-                    return that.color.default;
-                }
-            });
-
-        // Transition exiting nodes to the parent's new position.
-        link.exit().transition()
-            .duration(duration)
-            .attr("d", function(d) {
-              var o = {x: d.parent.x, y: d.parent.y};
-              return diagonal(o,o);
-            })
-            .remove();
-
-        // Stash the old positions for transition.
-        nodes.forEach(function(d) {
-            d.x0 = d.x;
-            d.y0 = d.y;
-            if(d.id==that.i-1){
-                that.last_modified_tree_node=d;
-            }
-
-        });
-
-        // TODO: Implement drag listener
-//        d3.selectAll('.treeNode')
-//            .call(that.dragListener);
-
-        // TODO: Implement context menu
-//        d3.selectAll('.treeNode')
-//            .on('contextmenu', function(d){
-//
-//                d3.event.preventDefault();
-//                var coord = d3.mouse($('#feature_application_panel > svg > g').get(0));
-//                var context = d.type;
-//
-//                if(!that.contextMenu){
-//                    that.contextMenu = new ContextMenu();
-//                }
-//
-//                self.contextMenu.showMenu(d, coord);
-//
-//            });
-
-
-        // Highlight the node in which to add new features
-//        d3.selectAll('.treeNode')[0].forEach(function(d){
-//            if(d.__data__.add){
-//               d3.select(d).select('circle').style('fill',that.color.add);
-//            }
-//        });
-
-        //self.update_feature_expression(self.parse_tree(self.root));
-    }
-
-
 
     dragStart(d){
 
@@ -492,9 +216,9 @@ export default class FeatureApplication {
 
         }
 
-        that.visit_nodes(self.root, delete_logic_node_without_children);
-        that.visit_nodes(self.root, remove_redundant_logical_connectives);
-        that.visit_nodes(self.root, remove_redundant_features);
+        that.visitNodes(self.root, delete_logic_node_without_children);
+        that.visitNodes(self.root, remove_redundant_logical_connectives);
+        that.visitNodes(self.root, remove_redundant_features);
 
     }
 
@@ -545,94 +269,6 @@ export default class FeatureApplication {
                 self.remove_descendants(id);
             }
         });
-    }
-
-    construct_tree(expression,depth){
-
-        if(depth==null){
-           depth = 0;
-        }
-
-        if(expression==null){
-            return {};
-        }
-
-        var d=depth;
-        var e=expression;
-        var _e = null;
-
-        // Remove outer parenthesis
-        var parentheses_removed = removeOuterParentheses(e,d);
-        e = parentheses_removed.expression;
-        d = +parentheses_removed.level;
-
-        if(getNestedParenthesisDepth(e)==0){ // Given expression does not have a nested structure
-
-            if(e.indexOf("&&") == -1 && e.indexOf("||") == -1){
-                // There is no logical connective: return single feature (leaf node)
-                return {depth:d,type:"leaf",name:e,children:null};
-            }else{
-                // There are logical connectives
-                _e = e;
-            }
-
-        }else{
-            // Hide the nested structure by replacing whatever's inside parentheses with special characters (currently using X's).
-            _e = collapseParenIntoSymbol(e);
-        }
-
-        var first = true;
-        var logic = null;
-        var thisNode = null;
-
-        while(true){
-
-            var temp=null;
-            var _temp=null;
-
-            if(first){
-
-                // The first filter in a series to be applied
-                first = false;
-                var name = null;
-
-                if (_e.indexOf("&&") != -1){
-                    logic = "&&";
-                    name="AND";
-                }else{
-                    logic = "||";
-                    name="OR";
-                }
-                thisNode = {depth:d,type:"logic",name:name,children:[]};
-
-            }else{
-                _e = _e.substring(2);
-                e = e.substring(2);
-            }
-
-            if(_e.indexOf(logic)==-1){
-                // Last element in the list
-                var child = this.construct_tree(e,d+1);
-                thisNode.children.push(child);
-                break;
-            }else{
-                // Not last
-
-                // Get the current feature expression
-                _temp = _e.split(logic,1)[0];
-                temp = e.substring(0,_temp.length);
-
-                // Add the child to the current node
-                var child = this.construct_tree(temp,d+1);
-                thisNode.children.push(child);
-
-                // Get the rest of the expression for the next loop
-                _e = _e.substring(_temp.length);
-                e = e.substring(temp.length);
-            }
-
-        }
-        return thisNode;
     }
 
     parse_tree(root, placeholderNode){
@@ -814,18 +450,4 @@ export default class FeatureApplication {
         //PubSub.publish(ADD_FEATURE, null);
         //ifeed.data_mining.draw_venn_diagram();
     }
-
-
-    diagonal(s, d) {
-        let path = `M ${s.y} ${s.x}
-                C ${(s.y + d.y) / 2} ${s.x},
-                  ${(s.y + d.y) / 2} ${d.x},
-                  ${d.y} ${d.x}`;
-        return path
-    }
-
-
-
-
-
 }
