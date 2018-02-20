@@ -1,19 +1,7 @@
 import * as utils from './utils';
 
 export default class FeatureApplication {
-    constructor(label){
-
-        this.label = label;
-
-
-
-        this.stashed_root = null;
-        this.stashed_node_ids = null;
-
-        this.tree = null;
-        this.data = null;
-        this.i=0;
-
+    constructor() {
         this.draggingNode = null;
         this.selectedNode = null;
         this.dragStarted = false;
@@ -21,10 +9,6 @@ export default class FeatureApplication {
 
         PubSub.subscribe(utils.INITIALIZE_FEATURE_APPLICATION, (msg, data) => {
             this.clear_feature_application()
-        });
-
-        PubSub.subscribe(utils.UPDATE_FEATURE_APPLICATION, (msg, data) => {
-            this.update_feature_application(data.option,data.expression);
         });
     }
 

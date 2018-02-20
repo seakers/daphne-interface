@@ -1,5 +1,4 @@
 export const INITIALIZE_FEATURE_APPLICATION = "initialize_feature_application";
-export const UPDATE_FEATURE_APPLICATION = "update_feature_application";
 
 import * as _ from 'lodash-es';
 import store from '../store';

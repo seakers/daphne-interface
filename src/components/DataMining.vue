@@ -20,6 +20,7 @@
     import { mapGetters, mapMutations } from 'vuex';
     import * as d3 from 'd3';
     import { roundNum } from '../scripts/utils';
+    import * as _ from 'lodash-es';
 
     export default {
         name: 'data-mining',
@@ -30,7 +31,9 @@
                 height: 300,
                 xMap: {},
                 yMap: {},
-                svg: {}
+                svg: {},
+                currentFeature: {},
+                currentFeatureBlinkInterval: null
             }
         },
         beforeMount() {
@@ -127,19 +130,14 @@
 
 
                 // Update the placeholder with the driving feature and stash the expression
-                // TODO: Update filter and feature_application through PubSub && Change to Vue
                 this.$store.commit('setCurrentExpression', expression);
                 this.$store.commit('setHoveredExpression', expression);
-                //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'temp','expression':expression});
-
-                //ifeed.filter.apply_filter_expression(ifeed.feature_application.parse_tree(ifeed.feature_application.root));
             },
 
-            featureClick(d) {
+            featureClick(d, i, nodes) {
                 // Replaces the current feature expression with the stashed expression
-                // TODO: Change to Vue
                 this.$store.commit('setClickedExpression', this.$store.state.featureApplication.hoveredExpression);
-                //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'update','expression':null});
+                this.currentFeature = nodes[i];
             },
 
             featureMouseout(d) {
@@ -147,10 +145,8 @@
                 d3.selectAll('#tooltip-g').remove();
 
                 // Remove all the features created temporarily and bring back the previously stored feature expression
-                // TODO: Change to Vue
                 this.$store.commit('setCurrentExpression', '');
                 this.$store.commit('setHoveredExpression', '');
-                //PubSub.publish(UPDATE_FEATURE_APPLICATION,{'option':'restore','expression':null});
             }
 
         },
@@ -164,11 +160,6 @@
                     function getUtopiaPoint() {
                         // Utopia point
                         return objects.filter(d => d.name === 'utopiaPoint');
-                    }
-
-                    function get_current_feature() {
-                        // The current feature
-                        return objects.filter(d => d.added === '0');
                     }
 
                     // Set updated width
@@ -273,7 +264,7 @@
                     objects.filter(d => d.name !== 'utopiaPoint')
                         .on('mouseover', d => { this.featureMouseover(d); })
                         .on('mouseout', d => { this.featureMouseout(d); })
-                        .on('click', d => { this.featureClick(d); });
+                        .on('click', (d, i, nodes) => { this.featureClick(d, i, nodes); });
 
                     //Transition the colors to a rainbow
                     objects.style('fill', (d, i) => colorScaleRainbow(colorInterpolateRainbow(this.scores[i])));
@@ -304,44 +295,6 @@
                         .style('text-anchor', 'end')
                         .text('Confidence(S->F)');
 
-                    // TODO: Check what happens here
-                    /*// The current feature: modify the shape to a cross
-                    let _current_feature = get_current_feature().attr('d', d3.symbol().type(d3.symbolCross).size(120));
-
-                    _current_feature.shown = true;
-
-                    function blink() {
-                        if (_current_feature.shown) {
-                            _current_feature.style('opacity', 0);
-                            _current_feature.shown = false;
-                        }
-                        else {
-                            _current_feature.style('opacity', 1);
-                            _current_feature.shown = true;
-                        }
-                    }
-
-                    if (this.current_feature_blink_interval != null) {
-                        clearInterval(this.current_feature_blink_interval);
-
-                        objects.filter(d => {
-                            if (d.added === '1') {
-                                return true;
-                            }
-                            return false;
-                        }).style('opacity', 1);
-                    }
-                    this.current_feature_blink_interval = setInterval(blink, 350);
-
-                    if (remove_last_feature) {
-                        // Remove the last feature, as it had been added temporarily to display the cursor
-                        this.features.pop();
-                        this.added_features.pop();
-                    }
-
-                    // The current feature
-                    _current_feature.style('fill', 'black');*/
-
                     // Animate creation of graph
                     let duration = 500;
                     objects.transition()
@@ -350,7 +303,44 @@
                             return 'translate(' + this.xMap(d) + ',' + this.yMap(d) + ')';
                         });
                 }
+            },
 
+            currentFeature: function(val, oldVal) {
+                if (!_.isEmpty(oldVal)) {
+                    let oldElem = d3.select(oldVal);
+
+                    oldElem.attr('d', d3.symbol().type(d3.symbolTriangle).size(120))
+                        .attr('stroke', 'black')
+                        .attr('stroke-width', 1)
+                        .style('fill', oldVal.oldColor)
+                        .style('opacity', 1.0);
+                }
+
+                let newElem = d3.select(val);
+
+                // The current feature: modify the shape to a cross
+                newElem.attr('d', d3.symbol().type(d3.symbolCross).size(120));
+                // The current feature
+                val.oldColor = newElem.style('fill');
+                newElem.style('fill', 'black');
+
+                newElem.shown = true;
+
+                function blink() {
+                    if (newElem.shown) {
+                        newElem.style('opacity', 0);
+                        newElem.shown = false;
+                    }
+                    else {
+                        newElem.style('opacity', 1);
+                        newElem.shown = true;
+                    }
+                }
+
+                if (this.currentFeatureBlinkInterval != null) {
+                    clearInterval(this.currentFeatureBlinkInterval);
+                }
+                this.currentFeatureBlinkInterval = setInterval(blink, 350);
             }
         }
     }

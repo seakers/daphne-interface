@@ -1,14 +1,8 @@
 class DataMining {
-    constructor(tradespace_plot, label) {
-        this.tradespace_plot = tradespace_plot;
-        this.label = label;
-
+    constructor() {
         this.all_features = [];
         this.mined_features = [];
         this.added_features = [];
-
-        this.current_feature = { id: null, name: null, expression: null, metrics: null, added: "0", x0: -1, y0: -1, x: -1, y: -1 };
-        this.current_feature_blink_interval = null;
     }
 
     add_feature_to_plot(expression){

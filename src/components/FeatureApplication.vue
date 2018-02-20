@@ -17,96 +17,6 @@
     import { removeOuterParentheses, getNestedParenthesisDepth, collapseParenIntoSymbol } from '../scripts/utils';
     import * as _ from 'lodash-es';
     
-    function update_feature_application(option, expression) {
-        let direct_update = false;
-
-        if (option === 'direct-update') { // Make the direct update to the feature application status
-            option = 'temp';
-            direct_update = true;
-        }
-
-        if (option === 'temp') {
-            // Mouseover on the feature plot
-
-            let parentNode = null;
-
-            if (this.data) {
-                // There already exists a tree: Find the node to add new features and append children temporarily
-                // No parentNode
-
-                // Stash the current root
-                this.stashed_root = this.constructTree(this.parse_tree(this.data));
-
-                // Re-draw the whole tree
-                this.draw_feature_application_tree(expression);
-            }
-            else {
-                // There is no tree. Build a new one
-                this.stashed_node_ids = [];
-                this.stashed_root = {};
-                this.draw_feature_application_tree(expression);
-            }
-
-            if (direct_update) { // Make a direct update to the feature application status; not temporary
-                // Remove the stashed information
-                this.stashed_node_ids = null;
-                this.stashed_root = null;
-            }
-        }
-        else if (option === 'restore') {
-            // Restore the stashed tree
-
-            if (this.stashed_root != null && this.stashed_node_ids != null) {
-
-                if (jQuery.isEmptyObject(this.stashed_root) && this.stashed_node_ids.length === 0) {
-                    // There was no tree before
-                    this.data = null;
-                }
-            }
-            else if (this.stashed_root != null) {
-                // The whole tree is stashed
-                this.data = this.stashed_root;
-            }
-            else if (this.stashed_node_ids != null) {
-                // Tree has been modified by the temporary update
-                // Visit each node, and if node.indexOf(id)==-1, remove the index
-                let parentNode = null;
-                indices = [];
-
-                this.visitNodes(this.data, function(d) {
-                    if (this.stashed_node_ids.indexOf(d.id) === -1) {
-                        parentNode = d.parent;
-                        let index = d.parent.children.indexOf(d);
-                        indices.push(index);
-                    }
-                });
-
-                indices.reverse();
-                for (let i = 0; i < indices.length; i++) {
-                    parentNode.children.splice(indices[i], 1);
-                }
-            }
-
-            if (this.data) {
-                this.visitNodes(this.data, function(d) {
-                    d.temp = false;
-                });
-            }
-
-            this.update();
-
-            this.stashed_root = null;
-            this.stashed_node_ids = null;
-        }
-        else if (option === 'update') {
-            this.stashed_node_ids = null;
-            this.stashed_root = null;
-            this.visitNodes(this.data, function(d) {
-                d.temp = false;
-            });
-        }
-    }
-    
     export default {
         name: 'feature-application',
         data() {
@@ -174,7 +84,6 @@
                 if (getNestedParenthesisDepth(newExpression) === 0) { // Given expression does not have a nested structure
                     if (newExpression.indexOf('&&') === -1 && newExpression.indexOf('||') === -1) {
                         // There is no logical connective: return single feature (leaf node)
-                        console.log(newExpression);
                         return {
                             depth: newDepth,
                             type: 'leaf',
@@ -203,7 +112,6 @@
                     logic = '||';
                     name = 'OR';
                 }
-                console.log(name);
                 let thisNode = {
                     depth: newDepth,
                     type: 'logic',
@@ -496,7 +404,7 @@
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.bottom + margin.top)
                     .append('g')
-                    .attr('transform','translate('+ margin.left + ',' + margin.top + ')');
+                    .attr('transform', 'translate('+ margin.left + ',' + margin.top + ')');
 
                 this.drawTree();
             }
