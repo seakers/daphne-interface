@@ -19,6 +19,7 @@
     "bulma": "^0.6.2",
     "d3": "^4.13.0",
     "d3-selection-multi": "^1.0.1",
+    "intro.js": "^2.8.0-alpha.1",
     "lodash-es": "^4.17.5",
     "speechkitt": "^1.0.0",
     "vue": "^2.5.13",

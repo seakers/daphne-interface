@@ -7,6 +7,7 @@ import daphne from './modules/daphne';
 import dataMining from './modules/data-mining';
 import filter from './modules/filter';
 import featureApplication from './modules/feature-application';
+import experiment from './modules/experiment';
 
 Vue.use(Vuex);
 
@@ -21,7 +22,8 @@ export default new Vuex.Store({
         functionalityList,
         dataMining,
         filter,
-        featureApplication
+        featureApplication,
+        experiment
     },
     strict: debug
 });

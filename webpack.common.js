@@ -56,6 +56,21 @@ module.exports = {
                     fallback: 'style-loader'
                 })
             },
+            // css-loader with sourceMap activated
+            {
+                test: /\.css$/,
+                use: extractPlugin.extract({
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                sourceMap: true
+                            }
+                        }
+                    ],
+                    fallback: 'style-loader'
+                })
+            },
             // file-loader(for images)
             { test: /\.(jpg|png|gif|svg)$/, use: [ { loader: 'file-loader', options: { name: '[name].[ext]', outputPath: './assets/img/' } } ] },
             // file-loader(for fonts)
