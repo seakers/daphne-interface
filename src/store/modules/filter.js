@@ -1,10 +1,14 @@
 // initial state
+import * as _ from "lodash-es";
+
 const state = {
     presetOptions: [],
     selectedFilter: '',
     currentExpression: '',
     processFilterExpression: (point, expression, logic) => false // Should return true if a datapoint conforms to expression
 };
+
+let initialState = {};
 
 // getters
 const getters = {
@@ -27,12 +31,17 @@ const mutations = {
         state.presetOptions = filterInfo.presetOptions;
         state.selectedFilter = filterInfo.selectedFilter;
         state.processFilterExpression = filterInfo.processFilterExpression;
+
+        initialState = _.cloneDeep(state);
     },
     setSelectedFilter(state, selectedFilter) {
         state.selectedFilter = selectedFilter;
     },
     setCurrentExpression(state, currentExpression) {
         state.currentExpression = currentExpression;
+    },
+    resetFilter(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
     }
 };
 

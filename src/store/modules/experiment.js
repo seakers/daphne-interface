@@ -13,6 +13,14 @@ const state = {
                 'Cheatsheet',
                 'QuestionBar'
             ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter',
+                'DaphneAnswer',
+                'Cheatsheet'
+            ],
             dataset: 'EOSS_data_recalculated.csv',
             nextStage: 'stage1',
             steps: [
@@ -97,7 +105,22 @@ const state = {
             ]
 
         },
-        stage1: {},
+        stage1: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter'
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter'
+            ],
+            dataset: 'EOSS_data_recalculated.csv',
+            nextStage: 'stage2',
+        },
         stage2: {}
     }
 };
@@ -109,6 +132,9 @@ const getters = {
     },
     getExperimentStage(state) {
         return state.experimentStage;
+    },
+    getStageInformation(state) {
+        return state.stageInformation;
     }
 };
 

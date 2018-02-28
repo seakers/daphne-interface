@@ -1,9 +1,13 @@
 // initial state
+import * as _ from "lodash-es";
+
 const state = {
     command: '',
     response: {},
     isLoading: false
 };
+
+const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
@@ -56,6 +60,9 @@ const mutations = {
     },
     setIsLoading(state, isLoading) {
         state.isLoading = isLoading;
+    },
+    resetDaphne(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
     }
 };
 

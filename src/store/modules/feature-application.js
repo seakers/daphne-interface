@@ -1,8 +1,12 @@
 // initial state
+import * as _ from "lodash-es";
+
 const state = {
     hoveredExpression: '',
     clickedExpression: ''
 };
+
+const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
@@ -26,6 +30,9 @@ const mutations = {
     },
     setClickedExpression(state, clickedExpression) {
         state.clickedExpression = clickedExpression;
+    },
+    resetFeatureApplication(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
     }
 };
 

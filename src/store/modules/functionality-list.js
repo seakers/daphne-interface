@@ -1,3 +1,5 @@
+import * as _ from "lodash-es";
+
 let functionalityTypes = new Map();
 functionalityTypes.set('DaphneAnswer', { title: 'Answers', minSize: 'one-third', maxRepeat: 1});
 functionalityTypes.set('DesignBuilder', { title: 'Design Builder', minSize: 'one-third', maxRepeat: 1});
@@ -29,6 +31,8 @@ const state = {
         'FeatureApplication': 0
     }
 };
+
+const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
@@ -62,6 +66,9 @@ const mutations = {
         let funcName = state.functionalities[funcIndex].name;
         state.functionalities.splice(funcIndex, 1);
         state.functionalityCount[funcName]--;
+    },
+    resetFunctionalityList(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
     }
 
 };

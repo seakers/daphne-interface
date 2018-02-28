@@ -1,5 +1,7 @@
 // initial state
 // shape: [{ id, quantity }]
+import * as _ from "lodash-es";
+
 const state = {
     plotData: [],
     colorList: {
@@ -20,6 +22,8 @@ const state = {
     highlightedArchs: [],
     hiddenArchs: []
 };
+
+const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
@@ -100,8 +104,10 @@ const mutations = {
         state.hiddenArchs.length = plotData.length;
         state.hiddenArchs.fill(false);
         // Mark the last point added as the selected one
-        state.clickedArch = plotData.length - 1;
-        state.clickedArchInputs = plotData[state.clickedArch].inputs;
+        if (plotData.length > 0) {
+            state.clickedArch = plotData.length - 1;
+            state.clickedArchInputs = plotData[state.clickedArch].inputs;
+        }
 
         // Function to create new colours for the picking.
         let nextCol = 1;
@@ -153,6 +159,9 @@ const mutations = {
         state.highlightedArchs = [];
         state.highlightedArchs.length = state.plotData.length;
         state.highlightedArchs.fill(false);
+    },
+    resetTradespacePlot(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
     }
 };
 

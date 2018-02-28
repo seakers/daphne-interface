@@ -23,6 +23,7 @@ let styles = require('./styles/app.scss');
 
 import store from './store';
 import { mapGetters } from 'vuex';
+import * as _ from "lodash-es";
 
 let app = new Vue({
     el: '#app',
@@ -36,8 +37,17 @@ let app = new Vue({
     computed: {
         ...mapGetters({
             inExperiment: 'getInExperiment',
-            experimentStage: 'getExperimentStage'
-        })
+            experimentStage: 'getExperimentStage',
+            stageInformation: 'getStageInformation'
+        }),
+        questionBarExperimentCondition() {
+            if (!this.inExperiment) {
+                return true;
+            }
+            else {
+                return this.$store.state.experiment.stageInformation[this.experimentStage].availableFunctionalities.includes('QuestionBar');
+            }
+        }
     },
     methods: {
     },
@@ -58,38 +68,56 @@ let app = new Vue({
         // Set up initial state
         this.$store.commit('setProblem', EOSS);
         this.$store.commit('setFilter', EOSSFilter);
-        this.$store.commit('addFunctionality', 'DesignBuilder');
+
+        // Experiment
+        this.$store.commit('setInExperiment', true);
+        this.$store.commit('setExperimentStage', 'tutorial');
+
+        /*this.$store.commit('addFunctionality', 'DesignBuilder');
         this.$store.commit('addFunctionality', 'DataMining');
         this.$store.commit('addFunctionality', 'FeatureApplication');
         this.$store.commit('addFunctionality', 'EOSSFilter');
         this.$store.commit('addFunctionality', 'DaphneAnswer');
         this.$store.commit('addFunctionality', 'Cheatsheet');
-        this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv').then(() => {
-            // Experiment
-            this.$store.commit('setInExperiment', true);
-            this.$store.commit('setExperimentStage', 'tutorial');
-        });
+        this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');*/
     },
     watch: {
         experimentStage: function (val, oldVal) {
             if (this.inExperiment) {
-                switch (this.experimentStage) {
-                    case 'tutorial': {
-                        this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
-                        this.tutorial.oncomplete(() => {
-                            this.$store.commit('setExperimentStage', 'stage1');
-                        });
-                        // TODO: Hijack next button action on tutorial
-                        this.tutorial.start();
-                        break;
-                    }
-                    case 'stage1': {
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+                // Reset state
+                this.$store.commit('resetDaphne');
+                this.$store.commit('resetTradespacePlot');
+                this.$store.commit('resetProblem');
+                this.$store.commit('resetFunctionalityList');
+                this.$store.commit('resetDataMining');
+                this.$store.commit('resetFilter');
+                this.$store.commit('resetFeatureApplication');
+
+                // Add functionalities
+                for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
+                    this.$store.commit('addFunctionality', shownFunc);
                 }
+
+                // Load stage dataset
+                this.$store.dispatch('loadNewData', this.stageInformation[this.experimentStage].dataset).then(() => {
+                    switch (this.experimentStage) {
+                        case 'tutorial': {
+                            this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
+                            this.tutorial.oncomplete(() => {
+                                this.$store.commit('setExperimentStage', this.$store.state.experiment.stageInformation.tutorial.nextStage);
+                            });
+                            // TODO: Hijack next button action on tutorial
+                            this.tutorial.start();
+                            break;
+                        }
+                        case 'stage1': {
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                });
             }
         }
     }

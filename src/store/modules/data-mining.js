@@ -1,4 +1,6 @@
 // initial state
+import * as _ from "lodash-es";
+
 const state = {
     features: [],
     scores: [],
@@ -6,6 +8,8 @@ const state = {
     confidenceThreshold: 0.2,
     liftThreshold: 1
 };
+
+const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
@@ -145,6 +149,9 @@ const mutations = {
     },
     clearFeatures(state) {
         state.features = [];
+    },
+    resetDataMining(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
     }
 };
 

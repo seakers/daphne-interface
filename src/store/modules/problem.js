@@ -1,4 +1,5 @@
 import { calculateParetoRanking } from '../../scripts/utils';
+import * as _ from "lodash-es";
 
 // initial state
 const state = {
@@ -23,6 +24,8 @@ const state = {
     index2DisplayName: (index, type) => '', // To be implemented
     ppFeatureSingle: (expression) => '' // To be implemented
 };
+
+let initialState = {};
 
 // getters
 const getters = {
@@ -98,6 +101,7 @@ const mutations = {
         state.displayName2Index = problemInfo.displayName2Index;
         state.index2DisplayName = problemInfo.index2DisplayName;
         state.ppFeatureSingle = problemInfo.ppFeatureSingle;
+        initialState = _.cloneDeep(state);
     },
     updateExtra(state, extra) {
         state.extra = extra;
@@ -107,6 +111,9 @@ const mutations = {
     },
     addProblemData(state, newData) {
         state.problemData.push(newData);
+    },
+    resetProblem(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
     }
 };
 
