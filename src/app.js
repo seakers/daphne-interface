@@ -58,26 +58,32 @@ let app = new Vue({
         // Set up initial state
         this.$store.commit('setProblem', EOSS);
         this.$store.commit('setFilter', EOSSFilter);
-        this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
         this.$store.commit('addFunctionality', 'DesignBuilder');
         this.$store.commit('addFunctionality', 'DataMining');
         this.$store.commit('addFunctionality', 'FeatureApplication');
         this.$store.commit('addFunctionality', 'EOSSFilter');
         this.$store.commit('addFunctionality', 'DaphneAnswer');
         this.$store.commit('addFunctionality', 'Cheatsheet');
-
-        // Experiment
-        this.$store.commit('setInExperiment', true);
-        this.$store.commit('setExperimentStage', 'tutorial');
+        this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv').then(() => {
+            // Experiment
+            this.$store.commit('setInExperiment', true);
+            this.$store.commit('setExperimentStage', 'tutorial');
+        });
     },
     watch: {
         experimentStage: function (val, oldVal) {
             if (this.inExperiment) {
                 switch (this.experimentStage) {
                     case 'tutorial': {
-                        this.tutorial.setOption('steps', this.$store.state.experiment.stageInformation.tutorial.steps);
+                        this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
+                        this.tutorial.oncomplete(() => {
+                            this.$store.commit('setExperimentStage', 'stage1');
+                        });
                         // TODO: Hijack next button action on tutorial
                         this.tutorial.start();
+                        break;
+                    }
+                    case 'stage1': {
                         break;
                     }
                     default: {
