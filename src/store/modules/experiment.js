@@ -4,10 +4,16 @@ const state = {
     experimentStage: '',
     stageInformation: {
         tutorial: {
-            availableFunctionalities: {
-
-            },
-            dataset: '.csv',
+            availableFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter',
+                'DaphneAnswer',
+                'Cheatsheet',
+                'QuestionBar'
+            ],
+            dataset: 'EOSS_data_recalculated.csv',
             nextStage: 'stage1',
             steps: [
                 {

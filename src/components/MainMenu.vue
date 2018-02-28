@@ -19,8 +19,25 @@
         name: 'main-menu',
         computed: {
             ...mapState({
-                availableFunctionalities: state => state.functionalityList.availableFunctionalities
-            })
+                inExperiment: state => state.experiment.inExperiment,
+                stageInformation: state => state.experiment.stageInformation,
+                experimentStage: state => state.experiment.experimentStage,
+                allAvailableFunctionalities: state => state.functionalityList.availableFunctionalities
+            }),
+            availableFunctionalities() {
+                if (this.inExperiment) {
+                    let functionalities = [];
+                    for (let functionality of this.allAvailableFunctionalities) {
+                        if (this.stageInformation[this.experimentStage].availableFunctionalities.includes(functionality.name)) {
+                            functionalities.push(functionality);
+                        }
+                    }
+                    return functionalities;
+                }
+                else {
+                    return this.allAvailableFunctionalities;
+                }
+            }
         },
         methods: {
         },
