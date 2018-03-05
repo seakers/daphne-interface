@@ -3,6 +3,7 @@
 import Vue from 'vue';
 
 import MainMenu from './components/MainMenu';
+import Timer from './components/Timer';
 import QuestionBar from './components/QuestionBar';
 import TradespacePlot from './components/TradespacePlot';
 import FunctionalityList from './components/FunctionalityList';
@@ -31,7 +32,11 @@ let app = new Vue({
     data: function () {
         return {
             websocket: {},
-            tutorial: {}
+            tutorial: {},
+            startTimes: {
+                'stage1': 0,
+                'stage2': 0
+            }
         }
     },
     computed: {
@@ -47,11 +52,28 @@ let app = new Vue({
             else {
                 return this.$store.state.experiment.stageInformation[this.experimentStage].availableFunctionalities.includes('QuestionBar');
             }
+        },
+        timerExperimentCondition() {
+            if (!this.inExperiment) {
+                return false;
+            }
+            else {
+                return this.experimentStage === 'stage1' || this.experimentStage === 'stage2';
+            }
+        },
+        stageDuration() {
+            return this.$store.state.experiment.stageInformation[this.experimentStage].stageDuration;
+        },
+        stageStartTime() {
+            return this.startTimes[this.experimentStage];
         }
     },
     methods: {
+        onCountdownEnd() {
+            console.log('Countdown ended!');
+        }
     },
-    components: { MainMenu, QuestionBar, TradespacePlot, FunctionalityList },
+    components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList },
     mounted() {
         // Websocket connection
         this.websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
@@ -100,11 +122,15 @@ let app = new Vue({
 
                 // Load stage dataset
                 this.$store.dispatch('loadNewData', this.stageInformation[this.experimentStage].dataset).then(() => {
+                    // Stage specific behaviour
                     switch (this.experimentStage) {
                         case 'tutorial': {
                             this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
+                            this.tutorial.setOption('exitOnOverlayClick', false);
+                            this.tutorial.setOption('exitOnEsc', false);
                             this.tutorial.oncomplete(() => {
                                 this.$store.commit('setExperimentStage', this.$store.state.experiment.stageInformation.tutorial.nextStage);
+                                this.startTimes['stage1'] = Date.now();
                             });
                             // TODO: Hijack next button action on tutorial
                             this.tutorial.start();

@@ -13,6 +13,12 @@
     <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
         <div>
             <main-menu></main-menu>
+            <timer
+                v-if="timerExperimentCondition"
+                v-bind:duration="stageDuration"
+                v-bind:start-time="stageStartTime"
+                v-on:countdown-end="onCountdownEnd">
+            </timer>
         </div>
     </aside>
     <div class="column is-10" id="admin-panel">
@@ -53,6 +59,6 @@
     </div>
 </footer>
 <script src="//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/1.0.0/speechkitt.min.js"></script>
-<script src='//code.responsivevoice.org/responsivevoice.js'></script>
+<script src="//code.responsivevoice.org/responsivevoice.js"></script>
 </body>
 </html>

@@ -120,6 +120,7 @@ const state = {
             ],
             dataset: 'EOSS_data_recalculated.csv',
             nextStage: 'stage2',
+            stageDuration: 15*60
         },
         stage2: {}
     }
