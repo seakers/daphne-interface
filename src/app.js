@@ -7,6 +7,7 @@ import Timer from './components/Timer';
 import QuestionBar from './components/QuestionBar';
 import TradespacePlot from './components/TradespacePlot';
 import FunctionalityList from './components/FunctionalityList';
+import Modal from './components/Modal';
 
 import EOSS from './scripts/eoss';
 import EOSSFilter from './scripts/eoss-filter';
@@ -24,7 +25,65 @@ let styles = require('./styles/app.scss');
 
 import store from './store';
 import { mapGetters } from 'vuex';
-import * as _ from "lodash-es";
+
+// Record state and mutations when inside an experiment
+// TODO: Rework to use WS and avoid so many connections?
+let stateTimer = 0;
+store.subscribe(async (mutation, state) => {
+    // Only update if inside experiment
+    if (state.experiment.inExperiment) {
+        // Only update mutations if after tutorial (currentStageNum > 0)
+        if (state.experiment.currentStageNum > 0) {
+            // Upload mutation to server
+            try {
+                let reqData = new FormData();
+                reqData.append('action', mutation);
+                let response = await fetch(
+                    '/api/experiment/add-action/' + state.experiment.currentStageNum - 1,
+                    {
+                        method: 'POST',
+                        body: reqData,
+                        credentials: 'same-origin'
+                    });
+                if (!response.ok) {
+                    console.error('Error uploading a mutation.');
+                }
+            }
+            catch(e) {
+                console.error('Networking error:', e);
+            }
+        }
+
+        // Upload new state to server
+        if (stateTimer === 0) {
+            stateTimer = window.setInterval(async () => {
+                try {
+                    let reqData = new FormData();
+                    reqData.append('state', JSON.stringify(state));
+                    let response = await fetch(
+                        '/api/experiment/update-state',
+                        {
+                            method: 'POST',
+                            body: reqData,
+                            credentials: 'same-origin'
+                        });
+                    if (!response.ok) {
+                        console.error('Error updating the state in the server.', response);
+                    }
+                }
+                catch(e) {
+                    console.error('Networking error:', e);
+                }
+            }, 10000);
+        }
+    }
+    else {
+        if (stateTimer !== 0) {
+            clearInterval(stateTimer);
+            stateTimer = 0;
+        }
+    }
+});
 
 let app = new Vue({
     el: '#app',
@@ -33,10 +92,7 @@ let app = new Vue({
         return {
             websocket: {},
             tutorial: {},
-            startTimes: {
-                'stage1': 0,
-                'stage2': 0
-            }
+            isModalActive: false
         }
     },
     computed: {
@@ -50,7 +106,7 @@ let app = new Vue({
                 return true;
             }
             else {
-                return this.$store.state.experiment.stageInformation[this.experimentStage].availableFunctionalities.includes('QuestionBar');
+                return this.stageInformation[this.experimentStage].availableFunctionalities.includes('QuestionBar');
             }
         },
         timerExperimentCondition() {
@@ -58,22 +114,33 @@ let app = new Vue({
                 return false;
             }
             else {
-                return this.experimentStage === 'stage1' || this.experimentStage === 'stage2';
+                return this.experimentStage === 'no_dapne' || this.experimentStage === 'daphne_peer' || this.experimentStage === 'daphne_assistant';
             }
         },
         stageDuration() {
-            return this.$store.state.experiment.stageInformation[this.experimentStage].stageDuration;
+            return this.stageInformation[this.experimentStage].stageDuration;
         },
         stageStartTime() {
-            return this.startTimes[this.experimentStage];
+            return this.stageInformation[this.experimentStage].startTime;
+        },
+        modalContent() {
+            return this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum];
         }
     },
     methods: {
         onCountdownEnd() {
             console.log('Countdown ended!');
+            // First stop the current stage
+            this.$store.dispatch('finishStage').then(() => {
+                // Activate the modal with end of stage information
+                this.isModalActive = true;
+            });
+        },
+        onCloseModal() {
+            this.isModalActive = false;
         }
     },
-    components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList },
+    components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal },
     mounted() {
         // Websocket connection
         this.websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
@@ -92,8 +159,10 @@ let app = new Vue({
         this.$store.commit('setFilter', EOSSFilter);
 
         // Experiment
-        this.$store.commit('setInExperiment', true);
-        this.$store.commit('setExperimentStage', 'tutorial');
+        this.$store.dispatch('startExperiment').then(() => {
+            this.$store.commit('setInExperiment', true);
+            this.$store.commit('setExperimentStage', 'tutorial');
+        });
 
         /*this.$store.commit('addFunctionality', 'DesignBuilder');
         this.$store.commit('addFunctionality', 'DataMining');
@@ -129,14 +198,21 @@ let app = new Vue({
                             this.tutorial.setOption('exitOnOverlayClick', false);
                             this.tutorial.setOption('exitOnEsc', false);
                             this.tutorial.oncomplete(() => {
-                                this.$store.commit('setExperimentStage', this.$store.state.experiment.stageInformation.tutorial.nextStage);
-                                this.startTimes['stage1'] = Date.now();
+                                this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
+                                    this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
+                                });
                             });
                             // TODO: Hijack next button action on tutorial
                             this.tutorial.start();
                             break;
                         }
-                        case 'stage1': {
+                        case 'no_daphne': {
+                            break;
+                        }
+                        case 'daphne_peer': {
+                            break;
+                        }
+                        case 'daphne_assistant': {
                             break;
                         }
                         default: {

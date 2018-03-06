@@ -46,7 +46,7 @@ const actions = {
             let reqData = new FormData();
             reqData.append('filename', fileName);
             let dataResponse = await fetch(
-                '/api/ifeed/import-data/',
+                '/api/ifeed/import-data',
                 {
                     method: 'POST',
                     body: reqData,

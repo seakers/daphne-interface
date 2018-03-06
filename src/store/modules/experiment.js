@@ -1,7 +1,11 @@
 // initial state
+import * as _ from "lodash-es";
+
 const state = {
     inExperiment: false,
     experimentStage: '',
+    currentStageNum: -1,
+    modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -22,7 +26,7 @@ const state = {
                 'Cheatsheet'
             ],
             dataset: 'EOSS_data_recalculated.csv',
-            nextStage: 'stage1',
+            nextStage: '',
             steps: [
                 {
                     intro: 'As a Systems Engineer at "The EasySpace Corporation" (ESC) you have been tasked with exploring some designs for a new Earth Observation mission. This mission will fly in about 10 years. Your bosses at ESC have asked you to find designs in a range of possible budgets from $1M to $10M, as NASA does not yet know how much money it will be able to allocate to it. What\'s more, as science priorities change depending on who is in the White House, you have been asked to do this study twice, first making weather studies the biggest priority and then making climate science the most important research factor.'
@@ -101,11 +105,9 @@ const state = {
                 true,
                 true,
                 true,
-
             ]
-
         },
-        stage1: {
+        no_daphne: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DataMining',
@@ -119,10 +121,56 @@ const state = {
                 'EOSSFilter'
             ],
             dataset: 'EOSS_data_recalculated.csv',
-            nextStage: 'stage2',
+            nextStage: '',
+            startTime: 0,
             stageDuration: 15*60
         },
-        stage2: {}
+        daphne_peer: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter',
+                'DaphneAnswer',
+                'Cheatsheet',
+                'QuestionBar'
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter',
+                'DaphneAnswer',
+                'Cheatsheet'
+            ],
+            dataset: 'EOSS_data_recalculated.csv',
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 15*60
+        },
+        daphne_assistant: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter',
+                'DaphneAnswer',
+                'Cheatsheet',
+                'QuestionBar'
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'FeatureApplication',
+                'EOSSFilter',
+                'DaphneAnswer',
+                'Cheatsheet'
+            ],
+            dataset: 'EOSS_data_recalculated.csv',
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 15*60
+        }
     }
 };
 
@@ -141,6 +189,88 @@ const getters = {
 
 // actions
 const actions = {
+    async startExperiment({ state, commit }) {
+        // Call server to start experiment
+        try {
+            let response = await fetch('/api/experiment/start-experiment', {credentials: 'same-origin'});
+            if (response.ok) {
+                let experimentInformation = await response.json();
+                // Start the experiment: set the order of the conditions after the tutorial
+                console.log(experimentInformation);
+                commit('setNextStage', 'tutorial', experimentInformation.stages[0].type);
+                for (let i = 0; i < experimentInformation.stages.size - 1; ++i) {
+                    commit('nextStage', experimentInformation.stages[i].type, experimentInformation.stages[i+1].type);
+                }
+            }
+            else {
+                console.error('Error starting the experiment.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
+    async startStage({ state, commit }, stage) {
+        // Call server to start stage
+        try {
+            let nextStage = state.currentStageNum;
+            let response = await fetch('/api/experiment/start-stage/' + nextStage, {credentials: 'same-origin'});
+            if (response.ok) {
+                let experimentInformation = await response.json();
+                // Start the stage: get the starting time from the server information
+                console.log(experimentInformation);
+                let startTime = experimentInformation.stages[nextStage].start_date + '+00:00';
+                startTime = Date.parse(startTime);
+                console.log(state);
+                commit('setStartTime', stage, startTime);
+            }
+            else {
+                console.error('Error starting the stage.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
+    async finishStage({ state, commit }) {
+        // Call server to finish stage
+        try {
+            let currentStage = state.experiment.currentStageNum - 1;
+            let response = await fetch('/api/experiment/finish-stage/' + currentStage, {credentials: 'same-origin'});
+            if (response.ok) {
+                let experimentInformation = await response.json();
+                // Stage is finished!
+                console.log(experimentInformation);
+            }
+            else {
+                console.error('Error finishing the stage.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
+    async finishExperiment({ state, commit }) {
+        // Call server to finish experiment
+        try {
+            let response = await fetch('/api/experiment/finish-experiment', {credentials: 'same-origin'});
+            if (response.ok) {
+                let experimentInformation = await response.json();
+                // Finish the experiment: set inExperiment to false
+                console.log(experimentInformation);
+                commit('setInExperiment', false);
+            }
+            else {
+                console.error('Error finishing the experiment.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    }
 };
 
 // mutations
@@ -150,6 +280,14 @@ const mutations = {
     },
     setExperimentStage(state, experimentStage) {
         state.experimentStage = experimentStage;
+        state.currentStageNum++;
+    },
+    setNextStage(state, experimentStage, nextStage) {
+        state.stageInformation[experimentStage].nextStage = nextStage;
+    },
+    setStartTime(state, experimentStage, startTime) {
+        console.log(state, experimentStage, startTime, state.stageInformation[experimentStage]);
+        state.stageInformation[experimentStage].startTime = startTime;
     }
 };
 

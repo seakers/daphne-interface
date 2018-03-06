@@ -194,7 +194,7 @@ export default {
     */
 async function getOrbitList() {
     try {
-        let dataResponse = await fetch('/api/vassar/get-orbit-list/', {credentials: 'same-origin'});
+        let dataResponse = await fetch('/api/vassar/get-orbit-list', {credentials: 'same-origin'});
         if (dataResponse.ok) {
             return dataResponse.json();
         }
@@ -213,7 +213,7 @@ async function getOrbitList() {
     */
 async function getInstrumentList() {
     try {
-        let dataResponse = await fetch('/api/vassar/get-instrument-list/', {credentials: 'same-origin'});
+        let dataResponse = await fetch('/api/vassar/get-instrument-list', {credentials: 'same-origin'});
         if (dataResponse.ok) {
             return dataResponse.json();
         }
