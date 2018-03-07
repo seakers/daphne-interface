@@ -123,7 +123,7 @@ const state = {
             dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,
-            stageDuration: 15*60
+            stageDuration: 60*1
         },
         daphne_peer: {
             availableFunctionalities: [
@@ -146,7 +146,7 @@ const state = {
             dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,
-            stageDuration: 15*60
+            stageDuration: 60*1
         },
         daphne_assistant: {
             availableFunctionalities: [
@@ -169,7 +169,7 @@ const state = {
             dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,
-            stageDuration: 15*60
+            stageDuration: 60*1
         }
     }
 };
@@ -197,9 +197,9 @@ const actions = {
                 let experimentInformation = await response.json();
                 // Start the experiment: set the order of the conditions after the tutorial
                 console.log(experimentInformation);
-                commit('setNextStage', 'tutorial', experimentInformation.stages[0].type);
-                for (let i = 0; i < experimentInformation.stages.size - 1; ++i) {
-                    commit('nextStage', experimentInformation.stages[i].type, experimentInformation.stages[i+1].type);
+                commit('setNextStage', { experimentStage: 'tutorial', nextStage: experimentInformation.stages[0].type });
+                for (let i = 0; i < experimentInformation.stages.length - 1; ++i) {
+                    commit('setNextStage', { experimentStage: experimentInformation.stages[i].type, nextStage: experimentInformation.stages[i+1].type });
                 }
             }
             else {
@@ -222,8 +222,7 @@ const actions = {
                 console.log(experimentInformation);
                 let startTime = experimentInformation.stages[nextStage].start_date + '+00:00';
                 startTime = Date.parse(startTime);
-                console.log(state);
-                commit('setStartTime', stage, startTime);
+                commit('setStartTime', { experimentStage: stage, startTime: startTime });
             }
             else {
                 console.error('Error starting the stage.');
@@ -237,7 +236,7 @@ const actions = {
     async finishStage({ state, commit }) {
         // Call server to finish stage
         try {
-            let currentStage = state.experiment.currentStageNum - 1;
+            let currentStage = state.currentStageNum - 1;
             let response = await fetch('/api/experiment/finish-stage/' + currentStage, {credentials: 'same-origin'});
             if (response.ok) {
                 let experimentInformation = await response.json();
@@ -282,11 +281,10 @@ const mutations = {
         state.experimentStage = experimentStage;
         state.currentStageNum++;
     },
-    setNextStage(state, experimentStage, nextStage) {
+    setNextStage(state, { experimentStage, nextStage }) {
         state.stageInformation[experimentStage].nextStage = nextStage;
     },
-    setStartTime(state, experimentStage, startTime) {
-        console.log(state, experimentStage, startTime, state.stageInformation[experimentStage]);
+    setStartTime(state, { experimentStage, startTime }) {
         state.stageInformation[experimentStage].startTime = startTime;
     }
 };

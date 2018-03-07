@@ -33,7 +33,7 @@
                     this.now = Date.now();
                     if (this.endTime - this.now <= 0) {
                         window.clearInterval(this.timeInterval);
-                        this.$emit('countdownEnd');
+                        this.$emit('countdown-end');
                     }
                 }, 1000);
             }

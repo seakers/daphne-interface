@@ -12,9 +12,10 @@
             goToNextStage() {
                 let currentStage = this.$store.state.experiment.experimentStage;
                 let nextStage = this.$store.state.experiment.stageInformation[currentStage].nextStage;
+                console.log(currentStage, nextStage);
                 this.$store.dispatch('startStage', nextStage).then(() => {
                     this.$store.commit('setExperimentStage', nextStage);
-                    this.$emit('closeModal');
+                    this.$emit('close-modal');
                 });
             }
         }

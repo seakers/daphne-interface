@@ -3,7 +3,7 @@
         <div class="modal-background"></div>
         <div class="modal-content">
             <article class="message">
-                <component v-bind:is="modalContent" v-on:closeModal="onCloseModal"></component>
+                <component v-bind:is="modalContent" v-on:close-modal="onCloseModal"></component>
             </article>
         </div>
         <button class="modal-close is-large" aria-label="close"></button>
@@ -27,7 +27,7 @@
         },
         methods: {
             onCloseModal() {
-                this.$emit('closeModal');
+                this.$emit('close-modal');
             }
         }
     }
