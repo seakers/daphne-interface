@@ -18,11 +18,14 @@ import store from './store';
 // Record state and mutations when inside an experiment
 // TODO: Rework to use WS and avoid so many connections? -> Do, connections too slow
 let stateTimer = 0;
+let mutationBlackList = ['setIsLoading', 'resetDaphne', 'clearFeatures', 'resetDataMining', 'resetFeatureApplication',
+    'resetFilter', 'resetFunctionalityList', 'setProblem', 'updateExtra', 'updateProblemData', 'resetProblem',
+    'updatePlotData', 'resetTradespacePlot'];
 store.subscribe(async (mutation, state) => {
     // Only update if inside experiment
     if (state.experiment.inExperiment) {
         // Only update mutations if after tutorial (currentStageNum > 0)
-        if (state.experiment.currentStageNum > 0) {
+        if (state.experiment.currentStageNum > 0 && !mutationBlackList.includes(mutation.type)) {
             // Upload mutation to server
             try {
                 let reqData = new FormData();
