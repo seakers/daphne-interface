@@ -72,7 +72,6 @@
         name: 'app',
         data: function () {
             return {
-                websocket: {},
                 tutorial: {},
                 isModalActive: false
             }
@@ -81,7 +80,8 @@
             ...mapGetters({
                 inExperiment: 'getInExperiment',
                 experimentStage: 'getExperimentStage',
-                stageInformation: 'getStageInformation'
+                stageInformation: 'getStageInformation',
+                websocket: 'getWebsocket'
             }),
             questionBarExperimentCondition() {
                 if (!this.inExperiment) {
@@ -125,13 +125,14 @@
         components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal },
         mounted() {
             // Websocket connection
-            this.websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
-            this.websocket.onopen = function() {
+            let websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
+            websocket.onopen = function() {
                 console.log('Web Socket Conenction Made');
             };
-            this.websocket.onmessage = function (data) {
+            websocket.onmessage = function (data) {
                 //ws.send(JSON.stringify(data));
             };
+            this.$store.commit('setWebsocket', websocket);
 
             // Tutorial
             this.tutorial = introJs();

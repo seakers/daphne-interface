@@ -1,4 +1,4 @@
-import * as _ from "lodash-es";
+import * as _ from 'lodash-es';
 
 let functionalityTypes = new Map();
 functionalityTypes.set('DaphneAnswer', { title: 'Answers', minSize: 'one-third', maxRepeat: 1});

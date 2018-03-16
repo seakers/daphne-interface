@@ -14,6 +14,19 @@ Vue.use(Vuex);
 const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
+    state: {
+        websocket: {}
+    },
+    getters: {
+        getWebsocket(state) {
+            return state.websocket;
+        }
+    },
+    mutations: {
+        setWebsocket(state, websocket) {
+            state.websocket = websocket;
+        },
+    },
     actions: {},
     modules: {
         daphne,

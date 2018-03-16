@@ -1,5 +1,5 @@
 // initial state
-import * as _ from "lodash-es";
+import * as _ from 'lodash-es';
 
 const state = {
     features: [],

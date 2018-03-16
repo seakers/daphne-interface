@@ -1,5 +1,5 @@
 import { calculateParetoRanking } from '../../scripts/utils';
-import * as _ from "lodash-es";
+import * as _ from 'lodash-es';
 
 // initial state
 const state = {

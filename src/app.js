@@ -72,6 +72,16 @@ store.subscribe(async (mutation, state) => {
             stateTimer = 0;
         }
     }
+
+    // Context updates TODO: Refactor into something more modular
+    
+    // Update context in server
+    this.websocket.send(JSON.stringify({
+        msg_type: 'context_add',
+        new_context: {
+            current_design_id: clickedArch
+        }
+    }));
 });
 
 let app = new Vue({

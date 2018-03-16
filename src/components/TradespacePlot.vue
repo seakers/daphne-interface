@@ -88,7 +88,8 @@
                 selectedArchs: 'getSelectedArchs',
                 highlightedArchs: 'getHighlightedArchs',
                 hiddenArchs: 'getHiddenArchs',
-                currentExpression: 'getCurrentExpression'
+                currentExpression: 'getCurrentExpression',
+                websocket: 'getWebsocket'
             }),
 
             plotWidth() {
