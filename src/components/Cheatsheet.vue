@@ -6,7 +6,7 @@
                     <option value=""></option>
                     <option value="general">General</option>
                     <option value="ifeed">iFEED</option>
-                    <option value="vassar">VASSAR</option>
+                    <option value="analyst">Analyst</option>
                     <option value="critic">Critic</option>
                     <option value="historian">Historian</option>
                     <option value="measurements">Measurements</option>

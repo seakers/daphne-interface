@@ -377,7 +377,7 @@
 
         watch: {
             problemData: function(val, oldVal) {
-                this.$store.commit('updatePlotData', val);
+                this.$store.dispatch('updatePlotData', val);
             },
 
             plotData: function(val, oldVal) {

@@ -87,6 +87,13 @@ const getters = {
 
 // actions
 const actions = {
+    updatePlotData({state, commit}, problemData) {
+        commit('updatePlotData', problemData);
+        // Mark the last point added as the selected one
+        if (state.plotData.length > 0) {
+            commit('updateClickedArch', state.plotData.length - 1);
+        }
+    }
 };
 
 // mutations
@@ -103,11 +110,6 @@ const mutations = {
         state.hiddenArchs = [];
         state.hiddenArchs.length = plotData.length;
         state.hiddenArchs.fill(false);
-        // Mark the last point added as the selected one
-        if (plotData.length > 0) {
-            state.clickedArch = plotData.length - 1;
-            state.clickedArchInputs = plotData[state.clickedArch].inputs;
-        }
 
         // Function to create new colours for the picking.
         let nextCol = 1;

@@ -21,6 +21,7 @@ let stateTimer = 0;
 let mutationBlackList = ['setIsLoading', 'resetDaphne', 'clearFeatures', 'resetDataMining', 'resetFeatureApplication',
     'resetFilter', 'resetFunctionalityList', 'setProblem', 'updateExtra', 'updateProblemData', 'resetProblem',
     'updatePlotData', 'resetTradespacePlot'];
+let updatesContextList = ['updateClickedArch'];
 store.subscribe(async (mutation, state) => {
     // Only update if inside experiment
     if (state.experiment.inExperiment) {
@@ -77,14 +78,17 @@ store.subscribe(async (mutation, state) => {
     }
 
     // Context updates TODO: Refactor into something more modular
-    
-    // Update context in server
-    this.websocket.send(JSON.stringify({
-        msg_type: 'context_add',
-        new_context: {
-            current_design_id: clickedArch
+    if (updatesContextList.includes(mutation.type)) {
+        if (mutation.type === 'updateClickedArch') {
+            state.websocket.send(JSON.stringify({
+                msg_type: 'context_add',
+                new_context: {
+                    current_design_id: mutation.payload
+                }
+            }));
         }
-    }));
+
+    }
 });
 
 let app = new Vue({
