@@ -143,6 +143,11 @@ const state = {
                 'DaphneAnswer',
                 'Cheatsheet'
             ],
+            restrictedQuestions: {
+                analyst: [],
+                critic: ['3000', '3005'],
+                historian: []
+            },
             dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,
@@ -166,6 +171,11 @@ const state = {
                 'DaphneAnswer',
                 'Cheatsheet'
             ],
+            restrictedQuestions: {
+                analyst: ['2000', '2008', '2010'],
+                critic: [],
+                historian: ['4000', '4006', '4007']
+            },
             dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,

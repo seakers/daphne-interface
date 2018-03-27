@@ -43,6 +43,16 @@
                 try {
                     let reqData = new FormData();
                     reqData.append('command_list', this.selectedList);
+                    // Limit number of cheatsheet answers
+
+                    if (this.$store.getters.getInExperiment) {
+                        let stageInformation = this.$store.getters.getStageInformation;
+                        let currStageInfo = stageInformation[this.$store.getters.getExperimentStage];
+                        if ('restrictedQuestions' in currStageInfo && this.selectedList in currStageInfo.restrictedQuestions) {
+                            reqData.append('restricted_list', currStageInfo.restrictedQuestions[this.selectedList])
+                        }
+                    }
+
                     let dataResponse = await fetch(
                         '/api/daphne/commands',
                         {
