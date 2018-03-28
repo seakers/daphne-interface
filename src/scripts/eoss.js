@@ -25,14 +25,20 @@ export default {
         // Add alias for instruments and orbits
         extra.labelingEnabled = true;
         let orbitAliasArray = [['LEO-600-polar-NA', '1'], ['SSO-600-SSO-AM', '2'], ['SSO-600-SSO-DD', '3'], ['SSO-800-SSO-DD', '4'], ['SSO-800-SSO-PM', '5']];
-        let orbitInvAliasArray = orbitAliasArray.map(alias => _.clone(alias).reverse());
-        extra.orbitAlias = new Map(orbitAliasArray);
-        extra.orbitInvAlias = new Map(orbitInvAliasArray);
+        extra.orbitAlias = {};
+        extra.orbitInvAlias = {};
+        orbitAliasArray.forEach((element) => {
+            extra.orbitAlias[element[0]] = element[1];
+            extra.orbitInvAlias[element[1]] = element[0];
+        });
 
         let instrumentAliasArray = [['ACE_ORCA', 'A'], ['ACE_POL', 'B'], ['ACE_LID', 'C'], ['CLAR_ERB', 'D'], ['ACE_CPR', 'E'], ['DESD_SAR', 'F'], ['DESD_LID', 'G'], ['GACM_VIS', 'H'], ['GACM_SWIR', 'I'], ['HYSP_TIR', 'J'], ['POSTEPS_IRS', 'K'],['CNES_KaRIN', 'L']];
-        let instrumentInvAliasArray = instrumentAliasArray.map((alias) => _.clone(alias).reverse());
-        extra.instrumentAlias = new Map(instrumentAliasArray);
-        extra.instrumentInvAlias = new Map(instrumentInvAliasArray);
+        extra.instrumentAlias = {};
+        extra.instrumentInvAlias = {};
+        instrumentAliasArray.forEach((element) => {
+            extra.instrumentAlias[element[0]] = element[1];
+            extra.instrumentInvAlias[element[1]] = element[0];
+        });
 
         let problemData = preprocessing(data);
         return {
@@ -110,10 +116,10 @@ export default {
             }
 
             if (type === 'orbit') {
-                output += eossInfo.orbitList.indexOf(eossInfo.orbitInvAlias.get(name));
+                output += eossInfo.orbitList.indexOf(eossInfo.orbitInvAlias[name]);
             }
             else if (type === 'instrument') {
-                output += eossInfo.instrumentList.indexOf(eossInfo.instrumentInvAlias.get(name));
+                output += eossInfo.instrumentList.indexOf(eossInfo.instrumentInvAlias[name]);
             }
             else {
                 return 'NamingError';

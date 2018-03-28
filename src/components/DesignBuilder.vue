@@ -64,7 +64,7 @@
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
                     try {
-                        let dataResponse = await fetch('/api/vassar/evaluate-architecture/',
+                        let dataResponse = await fetch('/api/vassar/evaluate-architecture',
                             {
                                 method: 'POST',
                                 body: reqData,

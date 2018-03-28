@@ -20,7 +20,9 @@ import store from './store';
 let stateTimer = 0;
 let mutationBlackList = ['setIsLoading', 'resetDaphne', 'clearFeatures', 'resetDataMining', 'resetFeatureApplication',
     'resetFilter', 'resetFunctionalityList', 'setProblem', 'updateExtra', 'updateProblemData', 'resetProblem',
-    'updatePlotData', 'resetTradespacePlot'];
+    'updatePlotData', 'resetTradespacePlot', 'restoreProblem', 'restoreFilter', 'restoreTradespacePlot',
+    'restoreDaphne', 'restoreFunctionalityList', 'restoreDataMining', 'restoreFeatureApplication', 'restoreExperiment',
+    'setIsRecovering'];
 let updatesContextList = ['updateClickedArch'];
 store.subscribe(async (mutation, state) => {
     // Only update if inside experiment

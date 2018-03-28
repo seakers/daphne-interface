@@ -43,7 +43,7 @@ const actions = {
             reqData.append('conf', state.confidenceThreshold);
             reqData.append('lift', state.liftThreshold);
             let dataResponse = await fetch(
-                '/api/data-mining/get-driving-features/',
+                '/api/data-mining/get-driving-features',
                 {
                     method: 'POST',
                     body: reqData,
@@ -152,6 +152,11 @@ const mutations = {
     },
     resetDataMining(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
+    },
+    restoreDataMining(state, recoveredState) {
+        Object.keys(recoveredState).forEach((key) => {
+            state[key] = recoveredState[key];
+        });
     }
 };
 

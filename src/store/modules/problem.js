@@ -114,6 +114,11 @@ const mutations = {
     },
     resetProblem(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
+    },
+    restoreProblem(state, recoveredState) {
+        Object.keys(recoveredState).forEach((key) => {
+            state[key] = recoveredState[key];
+        });
     }
 };
 

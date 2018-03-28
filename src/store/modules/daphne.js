@@ -63,6 +63,11 @@ const mutations = {
     },
     resetDaphne(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
+    },
+    restoreDaphne(state, recoveredState) {
+        Object.keys(recoveredState).forEach((key) => {
+            state[key] = recoveredState[key];
+        });
     }
 };
 

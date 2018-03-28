@@ -3,6 +3,7 @@ import * as _ from "lodash-es";
 
 const state = {
     inExperiment: false,
+    isRecovering: false,
     experimentStage: '',
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
@@ -194,6 +195,9 @@ const getters = {
     },
     getStageInformation(state) {
         return state.stageInformation;
+    },
+    getIsRecovering(state) {
+        return state.isRecovering;
     }
 };
 
@@ -279,6 +283,35 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
+    },
+
+    async recoverExperiment({ state, commit }) {
+        // Call server to see if there is an experiment already running
+        try {
+            let response = await fetch('/api/experiment/reload-experiment', {credentials: 'same-origin'});
+            if (response.ok) {
+                let experimentInformation = await response.json();
+                console.log(experimentInformation);
+                if (experimentInformation.is_running) {
+                    // If experiment was already running restore the last known state
+                    commit('setIsRecovering', true);
+                    commit('restoreProblem', experimentInformation.experiment_data.state.problem);
+                    commit('restoreFilter', experimentInformation.experiment_data.state.filter);
+                    commit('restoreTradespacePlot', experimentInformation.experiment_data.state.tradespacePlot);
+                    commit('restoreDaphne', experimentInformation.experiment_data.state.daphne);
+                    commit('restoreFunctionalityList', experimentInformation.experiment_data.state.functionalityList);
+                    commit('restoreDataMining', experimentInformation.experiment_data.state.dataMining);
+                    commit('restoreFeatureApplication', experimentInformation.experiment_data.state.featureApplication);
+                    commit('restoreExperiment', experimentInformation.experiment_data.state.experiment);
+                }
+            }
+            else {
+                console.error('Error recovering the experiment.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
     }
 };
 
@@ -296,6 +329,17 @@ const mutations = {
     },
     setStartTime(state, { experimentStage, startTime }) {
         state.stageInformation[experimentStage].startTime = startTime;
+    },
+    restoreExperiment(state, recoveredState) {
+        Object.keys(recoveredState).forEach((key) => {
+            if (key !== 'isRecovering') {
+                state[key] = recoveredState[key];
+            }
+        });
+    },
+    setIsRecovering(state, isRecovering) {
+        console.log(isRecovering);
+        state.isRecovering = isRecovering;
     }
 };
 

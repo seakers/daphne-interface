@@ -69,6 +69,11 @@ const mutations = {
     },
     resetFunctionalityList(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
+    },
+    restoreFunctionalityList(state, recoveredState) {
+        Object.keys(recoveredState).forEach((key) => {
+            state[key] = recoveredState[key];
+        });
     }
 
 };

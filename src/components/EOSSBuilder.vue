@@ -97,11 +97,11 @@
         },
         methods: {
             orbitDisplayName(orbit) {
-                return this.getExtraInfo.orbitAlias.get(orbit);
+                return this.getExtraInfo.orbitAlias[orbit];
             },
 
             instrDisplayName(instrument) {
-                return this.getExtraInfo.instrumentAlias.get(instrument);
+                return this.getExtraInfo.instrumentAlias[instrument];
             },
 
             boolArch() {

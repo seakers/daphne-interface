@@ -354,7 +354,7 @@
                     reqData.append('selected', JSON.stringify(selected));
                     reqData.append('non_selected', JSON.stringify(non_selected));
                     let dataResponse = await fetch(
-                        '/api/ifeed/set-target/',
+                        '/api/ifeed/set-target',
                         {
                             method: 'POST',
                             body: reqData,

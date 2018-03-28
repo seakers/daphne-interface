@@ -164,11 +164,11 @@
             },
             printOrbitList() {
                 const eossInfo = this.$store.state.problem.extra;
-                return eossInfo.orbitList.map(orbit => eossInfo.orbitAlias.get(orbit)).join(', ');
+                return eossInfo.orbitList.map(orbit => eossInfo.orbitAlias[orbit]).join(', ');
             },
             printInstrumentList() {
                 const eossInfo = this.$store.state.problem.extra;
-                return eossInfo.instrumentList.map(orbit => eossInfo.instrumentAlias.get(orbit)).join(', ');
+                return eossInfo.instrumentList.map(orbit => eossInfo.instrumentAlias[orbit]).join(', ');
             }
         },
         methods: {
