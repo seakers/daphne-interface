@@ -138,10 +138,10 @@ export default {
         }
 
         if (type === 'orbit') {
-            return eossInfo.orbitAlias.get(eossInfo.orbitList[index]);
+            return eossInfo.orbitAlias[eossInfo.orbitList[index]];
         }
         else if (type === 'instrument') {
-            return eossInfo.instrumentAlias.get(eossInfo.instrumentList[index]);
+            return eossInfo.instrumentAlias[eossInfo.instrumentList[index]];
         }
         else {
             return 'NamingError';
