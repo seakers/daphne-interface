@@ -291,7 +291,6 @@ const actions = {
             let response = await fetch('/api/experiment/reload-experiment', {credentials: 'same-origin'});
             if (response.ok) {
                 let experimentInformation = await response.json();
-                console.log(experimentInformation);
                 if (experimentInformation.is_running) {
                     // If experiment was already running restore the last known state
                     commit('setIsRecovering', true);
@@ -338,7 +337,6 @@ const mutations = {
         });
     },
     setIsRecovering(state, isRecovering) {
-        console.log(isRecovering);
         state.isRecovering = isRecovering;
     }
 };
