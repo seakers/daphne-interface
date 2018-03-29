@@ -7,6 +7,10 @@ const state = {
     experimentStage: '',
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
+    datasets: ['EOSS_data_recalculated.csv', 'stage1.csv', 'stage2.csv'],
+    aggregationXls: ['/xls/Climate-centric/Climate-centric Aggregation Rules.xls',
+        '/xls/Climate-centric/Climate-centric Aggregation Rules-Climate.xls',
+        '/xls/Climate-centric/Climate-centric Aggregation Rules-Weather.xls'],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -26,7 +30,6 @@ const state = {
                 'DaphneAnswer',
                 'Cheatsheet'
             ],
-            dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             steps: [
                 {
@@ -121,7 +124,6 @@ const state = {
                 'FeatureApplication',
                 'EOSSFilter'
             ],
-            dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,
             stageDuration: 60*1
@@ -149,7 +151,6 @@ const state = {
                 critic: ['3000', '3005'],
                 historian: []
             },
-            dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,
             stageDuration: 60*1
@@ -177,7 +178,6 @@ const state = {
                 critic: [],
                 historian: ['4000', '4006', '4007']
             },
-            dataset: 'EOSS_data_recalculated.csv',
             nextStage: '',
             startTime: 0,
             stageDuration: 60*1
@@ -198,6 +198,15 @@ const getters = {
     },
     getIsRecovering(state) {
         return state.isRecovering;
+    },
+    getCurrentStageNum(state) {
+        return state.currentStageNum;
+    },
+    getDatasets(state) {
+        return state.datasets;
+    },
+    getAggregationXls(state) {
+        return state.aggregationXls;
     }
 };
 

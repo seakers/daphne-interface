@@ -82,7 +82,10 @@
                 experimentStage: 'getExperimentStage',
                 stageInformation: 'getStageInformation',
                 websocket: 'getWebsocket',
-                isRecovering: 'getIsRecovering'
+                isRecovering: 'getIsRecovering',
+                currentStageNum: 'getCurrentStageNum',
+                datasets: 'getDatasets',
+                aggregationXls: 'getAggregationXls'
             }),
             questionBarExperimentCondition() {
                 if (!this.inExperiment) {
@@ -180,7 +183,11 @@
                     }
 
                     // Load stage dataset
-                    this.$store.dispatch('loadNewData', this.stageInformation[this.experimentStage].dataset).then(() => {
+                    this.$store.dispatch('loadNewData', this.datasets[this.currentStageNum]).then(async () => {
+                        // Switch the VASSAR models for the new ones specific to this dataset
+                        await this.$store.dispatch('changeProblemLoadedFiles', {
+                            'aggregationXls': this.aggregationXls[this.currentStageNum]
+                        });
                         // Stage specific behaviour
                         switch (this.experimentStage) {
                             case 'tutorial': {

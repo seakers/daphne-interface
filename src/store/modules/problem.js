@@ -81,6 +81,31 @@ const actions = {
             let procData = await state.importCallback([newData]);
             commit('addProblemData', procData.problemData[0]);
         }
+    },
+    async changeProblemLoadedFiles({ state, commit }, filesDict) {
+        try {
+            let reqData = new FormData();
+            reqData.append('loaded_files', JSON.stringify(filesDict));
+            let dataResponse = await fetch(
+                '/api/vassar/change-loaded-files',
+                {
+                    method: 'POST',
+                    body: reqData,
+                    credentials: 'same-origin'
+                }
+            );
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                console.log(data['result']);
+            }
+            else {
+                console.error('Error accessing the data.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
     }
 };
 
