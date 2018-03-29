@@ -82,7 +82,10 @@
                 experimentStage: 'getExperimentStage',
                 stageInformation: 'getStageInformation',
                 websocket: 'getWebsocket',
-                isRecovering: 'getIsRecovering'
+                isRecovering: 'getIsRecovering',
+                currentStageNum: 'getCurrentStageNum',
+                datasets: 'getDatasets',
+                aggregationXls: 'getAggregationXls'
             }),
             questionBarExperimentCondition() {
                 if (!this.inExperiment) {
@@ -143,7 +146,7 @@
             this.$store.commit('setFilter', EOSSFilter);
 
             // Experiment
-            /*this.$store.dispatch('recoverExperiment').then(() => {
+            this.$store.dispatch('recoverExperiment').then(() => {
                 this.$store.commit('setIsRecovering', false);
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
@@ -152,15 +155,15 @@
                         this.$store.commit('setExperimentStage', 'tutorial');
                     });
                 }
-            });*/
+            });
 
-            this.$store.commit('addFunctionality', 'DesignBuilder');
+            /*this.$store.commit('addFunctionality', 'DesignBuilder');
             this.$store.commit('addFunctionality', 'DataMining');
             this.$store.commit('addFunctionality', 'FeatureApplication');
             this.$store.commit('addFunctionality', 'EOSSFilter');
             this.$store.commit('addFunctionality', 'DaphneAnswer');
             this.$store.commit('addFunctionality', 'Cheatsheet');
-            this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
+            this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');*/
         },
         watch: {
             experimentStage: function (val, oldVal) {
@@ -180,7 +183,11 @@
                     }
 
                     // Load stage dataset
-                    this.$store.dispatch('loadNewData', this.stageInformation[this.experimentStage].dataset).then(() => {
+                    this.$store.dispatch('loadNewData', this.datasets[this.currentStageNum]).then(async () => {
+                        // Switch the VASSAR models for the new ones specific to this dataset
+                        await this.$store.dispatch('changeProblemLoadedFiles', {
+                            'aggregationXls': this.aggregationXls[this.currentStageNum]
+                        });
                         // Stage specific behaviour
                         switch (this.experimentStage) {
                             case 'tutorial': {
