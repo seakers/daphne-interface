@@ -4,6 +4,13 @@
             <input class="input" type="text" name="command" placeholder="Ask a question / Give a command / Speak it out!" v-model="command" v-on:keyup.enter="sendCommand">
         </div>
         <div class="control">
+            <a class="button is-info" v-on:click.prevent="switchVoice">
+                <span class="icon is-small">
+                    <i class="fas" v-bind:class="[ speakOut ? 'fa-microphone' : 'fa-microphone-slash' ]"></i>
+                </span>
+            </a>
+        </div>
+        <div class="control">
             <a class="button is-info" id="send_command" v-on:click.prevent="sendCommand">Do it!</a>
         </div>
     </div>
@@ -15,6 +22,11 @@
 
     export default {
         name: 'question-bar',
+        data() {
+            return {
+                speakOut: false
+            }
+        },
         computed: {
             ...mapGetters([
                 'getResponse'
@@ -36,11 +48,17 @@
                 else {
                     this.$store.dispatch('executeCommand');
                 }
+            },
+            switchVoice(event) {
+                console.log(this.speakOut);
+                this.speakOut = !this.speakOut;
             }
         },
         watch: {
             getResponse: function(val, oldVal) {
-                responsiveVoice.speak(this.getResponse['voice_answer']);
+                if (this.speakOut) {
+                    responsiveVoice.speak(this.getResponse['voice_answer']);
+                }
             }
         }
     }

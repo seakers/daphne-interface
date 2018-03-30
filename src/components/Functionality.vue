@@ -4,9 +4,9 @@
             <p class="panel-heading">
                 <span>{{title}}</span>
                 <span style="float:right;">
-                    <a href="#" class="reduce-panel" v-bind:class="{ 'has-text-grey': isMinSize }" v-on:click.prevent="reduce"><span class="icon"><span class="fa fa-window-minimize"></span></span></a>
-                    <a href="#" class="grow-panel" v-bind:class="{ 'has-text-grey': isMaxSize }" v-on:click.prevent="grow"><span class="icon"><span class="fa fa-window-maximize"></span></span></a>
-                    <a href="#" class="close-panel" v-on:click.prevent="remove"><span class="icon"><span class="fa fa-times"></span></span></a>
+                    <a href="#" class="reduce-panel" v-bind:class="{ 'has-text-grey': isMinSize }" v-on:click.prevent="reduce"><span class="icon"><span class="fas fa-window-minimize"></span></span></a>
+                    <a href="#" class="grow-panel" v-bind:class="{ 'has-text-grey': isMaxSize }" v-on:click.prevent="grow"><span class="icon"><span class="fas fa-window-maximize"></span></span></a>
+                    <a href="#" class="close-panel" v-on:click.prevent="remove"><span class="icon"><span class="fas fa-times"></span></span></a>
                 </span>
             </p>
             <component v-bind:is="chosenFunctionality"></component>

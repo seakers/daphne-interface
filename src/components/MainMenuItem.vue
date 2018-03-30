@@ -1,5 +1,5 @@
 <template>
-    <a href="#" class="item" v-bind:class="{ active: isActive }" v-on:click.prevent="addFunctionality"><span class="icon"><span class="fa" v-bind:class="icon"></span></span><span class="name">{{ text }}</span></a>
+    <a href="#" class="item" v-bind:class="{ active: isActive }" v-on:click.prevent="addFunctionality"><span class="icon"><span class="fas" v-bind:class="icon"></span></span><span class="name">{{ text }}</span></a>
 </template>
 
 <script>
