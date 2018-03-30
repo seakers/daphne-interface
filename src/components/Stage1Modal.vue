@@ -1,13 +1,19 @@
 <template>
     <div class="message-body">
-        <p>That's it for the first stage of the experiment! Click continue to start the second stage.</p>
-        <a class="button" v-on:click.prevent="goToNextStage">Continue</a>
+        <p>That's it for the first stage of the experiment! Click the button to take a test about what you just did. When you're done click on Continue to go to the second stage.</p>
+        <a class="button" href="https://cornell.qualtrics.com/jfe/form/SV_aeJIreVxXrtrUAR" target="_blank" v-on:click="changeButtons" v-if="firstButton">Take test</a>
+        <a class="button" v-on:click.prevent="goToNextStage" v-if="!firstButton">Continue</a>
     </div>
 </template>
 
 <script>
     export default {
         name: 'stage1-modal',
+        data() {
+            return {
+                firstButton: true
+            }
+        },
         methods: {
             goToNextStage() {
                 let currentStage = this.$store.state.experiment.experimentStage;
@@ -17,6 +23,9 @@
                     this.$store.commit('setExperimentStage', nextStage);
                     this.$emit('close-modal');
                 });
+            },
+            changeButtons() {
+                this.firstButton = false;
             }
         }
     }

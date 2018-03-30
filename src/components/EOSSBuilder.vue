@@ -19,7 +19,7 @@
             </tbody>
         </table>
         <draggable id="instrument-adder-list" v-bind:options="instrumentAdderOptions" @add="onAddInstrAdder">
-            <div v-for="instrument in getExtraInfo.instrumentList" class="arch-box" v-bind:key="instrument" v-bind:name="instrDisplayName(instrument)">
+            <div v-for="instrument in extraInfo.instrumentList" class="arch-box" v-bind:key="instrument" v-bind:name="instrDisplayName(instrument)">
                 {{ instrDisplayName(instrument) }}
             </div>
         </draggable>
@@ -54,25 +54,25 @@
             }
         },
         computed: {
-            ...mapGetters([
-                'getHoveredArch',
-                'getClickedArch',
-                'getProblemData',
-                'getExtraInfo'
-            ]),
+            ...mapGetters({
+                hoveredArch: 'getHoveredArch',
+                clickedArch: 'getClickedArch',
+                problemData: 'getProblemData',
+                extraInfo: 'getExtraInfo'
+            }),
             pointID() {
-                return this.getHoveredArch === -1 ? this.getClickedArch : this.getHoveredArch;
+                return this.hoveredArch === -1 ? this.clickedArch : this.hoveredArch;
             },
             jsonArch() {
                 // Pick information depending on whether we are showing clicked or hovered arch
                 let architectureInputs = [];
-                if (this.getHoveredArch !== -1) {
-                    architectureInputs = this.getProblemData[this.pointID].inputs;
+                if (this.hoveredArch !== -1) {
+                    architectureInputs = this.problemData[this.pointID].inputs;
                 }
                 else {
                     architectureInputs = this.$store.state.tradespacePlot.clickedArchInputs;
                 }
-                let extraInfo = this.getExtraInfo;
+                let extraInfo = this.extraInfo;
                 let jsonArchitecture = [];
 
                 for (let i = 0; i < extraInfo.orbitNum; i++) {
@@ -97,11 +97,11 @@
         },
         methods: {
             orbitDisplayName(orbit) {
-                return this.getExtraInfo.orbitAlias[orbit];
+                return this.extraInfo.orbitAlias[orbit];
             },
 
             instrDisplayName(instrument) {
-                return this.getExtraInfo.instrumentAlias[instrument];
+                return this.extraInfo.instrumentAlias[instrument];
             },
 
             boolArch() {
