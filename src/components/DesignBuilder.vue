@@ -21,16 +21,17 @@
     export default {
         name: 'design-builder',
         computed: {
-            ...mapGetters([
-                'getHoveredArch',
-                'getClickedArch',
-                'getProblemData'
-            ]),
+            ...mapGetters({
+                hoveredArch: 'getHoveredArch',
+                clickedArch: 'getClickedArch',
+                problemData: 'getProblemData',
+                inExperiment: 'getInExperiment'
+            }),
             isPointSelected() {
-                return this.getHoveredArch !== -1 || this.getClickedArch !== -1;
+                return this.hoveredArch !== -1 || this.clickedArch !== -1;
             },
             pointID() {
-                return this.getHoveredArch === -1 ? this.getClickedArch : this.getHoveredArch;
+                return this.hoveredArch === -1 ? this.clickedArch : this.hoveredArch;
             },
             outputList() {
                 return this.$store.state.problem.outputList;
@@ -44,7 +45,7 @@
         },
         methods: {
             outputVal(index) {
-                let rawValue = this.getProblemData[this.pointID].outputs[index];
+                let rawValue = this.problemData[this.pointID].outputs[index];
                 if (typeof rawValue === "number") {
                     if (rawValue > 100) {
                         return rawValue.toFixed(2);
@@ -56,13 +57,14 @@
             },
             async evaluateArch(event) {
                 let newInputs = this.$store.state.tradespacePlot.clickedArchInputs;
-                let oldInputs = this.getProblemData[this.pointID].inputs;
+                let oldInputs = this.problemData[this.pointID].inputs;
                 let arraysAreEq = (newInputs.length === oldInputs.length) && newInputs.every((element, index) => {
                     return element === oldInputs[index];
                 });
                 if (!arraysAreEq) {
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
+                    reqData.append('special', this.inExperiment ? 'True' : 'False');
                     try {
                         let dataResponse = await fetch('/api/vassar/evaluate-architecture',
                             {
