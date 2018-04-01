@@ -15,18 +15,12 @@ const state = {
         tutorial: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter',
                 'DaphneAnswer',
                 'Cheatsheet',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter',
                 'DaphneAnswer',
                 'Cheatsheet'
             ],
@@ -43,19 +37,11 @@ const state = {
                 },
                 {
                     element: '#arch-info-display-table',
-                    intro: 'Each design is represented by a table as shown here. It shows which set of measurement instruments is assigned to fly in each orbit. Each row represents one spacecraft flying in a specified orbit. Orbits are defined by various parameters, such as altitude and inclination'
+                    intro: 'Each design is represented by a table as shown here. It shows which set of measurement instruments is assigned to fly in each orbit. Each row represents one spacecraft flying in a specified orbit. If one orbit has no instruments, it means there will be no spacecraft flying there. Orbits are defined by various parameters, such as altitude, inclination and local sun time for those which are sun-synchronous.'
                 },
-                {
-                    element: '#arch-info-display-table',
-                    intro: 'Each column represents what measurement instruments (sensors) are onboard each of those spacecraft. The instruments include spectrometers, lidars, radars, imagers, etc.'
-                },
-                {
-                    element: '#arch-info-display-table',
-                    intro: 'The real names of orbits and instruments were changed to numbers and alphabetical letters repectively to make the task simpler. There are total 5 candidate orbits, and 6 available measurement instruments.'
-                },           // 6 instead of 12?
                 {
                     element:  '.cheatsheet',
-                    intro: 'Detailed information on what these orbits and instruments are is given in the cheatsheet when checking the Orbits and Instruments alias. You don\'t have to pay attention to this information for now, but it may come in handy later in the design task.'
+                    intro: 'Detailed information on what these orbits and instruments are is given in the cheatsheet when checking the Orbits and Instruments information. You don\'t have to pay attention to this information for now, but it may come in handy later in the design task.'
                 },
                 {
                     element: '#main-plot-block',
@@ -131,25 +117,20 @@ const state = {
         daphne_peer: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter',
                 'DaphneAnswer',
                 'Cheatsheet',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter',
                 'DaphneAnswer',
                 'Cheatsheet'
             ],
             restrictedQuestions: {
                 analyst: [],
                 critic: ['3000', '3005'],
-                historian: []
+                historian: [],
+                ifeed: []
             },
             nextStage: '',
             startTime: 0,
@@ -158,25 +139,20 @@ const state = {
         daphne_assistant: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter',
                 'DaphneAnswer',
                 'Cheatsheet',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter',
                 'DaphneAnswer',
                 'Cheatsheet'
             ],
             restrictedQuestions: {
                 analyst: ['2000', '2008', '2010'],
                 critic: [],
-                historian: ['4000', '4006', '4007']
+                historian: ['4000', '4006', '4007'],
+                ifeed: []
             },
             nextStage: '',
             startTime: 0,

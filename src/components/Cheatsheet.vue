@@ -3,16 +3,7 @@
         <div class="panel-block">
             <div class="select is-fullwidth">
                 <select v-on:change="updateList" v-model="selectedList">
-                    <option value=""></option>
-                    <option value="general">General</option>
-                    <option value="ifeed">iFEED</option>
-                    <option value="analyst">Analyst</option>
-                    <option value="critic">Critic</option>
-                    <option value="historian">Historian</option>
-                    <option value="measurements">Measurements</option>
-                    <option value="missions">Missions</option>
-                    <option value="technologies">Technologies</option>
-                    <option value="objectives">Objectives</option>
+                    <option v-for="option in filteredList" v-bind:value="option.value" v-bind:key="option.value">{{ option.name }}</option>
                 </select>
             </div>
         </div>
@@ -35,7 +26,44 @@
         data () {
             return {
                 selectedList: '',
-                cheatList: []
+                cheatList: [],
+                optionsList: [
+                    {name: "", value: ""},
+                    {name: "General", value: "general"},
+                    {name: "Orbits Information", value: "orb_info"},
+                    {name: "Instruments Information", value: "instr_info"},
+                    {name: "iFEED", value: "ifeed"},
+                    {name: "Analyst", value: "analyst"},
+                    {name: "Critic", value: "critic"},
+                    {name: "Historian", value: "historian"},
+                    {name: "Historical Measurements", value: "measurements"},
+                    {name: "Historical Missions", value: "missions"},
+                    {name: "Historical Technologies", value: "technologies"},
+                    {name: "Objectives", value: "objectives"}
+                ]
+            }
+        },
+        computed: {
+            filteredList() {
+                if (this.$store.getters.getInExperiment) {
+                    let stageInformation = this.$store.getters.getStageInformation;
+                    let currStageInfo = stageInformation[this.$store.getters.getExperimentStage];
+                    let newList = [];
+                    this.optionsList.forEach((option) => {
+                        if ('restrictedQuestions' in currStageInfo && option.value in currStageInfo.restrictedQuestions) {
+                            if (currStageInfo.restrictedQuestions[option.value].length !== 0) {
+                                newList.push(option);
+                            }
+                        }
+                        else {
+                            newList.push(option);
+                        }
+                    });
+                    return newList;
+                }
+                else {
+                    return this.optionsList;
+                }
             }
         },
         methods: {

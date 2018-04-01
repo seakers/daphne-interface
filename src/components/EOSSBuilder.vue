@@ -115,8 +115,8 @@
                     for (let j = 0; j < tableInstrumentRows[i].children.length; ++j) {
                         let child = tableInstrumentRows[i].children[j];
                         if (child.classList.contains('arch-box')) {
-                            let position = child.textContent.trim().charCodeAt() - 'A'.charCodeAt();
-                            bitString[12*i + position] = true;
+                            let position = this.$store.state.problem.displayName2Index(child.textContent.trim(), 'instrument');
+                            bitString[12*i + +position] = true;
                         }
                     }
                 }
@@ -127,8 +127,8 @@
                 let tableInstrumentRows = document.getElementsByClassName('instruments-list');
                 for (let i = 0; i < tableInstrumentRows.length; ++i) {
                     if (tableInstrumentRows[i] === list) {
-                        let position = element.textContent.trim().charCodeAt() - 'A'.charCodeAt();
-                        return 12*i + position;
+                        let position = this.$store.state.problem.displayName2Index(element.textContent.trim(), 'instrument');
+                        return 12*i + +position;
                     }
                 }
             },
@@ -178,8 +178,9 @@
 
     .arch-box {
         display: inline-block;
-        width: 30px;
+        min-width: 30px;
         height: 30px;
+        padding: 0 5px 0 5px;
         margin-right: 5px;
         text-align: center;
         border: 1px solid $grey-lighter;
@@ -187,6 +188,6 @@
 
     #instrument-adder-list {
         margin-left: 40px;
-        max-width: 70px;
+        max-width: 25%;
     }
 </style>

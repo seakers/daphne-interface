@@ -24,7 +24,10 @@ export default {
 
         // Add alias for instruments and orbits
         extra.labelingEnabled = true;
-        let orbitAliasArray = [['LEO-600-polar-NA', '1'], ['SSO-600-SSO-AM', '2'], ['SSO-600-SSO-DD', '3'], ['SSO-800-SSO-DD', '4'], ['SSO-800-SSO-PM', '5']];
+        //let orbitAliasArray = [['LEO-600-polar-NA', '1'], ['SSO-600-SSO-AM', '2'], ['SSO-600-SSO-DD', '3'], ['SSO-800-SSO-DD', '4'], ['SSO-800-SSO-PM', '5']];
+        let orbitAliasArray = [['LEO-600-polar-NA', 'LEO-600-polar-NA'], ['SSO-600-SSO-AM', 'SSO-600-SSO-AM'],
+            ['SSO-600-SSO-DD', 'SSO-600-SSO-DD'], ['SSO-800-SSO-DD', 'SSO-800-SSO-DD'],
+            ['SSO-800-SSO-PM', 'SSO-800-SSO-PM']];
         extra.orbitAlias = {};
         extra.orbitInvAlias = {};
         orbitAliasArray.forEach((element) => {
@@ -32,7 +35,11 @@ export default {
             extra.orbitInvAlias[element[1]] = element[0];
         });
 
-        let instrumentAliasArray = [['ACE_ORCA', 'A'], ['ACE_POL', 'B'], ['ACE_LID', 'C'], ['CLAR_ERB', 'D'], ['ACE_CPR', 'E'], ['DESD_SAR', 'F'], ['DESD_LID', 'G'], ['GACM_VIS', 'H'], ['GACM_SWIR', 'I'], ['HYSP_TIR', 'J'], ['POSTEPS_IRS', 'K'],['CNES_KaRIN', 'L']];
+        //let instrumentAliasArray = [['ACE_ORCA', 'A'], ['ACE_POL', 'B'], ['ACE_LID', 'C'], ['CLAR_ERB', 'D'], ['ACE_CPR', 'E'], ['DESD_SAR', 'F'], ['DESD_LID', 'G'], ['GACM_VIS', 'H'], ['GACM_SWIR', 'I'], ['HYSP_TIR', 'J'], ['POSTEPS_IRS', 'K'],['CNES_KaRIN', 'L']];
+        let instrumentAliasArray = [['ACE_ORCA', 'ACE_ORCA'], ['ACE_POL', 'ACE_POL'], ['ACE_LID', 'ACE_LID'],
+            ['CLAR_ERB', 'CLAR_ERB'], ['ACE_CPR', 'ACE_CPR'], ['DESD_SAR', 'DESD_SAR'], ['DESD_LID', 'DESD_LID'],
+            ['GACM_VIS', 'GACM_VIS'], ['GACM_SWIR', 'GACM_SWIR'], ['HYSP_TIR', 'HYSP_TIR'],
+            ['POSTEPS_IRS', 'POSTEPS_IRS'], ['CNES_KaRIN', 'CNES_KaRIN']];
         extra.instrumentAlias = {};
         extra.instrumentInvAlias = {};
         instrumentAliasArray.forEach((element) => {
