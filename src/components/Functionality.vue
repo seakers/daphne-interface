@@ -1,6 +1,6 @@
 <template>
     <div class="column is-full-mobile" v-bind:class="sizeClass">
-        <section class="panel func-panel cheatsheet">
+        <section class="panel func-panel" v-bind:class="funcClass">
             <p class="panel-heading">
                 <span>{{title}}</span>
                 <span style="float:right;">
@@ -30,7 +30,7 @@
 
     export default {
         name: 'functionality',
-        props: ['name', 'title', 'initialSize'],
+        props: ['name', 'title', 'funcClass', 'initialSize'],
         data () {
             return {
                 size: this.initialSize,

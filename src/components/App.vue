@@ -26,7 +26,7 @@
                     <div class="navbar-menu">
                         <div class="navbar-start is-fullwidth">
                             <div class="navbar-item is-fullwidth">
-                                <question-bar v-if="questionBarExperimentCondition"></question-bar>
+                                <question-bar v-if="questionBarExperimentCondition" id="question-bar"></question-bar>
                             </div>
                         </div>
                     </div>

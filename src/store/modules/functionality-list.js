@@ -1,12 +1,12 @@
 import * as _ from 'lodash-es';
 
 let functionalityTypes = new Map();
-functionalityTypes.set('DaphneAnswer', { title: 'Answers', minSize: 'one-third', maxRepeat: 1});
-functionalityTypes.set('DesignBuilder', { title: 'Design Builder', minSize: 'two-thirds', maxRepeat: 1});
-functionalityTypes.set('DataMining', { title: 'Data Mining', minSize: 'one-third', maxRepeat: 1});
-functionalityTypes.set('Cheatsheet', { title: 'Cheatsheet', minSize: 'one-third', maxRepeat: 1000});
-functionalityTypes.set('EOSSFilter', { title: 'Filter', minSize: 'one-third', maxRepeat: 1});
-functionalityTypes.set('FeatureApplication', { title: 'Feature Application', minSize: 'one-third', maxRepeat: 1});
+functionalityTypes.set('DaphneAnswer', { title: 'Answers', class: 'answers', minSize: 'one-third', maxRepeat: 1});
+functionalityTypes.set('DesignBuilder', { title: 'Design Builder', class: 'design-builder', minSize: 'two-thirds', maxRepeat: 1});
+functionalityTypes.set('DataMining', { title: 'Data Mining', class: 'data-mining', minSize: 'one-third', maxRepeat: 1});
+functionalityTypes.set('Cheatsheet', { title: 'Cheatsheet', class: 'cheatsheet', minSize: 'one-third', maxRepeat: 1000});
+functionalityTypes.set('EOSSFilter', { title: 'Filter', class: 'filter', minSize: 'one-third', maxRepeat: 1});
+functionalityTypes.set('FeatureApplication', { title: 'Feature Application', class: 'feature-application', minSize: 'one-third', maxRepeat: 1});
 
 let newFunctionalityId = 0;
 
@@ -52,6 +52,7 @@ const mutations = {
             state.functionalities.push({
                 name: functionality,
                 title: funcInfo.title,
+                funcClass: funcInfo.class,
                 initialSize: funcInfo.minSize,
                 id: newFunctionalityId++
             });
