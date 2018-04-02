@@ -57,7 +57,8 @@ const state = {
                 },
                 {
                     element: '.design-builder',
-                    intro: 'You can move the instruments from one orbit to another, add new instruments, or remove them using drag-and-drop. After modifying the design, you can evaluate it using the <b>"Evaluate Architecture"</b> button on the top-right side. After the evaluation is finished, a new cross will appear on the scatter plot with its location determined by the new science score and cost. It is very important to evaluate the new designs you make, as otherwise they won\'t get saved and you won\'t know how much you improved! Try coming up with a new design before going forward with the tutorial.'
+                    intro: 'You can move the instruments from one orbit to another, add new instruments, or remove them using drag-and-drop. After modifying the design, you can evaluate it using the <b>"Evaluate Architecture"</b> button on the top-right side. After the evaluation is finished, a new cross will appear on the scatter plot with its location determined by the new science score and cost. It is very important to evaluate the new designs you make, as otherwise they won\'t get saved and you won\'t know how much you improved! Try coming up with a new design before going forward with the tutorial.',
+                    position: 'right'
                 },
                 {
                     element: '#admin-panel',
