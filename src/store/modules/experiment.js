@@ -4,6 +4,7 @@ import * as _ from "lodash-es";
 const state = {
     inExperiment: false,
     isRecovering: false,
+    experimentWebsocket: {},
     experimentStage: '',
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
@@ -90,7 +91,7 @@ const state = {
                     intro: 'To make the most out of the Analyst and the Historian assistant, you should know how the science score is computed and what information can Daphne provide you. The science score measures how many and how well the Analyst Measurements are being measured, and the information the Daphne Analyst can give you is which is the requirement for a measurement and how well does an instrument fulfill that requirement, and by joining this information you can tell which instruments you should be using. You can also ask the Historian for common patterns in past missions for some of the instruments in the list.'
                 },
                 {
-                    intro: 'Each stage of the experiment will last for 15 minutes. Remember, your objective is always the same: <b>find a range of designs with good science scores with a cost between $1,000K and $10,000K</b>. Whether you have start with the Critic or the Analyst/Historian is randomized, so check what you have available in the Cheatsheet! With this being said, click on done to start the experiment!'
+                    intro: 'Each stage of the experiment will last for 15 minutes. Remember, your objective is always the same: <b>find a range of designs with good science scores with a cost between $1,000K and $10,000K</b>. Whether you start with the Critic or the Analyst/Historian is randomized, so check what you have available in the Cheatsheet! With this being said, click on done to start the experiment!'
                 }
             ],
             conditions: [
@@ -114,7 +115,7 @@ const state = {
             ],
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*1
         },
         daphne_peer: {
             availableFunctionalities: [
@@ -136,7 +137,7 @@ const state = {
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*1
         },
         daphne_assistant: {
             availableFunctionalities: [
@@ -158,7 +159,7 @@ const state = {
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*1
         }
     }
 };
@@ -202,6 +203,8 @@ const actions = {
                 for (let i = 0; i < experimentInformation.stages.length - 1; ++i) {
                     commit('setNextStage', { experimentStage: experimentInformation.stages[i].type, nextStage: experimentInformation.stages[i+1].type });
                 }
+                // Start the websockets after completing the request so the session cookie is already set
+                commit('startExperimentWebsocket');
             }
             else {
                 console.error('Error starting the experiment.');
@@ -279,6 +282,8 @@ const actions = {
             if (response.ok) {
                 let experimentInformation = await response.json();
                 if (experimentInformation.is_running) {
+                    // Start the websockets after completing the request so the session cookie is already set
+                    commit('startExperimentWebsocket');
                     // If experiment was already running restore the last known state
                     commit('setIsRecovering', true);
                     commit('restoreProblem', experimentInformation.experiment_data.state.problem);
@@ -325,6 +330,13 @@ const mutations = {
     },
     setIsRecovering(state, isRecovering) {
         state.isRecovering = isRecovering;
+    },
+    startExperimentWebsocket(state) {
+        state.experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/experiment');
+        state.experimentWebsocket.onopen = function() {
+            console.log('Experiment Web Socket Conenction Made');
+        };
+        state.experimentWebsocket.onmessage = function (data) {};
     }
 };
 
