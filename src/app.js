@@ -16,7 +16,6 @@ import './styles/app.scss';
 import store from './store';
 
 // Record state and mutations when inside an experiment
-// TODO: Rework to use WS and avoid so many connections? -> Do, connections too slow
 let stateTimer = 0;
 let mutationBlackList = ['setIsLoading', 'resetDaphne', 'clearFeatures', 'resetDataMining', 'resetFeatureApplication',
     'resetFilter', 'resetFunctionalityList', 'setProblem', 'updateExtra', 'updateProblemData', 'resetProblem',

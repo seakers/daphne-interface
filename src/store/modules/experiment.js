@@ -17,13 +17,17 @@ const state = {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet'
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
             ],
             nextStage: '',
             steps: [
@@ -41,7 +45,7 @@ const state = {
                     intro: 'Each design is represented by a table as shown here. Each row represents one spacecraft flying in a specified orbit, so the instruments in each row represent the ones in that spacecraft. If one orbit has no instruments, it means there will be no spacecraft flying there. Orbits are defined by various parameters, such as altitude, inclination and local sun time for those which are sun-synchronous.'
                 },
                 {
-                    element:  '.panel.cheatsheet',
+                    element:  '.panel.orbit-instr-info',
                     intro: 'Detailed information on what these orbits and instruments are is given in the cheatsheet when checking the Orbits and Instruments information. You should read them now by clicking on the elements of the dropdown list.'
                 },
                 {
@@ -121,19 +125,29 @@ const state = {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet',
+                'OrbitInstrInfo',
+                'AvailableCommands',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet'
+                'OrbitInstrInfo',
+                'AvailableCommands'
             ],
             restrictedQuestions: {
                 analyst: [],
                 critic: ['3000', '3005'],
                 historian: [],
-                ifeed: []
+                ifeed: [],
+                analyst_instruments: [],
+                analyst_instrument_parameters: [],
+                analyst_measurements: [],
+                analyst_stakeholders: [],
+                measurements: [],
+                missions: [],
+                technologies: [],
+                objectives: []
             },
             nextStage: '',
             startTime: 0,
@@ -143,13 +157,17 @@ const state = {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet'
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
             ],
             restrictedQuestions: {
                 analyst: ['2000', '2008', '2010'],
@@ -282,8 +300,6 @@ const actions = {
             if (response.ok) {
                 let experimentInformation = await response.json();
                 if (experimentInformation.is_running) {
-                    // Start the websockets after completing the request so the session cookie is already set
-                    commit('startExperimentWebsocket');
                     // If experiment was already running restore the last known state
                     commit('setIsRecovering', true);
                     commit('restoreProblem', experimentInformation.experiment_data.state.problem);
@@ -294,6 +310,8 @@ const actions = {
                     commit('restoreDataMining', experimentInformation.experiment_data.state.dataMining);
                     commit('restoreFeatureApplication', experimentInformation.experiment_data.state.featureApplication);
                     commit('restoreExperiment', experimentInformation.experiment_data.state.experiment);
+                    // Start the websockets after completing the request so the session cookie is already set
+                    commit('startExperimentWebsocket');
                 }
             }
             else {

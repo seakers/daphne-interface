@@ -10,9 +10,7 @@
         <div class="panel-block functionality">
             <div class="content">
                 <ul v-if="cheatList.length">
-                    <li v-for="cheat in cheatList">
-                        {{ cheat }}
-                    </li>
+                    <li v-for="cheat in cheatList" v-html="cheat"></li>
                 </ul>
                 <p v-else>Choose one of the different cheatsheets available for Daphne</p>
             </div>
@@ -26,27 +24,10 @@
         data () {
             return {
                 selectedList: '',
-                cheatList: [],
-                optionsList: [
-                    {name: "", value: ""},
-                    {name: "General", value: "general"},
-                    {name: "Orbits Information", value: "orb_info"},
-                    {name: "Instruments Information", value: "instr_info"},
-                    {name: "iFEED", value: "ifeed"},
-                    {name: "Analyst", value: "analyst"},
-                    {name: "Critic", value: "critic"},
-                    {name: "Historian", value: "historian"},
-                    {name: "Analyst Instruments", value: "analyst_instruments"},
-                    {name: "Analyst Instrument Parameters", value: "analyst_instrument_parameters"},
-                    {name: "Analyst Measurements", value: "analyst_measurements"},
-                    {name: "Analyst Stakeholders", value: "analyst_stakeholders"},
-                    {name: "Historical Measurements", value: "measurements"},
-                    {name: "Historical Missions", value: "missions"},
-                    {name: "Historical Technologies", value: "technologies"},
-                    {name: "Objectives", value: "objectives"}
-                ]
+                cheatList: []
             }
         },
+        props: ['name'],
         computed: {
             filteredList() {
                 if (this.$store.getters.getInExperiment) {
@@ -68,6 +49,9 @@
                 else {
                     return this.optionsList;
                 }
+            },
+            optionsList() {
+                return this.$store.getters.getOptionsList(this.name);
             }
         },
         methods: {
