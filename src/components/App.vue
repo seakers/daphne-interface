@@ -162,7 +162,9 @@
             this.$store.commit('addFunctionality', 'FeatureApplication');
             this.$store.commit('addFunctionality', 'EOSSFilter');
             this.$store.commit('addFunctionality', 'DaphneAnswer');
-            this.$store.commit('addFunctionality', 'Cheatsheet');
+            this.$store.commit('addFunctionality', 'OrbitInstrInfo');
+            this.$store.commit('addFunctionality', 'AvailableCommands');
+            this.$store.commit('addFunctionality', 'CommandsInformation');
             this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');*/
         },
         watch: {

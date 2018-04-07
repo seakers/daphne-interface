@@ -3,6 +3,7 @@
         <functionality
                 v-for="functionality in functionalities"
                 v-bind:name="functionality.name"
+                v-bind:component="functionality.component"
                 v-bind:title="functionality.title"
                 v-bind:func-class="functionality.funcClass"
                 v-bind:initial-size="functionality.initialSize"

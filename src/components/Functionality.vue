@@ -9,7 +9,7 @@
                     <a href="#" class="close-panel" v-on:click.prevent="remove"><span class="icon"><span class="fas fa-times"></span></span></a>
                 </span>
             </p>
-            <component v-bind:is="chosenFunctionality"></component>
+            <component v-bind:is="chosenFunctionality" v-bind:name="name"></component>
         </section>
     </div>
 </template>
@@ -30,11 +30,11 @@
 
     export default {
         name: 'functionality',
-        props: ['name', 'title', 'funcClass', 'initialSize'],
+        props: ['name', 'component', 'title', 'funcClass', 'initialSize'],
         data () {
             return {
                 size: this.initialSize,
-                chosenFunctionality: this.name
+                chosenFunctionality: this.component
             }
         },
         components: {

@@ -16,7 +16,6 @@ import './styles/app.scss';
 import store from './store';
 
 // Record state and mutations when inside an experiment
-// TODO: Rework to use WS and avoid so many connections? -> Do, connections too slow
 let stateTimer = 0;
 let mutationBlackList = ['setIsLoading', 'resetDaphne', 'clearFeatures', 'resetDataMining', 'resetFeatureApplication',
     'resetFilter', 'resetFunctionalityList', 'setProblem', 'updateExtra', 'updateProblemData', 'resetProblem',
@@ -26,18 +25,13 @@ let mutationBlackList = ['setIsLoading', 'resetDaphne', 'clearFeatures', 'resetD
 let updatesContextList = ['updateClickedArch'];
 
 // Experiment Websocket connection
-let experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/experiment');
-experimentWebsocket.onopen = function() {
-    console.log('Experiment Web Socket Conenction Made');
-};
-experimentWebsocket.onmessage = function (data) {};
 store.subscribe(async (mutation, state) => {
     // Only update if inside experiment
     if (state.experiment.inExperiment) {
         // Only update mutations if after tutorial (currentStageNum > 0)
         if (state.experiment.currentStageNum > 0 && !mutationBlackList.includes(mutation.type)) {
             // Upload mutation to server
-            experimentWebsocket.send(JSON.stringify({
+            state.experiment.experimentWebsocket.send(JSON.stringify({
                 msg_type: 'add_action',
                 stage: state.experiment.currentStageNum - 1,
                 action: mutation
@@ -47,7 +41,7 @@ store.subscribe(async (mutation, state) => {
         // Upload new state to server
         if (stateTimer === 0) {
             stateTimer = window.setInterval(async () => {
-                experimentWebsocket.send(JSON.stringify({
+                state.experiment.experimentWebsocket.send(JSON.stringify({
                     msg_type: 'update_state',
                     state: state
                 }));

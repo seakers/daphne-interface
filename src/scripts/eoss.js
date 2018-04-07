@@ -13,7 +13,7 @@ export default {
     inputNum: 60,
     outputNum: 2,
     inputList: [],
-    outputList: ['Science', 'Cost'],
+    outputList: ['Science', 'Cost ($K)'],
     outputObj: [1, -1],
     displayComponent: 'EOSSBuilder',
     importCallback: async (data) => {

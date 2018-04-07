@@ -4,6 +4,7 @@ import * as _ from "lodash-es";
 const state = {
     inExperiment: false,
     isRecovering: false,
+    experimentWebsocket: {},
     experimentStage: '',
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
@@ -16,18 +17,22 @@ const state = {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet'
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
             ],
             nextStage: '',
             steps: [
                 {
-                    intro: 'As a Systems Engineer at "The EasySpace Corporation" (ESC) you have been tasked with exploring some designs for a new Earth Observation mission. This mission will fly in about 10 years. Your bosses at ESC have asked you to find designs in a range of possible budgets from $1M to $10M, as NASA does not yet know how much money it will be able to allocate to it. What\'s more, as science priorities change depending on who is in the White House, you have been asked to do this study twice, first making climate science the biggest priority and then making weather studies the most important research factor.'
+                    intro: 'As a Systems Engineer at "The EasySpace Corporation" (ESC) you have been tasked with exploring some designs for a new Earth Observation mission. This mission will fly in about 10 years. Your bosses at ESC have asked you to find designs in a range of possible budgets from $1,000K to $10,000K, as NASA does not yet know how much money it will be able to allocate to it. What\'s more, as science priorities change depending on who is in the White House, you have been asked to do this study twice, first making climate science the biggest priority and then making weather studies the most important research factor.'
                 },
                 {
                     intro: 'But that is not all. As a member of the R&D department in the corporation, your teammates are always trying to improve the tools you all use to design new missions. They have been building a virtual assistant called Daphne which will help you by either answering questions or giving you advice on your design decisions and they want you to test it and see if it helps you work better or not.'
@@ -40,7 +45,7 @@ const state = {
                     intro: 'Each design is represented by a table as shown here. Each row represents one spacecraft flying in a specified orbit, so the instruments in each row represent the ones in that spacecraft. If one orbit has no instruments, it means there will be no spacecraft flying there. Orbits are defined by various parameters, such as altitude, inclination and local sun time for those which are sun-synchronous.'
                 },
                 {
-                    element:  '.panel.cheatsheet',
+                    element:  '.panel.orbit-instr-info',
                     intro: 'Detailed information on what these orbits and instruments are is given in the cheatsheet when checking the Orbits and Instruments information. You should read them now by clicking on the elements of the dropdown list.'
                 },
                 {
@@ -53,7 +58,7 @@ const state = {
                 },
                 {
                     element: '#admin-panel',
-                    intro: 'As you hover over each dot on the scatter plot, you can see the corresponding information being changed in the Design Builder space. If you click a dot, it is replaced by a cross. The cross means you have selected that design. Try selecting a design in the Pareto Front (meaning the designs which have no better science benefit for that cost) before proceeding.'
+                    intro: 'As you hover over each dot on the scatter plot, you can see the corresponding information being changed in the Design Builder space. If you click a dot, it is replaced by a cross. The cross means you have selected that design. Try selecting a design which has the highest science benefit for a certain cost (so the one the furthest right for any cost). Just in case you want to know, the set of all the points with the best science for a certain cost is also known as the Pareto Front.'
                 },
                 {
                     element: '.design-builder',
@@ -66,15 +71,22 @@ const state = {
                 },
                 {
                     element: '#question-bar',
+                    intro: 'To ask a question, you can write it down here, and then either click Do It! or press Enter on your keyboard.'
+                },
+                {
+                    element: '#question-bar',
                     intro: 'For example, you can ask what Daphne thinks about the currently design. After thinking for a while, Daphne will give her thoughts on the design along with some hints on how you might want to improve it. Try writing or copying the following question into the Question Bar: "What do you think of this design?" If you want to hear the output instead of just reading it, you can unmute Daphne by clicking on the microphone.'
                 },
                 {
                     element: '.answers',
-                    intro: 'You can read all the suggestions Daphne has for you about your design in here. There are a lot more questions you can ask Daphne, and they can be checked in the Cheatsheet.'
+                    intro: 'You can read all the suggestions Daphne has for you about your design in here. There are a lot more questions you can ask Daphne, so you should know a little more about it.'
+                },
+                {
+                    intro: 'Daphne is a virtual assistant, and it can take on three different roles: Analyst, Historian or Critic. All three roles can answer different kinds of questions, with the Analyst focusing on telling you WHY a design has a certain score, the Historian giving you information on past missions which have been launched, and the Critic explaining HOW you can improve a design with advice.'
                 },
                 {
                     element: '#admin-panel',
-                    intro: 'You can now try choosing a question from those available at the Cheatsheet lists. If you look at the historian list, you will see that there are strange looking words such as ${measurement} or ${year}. You can look at other lists such as Historical Measurements, Historical Missions or Historical Technologies to know valid values for these fields. If a part of a question is inside brackets it means it is optional. Another example question (which you can try!) would be: "Which orbit is the most common for snow cover?"'
+                    intro: 'You can now try choosing a question from those available at the Cheatsheet lists. If you look at the Historian list, you will see that there are strange looking words such as ${measurement} or ${year}. You can look at other lists such as Historical Measurements, Historical Missions or Historical Technologies to know valid values for these fields. If a part of a question is inside brackets it means it is optional. Another example question (which you can try!) would be: "Which orbit is the most common for snow cover?"'
                 },
                 {
                     intro: 'Now you know every tool available to you! The experiment, as you already know, will have two stages. The main difference between them will be the questions you can ask Daphne: on one case you will only be able to use the Critic questions, while in the other case you will have both the Historian and the Analyst available.'
@@ -83,7 +95,7 @@ const state = {
                     intro: 'To make the most out of the Analyst and the Historian assistant, you should know how the science score is computed and what information can Daphne provide you. The science score measures how many and how well the Analyst Measurements are being measured, and the information the Daphne Analyst can give you is which is the requirement for a measurement and how well does an instrument fulfill that requirement, and by joining this information you can tell which instruments you should be using. You can also ask the Historian for common patterns in past missions for some of the instruments in the list.'
                 },
                 {
-                    intro: 'Each stage of the experiment will last for 15 minutes. Remember, your objective is always the same: <b>find a range of designs with good science scores with a cost between $1M and $10M</b>. Whether you have start with the Critic or the Analyst/Historian is randomized, so check what you have available in the Cheatsheet! With this being said, click on done to start the experiment!'
+                    intro: 'Each stage of the experiment will last for 15 minutes. Remember, your objective is always the same: <b>find a range of designs with good science scores with a cost between $1,000K and $10,000K</b>. Whether you start with the Critic or the Analyst/Historian is randomized, so check what you have available in the Cheatsheet! With this being said, click on done to start the experiment!'
                 }
             ],
             conditions: [
@@ -107,41 +119,55 @@ const state = {
             ],
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*1
         },
         daphne_peer: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet',
+                'OrbitInstrInfo',
+                'AvailableCommands',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet'
+                'OrbitInstrInfo',
+                'AvailableCommands'
             ],
             restrictedQuestions: {
                 analyst: [],
                 critic: ['3000', '3005'],
                 historian: [],
-                ifeed: []
+                ifeed: [],
+                analyst_instruments: [],
+                analyst_instrument_parameters: [],
+                analyst_measurements: [],
+                analyst_stakeholders: [],
+                measurements: [],
+                missions: [],
+                technologies: [],
+                objectives: []
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*1
         },
         daphne_assistant: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
-                'Cheatsheet'
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
             ],
             restrictedQuestions: {
                 analyst: ['2000', '2008', '2010'],
@@ -151,7 +177,7 @@ const state = {
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*1
         }
     }
 };
@@ -195,6 +221,8 @@ const actions = {
                 for (let i = 0; i < experimentInformation.stages.length - 1; ++i) {
                     commit('setNextStage', { experimentStage: experimentInformation.stages[i].type, nextStage: experimentInformation.stages[i+1].type });
                 }
+                // Start the websockets after completing the request so the session cookie is already set
+                commit('startExperimentWebsocket');
             }
             else {
                 console.error('Error starting the experiment.');
@@ -282,6 +310,8 @@ const actions = {
                     commit('restoreDataMining', experimentInformation.experiment_data.state.dataMining);
                     commit('restoreFeatureApplication', experimentInformation.experiment_data.state.featureApplication);
                     commit('restoreExperiment', experimentInformation.experiment_data.state.experiment);
+                    // Start the websockets after completing the request so the session cookie is already set
+                    commit('startExperimentWebsocket');
                 }
             }
             else {
@@ -318,6 +348,13 @@ const mutations = {
     },
     setIsRecovering(state, isRecovering) {
         state.isRecovering = isRecovering;
+    },
+    startExperimentWebsocket(state) {
+        state.experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/experiment');
+        state.experimentWebsocket.onopen = function() {
+            console.log('Experiment Web Socket Conenction Made');
+        };
+        state.experimentWebsocket.onmessage = function (data) {};
     }
 };
 
