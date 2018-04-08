@@ -6,7 +6,10 @@
                 <span v-for="(output, index) in outputList" v-bind:key="index">
                     <b>{{ output }}</b>: {{ outputVal(index) }};
                 </span>
-                <a class="button" v-on:click.prevent="evaluateArch">Evaluate Architecture</a>
+                <a class="button" v-on:click.prevent="evaluateArch">
+                    <img src="assets/img/loader.svg" style="margin-right: 5px;" height="20" width="20" v-if="isComputing">
+                    Evaluate Architecture
+                </a>
             </p>
             <component v-bind:is="displayComponent"></component>
         </div>
@@ -20,6 +23,11 @@
 
     export default {
         name: 'design-builder',
+        data() {
+            return {
+                isComputing: false
+            }
+        },
         computed: {
             ...mapGetters({
                 hoveredArch: 'getHoveredArch',
@@ -56,6 +64,7 @@
                 }
             },
             async evaluateArch(event) {
+                this.isComputing = true;
                 let newInputs = this.$store.state.tradespacePlot.clickedArchInputs;
                 let oldInputs = this.problemData[this.pointID].inputs;
                 let arraysAreEq = (newInputs.length === oldInputs.length) && newInputs.every((element, index) => {
@@ -84,6 +93,7 @@
                         console.error('Networking error:', e);
                     }
                 }
+                this.isComputing = false;
             }
         }
     }
