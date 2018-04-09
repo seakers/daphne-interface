@@ -229,6 +229,10 @@
                 // Canvas related functions
                 this.drawPoints(this.context, false);
 
+                // Restore old zoom values if they are there
+                gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
+                gY.call(yAxis.scale(this.transform.rescaleY(yScale)));
+
                 // Canvas interaction
                 let self = this;
 
