@@ -128,16 +128,6 @@
         },
         components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal },
         mounted() {
-            // Websocket connection
-            let websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
-            websocket.onopen = function() {
-                console.log('Web Socket Conenction Made');
-            };
-            websocket.onmessage = function (data) {
-                //ws.send(JSON.stringify(data));
-            };
-            this.$store.commit('setWebsocket', websocket);
-
             // Tutorial
             this.tutorial = introJs();
 
