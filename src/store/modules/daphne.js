@@ -21,11 +21,16 @@ const getters = {
 
 // actions
 const actions = {
-    async executeCommand({ state, commit }) {
+    async executeCommand({ state, commit, rootState }) {
         commit('setIsLoading', true);
         try {
             let reqData = new FormData();
             reqData.append('command', state.command);
+            if (rootState.experiment.inExperiment) {
+                let experimentStage = rootState.experiment.experimentStage;
+                reqData.append('allowed_commands',
+                    JSON.stringify(rootState.experiment.stageInformation[experimentStage].restrictedQuestions));
+            }
             let dataResponse = await fetch(
                 '/api/daphne/command',
                 {
