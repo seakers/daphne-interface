@@ -29,7 +29,7 @@ const state = {
                 'AvailableCommands',
                 'CommandsInformation'
             ],
-            restrictedQuestions: {},
+            restrictedQuestions: null,
             nextStage: '',
             steps: [
                 {
@@ -118,7 +118,7 @@ const state = {
                 'FeatureApplication',
                 'EOSSFilter'
             ],
-            restrictedQuestions: {},
+            restrictedQuestions: null,
             nextStage: '',
             startTime: 0,
             stageDuration: 60*15

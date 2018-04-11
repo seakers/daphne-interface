@@ -28,8 +28,10 @@ const actions = {
             reqData.append('command', state.command);
             if (rootState.experiment.inExperiment) {
                 let experimentStage = rootState.experiment.experimentStage;
-                reqData.append('allowed_commands',
-                    JSON.stringify(rootState.experiment.stageInformation[experimentStage].restrictedQuestions));
+                let restrictedQuestions = rootState.experiment.stageInformation[experimentStage].restrictedQuestions;
+                if (restrictedQuestions !== null) {
+                    reqData.append('allowed_commands', JSON.stringify(restrictedQuestions));
+                }
             }
             let dataResponse = await fetch(
                 '/api/daphne/command',

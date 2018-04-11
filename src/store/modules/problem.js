@@ -71,15 +71,20 @@ const actions = {
     },
     async addNewData({ state, commit }, newData) {
         let dataAlreadyThere = false;
-        state.problemData.forEach(d => {
+        let newIndex = -1;
+        state.problemData.forEach((d, i) => {
             if (d.outputs[0] === newData.outputs[0] && d.outputs[1] === newData.outputs[1]) {
                 dataAlreadyThere = true;
+                newIndex = i;
             }
         });
 
         if (!dataAlreadyThere) {
             let procData = await state.importCallback([newData]);
             commit('addProblemData', procData.problemData[0]);
+        }
+        else {
+            commit('updateClickedArch', newIndex);
         }
     },
     async changeProblemLoadedFiles({ state, commit }, filesDict) {
@@ -97,7 +102,6 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                console.log(data['result']);
             }
             else {
                 console.error('Error accessing the data.');

@@ -255,6 +255,7 @@
                 // Restore old zoom values if they are there
                 gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
                 gY.call(yAxis.scale(this.transform.rescaleY(yScale)));
+                
                 // Experiment lines
                 minLine
                     .attr("y1", this.transform.applyY(yScale(1000)))
