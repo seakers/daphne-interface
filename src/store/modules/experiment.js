@@ -76,7 +76,7 @@ const state = {
                 },
                 {
                     element: '#question-bar',
-                    intro: 'For example, you can ask what Daphne thinks about the currently design. After thinking for a while, Daphne will give her thoughts on the design along with some hints on how you might want to improve it. Try writing or copying the following question into the Question Bar: "What do you think of this design?" If you want to hear the output instead of just reading it, you can unmute Daphne by clicking on the microphone.'
+                    intro: 'For example, you can ask what Daphne thinks about the currently design. After thinking for a while, Daphne will give her thoughts on the design along with some hints on how you might want to improve it. Try writing or copying the following question into the Question Bar: "What do you think of this design?" If you want to hear the output instead of just reading it, you can unmute Daphne by clicking on the speaker.'
                 },
                 {
                     element: '.answers',
