@@ -6,7 +6,7 @@
         <div class="control">
             <a class="button is-info" v-on:click.prevent="switchVoice">
                 <span class="icon is-small">
-                    <i class="fas" v-bind:class="[ speakOut ? 'fa-microphone' : 'fa-microphone-slash' ]"></i>
+                    <i class="fas" v-bind:class="[ speakOut ? 'fa-volume-up' : 'fa-volume-off' ]"></i>
                 </span>
             </a>
         </div>
