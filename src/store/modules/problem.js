@@ -102,7 +102,6 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                console.log(data['result']);
             }
             else {
                 console.error('Error accessing the data.');

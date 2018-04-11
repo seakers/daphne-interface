@@ -35,7 +35,7 @@
                     let currStageInfo = stageInformation[this.$store.getters.getExperimentStage];
                     let newList = [];
                     this.optionsList.forEach((option) => {
-                        if ('restrictedQuestions' in currStageInfo && option.value in currStageInfo.restrictedQuestions) {
+                        if (currStageInfo['restrictedQuestions'] !== null && option.value in currStageInfo.restrictedQuestions) {
                             if (currStageInfo.restrictedQuestions[option.value].length !== 0) {
                                 newList.push(option);
                             }
@@ -64,7 +64,7 @@
                     if (this.$store.getters.getInExperiment) {
                         let stageInformation = this.$store.getters.getStageInformation;
                         let currStageInfo = stageInformation[this.$store.getters.getExperimentStage];
-                        if ('restrictedQuestions' in currStageInfo && this.selectedList in currStageInfo.restrictedQuestions) {
+                        if (currStageInfo['restrictedQuestions'] !== null && this.selectedList in currStageInfo.restrictedQuestions) {
                             reqData.append('restricted_list', currStageInfo.restrictedQuestions[this.selectedList])
                         }
                     }
