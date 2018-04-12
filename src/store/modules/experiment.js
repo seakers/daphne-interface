@@ -121,7 +121,7 @@ const state = {
             restrictedQuestions: null,
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*20
         },
         daphne_peer: {
             availableFunctionalities: [
@@ -153,7 +153,7 @@ const state = {
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*20
         },
         daphne_assistant: {
             availableFunctionalities: [
@@ -179,7 +179,7 @@ const state = {
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*20
         }
     }
 };
