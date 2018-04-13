@@ -43,10 +43,11 @@ functionalityTypes.set('CommandsInformation', {
         {name: "Analyst Instrument Parameters", value: "analyst_instrument_parameters"},
         {name: "Analyst Measurements", value: "analyst_measurements"},
         {name: "Analyst Stakeholders", value: "analyst_stakeholders"},
+        {name: "Analyst Objectives", value: "objectives"},
         {name: "Historical Measurements", value: "measurements"},
         {name: "Historical Missions", value: "missions"},
         {name: "Historical Technologies", value: "technologies"},
-        {name: "Objectives", value: "objectives"}
+        {name: "Historical Space Agencies", value: "space_agencies"}
     ]});
 
 

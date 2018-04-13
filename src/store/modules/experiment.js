@@ -172,7 +172,7 @@ const state = {
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                analyst: ['2000', '2008', '2010', '2012'],
+                analyst: ['2000', '2012', '2013', '2014', '2015', '2016'],
                 critic: [],
                 historian: ['4000', '4006', '4007'],
                 ifeed: []
