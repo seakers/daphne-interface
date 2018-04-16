@@ -29,7 +29,12 @@ const state = {
                 'AvailableCommands',
                 'CommandsInformation'
             ],
-            restrictedQuestions: null,
+            restrictedQuestions: {
+                analyst: ['2012', '2016'],
+                critic: ['3005'],
+                historian: ['4006', '4007'],
+                ifeed: []
+            },
             nextStage: '',
             steps: [
                 {
@@ -96,7 +101,7 @@ const state = {
                     intro: 'To make the most out of the Analyst and the Historian assistant, you should know how the science score is computed and what information can Daphne provide you. The science score measures how many and how well a set of scientific measurements (e.g. aerosols, air temperature, ocean color...) are being measured, and the Daphne Analyst can help you by telling you how well each set of measurements is being measured. You can also ask the historian about which instruments are useful for what requirements, so you can focus on the weakest part of a design. You can also ask the Historian for common patterns in past missions for some of the instruments in the list.'
                 },
                 {
-                    intro: 'Each stage of the experiment will last for 15 minutes. Remember, your objective is always the same: <b>find a range of designs with good science scores with a cost between $1,000K and $10,000K</b>. Whether you start with the Critic or the Analyst/Historian is randomized, so check what you have available in the Available Commands panel! You are also encouraged to take notes during each task, as <b>there will be a test at the end of each one where you will be asked to choose the best architecture out of two with similar costs!</b> One helpful trick is try to find which instruments appear on which orbits for the best architectures you can find. With this being said, click on done to start the experiment!'
+                    intro: 'Each stage of the experiment will last for 15 minutes. Remember, you have two objectives: <b>find a range of designs with good science scores with a cost between $1,000K and $10,000K</b> and <b>Learn how to discern between designs with high and low science benefit with similar costs</b>. One helpful trick to learn this is try to find which instruments appear on which orbits for the best architectures you can find. Whether you start with the Critic or the Analyst is randomized, so check what you have available in the Available Commands panel! You are also encouraged to take notes during each task, as <b>there will be a test at the end of each one where you will be asked to choose the best architecture out of two with similar costs!</b> The first stage will be to design the Climate focused mission and the second one will be for the Weather focused mission. With this being said, click on done to start the experiment!'
                 }
             ],
             conditions: [
@@ -139,7 +144,7 @@ const state = {
             ],
             restrictedQuestions: {
                 analyst: [],
-                critic: ['3000', '3005'],
+                critic: ['3005'],
                 historian: [],
                 ifeed: [],
                 analyst_instruments: [],
@@ -172,10 +177,17 @@ const state = {
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                analyst: ['2000', '2012', '2013', '2014', '2015', '2016'],
+                analyst: ['2012', '2016'],
                 critic: [],
-                historian: ['4000', '4006', '4007'],
-                ifeed: []
+                historian: ['4006', '4007'],
+                ifeed: [],
+                analyst_instruments: [],
+                analyst_instrument_parameters: [],
+                analyst_measurements: [],
+                analyst_stakeholders: [],
+                measurements: [],
+                technologies: [],
+                objectives: []
             },
             nextStage: '',
             startTime: 0,
