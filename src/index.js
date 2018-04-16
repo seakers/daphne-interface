@@ -1,7 +1,6 @@
 'use strict';
 
 import Vue from 'vue';
-import * as _ from "lodash-es";
 
 import App from './components/App';
 import store from './store';
