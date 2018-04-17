@@ -186,6 +186,8 @@
                                 this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
                                 this.tutorial.setOption('exitOnOverlayClick', false);
                                 this.tutorial.setOption('exitOnEsc', false);
+                                this.tutorial.setOption('showProgress', true);
+                                this.tutorial.setOption('showBullets', false);
                                 this.tutorial.oncomplete(() => {
                                     this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
                                         this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
@@ -216,5 +218,4 @@
 </script>
 
 <style scoped>
-
 </style>
