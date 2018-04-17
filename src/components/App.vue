@@ -136,7 +136,7 @@
             this.$store.commit('setFilter', EOSSFilter);
 
             // Experiment
-            /*this.$store.dispatch('recoverExperiment').then(() => {
+            this.$store.dispatch('recoverExperiment').then(() => {
                 this.$store.commit('setIsRecovering', false);
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
@@ -145,9 +145,9 @@
                         this.$store.commit('setExperimentStage', 'tutorial');
                     });
                 }
-            });*/
+            });
 
-            this.$store.commit('addFunctionality', 'DesignBuilder');
+            /*this.$store.commit('addFunctionality', 'DesignBuilder');
             this.$store.commit('addFunctionality', 'DataMining');
             this.$store.commit('addFunctionality', 'FeatureApplication');
             this.$store.commit('addFunctionality', 'EOSSFilter');
@@ -155,7 +155,7 @@
             this.$store.commit('addFunctionality', 'OrbitInstrInfo');
             this.$store.commit('addFunctionality', 'AvailableCommands');
             this.$store.commit('addFunctionality', 'CommandsInformation');
-            this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
+            this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');*/
         },
         watch: {
             experimentStage: function (val, oldVal) {
