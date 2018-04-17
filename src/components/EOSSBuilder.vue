@@ -115,8 +115,8 @@
                     for (let j = 0; j < tableInstrumentRows[i].children.length; ++j) {
                         let child = tableInstrumentRows[i].children[j];
                         if (child.classList.contains('arch-box')) {
-                            let position = this.$store.state.problem.displayName2Index(child.textContent.trim(), 'instrument');
-                            bitString[12*i + +position] = true;
+                            let position = +this.$store.state.problem.displayName2Index(child.textContent.trim(), 'instrument');
+                            bitString[12*i + position] = true;
                         }
                     }
                 }
@@ -127,8 +127,8 @@
                 let tableInstrumentRows = document.getElementsByClassName('instruments-list');
                 for (let i = 0; i < tableInstrumentRows.length; ++i) {
                     if (tableInstrumentRows[i] === list) {
-                        let position = this.$store.state.problem.displayName2Index(element.textContent.trim(), 'instrument');
-                        return 12*i + +position;
+                        let position = +this.$store.state.problem.displayName2Index(element.textContent.trim(), 'instrument');
+                        return 12*i + position;
                     }
                 }
             },
