@@ -87,12 +87,12 @@ const actions = {
             commit('updateClickedArch', newIndex);
         }
     },
-    async changeProblemLoadedFiles({ state, commit }, filesDict) {
+    async changeVassarPort({ state, commit }, port) {
         try {
             let reqData = new FormData();
-            reqData.append('loaded_files', JSON.stringify(filesDict));
+            reqData.append('port', port);
             let dataResponse = await fetch(
-                '/api/vassar/change-loaded-files',
+                '/api/vassar/change-port',
                 {
                     method: 'POST',
                     body: reqData,

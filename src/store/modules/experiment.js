@@ -9,9 +9,7 @@ const state = {
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
     datasets: ['EOSS_data_recalculated.csv', 'stage1.csv', 'stage2.csv'],
-    aggregationXls: ['/xls/Climate-centric/Climate-centric Aggregation Rules.xls',
-        '/xls/Climate-centric/Climate-centric Aggregation Rules-Climate.xls',
-        '/xls/Climate-centric/Climate-centric Aggregation Rules-Weather.xls'],
+    vassarPort: [9090, 9091, 9092],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -227,8 +225,8 @@ const getters = {
     getDatasets(state) {
         return state.datasets;
     },
-    getAggregationXls(state) {
-        return state.aggregationXls;
+    getVassarPort(state) {
+        return state.vassarPort;
     }
 };
 
