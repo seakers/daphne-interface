@@ -9,7 +9,7 @@
                     <a href="#" class="close-panel" v-on:click.prevent="remove"><span class="icon"><span class="fas fa-times"></span></span></a>
                 </span>
             </p>
-            <component v-bind:is="chosenFunctionality" v-bind:name="name"></component>
+            <component v-bind:is="chosenFunctionality" v-bind:name="name" v-bind:size="size"></component>
         </section>
     </div>
 </template>

@@ -2,7 +2,7 @@
     <div class="panel-block functionality content">
         <img src="assets/img/loader.svg" style="margin: auto;" height="64" width="64" v-if="isLoading">
         <template v-else>
-            <component v-if="!emptyResponse" v-bind:is="responseTypes[daphneResponse['visual_answer_type']]"></component>
+            <component v-if="!emptyResponse" v-bind:is="responseTypes[daphneResponse['visual_answer_type']]" v-bind:size="size"></component>
             <p v-else>The answers from Daphne will be displayed here.</p>
         </template>
     </div>
@@ -12,6 +12,7 @@
     import { mapGetters } from 'vuex';
     import TextResponse from './TextResponse';
     import ListResponse from './ListResponse';
+    import TimelineResponse from './TimelineResponse';
 
     let loaderImage = require('../images/loader.svg');
 
@@ -21,10 +22,12 @@
             return {
                 responseTypes: {
                     text: 'TextResponse',
-                    list: 'ListResponse'
+                    list: 'ListResponse',
+                    timeline_plot: 'TimelineResponse'
                 }
             }
         },
+        props: ['size'],
         computed: {
             ...mapGetters({
                 daphneResponse: 'getResponse',
@@ -36,7 +39,8 @@
         },
         components: {
             TextResponse,
-            ListResponse
+            ListResponse,
+            TimelineResponse
         }
     }
 </script>

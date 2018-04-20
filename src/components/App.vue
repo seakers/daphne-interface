@@ -148,9 +148,9 @@
             });*/
 
             this.$store.commit('addFunctionality', 'DesignBuilder');
-            this.$store.commit('addFunctionality', 'DataMining');
-            this.$store.commit('addFunctionality', 'FeatureApplication');
-            this.$store.commit('addFunctionality', 'EOSSFilter');
+            //this.$store.commit('addFunctionality', 'DataMining');
+            //this.$store.commit('addFunctionality', 'FeatureApplication');
+            //this.$store.commit('addFunctionality', 'EOSSFilter');
             this.$store.commit('addFunctionality', 'DaphneAnswer');
             this.$store.commit('addFunctionality', 'OrbitInstrInfo');
             this.$store.commit('addFunctionality', 'AvailableCommands');
