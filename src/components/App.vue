@@ -66,7 +66,7 @@
 
     import { mapGetters } from 'vuex';
 
-    let introJs = require('intro.js').introJs;
+    let introJs = require('intro.js');
 
     export default {
         name: 'app',

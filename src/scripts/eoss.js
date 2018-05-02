@@ -1,5 +1,4 @@
 import store from '../store';
-import * as _ from 'lodash-es';
 
 class Architecture {
     constructor(id, inputs, outputs) {
