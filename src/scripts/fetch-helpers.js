@@ -10,7 +10,6 @@ export async function fetchPost(url, postBody) {
     if (csrftoken !== undefined) {
         reqHeaders.append('X-CSRFToken', csrftoken);
     }
-    console.log(csrftoken, reqHeaders);
     return fetch(
         url,
         {

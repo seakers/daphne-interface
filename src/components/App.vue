@@ -63,6 +63,7 @@
 
     import EOSS from '../scripts/eoss';
     import EOSSFilter from '../scripts/eoss-filter';
+    import {fetchGet} from "../scripts/fetch-helpers";
 
     import { mapGetters } from 'vuex';
 
@@ -74,7 +75,8 @@
             return {
                 tutorial: {},
                 isModalActive: false,
-                modalContent: ''
+                modalContent: '',
+                isStartup: true
             }
         },
         computed: {
@@ -123,7 +125,7 @@
             },
             onCloseModal() {
                 this.isModalActive = false;
-                if (this.modalContent === 'LoginModal') {
+                if (this.modalContent === 'LoginModal' && this.isStartup) {
                     this.init();
                 }
             },
@@ -137,6 +139,7 @@
                 this.$store.commit('addFunctionality', 'AvailableCommands');
                 this.$store.commit('addFunctionality', 'CommandsInformation');
                 this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
+                this.isStartup = false;
             }
         },
         components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal },
@@ -148,20 +151,25 @@
             this.$store.commit('setProblem', EOSS);
             this.$store.commit('setFilter', EOSSFilter);
 
-            // Experiment
-            /*this.$store.dispatch('recoverExperiment').then(() => {
-                this.$store.commit('setIsRecovering', false);
-                // Only start experiment if it wasn't already running
-                if (!this.inExperiment) {
-                    this.$store.dispatch('startExperiment').then(() => {
-                        this.$store.commit('setInExperiment', true);
-                        this.$store.commit('setExperimentStage', 'tutorial');
-                    });
-                }
-            });*/
-
-            this.modalContent = 'LoginModal';
-            this.isModalActive = true;
+            // Check if user is logged in before putting prompt
+            try {
+                fetchGet('/api/auth/check-status').then(async (response) => {
+                    if (response.ok) {
+                        let data = await response.json();
+                        if (data['is_logged_in'] === true) {
+                            this.$store.commit('logUserIn', data);
+                            this.init();
+                        }
+                        else {
+                            this.modalContent = 'LoginModal';
+                            this.isModalActive = true;
+                        }
+                    }
+                });
+            }
+            catch (e) {
+                console.error('Networking error:', e);
+            }
         },
         watch: {
             experimentStage: function (val, oldVal) {
