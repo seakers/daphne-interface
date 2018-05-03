@@ -19,6 +19,8 @@
 </template>
 
 <script>
+    import {fetchPost} from "../scripts/fetch-helpers";
+
     export default {
         name: 'cheatsheet',
         data () {
@@ -69,14 +71,7 @@
                         }
                     }
 
-                    let dataResponse = await fetch(
-                        '/api/daphne/commands',
-                        {
-                            method: 'POST',
-                            body: reqData,
-                            credentials: 'same-origin'
-                        }
-                    );
+                    let dataResponse = await fetchPost('/api/daphne/commands', reqData);
 
                     if (dataResponse.ok) {
                         // Add the new functionality

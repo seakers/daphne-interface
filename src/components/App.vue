@@ -73,7 +73,8 @@
         data: function () {
             return {
                 tutorial: {},
-                isModalActive: false
+                isModalActive: false,
+                modalContent: ''
             }
         },
         computed: {
@@ -108,9 +109,6 @@
             },
             stageStartTime() {
                 return this.stageInformation[this.experimentStage].startTime;
-            },
-            modalContent() {
-                return this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum];
             }
         },
         methods: {
@@ -119,11 +117,26 @@
                 // First stop the current stage
                 this.$store.dispatch('finishStage').then(() => {
                     // Activate the modal with end of stage information
+                    this.modalContent = this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum];
                     this.isModalActive = true;
                 });
             },
             onCloseModal() {
                 this.isModalActive = false;
+                if (this.modalContent === 'LoginModal') {
+                    this.init();
+                }
+            },
+            init() {
+                this.$store.commit('addFunctionality', 'DesignBuilder');
+                //this.$store.commit('addFunctionality', 'DataMining');
+                //this.$store.commit('addFunctionality', 'FeatureApplication');
+                //this.$store.commit('addFunctionality', 'EOSSFilter');
+                this.$store.commit('addFunctionality', 'DaphneAnswer');
+                this.$store.commit('addFunctionality', 'OrbitInstrInfo');
+                this.$store.commit('addFunctionality', 'AvailableCommands');
+                this.$store.commit('addFunctionality', 'CommandsInformation');
+                this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
             }
         },
         components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal },
@@ -147,15 +160,8 @@
                 }
             });*/
 
-            this.$store.commit('addFunctionality', 'DesignBuilder');
-            //this.$store.commit('addFunctionality', 'DataMining');
-            //this.$store.commit('addFunctionality', 'FeatureApplication');
-            //this.$store.commit('addFunctionality', 'EOSSFilter');
-            this.$store.commit('addFunctionality', 'DaphneAnswer');
-            this.$store.commit('addFunctionality', 'OrbitInstrInfo');
-            this.$store.commit('addFunctionality', 'AvailableCommands');
-            this.$store.commit('addFunctionality', 'CommandsInformation');
-            this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
+            this.modalContent = 'LoginModal';
+            this.isModalActive = true;
         },
         watch: {
             experimentStage: function (val, oldVal) {

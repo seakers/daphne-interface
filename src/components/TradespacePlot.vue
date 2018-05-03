@@ -58,6 +58,8 @@
     import * as _ from 'lodash-es';
     import * as d3 from 'd3';
     import 'd3-selection-multi';
+    import {fetchGet, fetchPost} from "../scripts/fetch-helpers";
+
 
     export default {
         name: 'tradespace-plot',
@@ -357,14 +359,7 @@
                     let reqData = new FormData();
                     reqData.append('selected', JSON.stringify(selected));
                     reqData.append('non_selected', JSON.stringify(non_selected));
-                    let dataResponse = await fetch(
-                        '/api/ifeed/set-target',
-                        {
-                            method: 'POST',
-                            body: reqData,
-                            credentials: 'same-origin'
-                        }
-                    );
+                    let dataResponse = await fetchPost('/api/ifeed/set-target', reqData);
 
                     if (dataResponse.ok) {
                         console.log('Target selection updated')

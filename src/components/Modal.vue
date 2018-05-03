@@ -13,6 +13,7 @@
 <script>
     import Stage1Modal from './Stage1Modal';
     import Stage2Modal from './Stage2Modal';
+    import LoginModal from './LoginModal';
 
     export default {
         name: 'modal',
@@ -23,7 +24,8 @@
         },
         components: {
             Stage1Modal,
-            Stage2Modal
+            Stage2Modal,
+            LoginModal
         },
         methods: {
             onCloseModal() {

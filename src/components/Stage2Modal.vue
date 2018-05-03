@@ -11,7 +11,7 @@
         methods: {
             finishExperiment() {
                 this.$store.dispatch('finishExperiment');
-                this.$emit('close-modal')
+                this.$emit('close-modal');
             }
         }
     }

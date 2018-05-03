@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import auth from'./modules/auth';
 import problem from './modules/problem';
 import tradespacePlot from './modules/tradespace-plot';
 import functionalityList from './modules/functionality-list';
@@ -29,6 +30,7 @@ export default new Vuex.Store({
     },
     actions: {},
     modules: {
+        auth,
         daphne,
         problem,
         tradespacePlot,

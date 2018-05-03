@@ -1,5 +1,6 @@
 import { calculateParetoRanking } from '../../scripts/utils';
 import * as _ from 'lodash-es';
+import {fetchPost} from "../../scripts/fetch-helpers";
 
 // initial state
 const state = {
@@ -45,14 +46,7 @@ const actions = {
         try {
             let reqData = new FormData();
             reqData.append('filename', fileName);
-            let dataResponse = await fetch(
-                '/api/ifeed/import-data',
-                {
-                    method: 'POST',
-                    body: reqData,
-                    credentials: 'same-origin'
-                }
-            );
+            let dataResponse = await fetchPost('/api/ifeed/import-data', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
@@ -91,14 +85,7 @@ const actions = {
         try {
             let reqData = new FormData();
             reqData.append('port', port);
-            let dataResponse = await fetch(
-                '/api/vassar/change-port',
-                {
-                    method: 'POST',
-                    body: reqData,
-                    credentials: 'same-origin'
-                }
-            );
+            let dataResponse = await fetchPost('/api/vassar/change-port', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();

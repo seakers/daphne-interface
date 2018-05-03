@@ -20,6 +20,8 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import EOSSBuilder from './EOSSBuilder';
+    import {fetchPost} from "../scripts/fetch-helpers";
+
 
     export default {
         name: 'design-builder',
@@ -75,12 +77,7 @@
                     reqData.append('inputs', JSON.stringify(newInputs));
                     reqData.append('special', this.inExperiment ? 'True' : 'False');
                     try {
-                        let dataResponse = await fetch('/api/vassar/evaluate-architecture',
-                            {
-                                method: 'POST',
-                                body: reqData,
-                                credentials: 'same-origin'
-                            });
+                        let dataResponse = await fetchPost('/api/vassar/evaluate-architecture', reqData);
                         if (dataResponse.ok) {
                             let newArch = await dataResponse.json();
                             this.$store.dispatch('addNewData', newArch);

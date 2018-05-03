@@ -1,5 +1,7 @@
 // initial state
 import * as _ from 'lodash-es';
+import {fetchPost} from "../../scripts/fetch-helpers";
+
 
 const state = {
     features: [],
@@ -42,14 +44,7 @@ const actions = {
             reqData.append('supp', state.supportThreshold);
             reqData.append('conf', state.confidenceThreshold);
             reqData.append('lift', state.liftThreshold);
-            let dataResponse = await fetch(
-                '/api/data-mining/get-driving-features',
-                {
-                    method: 'POST',
-                    body: reqData,
-                    credentials: 'same-origin'
-                }
-            );
+            let dataResponse = await fetchPost('/api/data-mining/get-driving-features', reqData);
 
             if (dataResponse.ok) {
                 let features = await dataResponse.json();

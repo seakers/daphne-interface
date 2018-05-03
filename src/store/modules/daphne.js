@@ -1,5 +1,7 @@
 // initial state
 import * as _ from 'lodash-es';
+import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
+
 
 const state = {
     command: '',
@@ -33,14 +35,7 @@ const actions = {
                     reqData.append('allowed_commands', JSON.stringify(restrictedQuestions));
                 }
             }
-            let dataResponse = await fetch(
-                '/api/daphne/command',
-                {
-                    method: 'POST',
-                    body: reqData,
-                    credentials: 'same-origin'
-                }
-            );
+            let dataResponse = await fetchPost('/api/daphne/command', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
