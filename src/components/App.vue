@@ -2,7 +2,7 @@
     <div>
         <div class="columns">
             <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
-                <div>
+                <div class="aside-container">
                     <main-menu></main-menu>
                     <timer
                             v-if="timerExperimentCondition"
@@ -10,6 +10,7 @@
                             v-bind:start-time="stageStartTime"
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
+                    <user class="user-info"></user>
                 </div>
             </aside>
             <div class="column is-10" id="admin-panel">
@@ -60,12 +61,13 @@
     import TradespacePlot from './TradespacePlot';
     import FunctionalityList from './FunctionalityList';
     import Modal from './Modal';
+    import User from './User';
 
     import EOSS from '../scripts/eoss';
     import EOSSFilter from '../scripts/eoss-filter';
     import {fetchGet} from "../scripts/fetch-helpers";
 
-    import { mapGetters } from 'vuex';
+    import { mapState, mapGetters } from 'vuex';
 
     let introJs = require('intro.js');
 
@@ -74,12 +76,14 @@
         data: function () {
             return {
                 tutorial: {},
-                isModalActive: false,
-                modalContent: '',
                 isStartup: true
             }
         },
         computed: {
+            ...mapState({
+                isModalActive: state => state.modal.isModalActive,
+                modalContent: state => state.modal.modalContent
+            }),
             ...mapGetters({
                 inExperiment: 'getInExperiment',
                 experimentStage: 'getExperimentStage',
@@ -119,12 +123,11 @@
                 // First stop the current stage
                 this.$store.dispatch('finishStage').then(() => {
                     // Activate the modal with end of stage information
-                    this.modalContent = this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum];
-                    this.isModalActive = true;
+                    this.$store.commit('activateModal', this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum]);
                 });
             },
             onCloseModal() {
-                this.isModalActive = false;
+                this.$store.commit('closeModal');
                 if (this.modalContent === 'LoginModal' && this.isStartup) {
                     this.init();
                 }
@@ -142,7 +145,7 @@
                 this.isStartup = false;
             }
         },
-        components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal },
+        components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal, User },
         mounted() {
             // Tutorial
             this.tutorial = introJs();
@@ -161,8 +164,7 @@
                             this.init();
                         }
                         else {
-                            this.modalContent = 'LoginModal';
-                            this.isModalActive = true;
+                            this.$store.commit('activateModal', 'LoginModal');
                         }
                     }
                 });
@@ -230,4 +232,18 @@
 </script>
 
 <style scoped>
+    .aside-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .user-info {
+        padding: 40px;
+        width: 100%;
+        flex-grow: 1;
+        color: #F6F7F7;
+        font-size: 16px;
+        font-weight: bold;
+    }
 </style>

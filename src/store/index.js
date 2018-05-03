@@ -9,6 +9,7 @@ import dataMining from './modules/data-mining';
 import filter from './modules/filter';
 import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
+import modal from './modules/modal';
 
 Vue.use(Vuex);
 
@@ -38,7 +39,8 @@ export default new Vuex.Store({
         dataMining,
         filter,
         featureApplication,
-        experiment
+        experiment,
+        modal
     },
     strict: debug
 });
