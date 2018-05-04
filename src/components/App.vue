@@ -10,6 +10,7 @@
                             v-bind:start-time="stageStartTime"
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
+                    <problem-picker></problem-picker>
                     <user class="user-info"></user>
                 </div>
             </aside>
@@ -62,12 +63,13 @@
     import FunctionalityList from './FunctionalityList';
     import Modal from './Modal';
     import User from './User';
+    import ProblemPicker from './ProblemPicker';
+
+    import { mapState, mapGetters } from 'vuex';
 
     import EOSS from '../scripts/eoss';
     import EOSSFilter from '../scripts/eoss-filter';
     import {fetchGet} from "../scripts/fetch-helpers";
-
-    import { mapState, mapGetters } from 'vuex';
 
     let introJs = require('intro.js');
 
@@ -145,13 +147,23 @@
                 this.isStartup = false;
             }
         },
-        components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal, User },
+        components: {
+            MainMenu,
+            Timer,
+            QuestionBar,
+            TradespacePlot,
+            FunctionalityList,
+            Modal,
+            User,
+            ProblemPicker
+        },
         mounted() {
             // Tutorial
             this.tutorial = introJs();
 
             // Set up initial state
             this.$store.commit('setProblem', EOSS);
+            this.$store.dispatch('setProblemName', 'EOSS');
             this.$store.commit('setFilter', EOSSFilter);
 
             // Check if user is logged in before putting prompt
@@ -239,7 +251,7 @@
     }
 
     .user-info {
-        padding: 40px;
+        padding: 30px;
         width: 100%;
         flex-grow: 1;
         color: #F6F7F7;

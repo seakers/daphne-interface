@@ -21,7 +21,7 @@ const actions = {
     async loginUser({ state, commit, rootState }, form) {
         try {
             let reqData = new FormData(form);
-            let dataResponse = await fetchPost('/api/auth/login',  reqData);
+            let dataResponse = await fetchPost('/api/auth/login', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
@@ -39,6 +39,23 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
+    },
+    async logoutUser({ state, commit, rootState }) {
+        try {
+            let reqData = new FormData();
+            let dataResponse = await fetchPost('/api/auth/logout', reqData);
+
+            if (dataResponse.ok) {
+                await dataResponse.json();
+                commit('logUserOut');
+            }
+            else {
+                console.error('Error logging out.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
     }
 };
 
@@ -49,7 +66,12 @@ const mutations = {
         state.hasLoginError = false;
         state.username = userInfo['username'];
         state.permissions = userInfo['permissions'];
-
+    },
+    logUserOut(state) {
+        state.isLoggedIn = false;
+        state.hasLoginError = false;
+        state.username = '';
+        state.permissions = [];
     },
     setLoginError(state, loginInfo) {
         state.isLoggedIn = false;

@@ -11,7 +11,8 @@ class Architecture {
 }
 
 export default {
-    inputNum: 60,
+    problemName: 'EOSS',
+    inputNum: 1,
     outputNum: 2,
     inputList: [],
     outputList: ['Science', 'Cost ($K)'],

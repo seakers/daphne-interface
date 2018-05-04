@@ -4,8 +4,14 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 
 // initial state
 const state = {
+    problemList: [
+        'EOSS',
+        'SMAP'
+    ],
+    problemName: '',
     problemData: [],
-    resultFilename: '', // String
+    datasetList: [],
+    datasetFilename: 'EOSS_data_recalculated.csv', // String
     inputNum: 0,
     outputNum: 0,
     inputList: [],
@@ -45,8 +51,12 @@ const actions = {
 
         try {
             let reqData = new FormData();
+            reqData.append('problem', state.problemName);
             reqData.append('filename', fileName);
-            let dataResponse = await fetchPost('/api/ifeed/import-data', reqData);
+            reqData.append('load_user_files', false);
+            reqData.append('input_num', state.inputNum);
+            reqData.append('output_num', state.outputNum);
+            let dataResponse = await fetchPost('/api/daphne/import-data', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
@@ -97,6 +107,42 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
+    },
+    async setProblemName({ state, commit }, problemName) {
+        try {
+            commit('setProblemName', problemName);
+            let reqData = new FormData();
+            reqData.append('problem', problemName);
+            let dataResponse = await fetchPost('/api/daphne/dataset-list', reqData);
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                let datasetList = [];
+                data['default'].forEach((dataset) => {
+                    datasetList.push({
+                        name: dataset,
+                        value: dataset
+                    });
+                });
+                datasetList.push({
+                    name: '---',
+                    value: ''
+                });
+                data['user'].forEach((dataset) => {
+                    datasetList.push({
+                        name: dataset,
+                        value: dataset
+                    });
+                });
+                commit('setDatasetList', datasetList);
+            }
+            else {
+                console.error('Error loading the new datasets.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
     }
 };
 
@@ -104,6 +150,7 @@ const actions = {
 const mutations = {
     setProblem(state, problemInfo) {
         // Set the problem instance
+        state.problemName = problemInfo.problemName;
         state.inputNum = problemInfo.inputNum;
         state.outputNum = problemInfo.outputNum;
         state.inputList = problemInfo.inputList;
@@ -118,6 +165,12 @@ const mutations = {
         state.index2DisplayName = problemInfo.index2DisplayName;
         state.ppFeatureSingle = problemInfo.ppFeatureSingle;
         initialState = _.cloneDeep(state);
+    },
+    setProblemName(state, problemName) {
+        state.problemName = problemName;
+    },
+    setDatasetList(state, datasetList) {
+        state.datasetList = datasetList;
     },
     updateExtra(state, extra) {
         state.extra = extra;

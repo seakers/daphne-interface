@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p v-if="isLoggedIn">Hi, {{ username }}. <a>Logout</a></p>
+        <p v-if="isLoggedIn">Hi, {{ username }}. <a v-on:click.prevent="logout">Logout</a></p>
         <p v-else>Hello! <a v-on:click.prevent="openLoginModal">Login/Register</a></p>
     </div>
 </template>
@@ -19,6 +19,9 @@
         methods: {
             openLoginModal() {
                 this.$store.commit('activateModal', 'LoginModal');
+            },
+            logout() {
+                this.$store.dispatch('logoutUser');
             }
         }
     }
