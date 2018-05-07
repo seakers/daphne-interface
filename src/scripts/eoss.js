@@ -18,6 +18,23 @@ export default {
     outputList: ['Science', 'Cost ($K)'],
     outputObj: [1, -1],
     displayComponent: 'EOSSBuilder',
+    problemFunctionalities: [
+        'DesignBuilder',
+        'DaphneAnswer',
+        'DataMining',
+        'EOSSFilter',
+        'FeatureApplication',
+        'OrbitInstrInfo',
+        'AvailableCommands',
+        'CommandsInformation',
+    ],
+    shownFunctionalities: [
+        'DesignBuilder',
+        'DaphneAnswer',
+        'OrbitInstrInfo',
+        'AvailableCommands',
+        'CommandsInformation'
+    ],
     importCallback: async (data) => {
         let extra = {};
         [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(), getInstrumentList()]);

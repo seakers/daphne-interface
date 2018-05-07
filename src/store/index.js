@@ -11,6 +11,9 @@ import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
 import modal from './modules/modal';
 
+import EOSS from '../scripts/eoss';
+import EOSSFilter from '../scripts/eoss-filter';
+
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
@@ -29,7 +32,28 @@ export default new Vuex.Store({
             state.websocket = websocket;
         },
     },
-    actions: {},
+    actions: {
+        initProblem({ commit, state }) {
+            // Load correct problem module based on problem
+            let problem = null;
+            let filter = null;
+            switch (state.problem.problemName) {
+            case 'EOSS':
+                problem = EOSS;
+                filter = EOSSFilter;
+                break;
+            }
+            commit('setProblem', problem);
+            if (filter !== null) {
+                commit('setFilter', filter);
+            }
+
+            // Load all the initial functionalities
+            for (let functionality of problem.shownFunctionalities) {
+                commit('addFunctionality', functionality);
+            }
+        }
+    },
     modules: {
         auth,
         daphne,

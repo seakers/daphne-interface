@@ -64,12 +64,8 @@
     import Modal from './Modal';
     import User from './User';
     import ProblemPicker from './ProblemPicker';
-
     import { mapState, mapGetters } from 'vuex';
-
-    import EOSS from '../scripts/eoss';
-    import EOSSFilter from '../scripts/eoss-filter';
-    import {fetchGet} from "../scripts/fetch-helpers";
+    import {fetchGet} from '../scripts/fetch-helpers';
 
     let introJs = require('intro.js');
 
@@ -84,7 +80,8 @@
         computed: {
             ...mapState({
                 isModalActive: state => state.modal.isModalActive,
-                modalContent: state => state.modal.modalContent
+                modalContent: state => state.modal.modalContent,
+                dataset: state => state.problem.datasetFilename
             }),
             ...mapGetters({
                 inExperiment: 'getInExperiment',
@@ -134,16 +131,9 @@
                     this.init();
                 }
             },
-            init() {
-                this.$store.commit('addFunctionality', 'DesignBuilder');
-                //this.$store.commit('addFunctionality', 'DataMining');
-                //this.$store.commit('addFunctionality', 'FeatureApplication');
-                //this.$store.commit('addFunctionality', 'EOSSFilter');
-                this.$store.commit('addFunctionality', 'DaphneAnswer');
-                this.$store.commit('addFunctionality', 'OrbitInstrInfo');
-                this.$store.commit('addFunctionality', 'AvailableCommands');
-                this.$store.commit('addFunctionality', 'CommandsInformation');
-                this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');
+            async init() {
+                await this.$store.dispatch('initProblem');
+                this.$store.dispatch('loadNewData', this.dataset);
                 this.isStartup = false;
             }
         },
@@ -161,16 +151,25 @@
             // Tutorial
             this.tutorial = introJs();
 
-            // Set up initial state
-            this.$store.commit('setProblem', EOSS);
-            this.$store.dispatch('setProblemName', 'EOSS');
-            this.$store.commit('setFilter', EOSSFilter);
-
             // Check if user is logged in before putting prompt
             try {
                 fetchGet('/api/auth/check-status').then(async (response) => {
                     if (response.ok) {
                         let data = await response.json();
+                        // Start by setting problem name and current dataset
+                        let problemName = data['problem'];
+                        let dataset = data['dataset'];
+                        if (problemName === '') {
+                            problemName = 'EOSS';
+                        }
+                        if (dataset === '') {
+                            dataset = 'EOSS_data_recalculated.csv';
+                        }
+                        // Put the name and dataset back into the store
+                        await this.$store.dispatch('setProblemName', problemName);
+                        this.$store.commit('setDatasetFilename', dataset);
+
+                        // If the user is already logged in, just proceed with loading as usual; if not, show login screen
                         if (data['is_logged_in'] === true) {
                             this.$store.commit('logUserIn', data);
                             this.init();

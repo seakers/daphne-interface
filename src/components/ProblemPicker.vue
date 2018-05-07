@@ -23,7 +23,7 @@
             </div>
             <div class="field">
                 <div class="control">
-                    <button class="button is-link" v-on:click.prevent="login">Load</button>
+                    <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
                 </div>
             </div>
         </form>
@@ -32,6 +32,7 @@
 
 <script>
     import { mapState } from 'vuex';
+    import {fetchPost} from '../scripts/fetch-helpers';
 
     export default {
         name: 'ProblemPicker',
@@ -55,6 +56,27 @@
                 set(newDatasetFilename) {
                     this.$store.commit('setDatasetFilename', newDatasetFilename);
                 }
+            }
+        },
+        methods: {
+            async changeProblem() {
+                // Flush the Daphne session if we are changing problems
+                try {
+                    let dataResponse = await fetchPost('/api/daphne/clear-session', new FormData());
+                    if (dataResponse.ok) {
+                        // Init the new problem
+                        await this.$store.dispatch('initProblem');
+                        // Load the new dataset
+                        this.$store.dispatch('loadNewData', this.datasetFilename);
+                    }
+                    else {
+                        console.error('Error flushing the daphne session.');
+                    }
+                }
+                catch(e) {
+                    console.error('Networking error:', e);
+                }
+
             }
         }
     }

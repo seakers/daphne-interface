@@ -14,6 +14,7 @@
 <script>
     import { mapState } from 'vuex';
     import MainMenuItem from './MainMenuItem';
+    import * as _ from 'lodash-es';
 
     export default {
         name: 'main-menu',
@@ -22,21 +23,30 @@
                 inExperiment: state => state.experiment.inExperiment,
                 stageInformation: state => state.experiment.stageInformation,
                 experimentStage: state => state.experiment.experimentStage,
-                allAvailableFunctionalities: state => state.functionalityList.availableFunctionalities
+                allAvailableFunctionalities: state => state.functionalityList.availableFunctionalities,
+                problemFunctionalities: state => state.problem.problemFunctionalities,
             }),
             availableFunctionalities() {
+                let funcFilter = [];
+                for (let functionality of this.allAvailableFunctionalities) {
+                    funcFilter.push(functionality.name);
+                }
+                // First filter those available only in experiments, by creating a list of functionalities which are to be excluded
                 if (this.inExperiment) {
-                    let functionalities = [];
-                    for (let functionality of this.allAvailableFunctionalities) {
-                        if (this.stageInformation[this.experimentStage].availableFunctionalities.includes(functionality.name)) {
-                            functionalities.push(functionality);
-                        }
+                    funcFilter = _.difference(funcFilter, this.stageInformation[this.experimentStage].availableFunctionalities);
+                }
+                // Then filter by the problem
+                funcFilter = _.difference(funcFilter, this.problemFunctionalities);
+
+                // Create the list of avaliable functionalities
+                let functionalities = [];
+                for (let functionality of this.allAvailableFunctionalities) {
+                    if (!funcFilter.includes(functionality.name)) {
+                        functionalities.push(functionality);
                     }
-                    return functionalities;
                 }
-                else {
-                    return this.allAvailableFunctionalities;
-                }
+
+                return functionalities;
             }
         },
         methods: {

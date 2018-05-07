@@ -18,6 +18,7 @@ const state = {
     outputList: [],
     outputObj: [], // 1 for larger-is-better, -1 for smaller-is-better
     displayComponent: '',
+    problemFunctionalities: [],
     importCallback: (data) => {
         return {
             problemData: data,
@@ -157,6 +158,7 @@ const mutations = {
         state.outputList = problemInfo.outputList;
         state.outputObj = problemInfo.outputObj;
         state.displayComponent = problemInfo.displayComponent;
+        state.problemFunctionalities = problemInfo.problemFunctionalities;
         state.importCallback = problemInfo.importCallback;
         state.extra = problemInfo.extra;
         state.actualName2Index = problemInfo.actualName2Index;
@@ -171,6 +173,9 @@ const mutations = {
     },
     setDatasetList(state, datasetList) {
         state.datasetList = datasetList;
+    },
+    setDatasetFilename(state, datasetFilename) {
+        state.datasetFilename = datasetFilename;
     },
     updateExtra(state, extra) {
         state.extra = extra;
