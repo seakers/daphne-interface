@@ -12,6 +12,7 @@ import experiment from './modules/experiment';
 import modal from './modules/modal';
 
 import EOSS from '../scripts/eoss';
+import SMAP from '../scripts/smap';
 import EOSSFilter from '../scripts/eoss-filter';
 
 Vue.use(Vuex);
@@ -42,6 +43,10 @@ export default new Vuex.Store({
                 problem = EOSS;
                 filter = EOSSFilter;
                 break;
+            case 'SMAP':
+                problem = SMAP;
+                filter = EOSSFilter;
+                break;
             }
             commit('setProblem', problem);
             if (filter !== null) {
@@ -49,6 +54,11 @@ export default new Vuex.Store({
             }
 
             // Load all the initial functionalities
+            commit('resetDaphne');
+            commit('resetTradespacePlot');
+            commit('resetFunctionalityList');
+            commit('resetDataMining');
+            commit('resetFeatureApplication');
             for (let functionality of problem.shownFunctionalities) {
                 commit('addFunctionality', functionality);
             }

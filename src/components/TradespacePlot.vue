@@ -47,6 +47,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card">
+                        <div class="card-content is-small">
+                            <div class="field">
+                                <p class="control">
+                                    <button class="button" id="start-ga" v-on:click="startGA">Start the GA</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -362,10 +371,28 @@
                     let dataResponse = await fetchPost('/api/ifeed/set-target', reqData);
 
                     if (dataResponse.ok) {
-                        console.log('Target selection updated')
+                        console.log('Target selection updated');
                     }
                     else {
                         console.error('Error obtaining the driving features.');
+                    }
+                }
+                catch(e) {
+                    console.error('Networking error:', e);
+                }
+            },
+
+            async startGA() {
+                try {
+                    let reqData = new FormData();
+                    let dataResponse = await fetchPost('/api/vassar/start-ga', reqData);
+
+                    if (dataResponse.ok) {
+                        let data = await dataResponse.text();
+                        console.log(data);
+                    }
+                    else {
+                        console.error('Error starting the GA.');
                     }
                 }
                 catch(e) {

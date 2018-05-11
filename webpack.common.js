@@ -9,6 +9,11 @@ const { VueLoaderPlugin } = require('vue-loader');
 
 
 module.exports = {
+    entry: {
+        index: './src/index.js',
+        details: './src/details.js'
+    },
+
     output: {
         filename: './assets/js/[name].bundle.js'
     },
@@ -78,12 +83,19 @@ module.exports = {
         // cleaning up only 'dist' folder
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
-            template: './src/index.html'
+            template: './src/index.html',
+            chunks: ['index'],
+            filename: 'index.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/details.html',
+            chunks: ['details'],
+            filename: 'details.html'
         }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
             // both options are optional
-            filename: './assets/css/app.css'
+            filename: './assets/css/[name].css'
         }),
         new VueLoaderPlugin()
     ],

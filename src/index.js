@@ -65,8 +65,13 @@ store.subscribe(async (mutation, state) => {
                     console.log('Web Socket Conenction Made');
                     resolve();
                 };
-                websocket.onmessage = function (data) {
-                    //ws.send(JSON.stringify(data));
+                websocket.onmessage = function (event) {
+                    let received_info = JSON.parse(event.data);
+                    if (received_info['type'] === 'ga.new_archs') {
+                        received_info['archs'].forEach((arch) => {
+                            store.dispatch('addNewDataFromGA', arch);
+                        });
+                    }
                 };
                 store.commit('setWebsocket', websocket);
             }
