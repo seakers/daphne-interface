@@ -1,7 +1,7 @@
 <template>
     <div class="wrapper">
         <div class="score-column">
-            <div class="score-explanation">Score Explanation</div>
+            <score-tree class="score-explanation"></score-tree>
             <div class="score-details">Details</div>
         </div>
         <div class="cost-column">
@@ -15,6 +15,7 @@
 <script>
     import { mapState, mapGetters } from 'vuex';
     import {fetchGet} from '../scripts/fetch-helpers';
+    import ScoreTree from './ScoreTree';
 
     function getParameterByName(name, url) {
         if (!url) url = window.location.href;
@@ -27,7 +28,7 @@
     }
 
     export default {
-        name: 'details',
+        name: 'details-panel',
         data: function () {
             return {
                 tutorial: {},
@@ -39,10 +40,12 @@
         methods: {
         },
         components: {
+            ScoreTree
         },
         mounted() {
             let archID = +getParameterByName('archID');
-
+            this.$store.commit('setArchID', archID);
+            this.$store.dispatch('getArchitectureDetails');
         },
         watch: {
         }

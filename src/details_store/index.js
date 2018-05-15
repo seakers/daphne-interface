@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import score from'./modules/score';
 import launchCost from './modules/launch-cost';
 import lifecycleCost from './modules/lifecycle-cost';
+import {fetchPost} from "../scripts/fetch-helpers";
 
 Vue.use(Vuex);
 
@@ -20,6 +21,24 @@ export default new Vuex.Store({
         },
     },
     actions: {
+        async getArchitectureDetails({ state, commit }) {
+            try {
+                let reqData = new FormData();
+                reqData.append('arch_id', state.archID);
+                let dataResponse = await fetchPost('/api/vassar/get-arch-details', reqData);
+
+                if (dataResponse.ok) {
+                    let archData = await dataResponse.json();
+                    commit('setScoreInfo', archData['score']);
+                }
+                else {
+                    console.error('Error downloading architecture information.');
+                }
+            }
+            catch(e) {
+                console.error('Networking error:', e);
+            }
+        },
     },
     modules: {
         score,
