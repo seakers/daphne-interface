@@ -30,6 +30,7 @@ export default new Vuex.Store({
                 if (dataResponse.ok) {
                     let archData = await dataResponse.json();
                     commit('setScoreInfo', archData['score']);
+                    commit('setLaunchCosts', archData['budgets']);
                 }
                 else {
                     console.error('Error downloading architecture information.');
