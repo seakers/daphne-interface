@@ -1,8 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import score from'./modules/score';
-import launchCost from './modules/launch-cost';
-import lifecycleCost from './modules/lifecycle-cost';
+import cost from './modules/cost';
 import {fetchPost} from "../scripts/fetch-helpers";
 
 Vue.use(Vuex);
@@ -30,7 +29,7 @@ export default new Vuex.Store({
                 if (dataResponse.ok) {
                     let archData = await dataResponse.json();
                     commit('setScoreInfo', archData['score']);
-                    commit('setLaunchCosts', archData['budgets']);
+                    commit('setBudgets', archData['budgets']);
                 }
                 else {
                     console.error('Error downloading architecture information.');
@@ -43,8 +42,7 @@ export default new Vuex.Store({
     },
     modules: {
         score,
-        launchCost,
-        lifecycleCost
+        cost
     },
     strict: debug
 });

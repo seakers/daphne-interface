@@ -5,8 +5,7 @@
             <div class="score-details">Details</div>
         </div>
         <div class="cost-column">
-            <launch-vehicles-plots class="launch-cost-details"></launch-vehicles-plots>
-            <div class="lifecycle-cost-details">Lifecycle Cost</div>
+            <cost-plots class="launch-cost-details"></cost-plots>
         </div>
 
     </div>
@@ -16,7 +15,7 @@
     import { mapState, mapGetters } from 'vuex';
     import {fetchGet} from '../scripts/fetch-helpers';
     import ScoreTree from './ScoreTree';
-    import LaunchVehiclesPlots from './LaunchVehiclesPlots';
+    import CostPlots from './CostPlots';
 
     function getParameterByName(name, url) {
         if (!url) url = window.location.href;
@@ -41,7 +40,7 @@
         methods: {
         },
         components: {
-            ScoreTree, LaunchVehiclesPlots
+            ScoreTree, CostPlots
         },
         mounted() {
             let archID = +getParameterByName('archID');
@@ -64,17 +63,7 @@
         display: flex;
         flex-direction: column;
     }
-    .cost-column {
-        display: flex;
-        flex-direction: column;
-    }
     .score-explanation {
-        flex-grow: 1;
-    }
-    .launch-cost-details {
-        flex-grow: 1;
-    }
-    .lifecycle-cost-details {
         flex-grow: 1;
     }
 </style>

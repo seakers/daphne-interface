@@ -1,6 +1,6 @@
 // initial state
 const state = {
-    launchCosts: []
+    budgets: []
 };
 
 // getters
@@ -13,8 +13,8 @@ const actions = {
 
 // mutations
 const mutations = {
-    setLaunchCosts(state, launchCosts) {
-        state.launchCosts = launchCosts;
+    setBudgets(state, budgets) {
+        state.budgets = budgets;
     },
 };
 
