@@ -9,6 +9,7 @@ const state = {
         'SMAP'
     ],
     problemName: '',
+    vassarPort: 9090,
     problemData: [],
     datasetList: [],
     datasetFilename: 'EOSS_data_recalculated.csv', // String
@@ -100,14 +101,18 @@ const actions = {
     async changeVassarPort({ state, commit }, port) {
         try {
             let reqData = new FormData();
-            reqData.append('port', port);
+            let vassarPort = state.vassarPort;
+            if (port !== undefined) {
+                vassarPort = port;
+            }
+            reqData.append('port', vassarPort);
             let dataResponse = await fetchPost('/api/vassar/change-port', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
             }
             else {
-                console.error('Error accessing the data.');
+                console.error('Error changing VASSAR port.');
             }
         }
         catch(e) {
@@ -157,6 +162,7 @@ const mutations = {
     setProblem(state, problemInfo) {
         // Set the problem instance
         state.problemName = problemInfo.problemName;
+        state.vassarPort = problemInfo.vassarPort;
         state.inputNum = problemInfo.inputNum;
         state.outputNum = problemInfo.outputNum;
         state.inputList = problemInfo.inputList;

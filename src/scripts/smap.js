@@ -12,6 +12,7 @@ class Architecture {
 
 export default {
     problemName: 'SMAP',
+    vassarPort: 9093,
     inputNum: 1,
     outputNum: 2,
     inputList: [],

@@ -12,6 +12,7 @@ class Architecture {
 
 export default {
     problemName: 'EOSS',
+    vassarPort: 9090,
     inputNum: 1,
     outputNum: 2,
     inputList: [],
