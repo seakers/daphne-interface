@@ -11,7 +11,7 @@
                         {{ objective.name }} ({{ objective.description }}) | Score: {{ objective.value | round(2) }}/1 | Weight: {{ objective.weight | round(2) }}/1
                         <ul class="no-list-type" v-if="showScore[pIndex]['objectives'][oIndex]['show']">
                             <li v-for="subobjective in objective.subscores">
-                                {{ subobjective.name }} ({{ subobjective.description }}) | Score: {{ subobjective.value | round(2) }}/1 | Weight: {{ subobjective.weight | round(2) }}/1
+                                {{ subobjective.name }} ({{ subobjective.description }}) | Score: {{ subobjective.value | round(2) }}/1 | Weight: {{ subobjective.weight | round(2) }}/1 | <a v-on:click.prevent="loadDetailsTable(subobjective.name)">Details</a>
                             </li>
                         </ul>
                     </li>
@@ -58,6 +58,9 @@
                 else {
                     this.showScore[panelIndex]['objectives'][objectIndex]['show'] = !this.showScore[panelIndex]['objectives'][objectIndex]['show'];
                 }
+            },
+            loadDetailsTable(subobjective) {
+                this.$store.dispatch('setSubobjectiveDetails', subobjective);
             }
         },
         watch: {

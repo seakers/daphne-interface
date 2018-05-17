@@ -2,7 +2,7 @@
     <div class="wrapper">
         <div class="score-column">
             <score-tree class="score-explanation"></score-tree>
-            <div class="score-details">Details</div>
+            <details-table v-if="subobjectiveDetails !== null" class="score-details"></details-table>
         </div>
         <div class="cost-column">
             <cost-plots class="launch-cost-details"></cost-plots>
@@ -12,10 +12,11 @@
 </template>
 
 <script>
-    import { mapState, mapGetters } from 'vuex';
+    import { mapState } from 'vuex';
     import {fetchGet} from '../scripts/fetch-helpers';
     import ScoreTree from './ScoreTree';
     import CostPlots from './CostPlots';
+    import DetailsTable from './DetailsTable';
 
     function getParameterByName(name, url) {
         if (!url) url = window.location.href;
@@ -36,11 +37,14 @@
             }
         },
         computed: {
+            ...mapState({
+                subobjectiveDetails: state => state.score.subobjectiveDetails
+            }),
         },
         methods: {
         },
         components: {
-            ScoreTree, CostPlots
+            ScoreTree, CostPlots, DetailsTable
         },
         mounted() {
             let archID = +getParameterByName('archID');
@@ -55,15 +59,22 @@
 <style scoped>
     .wrapper {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, 1fr);
         min-height: 100vh;
+        max-width: 100vw;
         padding: 10px;
+        width: 100vw;
+        height: 100vh;
     }
     .score-column {
         display: flex;
         flex-direction: column;
+        min-width: 0;
     }
     .score-explanation {
         flex-grow: 1;
+    }
+    .score-details {
+        min-width: 0;
     }
 </style>
