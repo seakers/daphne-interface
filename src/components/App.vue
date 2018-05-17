@@ -133,7 +133,7 @@
             },
             async init() {
                 await this.$store.dispatch('initProblem');
-                await this.$store.dispatch('changeVassarPort', this.vassarPort[this.currentStageNum]);
+                await this.$store.dispatch('changeVassarPort');
                 this.$store.dispatch('loadNewData', this.dataset);
                 this.isStartup = false;
             }

@@ -66,6 +66,7 @@
                     if (dataResponse.ok) {
                         // Init the new problem
                         await this.$store.dispatch('initProblem');
+                        await this.$store.dispatch('changeVassarPort');
                         // Load the new dataset
                         this.$store.dispatch('loadNewData', this.datasetFilename);
                     }
