@@ -34,7 +34,7 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        initProblem({ commit, state }) {
+        async initProblem({ commit, state }) {
             // Load correct problem module based on problem
             let problem = null;
             let filter = null;
@@ -52,6 +52,7 @@ export default new Vuex.Store({
             if (filter !== null) {
                 commit('setFilter', filter);
             }
+            commit('updateExtra', await problem.initFunction());
 
             // Load all the initial functionalities
             commit('resetDaphne');

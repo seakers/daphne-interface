@@ -106,7 +106,8 @@
 
             boolArch() {
                 let bitString = [];
-                for (let i = 0; i < 60; i++) {
+                let bitStringLength = this.extraInfo.orbitNum*this.extraInfo.instrumentNum;
+                for (let i = 0; i < bitStringLength; i++) {
                     bitString.push(false);
                 }
 
@@ -116,7 +117,7 @@
                         let child = tableInstrumentRows[i].children[j];
                         if (child.classList.contains('arch-box')) {
                             let position = this.$store.state.problem.displayName2Index(child.textContent.trim(), 'instrument');
-                            bitString[12*i + +position] = true;
+                            bitString[this.extraInfo.instrumentNum*i + +position] = true;
                         }
                     }
                 }
@@ -128,7 +129,7 @@
                 for (let i = 0; i < tableInstrumentRows.length; ++i) {
                     if (tableInstrumentRows[i] === list) {
                         let position = this.$store.state.problem.displayName2Index(element.textContent.trim(), 'instrument');
-                        return 12*i + +position;
+                        return this.extraInfo.instrumentNum*i + +position;
                     }
                 }
             },

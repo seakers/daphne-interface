@@ -62,9 +62,8 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                let {problemData, extra} = await state.importCallback(data);
+                let problemData = state.importCallback(data);
                 calculateParetoRanking(problemData);
-                commit('updateExtra', extra);
                 commit('updateProblemData', problemData);
             }
             else {
@@ -86,8 +85,8 @@ const actions = {
         });
 
         if (!dataAlreadyThere) {
-            let procData = await state.importCallback([newData]);
-            commit('addProblemData', procData.problemData[0]);
+            let problemData = state.importCallback([newData]);
+            commit('addProblemData', problemData[0]);
         }
         else {
             commit('updateClickedArch', newIndex);
@@ -95,8 +94,8 @@ const actions = {
     },
     async addNewDataFromGA({ state, commit }, newData) {
         // We can assume it's a new point as the server makes sure of that!
-        let procData = await state.importCallback([newData]);
-        commit('addProblemData', procData.problemData[0]);
+        let problemData = state.importCallback([newData]);
+        commit('addProblemData', problemData[0]);
     },
     async changeVassarPort({ state, commit }, port) {
         try {

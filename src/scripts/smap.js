@@ -36,7 +36,7 @@ export default {
         'AvailableCommands',
         'CommandsInformation'
     ],
-    importCallback: async (data) => {
+    async initFunction() {
         let extra = {};
         [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(), getInstrumentList()]);
         extra.orbitNum = extra.orbitList.length;
@@ -65,11 +65,10 @@ export default {
             extra.instrumentInvAlias[element[1]] = element[0];
         });
 
-        let problemData = preprocessing(data);
-        return {
-            problemData: problemData,
-            extra: extra
-        }
+        return extra;
+    },
+    importCallback(data) {
+        return preprocessing(data);
     },
     extra: {},
     actualName2Index: (name, type) => {
