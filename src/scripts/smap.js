@@ -16,7 +16,7 @@ export default {
     inputNum: 1,
     outputNum: 2,
     inputList: [],
-    outputList: ['Science', 'Cost ($K)'],
+    outputList: ['Science', 'Cost ($M)'],
     outputObj: [1, -1],
     displayComponent: 'EOSSBuilder',
     problemFunctionalities: [
