@@ -18,6 +18,7 @@ export default {
     inputList: [],
     outputList: ['Science', 'Cost ($M)'],
     outputObj: [1, -1],
+    inputType: 'binary',
     displayComponent: 'EOSSBuilder',
     problemFunctionalities: [
         'DesignBuilder',

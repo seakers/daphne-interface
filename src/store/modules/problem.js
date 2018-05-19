@@ -18,6 +18,7 @@ const state = {
     inputList: [],
     outputList: [],
     outputObj: [], // 1 for larger-is-better, -1 for smaller-is-better
+    inputType: 'binary',
     displayComponent: '',
     problemFunctionalities: [],
     importCallback: (data) => {
@@ -167,6 +168,7 @@ const mutations = {
         state.inputList = problemInfo.inputList;
         state.outputList = problemInfo.outputList;
         state.outputObj = problemInfo.outputObj;
+        state.inputType = problemInfo.inputType;
         state.displayComponent = problemInfo.displayComponent;
         state.problemFunctionalities = problemInfo.problemFunctionalities;
         state.importCallback = problemInfo.importCallback;

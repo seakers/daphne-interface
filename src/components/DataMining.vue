@@ -280,7 +280,7 @@
                         .attr('class', 'label')
                         .attr('y', -6)
                         .style('text-anchor', 'end')
-                        .text('Confidence(F->S)');
+                        .text('Specificity');
 
                     // y-axis
                     let gY = this.svg.append('g')
@@ -293,7 +293,7 @@
                         .attr('y', 6)
                         .attr('dy', '.71em')
                         .style('text-anchor', 'end')
-                        .text('Confidence(S->F)');
+                        .text('Coverage');
 
                     // Animate creation of graph
                     let duration = 500;

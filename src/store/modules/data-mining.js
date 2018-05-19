@@ -6,8 +6,8 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 const state = {
     features: [],
     scores: [],
-    supportThreshold: 0.002,
-    confidenceThreshold: 0.2,
+    supportThreshold: 0.10,
+    confidenceThreshold: 0.5,
     liftThreshold: 1
 };
 
@@ -44,6 +44,9 @@ const actions = {
             reqData.append('supp', state.supportThreshold);
             reqData.append('conf', state.confidenceThreshold);
             reqData.append('lift', state.liftThreshold);
+            reqData.append('problem', rootState.problem.problemName);
+            reqData.append('input_type', rootState.problem.inputType);
+
             let dataResponse = await fetchPost('/api/data-mining/get-driving-features', reqData);
 
             if (dataResponse.ok) {
