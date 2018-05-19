@@ -7,18 +7,19 @@
             </select>
         </div>
         <div>
-            <div id="svg-holder">
-                <h3 class="no-top-margin">Mass Budget (in kg)</h3>
-                <h3 class="no-top-margin">Power Budget (in W)</h3>
+            <div id="mass-holder">
+                <h3 v-if="currentMission !== undefined">Mass Budget: {{currentMission.total_mass | round(2)}} kg</h3>
                 <svg height="300" id="mass-budget"></svg>
-                <svg height="300" id="power-budget"></svg>
             </div>
+            <div id="cost-holder">
+                <h3 v-if="currentMission !== undefined">Lifecycle Cost: {{currentMission.total_cost | round(2)}} $M</h3>
+                <svg height="300" id="cost-budget"></svg>
+            </div>
+            <h3>Power</h3>
+            <h4 v-if="currentMission !== undefined" v-for="powerInfo in powerBudgetArray">{{powerInfo.property}}: {{ powerInfo.value | round(2) }} W</h4>
             <h3 v-if="currentMission !== undefined">Launch vehicle: {{ currentMission.launch_vehicle }}</h3>
         </div>
-        <div id="cost-holder">
-            <h3>Lifecycle Cost (in $M)</h3>
-            <svg height="300" id="cost-budget"></svg>
-        </div>
+
     </div>
 </template>
 
@@ -40,7 +41,7 @@
     }
 
     export default {
-        name: 'cost-plots',
+        name: 'cost-column',
         data() {
             return {
                 selectedOrbit: ''
@@ -60,7 +61,7 @@
                         if (this.currentMission.mass_budget.hasOwnProperty(property)) {
                             massBudget.push({
                                 property: property,
-                                value: this.currentMission.mass_budget[property]
+                                value: +this.currentMission.mass_budget[property]
                             })
                         }
                     }
@@ -74,7 +75,7 @@
                         if (this.currentMission.power_budget.hasOwnProperty(property)) {
                             powerBudget.push({
                                 property: property,
-                                value: this.currentMission.power_budget[property]
+                                value: +this.currentMission.power_budget[property]
                             })
                         }
                     }
@@ -96,6 +97,11 @@
                 return costBudget;
             }
         },
+        filters: {
+            round: function(value, decimals) {
+                return round(value,decimals);
+            }
+        },
         methods: {
             drawPieChart(dataArray, svgId, width) {
                 let legendWidth = 155;
@@ -111,7 +117,7 @@
                 }
                 svg.attr('width', width);
                 let height = +svg.attr('height'),
-                    radius = Math.min(width, height) / 2,
+                    radius = Math.min(width - legendWidth, height) / 2,
                     g = svg.append('g').attr('transform', 'translate(' + (legendWidth + (width - legendWidth) / 2) + ',' + height / 2 + ')');
 
                 let color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -231,34 +237,18 @@
                     return;
                 }
 
-                this.drawPieChart(this.massBudgetArray, '#mass-budget', document.getElementById('svg-holder').clientWidth/2,
-                );
-            },
-            powerBudgetArray: function(val, oldVal) {
-                if (this.powerBudgetArray.length === 0) {
-                    return;
-                }
-
-                this.drawPieChart(this.powerBudgetArray, '#power-budget', document.getElementById('svg-holder').clientWidth/2,
-                );
+                this.drawPieChart(this.massBudgetArray, '#mass-budget', document.getElementById('mass-holder').clientWidth);
             },
             costBudgetArray: function(val, oldVal, ) {
                 if (this.costBudgetArray.length === 0) {
                     return;
                 }
 
-                this.drawPieChart(this.costBudgetArray, '#cost-budget', 944);
+                this.drawPieChart(this.costBudgetArray, '#cost-budget', document.getElementById('cost-holder').clientWidth);
             }
         }
     }
 </script>
 
 <style scoped>
-    #svg-holder {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-    }
-    .no-top-margin {
-        margin-top: 0 !important;
-    }
 </style>

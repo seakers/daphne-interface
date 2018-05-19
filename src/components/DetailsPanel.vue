@@ -5,7 +5,7 @@
             <details-table v-if="subobjectiveDetails !== null" class="score-details"></details-table>
         </div>
         <div class="cost-column">
-            <cost-plots class="launch-cost-details"></cost-plots>
+            <cost-column class="launch-cost-details"></cost-column>
         </div>
 
     </div>
@@ -15,7 +15,7 @@
     import { mapState } from 'vuex';
     import {fetchGet} from '../scripts/fetch-helpers';
     import ScoreTree from './ScoreTree';
-    import CostPlots from './CostPlots';
+    import CostColumn from './CostColumn';
     import DetailsTable from './DetailsTable';
 
     function getParameterByName(name, url) {
@@ -44,7 +44,7 @@
         methods: {
         },
         components: {
-            ScoreTree, CostPlots, DetailsTable
+            ScoreTree, CostColumn, DetailsTable
         },
         mounted() {
             let archID = +getParameterByName('archID');

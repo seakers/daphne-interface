@@ -51,7 +51,7 @@
                         <div class="card-content is-small">
                             <div class="field">
                                 <p class="control">
-                                    <button class="button" id="start-ga" v-on:click="startGA">Start the GA</button>
+                                    <button class="button" id="start-ga" v-on:click="startGA">Start Search</button>
                                 </p>
                             </div>
                         </div>
