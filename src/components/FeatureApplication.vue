@@ -258,7 +258,36 @@
 
                 nodeUpdate.transition()
                     .duration(duration)
-                    .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')');
+                    //.attr('transform', d => 'translate(' + d.y + ',' + d.x + ')');
+                    .attr("transform", (d) => {
+                            if(d.parent){
+                                if(d.verticalOffset){
+                                    // pass
+
+                                }else{
+                                    // Adjust the vertical location of each node so that it doesn't overlap with other nodes
+                                    let offset = 28;
+                                    let sibling = d.parent.children;
+                                    let depth = d.depth;
+
+                                    if(sibling.length % 2 === 1 && depth % 2 === 0){
+                                        // When the number of children is odd, add offset to the vertical position
+                                        let index = sibling.indexOf(d);
+                                        let mid = (sibling.length - 1) / 2;
+                                        if(index === mid){
+                                            // Do nothing, as this one is in the middle
+                                        }else if(index < mid){
+                                            d.x = d.x - offset;
+                                        }else{
+                                            d.x = d.x + offset;
+                                        }
+
+                                        d.verticalOffset = true;
+                                    }
+                                }
+                            }
+                            return "translate(" + d.y+ "," + d.x + ")";
+                        });
 
                 nodeUpdate.select('circle')
                     .attr('r', 9.5)
