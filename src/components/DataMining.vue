@@ -256,6 +256,10 @@
                         .attr('stroke', 'black')
                         .attr('stroke-width', 1);
 
+                    // The features just added: modify the shape to a cross
+                    objects.filter(d => this.$store.state.dataMining.featureIDsJustAdded.indexOf(d.id) !== -1)
+                        .attr('d', d3.symbol().type(d3.symbolCross).size(120));
+
                     // Utopia point: modify the shape to a star
                     getUtopiaPoint().attr('d', d3.symbol().type(d3.symbolStar).size(120));
 

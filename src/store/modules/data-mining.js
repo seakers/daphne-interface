@@ -5,6 +5,7 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 
 const state = {
     features: [],
+    featureIDsJustAdded: [],
     scores: [],
     supportThreshold: 0.1,
     confidenceThreshold: 0.1,
@@ -56,9 +57,7 @@ const actions = {
             if (dataResponse.ok) {
                 let features = await dataResponse.json();
 
-                for(var i = 0; i < features.length; i++){
-                    commit('addFeature', features[i]);
-                }
+                commit('addFeatures', features);
             }
             else {
                 console.error('Error obtaining the driving features.');
@@ -99,9 +98,7 @@ const actions = {
             if (dataResponse.ok) {
                 let features = await dataResponse.json();
 
-                for(var i = 0; i < features.length; i++){
-                    commit('addFeature', features[i]);
-                }
+                commit('addFeatures', features);
             }
             else {
                 console.error('Error obtaining the driving features.');
@@ -192,6 +189,7 @@ function computeScores(features) {
 const mutations = {
     setFeatures(state, features) {
         state.features = features;
+        state.featureIDsJustAdded = [];
         state.scores = computeScores(features);
 
         let utopiaPoint = getNewUtopiaPoint(features);
@@ -207,17 +205,22 @@ const mutations = {
             state.features[i].id = i;
         }
     },
-    addFeature(state, feature) {
-        // Add new feature
-        state.features.push(feature);
+    addFeatures(state, features) {
+        // Add a list of new features
+        state.features = state.features.concat(features);
+        state.featureIDsJustAdded = [];
 
-        // Initialize id
-        let lastFeatureIndex = state.features.length-1;
-        state.features[lastFeatureIndex].id = lastFeatureIndex;
+        for(let i = 0; i < features.length; i++){
+            let index = state.features.length - 1 - features.length + i;
 
-        // Compute new score
-        let score = 1 - Math.sqrt(Math.pow(1 - feature.metrics[2], 2) + Math.pow(1 - feature.metrics[3], 2));
-        state.scores.push(score);
+            // Initialize id
+            state.features[index].id = index;
+            state.featureIDsJustAdded.push(index);
+
+            // Compute new score
+            let score = 1 - Math.sqrt(Math.pow(1 - features[i].metrics[2], 2) + Math.pow(1 - features[i].metrics[3], 2));
+            state.scores.push(score);
+        }
 
         // Remove old utopia point
         state.features.shift();
