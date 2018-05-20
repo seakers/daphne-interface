@@ -6,8 +6,8 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 const state = {
     features: [],
     scores: [],
-    supportThreshold: 0.10,
-    confidenceThreshold: 0.5,
+    supportThreshold: 0.1,
+    confidenceThreshold: 0.1,
     liftThreshold: 1
 };
 
@@ -25,6 +25,93 @@ const getters = {
 
 // actions
 const actions = {
+
+    async runConjunctiveLocalSearch({ state, commit, rootState}){
+        try {
+            let reqData = new FormData();
+            // Generate list of selected and not selected point ids
+            let selectedIds = [];
+            let nonSelectedIds = [];
+            rootState.tradespacePlot.selectedArchs.forEach((point, index) => {
+                if (point) {
+                    selectedIds.push(index);
+                }
+                else {
+                    nonSelectedIds.push(index);
+                }
+            });
+            reqData.append('selected', JSON.stringify(selectedIds));
+            reqData.append('non_selected', JSON.stringify(nonSelectedIds));
+            reqData.append('supp', state.supportThreshold);
+            reqData.append('conf', state.confidenceThreshold);
+            reqData.append('lift', state.liftThreshold);
+            reqData.append('problem', rootState.problem.problemName);
+            reqData.append('input_type', rootState.problem.inputType);
+
+            reqData.append('featureExpression', rootState.featureApplication.clickedExpression);
+            reqData.append('logical_connective', 'AND');
+
+            let dataResponse = await fetchPost('/api/data-mining/get-marginal-driving-features', reqData);
+
+            if (dataResponse.ok) {
+                let features = await dataResponse.json();
+
+                for(var i = 0; i < features.length; i++){
+                    commit('addFeature', features[i]);
+                }
+            }
+            else {
+                console.error('Error obtaining the driving features.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
+    async runDisjunctiveLocalSearch({ state, commit, rootState}){
+        try {
+            let reqData = new FormData();
+            // Generate list of selected and not selected point ids
+            let selectedIds = [];
+            let nonSelectedIds = [];
+            rootState.tradespacePlot.selectedArchs.forEach((point, index) => {
+                if (point) {
+                    selectedIds.push(index);
+                }
+                else {
+                    nonSelectedIds.push(index);
+                }
+            });
+            reqData.append('selected', JSON.stringify(selectedIds));
+            reqData.append('non_selected', JSON.stringify(nonSelectedIds));
+            reqData.append('supp', state.supportThreshold);
+            reqData.append('conf', state.confidenceThreshold);
+            reqData.append('lift', state.liftThreshold);
+            reqData.append('problem', rootState.problem.problemName);
+            reqData.append('input_type', rootState.problem.inputType);
+
+            reqData.append('featureExpression', rootState.featureApplication.clickedExpression);
+            reqData.append('logical_connective', 'OR');
+
+            let dataResponse = await fetchPost('/api/data-mining/get-marginal-driving-features', reqData);
+
+            if (dataResponse.ok) {
+                let features = await dataResponse.json();
+
+                for(var i = 0; i < features.length; i++){
+                    commit('addFeature', features[i]);
+                }
+            }
+            else {
+                console.error('Error obtaining the driving features.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
     async getDrivingFeatures({ state, commit, rootState }) {
         try {
             let reqData = new FormData();

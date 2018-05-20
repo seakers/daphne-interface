@@ -128,7 +128,6 @@
                     .style('color', '#F7FF55')
                     .style('word-wrap', 'break-word');
 
-
                 // Update the placeholder with the driving feature and stash the expression
                 this.$store.commit('setCurrentExpression', expression);
                 this.$store.commit('setHoveredExpression', expression);
