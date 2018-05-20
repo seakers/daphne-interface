@@ -65,13 +65,17 @@ store.subscribe(async (mutation, state) => {
                     console.log('Web Socket Conenction Made');
                     resolve();
                 };
-                websocket.onmessage = function (event) {
+                websocket.onmessage = function(event) {
                     let received_info = JSON.parse(event.data);
                     if (received_info['type'] === 'ga.new_archs') {
                         received_info['archs'].forEach((arch) => {
                             store.dispatch('addNewDataFromGA', arch);
                         });
                     }
+                };
+                websocket.onclose = function(event) {
+                    // Try to reconnect on closed connection
+                    websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
                 };
                 store.commit('setWebsocket', websocket);
             }
