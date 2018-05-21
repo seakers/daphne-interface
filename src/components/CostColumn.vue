@@ -8,13 +8,15 @@
         </div>
         <div>
             <h3 v-if="currentMission !== undefined">Payload: {{currentMission.payload.join(', ')}}</h3>
-            <div id="mass-holder">
-                <h3 v-if="currentMission !== undefined">Mass Budget: {{currentMission.total_mass | round(2)}} kg</h3>
-                <svg height="300" id="mass-budget"></svg>
-            </div>
-            <div id="cost-holder">
-                <h3 v-if="currentMission !== undefined">Lifecycle Cost: {{currentMission.total_cost | round(2)}} $M</h3>
-                <svg height="300" id="cost-budget"></svg>
+            <div id="pie-wrapper">
+                <div id="mass-holder">
+                    <h3 v-if="currentMission !== undefined">Mass Budget: {{currentMission.total_mass | round(2)}} kg</h3>
+                    <svg height="300" id="mass-budget"></svg>
+                </div>
+                <div id="cost-holder">
+                    <h3 v-if="currentMission !== undefined">Lifecycle Cost: {{currentMission.total_cost | round(2)}} $M</h3>
+                    <svg height="300" id="cost-budget"></svg>
+                </div>
             </div>
             <h3>Power</h3>
             <h4 v-if="currentMission !== undefined" v-for="powerInfo in powerBudgetArray">{{powerInfo.property}}: {{ powerInfo.value | round(2) }} W</h4>
@@ -105,7 +107,7 @@
         },
         methods: {
             drawPieChart(dataArray, svgId, width) {
-                let legendWidth = 155;
+                let legendWidth = 175;
                 let legendHeight = 5 + 17*dataArray.length;
 
                 let svg = d3.select(svgId);
@@ -165,7 +167,7 @@
                     .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
                     .attr("dy", "0.35em")
                     .attr("text-anchor", "middle")
-                    .style('font-size', 10 + 'px')
+                    .style('font-size', 12 + 'px')
                     .text(function(d) { return round(d.data.value, 2); })
                     .each(function (d) {
                         let bb = this.getBBox(),
@@ -224,9 +226,9 @@
                     .attr('x', 20)
                     .attr('y', 10)
                     .text(d => d.property)
-                    .attr('dy', '-2')
+                    .attr('dy', '-1')
                     .style('text-anchor', 'start')
-                    .style('font-size', 10 + 'px');
+                    .style('font-size', 12 + 'px');
             }
         },
         watch: {
@@ -252,4 +254,9 @@
 </script>
 
 <style scoped>
+    #pie-wrapper {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        width: 100vw;
+    }
 </style>

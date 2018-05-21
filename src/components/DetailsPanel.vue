@@ -3,6 +3,7 @@
         <div class="score-column">
             <score-tree class="score-explanation"></score-tree>
             <details-table v-if="subobjectiveDetails !== null" class="score-details"></details-table>
+            <hr>
         </div>
         <div class="cost-column">
             <cost-column class="launch-cost-details"></cost-column>
@@ -59,7 +60,7 @@
 <style scoped>
     .wrapper {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
         min-height: 100vh;
         max-width: 100vw;
         padding: 10px;

@@ -26,11 +26,6 @@
                     <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
                 </div>
             </div>
-            <div class="field">
-                <div class="control">
-                    <button class="button is-link" v-on:click.prevent="changeProblem">Save</button>
-                </div>
-            </div>
         </form>
     </div>
 </template>
