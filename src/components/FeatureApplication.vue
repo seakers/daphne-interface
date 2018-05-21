@@ -2,8 +2,8 @@
     <div class="panel-block functionality">
         <div id="feature_expression_panel" class="container is-fluid">
             <div class="buttons has-addons is-centered">
-                <a id="conjunctive_local_search" class="button">Improve Specificity</a>
-                <a id="disjunctive_local_search" class="button">Improve Coverage</a>
+                <a id="conjunctive_local_search" class="button" v-on:click="conjunctive_local_search">Improve Specificity</a>
+                <a id="disjunctive_local_search" class="button" v-on:click="disjunctive_local_search">Improve Coverage</a>
                 <a id="clear_all_features" class="button">Clear</a>
             </div>
         </div>
@@ -64,7 +64,19 @@
             }
         },
         methods: {
+            conjunctive_local_search(){
+                // Remove all highlights in the scatter plot (retain target solutions)
+                this.$store.commit('clearHighlightedArchs');
+                this.$store.dispatch('runConjunctiveLocalSearch');
+            },
+
+            disjunctive_local_search(){
+                this.$store.commit('clearHighlightedArchs');
+                this.$store.dispatch('runDisjunctiveLocalSearch');
+            },
+
             constructTree(expression, depth) {
+
                 // Initial checks
                 if (depth == null) {
                     depth = 0;
@@ -119,11 +131,26 @@
                     children: [],
                     id: this.nextIndex++
                 };
-                let childrenExpressions = _newExpression.split(logic);
-                childrenExpressions.forEach(childExpression => {
+                let _childrenExpressions = _newExpression.split(logic);
+                let childrenExpressions = newExpression;
+                for(let i = 0; i < _childrenExpressions.length; i++){
+
+                    // Get the length of each outermost level feature expression from _childExpression
+                    let _childExpression = _childrenExpressions[i];
+                    if(childrenExpressions.startsWith('&&') || childrenExpressions.startsWith('||')){
+                        childrenExpressions = childrenExpressions.slice(2);
+                    }
+
+                    // Use the length obtained to slice the actual expression
+                    let childExpression = childrenExpressions.slice(0,_childExpression.length);
+
+                    // Update the rest of the feature expression to the next iteration
+                    childrenExpressions = childrenExpressions.slice(_childExpression.length);
+
+                    // Construct the tree for an individual outermost level feature
                     let child = this.constructTree(childExpression, newDepth + 1);
                     thisNode.children.push(child);
-                });
+                }
 
                 return thisNode;
             },
@@ -231,7 +258,36 @@
 
                 nodeUpdate.transition()
                     .duration(duration)
-                    .attr('transform', d => 'translate(' + d.y + ',' + d.x + ')');
+                    //.attr('transform', d => 'translate(' + d.y + ',' + d.x + ')');
+                    .attr("transform", (d) => {
+                            if(d.parent){
+                                if(d.verticalOffset){
+                                    // pass
+
+                                }else{
+                                    // Adjust the vertical location of each node so that it doesn't overlap with other nodes
+                                    let offset = 28;
+                                    let sibling = d.parent.children;
+                                    let depth = d.depth;
+
+                                    if(sibling.length % 2 === 1 && depth % 2 === 0){
+                                        // When the number of children is odd, add offset to the vertical position
+                                        let index = sibling.indexOf(d);
+                                        let mid = (sibling.length - 1) / 2;
+                                        if(index === mid){
+                                            // Do nothing, as this one is in the middle
+                                        }else if(index < mid){
+                                            d.x = d.x - offset;
+                                        }else{
+                                            d.x = d.x + offset;
+                                        }
+
+                                        d.verticalOffset = true;
+                                    }
+                                }
+                            }
+                            return "translate(" + d.y+ "," + d.x + ")";
+                        });
 
                 nodeUpdate.select('circle')
                     .attr('r', 9.5)
