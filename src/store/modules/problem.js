@@ -21,11 +21,8 @@ const state = {
     inputType: 'binary',
     displayComponent: '',
     problemFunctionalities: [],
-    importCallback: (data) => {
-        return {
-            problemData: data,
-            extra: {}
-        };
+    importCallback: (data, extra) => {
+        return {};
     }, // Callback function to be called after importing data (preprocessing)
     extra: {}, // Data that is exclusive to the problem at hand at won't be used for the general interfaces
     actualName2Index: (name, type) => -1, // To be implemented
@@ -63,7 +60,7 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                let problemData = state.importCallback(data);
+                let problemData = state.importCallback(data, state.extra);
                 calculateParetoRanking(problemData);
                 commit('updateProblemData', problemData);
             }
@@ -86,7 +83,7 @@ const actions = {
         });
 
         if (!dataAlreadyThere) {
-            let problemData = state.importCallback([newData]);
+            let problemData = state.importCallback([newData], state.extra);
             commit('addProblemData', problemData[0]);
         }
         else {
@@ -95,7 +92,7 @@ const actions = {
     },
     async addNewDataFromGA({ state, commit }, newData) {
         // We can assume it's a new point as the server makes sure of that!
-        let problemData = state.importCallback([newData]);
+        let problemData = state.importCallback([newData], state.extra);
         commit('addProblemData', problemData[0]);
     },
     async changeVassarPort({ state, commit }, port) {

@@ -14,6 +14,7 @@ import modal from './modules/modal';
 import EOSS from '../scripts/eoss';
 import SMAP from '../scripts/smap';
 import EOSSFilter from '../scripts/eoss-filter';
+import {fetchPost} from "../scripts/fetch-helpers";
 
 Vue.use(Vuex);
 
@@ -52,6 +53,9 @@ export default new Vuex.Store({
             if (filter !== null) {
                 commit('setFilter', filter);
             }
+            let reqData = new FormData();
+            reqData.append('port', problem.vassarPort);
+            await fetchPost('/api/vassar/change-port', reqData);
             commit('updateExtra', await problem.initFunction());
 
             // Load all the initial functionalities

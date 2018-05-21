@@ -26,6 +26,11 @@
                     <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
                 </div>
             </div>
+            <div class="field">
+                <div class="control">
+                    <button class="button is-link" v-on:click.prevent="changeProblem">Save</button>
+                </div>
+            </div>
         </form>
     </div>
 </template>
@@ -66,12 +71,11 @@
                     if (dataResponse.ok) {
                         // Init the new problem
                         await this.$store.dispatch('initProblem');
-                        await this.$store.dispatch('changeVassarPort');
                         // Load the new dataset
                         this.$store.dispatch('loadNewData', this.datasetFilename);
                     }
                     else {
-                        console.error('Error flushing the daphne session.');
+                        console.error('Error changing the problem.');
                     }
                 }
                 catch(e) {

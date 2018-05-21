@@ -68,8 +68,8 @@ export default {
 
         return extra;
     },
-    importCallback(data) {
-        return preprocessing(data);
+    importCallback(data, extra) {
+        return preprocessing(data, extra);
     },
     extra: {},
     actualName2Index: (name, type) => {
@@ -257,24 +257,31 @@ async function getInstrumentList() {
     }
 }
 
-function preprocessing(data) {
+function preprocessing(data, extra) {
     let output = [];
-    data.forEach(d => {
-        // convert string to numbers
-        d.science = Number(d.science);
-        d.cost = Number(d.cost);
-        if (d.cost === 100000) {
-            d.cost = 0;
-            d.science = 0;
-        }
-        let outputs = d.outputs;
-        let inputs = d.inputs;
-        let id = +d.id;
-
-        let arch = new Architecture(id, inputs, outputs);
-
+    if (data.length === 0 || data[0].inputs.length !== extra.orbitNum*extra.instrumentNum) {
+        let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
+        let arch = new Architecture(0, inputs, [0, 0]);
         output.push(arch);
-    });
+    }
+    else {
+        data.forEach(d => {
+            // convert string to numbers
+            d.science = Number(d.science);
+            d.cost = Number(d.cost);
+            if (d.cost === 100000) {
+                d.cost = 0;
+                d.science = 0;
+            }
+            let outputs = d.outputs;
+            let inputs = d.inputs;
+            let id = +d.id;
+
+            let arch = new Architecture(id, inputs, outputs);
+
+            output.push(arch);
+        });
+    }
 
     return output;
 }

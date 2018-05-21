@@ -7,6 +7,7 @@
             </select>
         </div>
         <div>
+            <h3 v-if="currentMission !== undefined">Payload: {{currentMission.payload.join(', ')}}</h3>
             <div id="mass-holder">
                 <h3 v-if="currentMission !== undefined">Mass Budget: {{currentMission.total_mass | round(2)}} kg</h3>
                 <svg height="300" id="mass-budget"></svg>

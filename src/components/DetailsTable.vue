@@ -2,7 +2,7 @@
     <div>
         <div class="content">
             <h3>Details</h3>
-            <p>Parameter: {{ subobjectiveDetails.param }}</p>
+            <p>Subobjective: {{ subobjectiveDetails.subobjective }} | Parameter: {{ subobjectiveDetails.param }}</p>
         </div>
         <div class="table-wrapper">
             <table class="table">
