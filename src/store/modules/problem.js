@@ -72,6 +72,11 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
+    async reloadOldData({ state, commit }, oldData) {
+        let problemData = state.importCallback(oldData, state.extra);
+        calculateParetoRanking(problemData);
+        commit('updateProblemData', problemData);
+    },
     async addNewData({ state, commit }, newData) {
         let dataAlreadyThere = false;
         let newIndex = -1;

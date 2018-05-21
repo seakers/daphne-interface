@@ -131,9 +131,14 @@
                     this.init();
                 }
             },
-            async init() {
+            async init(startData) {
                 await this.$store.dispatch('initProblem');
-                this.$store.dispatch('loadNewData', this.dataset);
+                if (startData !== undefined && startData['modified_dataset']) {
+                    this.$store.dispatch('reloadOldData', startData['data']);
+                }
+                else {
+                    this.$store.dispatch('loadNewData', this.dataset);
+                }
                 this.isStartup = false;
             }
         },
@@ -172,7 +177,7 @@
                         // If the user is already logged in, just proceed with loading as usual; if not, show login screen
                         if (data['is_logged_in'] === true) {
                             this.$store.commit('logUserIn', data);
-                            this.init();
+                            this.init(data);
                         }
                         else {
                             this.$store.commit('activateModal', 'LoginModal');
