@@ -11,7 +11,8 @@ const state = {
         overlap: 'rgba(163,64,240,255)',
         mouseover: 'rgba(116,255,110,255)',
         hidden: 'rgba(110,110,110,22)',
-        important: 'rgba(255,0,0,255)'
+        important: 'rgba(255,0,0,255)',
+        ga: 'rgba(0,0,255,255)'
     },
     clickedArch: -1,
     clickedArchInputs: [],
@@ -20,7 +21,9 @@ const state = {
     selectionMode: 'zoom-pan',
     selectedArchs: [],
     highlightedArchs: [],
-    hiddenArchs: []
+    hiddenArchs: [],
+    gaArchs: [],
+    nextColor: 1
 };
 
 const initialState = _.cloneDeep(state);
@@ -60,6 +63,9 @@ const getters = {
                 else if (state.highlightedArchs[index]) {
                     return state.colorList.highlighted;
                 }
+                else if (state.gaArchs[index]) {
+                    return state.colorList.ga;
+                }
                 else {
                     return state.colorList.default;
                 }
@@ -87,13 +93,6 @@ const getters = {
 
 // actions
 const actions = {
-    updatePlotData({state, commit}, problemData) {
-        commit('updatePlotData', problemData);
-        // Mark the last point added as the selected one
-        if (state.plotData.length > 0) {
-            commit('updateClickedArch', state.plotData.length - 1);
-        }
-    }
 };
 
 // mutations
@@ -110,16 +109,18 @@ const mutations = {
         state.hiddenArchs = [];
         state.hiddenArchs.length = plotData.length;
         state.hiddenArchs.fill(false);
+        state.gaArchs = [];
+        state.gaArchs.length = plotData.length;
+        state.gaArchs.fill(false);
 
         // Function to create new colours for the picking.
-        let nextCol = 1;
         function genColor() {
             let ret = [];
-            if (nextCol < 16777215) {
-                ret.push(nextCol & 0xff); // R
-                ret.push((nextCol & 0xff00) >> 8); // G
-                ret.push((nextCol & 0xff0000) >> 16); // B
-                nextCol += 1;
+            if (state.nextColor < 16777215) {
+                ret.push(state.nextColor & 0xff); // R
+                ret.push((state.nextColor & 0xff00) >> 8); // G
+                ret.push((state.nextColor & 0xff0000) >> 16); // B
+                state.nextColor += 1;
             }
             return 'rgb(' + ret.join(',') + ')';
         }
@@ -132,6 +133,60 @@ const mutations = {
         });
 
         state.plotData = plotData;
+    },
+    addPlotData(state, problemData) {
+        // Function to create new colours for the picking.
+        function genColor() {
+            let ret = [];
+            if (state.nextColor < 16777215) {
+                ret.push(state.nextColor & 0xff); // R
+                ret.push((state.nextColor & 0xff00) >> 8); // G
+                ret.push((state.nextColor & 0xff0000) >> 16); // B
+                state.nextColor += 1;
+            }
+            return 'rgb(' + ret.join(',') + ')';
+        }
+
+        let lengthDiff = problemData.length - state.plotData.length;
+        for (let i = 0; i < lengthDiff; ++i) {
+            state.selectedArchs.push(false);
+            state.highlightedArchs.push(false);
+            state.hiddenArchs.push(false);
+            state.gaArchs.push(false);
+            let plotPoint = JSON.parse(JSON.stringify(problemData[state.plotData.length+i]));
+            plotPoint.interactColor = genColor();
+            state.colorMap[plotPoint.interactColor] = state.plotData.length+i;
+            state.plotData.push(plotPoint);
+        }
+
+        if (lengthDiff !== 0) {
+            state.clickedArch = state.plotData.length - 1;
+        }
+    },
+    addPlotDataFromGA(state, problemData) {
+        // Function to create new colours for the picking.
+        function genColor() {
+            let ret = [];
+            if (state.nextColor < 16777215) {
+                ret.push(state.nextColor & 0xff); // R
+                ret.push((state.nextColor & 0xff00) >> 8); // G
+                ret.push((state.nextColor & 0xff0000) >> 16); // B
+                state.nextColor += 1;
+            }
+            return 'rgb(' + ret.join(',') + ')';
+        }
+
+        let lengthDiff = problemData.length - state.plotData.length;
+        for (let i = 0; i < lengthDiff; ++i) {
+            state.selectedArchs.push(false);
+            state.highlightedArchs.push(false);
+            state.hiddenArchs.push(false);
+            state.gaArchs.push(true);
+            let plotPoint = JSON.parse(JSON.stringify(problemData[state.plotData.length+i]));
+            plotPoint.interactColor = genColor();
+            state.colorMap[plotPoint.interactColor] = state.plotData.length+i;
+            state.plotData.push(plotPoint);
+        }
     },
     updateClickedArch(state, clickedArch) {
         state.clickedArch = clickedArch;
@@ -161,6 +216,11 @@ const mutations = {
         state.highlightedArchs = [];
         state.highlightedArchs.length = state.plotData.length;
         state.highlightedArchs.fill(false);
+    },
+    clearGaArchs(state) {
+        state.gaArchs = [];
+        state.gaArchs.length = state.plotData.length;
+        state.gaArchs.fill(false);
     },
     resetTradespacePlot(state) {
         state = Object.assign(state, _.cloneDeep(initialState));

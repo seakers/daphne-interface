@@ -11,6 +11,7 @@ const state = {
     problemName: '',
     vassarPort: 9090,
     problemData: [],
+    dataUpdateFrom: '',
     datasetList: [],
     datasetFilename: 'EOSS_data_recalculated.csv', // String
     inputNum: 0,
@@ -63,6 +64,7 @@ const actions = {
                 let problemData = state.importCallback(data, state.extra);
                 calculateParetoRanking(problemData);
                 commit('updateProblemData', problemData);
+                commit('setDataUpdateFrom', 'loadNewData');
             }
             else {
                 console.error('Error accessing the data.');
@@ -76,6 +78,7 @@ const actions = {
         let problemData = state.importCallback(oldData, state.extra);
         calculateParetoRanking(problemData);
         commit('updateProblemData', problemData);
+        commit('setDataUpdateFrom', 'reloadOldData');
     },
     async addNewData({ state, commit }, newData) {
         let dataAlreadyThere = false;
@@ -90,6 +93,7 @@ const actions = {
         if (!dataAlreadyThere) {
             let problemData = state.importCallback([newData], state.extra);
             commit('addProblemData', problemData[0]);
+            commit('setDataUpdateFrom', 'addNewData');
         }
         else {
             commit('updateClickedArch', newIndex);
@@ -99,6 +103,7 @@ const actions = {
         // We can assume it's a new point as the server makes sure of that!
         let problemData = state.importCallback([newData], state.extra);
         commit('addProblemData', problemData[0]);
+        commit('setDataUpdateFrom', 'addNewDataFromGA');
     },
     async changeVassarPort({ state, commit }, port) {
         try {
@@ -199,6 +204,9 @@ const mutations = {
     },
     addProblemData(state, newData) {
         state.problemData.push(newData);
+    },
+    setDataUpdateFrom(state, dataUpdateFrom) {
+        state.dataUpdateFrom = dataUpdateFrom;
     },
     resetProblem(state) {
         state = Object.assign(state, _.cloneDeep(initialState));

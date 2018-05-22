@@ -383,6 +383,7 @@
             },
 
             async startGA() {
+                this.$store.commit('clearGaArchs');
                 try {
                     let reqData = new FormData();
                     let dataResponse = await fetchPost('/api/vassar/start-ga', reqData);
@@ -402,10 +403,6 @@
         },
 
         watch: {
-            problemData: function(val, oldVal) {
-                this.$store.dispatch('updatePlotData', val);
-            },
-
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
             },
@@ -607,6 +604,25 @@
         mounted() {
             window.addEventListener('resize', () => {
                 this.updatePlot(0, 1);
+            });
+
+            this.$store.subscribe((mutation, state) => {
+                if (mutation.type === 'setDataUpdateFrom') {
+                    let updateFrom = state.problem.dataUpdateFrom;
+                    if (updateFrom === 'loadNewData' || updateFrom === 'reloadOldData') {
+                        this.$store.commit('updatePlotData', this.problemData);
+                        // Mark the last point added as the selected one
+                        if (this.plotData.length > 0) {
+                            this.$store.commit('updateClickedArch', this.plotData.length - 1);
+                        }
+                    }
+                    else if (updateFrom === 'addNewData') {
+                        this.$store.commit('addPlotData', this.problemData);
+                    }
+                    else if (updateFrom === 'addNewDataFromGA') {
+                        this.$store.commit('addPlotDataFromGA', this.problemData);
+                    }
+                }
             });
         }
     }
