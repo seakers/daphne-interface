@@ -13,6 +13,7 @@ import modal from './modules/modal';
 
 import EOSS from '../scripts/eoss';
 import SMAP from '../scripts/smap';
+import Decadal2017Aerosols from '../scripts/decadal';
 import EOSSFilter from '../scripts/eoss-filter';
 import {fetchPost} from "../scripts/fetch-helpers";
 
@@ -48,6 +49,9 @@ export default new Vuex.Store({
                 problem = SMAP;
                 filter = EOSSFilter;
                 break;
+            case 'Decadal2017Aerosols':
+                problem = Decadal2017Aerosols;
+                filter = EOSSFilter;
             }
             commit('setProblem', problem);
             if (filter !== null) {

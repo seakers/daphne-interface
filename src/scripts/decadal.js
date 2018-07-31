@@ -11,14 +11,14 @@ class Architecture {
 }
 
 export default {
-    problemName: 'SMAP',
+    problemName: 'Decadal2017Aerosols',
     vassarPort: 9090,
-    inputNum: 1,
+    inputNum: 10,
     outputNum: 2,
     inputList: [],
     outputList: ['Science', 'Cost ($M)'],
     outputObj: [1, -1],
-    inputType: 'binary',
+    inputType: 'discrete',
     displayComponent: 'EOSSBuilder',
     problemFunctionalities: [
         'DesignBuilder',

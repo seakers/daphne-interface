@@ -165,10 +165,10 @@
                         let problemName = data['problem'];
                         let dataset = data['dataset'];
                         if (problemName === '') {
-                            problemName = 'SMAP';
+                            problemName = 'Decadal2017Aerosols';
                         }
                         if (dataset === '') {
-                            dataset = 'test_smap.csv';
+                            dataset = 'Decadal2017Aerosol.csv';
                         }
                         // Put the name and dataset back into the store
                         await this.$store.dispatch('setProblemName', problemName);

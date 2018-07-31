@@ -6,7 +6,8 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 const state = {
     problemList: [
         'EOSS',
-        'SMAP'
+        'SMAP',
+        'Decadal2017Aerosols'
     ],
     problemName: '',
     vassarPort: 9090,
@@ -56,6 +57,7 @@ const actions = {
             reqData.append('filename', fileName);
             reqData.append('load_user_files', false);
             reqData.append('input_num', state.inputNum);
+            reqData.append('input_type', state.inputType);
             reqData.append('output_num', state.outputNum);
             let dataResponse = await fetchPost('/api/daphne/import-data', reqData);
 
