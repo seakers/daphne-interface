@@ -14,6 +14,7 @@ import modal from './modules/modal';
 import EOSS from '../scripts/eoss';
 import SMAP from '../scripts/smap';
 import Decadal2017Aerosols from '../scripts/decadal';
+import DecadalFilter from '../scripts/decadal-filter';
 import EOSSFilter from '../scripts/eoss-filter';
 import {fetchPost} from "../scripts/fetch-helpers";
 
@@ -51,7 +52,7 @@ export default new Vuex.Store({
                 break;
             case 'Decadal2017Aerosols':
                 problem = Decadal2017Aerosols;
-                filter = EOSSFilter;
+                filter = DecadalFilter;
             }
             commit('setProblem', problem);
             if (filter !== null) {
