@@ -1,5 +1,5 @@
 import store from '../store';
-import {fetchGet} from "./fetch-helpers";
+import {fetchGet, fetchPost} from "./fetch-helpers";
 
 
 class Architecture {
@@ -11,7 +11,7 @@ class Architecture {
 }
 
 export default {
-    problemName: 'EOSS',
+    problemName: 'ClimateCentric',
     vassarPort: 9090,
     inputNum: 1,
     outputNum: 2,
@@ -37,9 +37,9 @@ export default {
         'AvailableCommands',
         'CommandsInformation'
     ],
-    async initFunction() {
+    async initFunction(problemName) {
         let extra = {};
-        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(), getInstrumentList()]);
+        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(problemName), getInstrumentList(problemName)]);
         extra.orbitNum = extra.orbitList.length;
         extra.instrumentNum = extra.instrumentList.length;
 
@@ -225,9 +225,12 @@ export default {
     Returns the list of orbits
     @return orbitList: a string list containing the names of orbits
     */
-async function getOrbitList() {
+async function getOrbitList(problemName) {
     try {
-        let dataResponse = await fetchGet('/api/vassar/get-orbit-list');
+        let reqData = new FormData();
+        reqData.append('problem_name', problemName);
+
+        let dataResponse = await fetchPost('/api/vassar/get-orbit-list', reqData);
         if (dataResponse.ok) {
             return dataResponse.json();
         }
@@ -244,9 +247,12 @@ async function getOrbitList() {
     Returns the list of instruments
     @return instrumentList: a string list containing the names of instruments
     */
-async function getInstrumentList() {
+async function getInstrumentList(problemName) {
     try {
-        let dataResponse = await fetchGet('/api/vassar/get-instrument-list');
+        let reqData = new FormData();
+        reqData.append('problem_name', problemName);
+
+        let dataResponse = await fetchPost('/api/vassar/get-instrument-list', reqData);
         if (dataResponse.ok) {
             return dataResponse.json();
         }

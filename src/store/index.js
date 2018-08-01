@@ -11,7 +11,7 @@ import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
 import modal from './modules/modal';
 
-import EOSS from '../scripts/eoss';
+import ClimateCentric from '../scripts/climate-centric';
 import SMAP from '../scripts/smap';
 import Decadal2017Aerosols from '../scripts/decadal';
 import DecadalFilter from '../scripts/decadal-filter';
@@ -42,8 +42,8 @@ export default new Vuex.Store({
             let problem = null;
             let filter = null;
             switch (state.problem.problemName) {
-            case 'EOSS':
-                problem = EOSS;
+            case 'ClimateCentric':
+                problem = ClimateCentric;
                 filter = EOSSFilter;
                 break;
             case 'SMAP':
@@ -61,7 +61,7 @@ export default new Vuex.Store({
             let reqData = new FormData();
             reqData.append('port', problem.vassarPort);
             await fetchPost('/api/vassar/change-port', reqData);
-            commit('updateExtra', await problem.initFunction());
+            commit('updateExtra', await problem.initFunction(state.problem.problemName));
 
             // Load all the initial functionalities
             commit('resetDaphne');

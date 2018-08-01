@@ -5,7 +5,7 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 // initial state
 const state = {
     problemList: [
-        'EOSS',
+        'ClimateCentric',
         'SMAP',
         'Decadal2017Aerosols'
     ],
