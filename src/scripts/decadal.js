@@ -37,9 +37,9 @@ export default {
         'AvailableCommands',
         'CommandsInformation'
     ],
-    async initFunction() {
+    async initFunction(problemName) {
         let extra = {};
-        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(), getInstrumentList()]);
+        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(problemName), getInstrumentList(problemName)]);
         extra.orbitNum = extra.orbitList.length;
         extra.instrumentNum = extra.instrumentList.length;
 
@@ -265,7 +265,7 @@ async function getInstrumentList(problemName) {
 
 function preprocessing(data, extra) {
     let output = [];
-    if (data.length === 0 || data[0].inputs.length !== extra.orbitNum*extra.instrumentNum) {
+    if (data.length === 0) {
         let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
         let arch = new Architecture(0, inputs, [0, 0]);
         output.push(arch);
@@ -273,8 +273,8 @@ function preprocessing(data, extra) {
     else {
         data.forEach(d => {
             // convert string to numbers
-            d.science = Number(d.science);
-            d.cost = Number(d.cost);
+            d.science = Number(d.outputs[0]);
+            d.cost = Number(d.outputs[1]);
             if (d.cost === 100000) {
                 d.cost = 0;
                 d.science = 0;
@@ -282,7 +282,6 @@ function preprocessing(data, extra) {
             let outputs = d.outputs;
             let inputs = d.inputs;
             let id = +d.id;
-
             let arch = new Architecture(id, inputs, outputs);
 
             output.push(arch);
