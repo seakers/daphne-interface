@@ -386,6 +386,9 @@
                 this.$store.commit('clearGaArchs');
                 try {
                     let reqData = new FormData();
+                    reqData.append('problem', this.$store.state.problem.problemName);
+                    reqData.append('inputType', this.$store.state.problem.inputType);
+
                     let dataResponse = await fetchPost('/api/vassar/start-ga', reqData);
 
                     if (dataResponse.ok) {

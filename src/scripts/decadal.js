@@ -273,8 +273,8 @@ function preprocessing(data, extra) {
     else {
         data.forEach(d => {
             // convert string to numbers
-            d.science = Number(d.science);
-            d.cost = Number(d.cost);
+            d.science = Number(d.outputs[0]);
+            d.cost = Number(d.outputs[1]);
             if (d.cost === 100000) {
                 d.cost = 0;
                 d.science = 0;
@@ -282,7 +282,6 @@ function preprocessing(data, extra) {
             let outputs = d.outputs;
             let inputs = d.inputs;
             let id = +d.id;
-
             let arch = new Architecture(id, inputs, outputs);
 
             output.push(arch);
