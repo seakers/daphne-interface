@@ -11,7 +11,11 @@
             <tbody>
                 <tr v-for="(row, index) in jsonArch" v-bind:key="index" v-bind:name="row.orbit">
                     <th class="arch-cell" v-bind:name="index">Satellite {{index}}</th>
-                    <td>{{ orbitDisplayName(row.orbit) }}</td>
+                    <td>
+                        <select>
+                            <option v-for="orbit in extraInfo.orbitList" v-bind:value="orbit" v-bind:selected="orbit === row.orbit">{{ orbit }}</option>
+                        </select>
+                    </td>
                     <draggable class="instruments-list" :element="'td'" v-bind:options="instrumentListOptions" @add="onAddInstrList">
                         <div v-for="(instrument, childIndex) in row.children" class="arch-box" v-bind:key="instrument + index" v-bind:name="instrDisplayName(instrument)">
                             {{ instrDisplayName(instrument) }}
