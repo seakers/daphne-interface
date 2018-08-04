@@ -23,6 +23,7 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import EOSSBuilder from './EOSSBuilder';
+    import PartitionBuilder from './PartitionBuilder';
     import {fetchPost} from "../scripts/fetch-helpers";
 
 
@@ -54,7 +55,7 @@
             }
         },
         components: {
-            EOSSBuilder
+            EOSSBuilder, PartitionBuilder
         },
         methods: {
             outputVal(index) {

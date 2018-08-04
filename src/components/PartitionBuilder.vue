@@ -3,6 +3,7 @@
         <table class="table" id="arch-info-display-table">
             <thead>
             <tr>
+                <th>Satellite</th>
                 <th>Orbit</th>
                 <th>Instruments</th>
             </tr>
@@ -74,6 +75,16 @@
                 }
                 let extraInfo = this.extraInfo;
                 let jsonArchitecture = [];
+
+                // First of all count the number of rows by checking the sets with a non-negative orbit
+                let numSatellites = 0;
+                for (let i = extraInfo.instrumentNum; i < 2*extraInfo.instrumentNum; ++i) {
+                    if (architectureInputs[i] !== -1) {
+                        ++numSatellites;
+                    }
+                }
+
+                console.log(numSatellites);
 
                 for (let i = 0; i < extraInfo.orbitNum; i++) {
                     let orbit = extraInfo.orbitList[i];
