@@ -10,7 +10,8 @@
             </thead>
             <tbody>
                 <tr v-for="(row, index) in jsonArch" v-bind:key="index" v-bind:name="row.orbit">
-                    <th class="arch-cell" v-bind:name="orbitDisplayName(row.orbit)">{{ orbitDisplayName(row.orbit) }}</th>
+                    <th class="arch-cell" v-bind:name="index">Satellite {{index}}</th>
+                    <td>{{ orbitDisplayName(row.orbit) }}</td>
                     <draggable class="instruments-list" :element="'td'" v-bind:options="instrumentListOptions" @add="onAddInstrList">
                         <div v-for="(instrument, childIndex) in row.children" class="arch-box" v-bind:key="instrument + index" v-bind:name="instrDisplayName(instrument)">
                             {{ instrDisplayName(instrument) }}
@@ -19,11 +20,6 @@
                 </tr>
             </tbody>
         </table>
-        <draggable id="instrument-adder-list" v-bind:options="instrumentAdderOptions" @add="onAddInstrAdder">
-            <div v-for="instrument in extraInfo.instrumentList" class="arch-box" v-bind:key="instrument" v-bind:name="instrDisplayName(instrument)">
-                {{ instrDisplayName(instrument) }}
-            </div>
-        </draggable>
     </div>
 </template>
 
@@ -84,22 +80,15 @@
                     }
                 }
 
-                console.log(numSatellites);
-
-                for (let i = 0; i < extraInfo.orbitNum; i++) {
-                    let orbit = extraInfo.orbitList[i];
-                    let assigned = [];
-
-                    for (let j = 0; j < extraInfo.instrumentNum; j++) {
-                        if (architectureInputs[i*extraInfo.instrumentNum + j] === true) {
-                            let instrument = extraInfo.instrumentList[j];
-                            //Store the instrument names assigned to jth orbit
-                            assigned.push(instrument);
-                        }
-                    }
-                    // Store the name of the orbit and the assigned instruments
-                    jsonArchitecture.push({ 'orbit': orbit, 'children': assigned });
+                // with the number of satellites, create an array with this size and fill it with objects containing the
+                // orbits and the instruments for each satellite
+                for (let i = 0; i < numSatellites; ++i) {
+                    jsonArchitecture.push(({ 'orbit': extraInfo.orbitList[architectureInputs[extraInfo.instrumentNum + i]], 'children': []}));
                 }
+                for (let i = 0; i < extraInfo.instrumentNum; ++i) {
+                    jsonArchitecture[architectureInputs[i]].children.push(extraInfo.instrumentList[i]);
+                }
+
                 return jsonArchitecture;
             }
         },
