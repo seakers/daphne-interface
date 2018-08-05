@@ -10,7 +10,10 @@
             </thead>
             <tbody>
                 <tr v-for="(row, index) in jsonArch" v-bind:key="index" v-bind:name="row.orbit">
-                    <th class="arch-cell" v-bind:name="index">Satellite {{index}}</th>
+                    <th class="arch-cell" v-bind:name="index">
+                        <a href="#" v-on:click.prevent="onRemoveSatellite(index)" v-if="jsonArch[index].children.length === 0"><span class="icon"><span class="fas fa-times"></span></span></a>
+                        Satellite {{index}}
+                    </th>
                     <td class="orbit-selection">
                         <select v-on:change="onChangeOrbit">
                             <option v-for="orbit in extraInfo.orbitList" v-bind:value="orbit" v-bind:selected="orbit === row.orbit">{{ orbit }}</option>
@@ -24,6 +27,7 @@
                 </tr>
             </tbody>
         </table>
+        <p><a class="button" v-on:click="onAddSatellite" v-if="jsonArch.length < extraInfo.instrumentNum">Add another satellite</a></p>
     </div>
 </template>
 
@@ -135,8 +139,6 @@
                     genome[this.extraInfo.instrumentNum + i] = +orbitPosition;
                 }
 
-                console.log(genome);
-
                 return genome;
             },
 
@@ -149,6 +151,33 @@
 
             onChangeOrbit(event) {
                 let discreteArch = this.discreteArch();
+                this.$store.commit('updateClickedArchInputs', discreteArch);
+            },
+
+            onAddSatellite(event) {
+                let discreteArch = this.discreteArch();
+                let i = 0;
+                while (discreteArch[i] !== -1) {
+                    ++i;
+                }
+                discreteArch[i] = 0;
+                this.$store.commit('updateClickedArchInputs', discreteArch);
+            },
+
+            onRemoveSatellite(index) {
+                let discreteArch = this.discreteArch();
+
+                // First move all instruments with a satellite with higher index down one index
+                for (let i = 0; i < this.extraInfo.instrumentNum; ++i) {
+                    if (discreteArch[i] > index) {
+                        discreteArch[i]--;
+                    }
+                }
+                // Then move the orbit assignments to the left in the genome
+                for (let i = this.extraInfo.instrumentNum + index; i < 2*this.extraInfo.instrumentNum - 1; ++i) {
+                    discreteArch[i] = discreteArch[i+1];
+                }
+                discreteArch[discreteArch.length-1] = -1;
                 this.$store.commit('updateClickedArchInputs', discreteArch);
             }
         }
@@ -168,7 +197,7 @@
 
     .design-space {
         display: flex;
-        align-items: center;
+        flex-direction: column;
         width: 100%;
     }
 
