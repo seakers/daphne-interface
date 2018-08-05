@@ -125,8 +125,8 @@ export default {
         }
     },
     displayName2Index: (input, type) => {
-        const eossInfo = store.state.problem.extra;
-        if (!eossInfo.labelingEnabled) {
+        const decadalInfo = store.state.problem.extra;
+        if (!decadalInfo.labelingEnabled) {
             return store.state.problem.actualName2Index(input, type);
         }
 
@@ -141,10 +141,10 @@ export default {
             }
 
             if (type === 'orbit') {
-                output += eossInfo.orbitList.indexOf(eossInfo.orbitInvAlias[name]);
+                output += decadalInfo.orbitList.indexOf(decadalInfo.orbitInvAlias[name]);
             }
             else if (type === 'instrument') {
-                output += eossInfo.instrumentList.indexOf(eossInfo.instrumentInvAlias[name]);
+                output += decadalInfo.instrumentList.indexOf(decadalInfo.instrumentInvAlias[name]);
             }
             else {
                 return 'NamingError';

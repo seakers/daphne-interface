@@ -11,8 +11,8 @@
             <tbody>
                 <tr v-for="(row, index) in jsonArch" v-bind:key="index" v-bind:name="row.orbit">
                     <th class="arch-cell" v-bind:name="index">Satellite {{index}}</th>
-                    <td>
-                        <select>
+                    <td class="orbit-selection">
+                        <select v-on:change="onChangeOrbit">
                             <option v-for="orbit in extraInfo.orbitList" v-bind:value="orbit" v-bind:selected="orbit === row.orbit">{{ orbit }}</option>
                         </select>
                     </td>
@@ -108,57 +108,48 @@
                 return this.extraInfo.instrumentAlias[instrument];
             },
 
-            boolArch() {
-                let bitString = [];
-                let bitStringLength = this.extraInfo.orbitNum*this.extraInfo.instrumentNum;
-                for (let i = 0; i < bitStringLength; i++) {
-                    bitString.push(false);
+            discreteArch() {
+                let genome = [];
+                let genomeLength = 2*this.extraInfo.instrumentNum;
+                for (let i = 0; i < genomeLength; i++) {
+                    genome.push(-1);
                 }
 
+                // First fill up the instruments in the genome
                 let tableInstrumentRows = document.getElementsByClassName('instruments-list');
                 for (let i = 0; i < tableInstrumentRows.length; ++i) {
                     for (let j = 0; j < tableInstrumentRows[i].children.length; ++j) {
                         let child = tableInstrumentRows[i].children[j];
                         if (child.classList.contains('arch-box')) {
                             let position = this.$store.state.problem.displayName2Index(child.textContent.trim(), 'instrument');
-                            bitString[this.extraInfo.instrumentNum*i + +position] = true;
+                            genome[+position] = i;
                         }
                     }
                 }
-                return bitString;
-            },
 
-            getBoolArrayIndex(list, element) {
-                let tableInstrumentRows = document.getElementsByClassName('instruments-list');
-                for (let i = 0; i < tableInstrumentRows.length; ++i) {
-                    if (tableInstrumentRows[i] === list) {
-                        let position = this.$store.state.problem.displayName2Index(element.textContent.trim(), 'instrument');
-                        return this.extraInfo.instrumentNum*i + +position;
-                    }
+                // Then do the same for the orbits
+                let orbitSelectionRows = document.getElementsByClassName('orbit-selection');
+                for (let i = 0; i < orbitSelectionRows.length; ++i) {
+                    let orbitSelector = orbitSelectionRows[i].getElementsByTagName("select")[0];
+                    let orbitPosition = this.$store.state.problem.displayName2Index(orbitSelector.value.trim(), 'orbit');
+                    genome[this.extraInfo.instrumentNum + i] = +orbitPosition;
                 }
-            },
 
-            onAddInstrAdder(event) {
-                if (event.from !== event.to) {
-                    let newIndex = this.getBoolArrayIndex(event.from, event.item);
-                    event.item.remove();
-                    let boolArch = this.boolArch();
-                    boolArch[newIndex] = false;
-                    this.$store.commit('updateClickedArchInputs', boolArch);
-                }
+                console.log(genome);
+
+                return genome;
             },
 
             onAddInstrList(event) {
                 if (event.from !== event.to) {
-                    let newIndex = this.getBoolArrayIndex(event.to, event.item);
-                    event.item.remove();
-                    let boolArch = this.boolArch();
-                    if (!boolArch[newIndex]) {
-                        boolArch[newIndex] = true;
-                        this.$store.commit('updateClickedArchInputs', boolArch);
-                    }
+                    let discreteArch = this.discreteArch();
+                    this.$store.commit('updateClickedArchInputs', discreteArch);
                 }
+            },
 
+            onChangeOrbit(event) {
+                let discreteArch = this.discreteArch();
+                this.$store.commit('updateClickedArchInputs', discreteArch);
             }
         }
     }
