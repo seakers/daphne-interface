@@ -38,6 +38,9 @@ let initialState = {};
 
 // getters
 const getters = {
+    getProblemName(state) {
+        return state.problemName;
+    },
     getProblemData(state) {
         return state.problemData;
     },

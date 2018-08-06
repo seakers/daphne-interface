@@ -10,7 +10,8 @@ const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
     state: {
-        archID: null
+        archID: null,
+        problem: null
     },
     getters: {
     },
@@ -18,12 +19,16 @@ export default new Vuex.Store({
         setArchID(state, archID) {
             state.archID = archID;
         },
+        setProblem(state, problem) {
+            state.problem = problem;
+        },
     },
     actions: {
         async getArchitectureDetails({ state, commit }) {
             try {
                 let reqData = new FormData();
                 reqData.append('arch_id', state.archID);
+                reqData.append('problem', state.problem);
                 let dataResponse = await fetchPost('/api/vassar/get-arch-details', reqData);
 
                 if (dataResponse.ok) {

@@ -49,7 +49,9 @@
         },
         mounted() {
             let archID = +getParameterByName('archID');
+            let problem = getParameterByName('problem');
             this.$store.commit('setArchID', archID);
+            this.$store.commit('setProblem', problem);
             this.$store.dispatch('getArchitectureDetails');
         },
         watch: {
