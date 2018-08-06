@@ -18,6 +18,7 @@ const actions = {
             let reqData = new FormData();
             reqData.append('arch_id', rootState.archID);
             reqData.append('subobjective', subobjective);
+            reqData.append('problem', rootState.problem);
             let dataResponse = await fetchPost('/api/vassar/get-subobjective-details', reqData);
 
             if (dataResponse.ok) {
