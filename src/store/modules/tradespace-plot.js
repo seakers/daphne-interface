@@ -23,6 +23,7 @@ const state = {
     highlightedArchs: [],
     hiddenArchs: [],
     gaArchs: [],
+    gaStatus: false,
     nextColor: 1
 };
 
@@ -211,6 +212,10 @@ const mutations = {
         state.selectedArchs = [];
         state.selectedArchs.length = state.plotData.length;
         state.selectedArchs.fill(false);
+    },
+    setGaStatus(state, gaStatus) {
+        console.log("Setting GA Status", gaStatus);
+        state.gaStatus = gaStatus;
     },
     clearHighlightedArchs(state) {
         state.highlightedArchs = [];

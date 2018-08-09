@@ -51,7 +51,7 @@
                         <div class="card-content is-small">
                             <div class="field">
                                 <p class="control">
-                                    <button class="button" id="start-ga" v-on:click="startGA">Start Search</button>
+                                    <button class="button" id="start-ga" v-on:click="toggleGA">{{ gaStatus ? "Stop Search" : "Start Search" }}</button>
                                 </p>
                             </div>
                         </div>
@@ -63,7 +63,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
+    import { mapGetters, mapMutations, mapState } from 'vuex';
     import * as _ from 'lodash-es';
     import * as d3 from 'd3';
     import 'd3-selection-multi';
@@ -89,6 +89,9 @@
             }
         },
         computed: {
+            ...mapState({
+                gaStatus: state => state.tradespacePlot.gaStatus
+            }),
             ...mapGetters({
                 problemData: 'getProblemData',
                 plotData: 'getPlotData',
@@ -121,6 +124,15 @@
                 },
                 set(newSelectionMode) {
                     this.$store.commit('updateSelectionMode', newSelectionMode);
+                }
+            },
+
+            gaText() {
+                if (this.gaStatus) {
+                    return "Stop Search";
+                }
+                else {
+                    return "Start Search";
                 }
             }
         },
@@ -267,8 +279,8 @@
                         context.fill();
                     }
                     else if (pointShape === 'cross') {
-                        context.fillRect(tx - 4, ty - 1, 8, 2);
-                        context.fillRect(tx - 1, ty - 4, 2, 8);
+                        context.fillRect(tx - 8, ty - 2, 16, 4);
+                        context.fillRect(tx - 2, ty - 8, 4, 16);
                     }
                 });
 
@@ -382,14 +394,21 @@
                 }
             },
 
-            async startGA() {
+            async toggleGA() {
                 this.$store.commit('clearGaArchs');
                 try {
                     let reqData = new FormData();
                     reqData.append('problem', this.$store.state.problem.problemName);
                     reqData.append('inputType', this.$store.state.problem.inputType);
 
-                    let dataResponse = await fetchPost('/api/vassar/start-ga', reqData);
+                    let url;
+                    if (this.gaStatus) {
+                        url = '/api/vassar/stop-ga';
+                    }
+                    else {
+                        url = '/api/vassar/start-ga';
+                    }
+                    let dataResponse = await fetchPost(url, reqData);
 
                     if (dataResponse.ok) {
                         let data = await dataResponse.text();

@@ -67,10 +67,17 @@ store.subscribe(async (mutation, state) => {
                 };
                 websocket.onmessage = function(event) {
                     let received_info = JSON.parse(event.data);
+                    console.log(received_info);
                     if (received_info['type'] === 'ga.new_archs') {
                         received_info['archs'].forEach((arch) => {
                             store.dispatch('addNewDataFromGA', arch);
                         });
+                    }
+                    if (received_info['type'] === 'ga.started') {
+                        store.commit('setGaStatus', true);
+                    }
+                    if (received_info['type'] === 'ga.finished') {
+                        store.commit('setGaStatus', false);
                     }
                 };
                 websocket.onclose = function(event) {
