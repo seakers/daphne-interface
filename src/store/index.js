@@ -86,5 +86,5 @@ export default new Vuex.Store({
         experiment,
         modal
     },
-    strict: debug
+    strict: false
 });

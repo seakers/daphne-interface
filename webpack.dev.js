@@ -10,17 +10,17 @@ module.exports = merge(common, {
         noInfo: false,
         proxy: {
             '/api': {
-                target: 'http://localhost:8001/',
+                target: 'http://localhost:8000/',
                 changeOrigin: true,
                 ws: true
             },
             '/server': {
-                target: 'http://localhost:8001/',
+                target: 'http://localhost:8000/',
                 changeOrigin: true,
                 ws: true
             },
             '/static': {
-                target: 'http://localhost:8001/',
+                target: 'http://localhost:8000/',
                 changeOrigin: true,
                 ws: true
             },

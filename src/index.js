@@ -5,6 +5,8 @@ import Vue from 'vue';
 import App from './components/App';
 import store from './store';
 
+import ReconnectingWebSocket from "reconnecting-websocket";
+
 // Non ES-modularized libraries
 let annyang = require('annyang');
 let SpeechKITT = window.SpeechKITT;
@@ -60,7 +62,7 @@ store.subscribe(async (mutation, state) => {
         const websocketPromise = new Promise((resolve, reject) => {
             if (state.websocket === null) {
                 // Websocket connection
-                let websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
+                let websocket = new ReconnectingWebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
                 websocket.onopen = function() {
                     console.log('Web Socket Conenction Made');
                     resolve();
@@ -79,10 +81,9 @@ store.subscribe(async (mutation, state) => {
                     if (received_info['type'] === 'ga.finished') {
                         store.commit('setGaStatus', false);
                     }
-                };
-                websocket.onclose = function(event) {
-                    // Try to reconnect on closed connection
-                    websocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
+                    if (received_info['type'] === 'ping') {
+                        websocket.send(JSON.stringify({'msg_type': 'ping'}));
+                    }
                 };
                 store.commit('setWebsocket', websocket);
             }
