@@ -64,10 +64,16 @@
                 try {
                     let dataResponse = await fetchPost('/api/daphne/clear-session', new FormData());
                     if (dataResponse.ok) {
+                        // Stop all running background tasks
+                        await this.$store.dispatch('stopBackgroundTasks');
                         // Init the new problem
                         await this.$store.dispatch('initProblem');
                         // Load the new dataset
-                        this.$store.dispatch('loadNewData', this.datasetFilename);
+                        await this.$store.dispatch('loadNewData', this.datasetFilename);
+                        // Start the background search algorithm
+                        if (this.$store.state.auth.isLoggedIn) {
+                            this.$store.dispatch("startBackgroundSearch");
+                        }
                     }
                     else {
                         console.error('Error changing the problem.');

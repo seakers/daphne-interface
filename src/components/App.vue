@@ -11,6 +11,7 @@
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
                     <problem-picker></problem-picker>
+                    <active-switches></active-switches>
                     <user class="user-info"></user>
                 </div>
             </aside>
@@ -33,6 +34,9 @@
                         </div>
                     </div>
                 </nav>
+                <section class="section is-small">
+                    <active-message></active-message>
+                </section>
                 <section class="section is-small">
                     <div class="columns is-mobile">
                         <tradespace-plot></tradespace-plot>
@@ -65,7 +69,9 @@
     import User from './User';
     import ProblemPicker from './ProblemPicker';
     import { mapState, mapGetters } from 'vuex';
-    import {fetchGet} from '../scripts/fetch-helpers';
+    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
+    import ActiveMessage from "./ActiveMessage";
+    import ActiveSwitches from "./ActiveSwitches";
 
     let introJs = require('intro.js');
 
@@ -132,17 +138,33 @@
                 }
             },
             async init(startData) {
+                // Stop all running background tasks
+                await this.$store.dispatch('stopBackgroundTasks');
+
+                // Start the Websocket
+                await this.$store.dispatch('startWebsocket');
+
+                // Initialize the new problem
                 await this.$store.dispatch('initProblem');
                 if (startData !== undefined && startData['modified_dataset']) {
-                    this.$store.dispatch('reloadOldData', startData['data']);
+                    await this.$store.dispatch('reloadOldData', startData['data']);
                 }
                 else {
-                    this.$store.dispatch('loadNewData', this.dataset);
+                    await this.$store.dispatch('loadNewData', this.dataset);
                 }
+
+                // Initialize user-only features
+                if (this.$store.state.auth.isLoggedIn) {
+                    await this.$store.dispatch("updateActiveSettings");
+                    this.$store.dispatch("startBackgroundSearch");
+                }
+
                 this.isStartup = false;
             }
         },
         components: {
+            ActiveSwitches,
+            ActiveMessage,
             MainMenu,
             Timer,
             QuestionBar,
@@ -170,6 +192,7 @@
                         if (dataset === '') {
                             dataset = 'test_smap.csv';
                         }
+
                         // Put the name and dataset back into the store
                         await this.$store.dispatch('setProblemName', problemName);
                         this.$store.commit('setDatasetFilename', dataset);

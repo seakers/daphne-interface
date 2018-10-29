@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import active from'./modules/active';
 import auth from'./modules/auth';
 import problem from './modules/problem';
 import tradespacePlot from './modules/tradespace-plot';
@@ -17,6 +18,7 @@ import Decadal2017Aerosols from '../scripts/decadal';
 import DecadalFilter from '../scripts/decadal-filter';
 import EOSSFilter from '../scripts/eoss-filter';
 import {fetchPost} from "../scripts/fetch-helpers";
+import ReconnectingWebSocket from "reconnecting-websocket";
 
 Vue.use(Vuex);
 
@@ -72,9 +74,88 @@ export default new Vuex.Store({
             for (let functionality of problem.shownFunctionalities) {
                 commit('addFunctionality', functionality);
             }
+        },
+        async startWebsocket({ state, commit, dispatch }) {
+            return new Promise((resolve, reject) => {
+                // Websocket connection
+                let websocket = new ReconnectingWebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
+                websocket.onopen = function () {
+                    console.log('Web Socket Connection Made');
+                    resolve();
+                };
+                websocket.onmessage = function (event) {
+                    let received_info = JSON.parse(event.data);
+                    console.log(received_info);
+                    if (received_info['type'] === 'ga.new_archs') {
+                        received_info['archs'].forEach((arch) => {
+                            dispatch('addNewDataFromGA', arch);
+                        });
+                    }
+                    if (received_info['type'] === 'ga.started') {
+                        commit('setGaStatus', true);
+                    }
+                    if (received_info['type'] === 'ga.finished') {
+                        commit('setGaStatus', false);
+                    }
+                    if (received_info['type'] === 'ping') {
+                        websocket.send(JSON.stringify({'msg_type': 'ping'}));
+                    }
+                };
+                commit('setWebsocket', websocket);
+            });
+        },
+        async stopBackgroundTasks({ dispatch }) {
+            // Stop all background tasks
+            await Promise.all([dispatch("stopBackgroundSearch")]);
+        },
+        async startBackgroundSearch({ rootState }) {
+            console.log("Starting the GA!!");
+            // Start the GA on login
+            try {
+                let reqData = new FormData();
+                reqData.append('problem', rootState.problem.problemName);
+                reqData.append('inputType', rootState.problem.inputType);
+
+                let url = '/api/vassar/start-ga';
+                let dataResponse = await fetchPost(url, reqData);
+
+                if (dataResponse.ok) {
+                    let data = await dataResponse.text();
+                    console.log(data);
+                }
+                else {
+                    console.error('Error starting the GA.');
+                }
+            }
+            catch(e) {
+                console.error('Networking error:', e);
+            }
+        },
+        async stopBackgroundSearch({ rootState }) {
+            // Stop the GA
+            try {
+                let reqData = new FormData();
+                reqData.append('problem', rootState.problem.problemName);
+                reqData.append('inputType', rootState.problem.inputType);
+
+                let url = '/api/vassar/stop-ga';
+                let dataResponse = await fetchPost(url, reqData);
+
+                if (dataResponse.ok) {
+                    let data = await dataResponse.text();
+                    console.log(data);
+                }
+                else {
+                    console.error('Error starting the GA.');
+                }
+            }
+            catch(e) {
+                console.error('Networking error:', e);
+            }
         }
     },
     modules: {
+        active,
         auth,
         daphne,
         problem,

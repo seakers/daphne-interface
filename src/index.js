@@ -59,49 +59,14 @@ store.subscribe(async (mutation, state) => {
     // Context updates TODO: Refactor into something more modular
     if (updatesContextList.includes(mutation.type)) {
         // Lazily create the Websocket to ensure the session is already created by this point
-        const websocketPromise = new Promise((resolve, reject) => {
-            if (state.websocket === null) {
-                // Websocket connection
-                let websocket = new ReconnectingWebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
-                websocket.onopen = function() {
-                    console.log('Web Socket Conenction Made');
-                    resolve();
-                };
-                websocket.onmessage = function(event) {
-                    let received_info = JSON.parse(event.data);
-                    console.log(received_info);
-                    if (received_info['type'] === 'ga.new_archs') {
-                        received_info['archs'].forEach((arch) => {
-                            store.dispatch('addNewDataFromGA', arch);
-                        });
-                    }
-                    if (received_info['type'] === 'ga.started') {
-                        store.commit('setGaStatus', true);
-                    }
-                    if (received_info['type'] === 'ga.finished') {
-                        store.commit('setGaStatus', false);
-                    }
-                    if (received_info['type'] === 'ping') {
-                        websocket.send(JSON.stringify({'msg_type': 'ping'}));
-                    }
-                };
-                store.commit('setWebsocket', websocket);
-            }
-            else {
-                resolve();
-            }
-        });
-
-        websocketPromise.then(() => {
-            if (mutation.type === 'updateClickedArch') {
-                state.websocket.send(JSON.stringify({
-                    msg_type: 'context_add',
-                    new_context: {
-                        current_design_id: mutation.payload
-                    }
-                }));
-            }
-        });
+        if (mutation.type === 'updateClickedArch') {
+            state.websocket.send(JSON.stringify({
+                msg_type: 'context_add',
+                new_context: {
+                    current_design_id: mutation.payload
+                }
+            }));
+        }
     }
 });
 

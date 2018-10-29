@@ -47,15 +47,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-content is-small">
-                            <div class="field">
-                                <p class="control">
-                                    <button class="button" id="start-ga" v-on:click="toggleGA">{{ gaStatus ? "Stop Search" : "Start Search" }}</button>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
@@ -89,9 +80,6 @@
             }
         },
         computed: {
-            ...mapState({
-                gaStatus: state => state.tradespacePlot.gaStatus
-            }),
             ...mapGetters({
                 problemData: 'getProblemData',
                 plotData: 'getPlotData',
@@ -124,15 +112,6 @@
                 },
                 set(newSelectionMode) {
                     this.$store.commit('updateSelectionMode', newSelectionMode);
-                }
-            },
-
-            gaText() {
-                if (this.gaStatus) {
-                    return "Stop Search";
-                }
-                else {
-                    return "Start Search";
                 }
             }
         },
@@ -387,35 +366,6 @@
                     }
                     else {
                         console.error('Error obtaining the driving features.');
-                    }
-                }
-                catch(e) {
-                    console.error('Networking error:', e);
-                }
-            },
-
-            async toggleGA() {
-                this.$store.commit('clearGaArchs');
-                try {
-                    let reqData = new FormData();
-                    reqData.append('problem', this.$store.state.problem.problemName);
-                    reqData.append('inputType', this.$store.state.problem.inputType);
-
-                    let url;
-                    if (this.gaStatus) {
-                        url = '/api/vassar/stop-ga';
-                    }
-                    else {
-                        url = '/api/vassar/start-ga';
-                    }
-                    let dataResponse = await fetchPost(url, reqData);
-
-                    if (dataResponse.ok) {
-                        let data = await dataResponse.text();
-                        console.log(data);
-                    }
-                    else {
-                        console.error('Error starting the GA.');
                     }
                 }
                 catch(e) {
