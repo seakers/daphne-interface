@@ -97,6 +97,12 @@ export default new Vuex.Store({
                     if (received_info['type'] === 'ga.finished') {
                         commit('setGaStatus', false);
                     }
+                    if (received_info['type'] === 'active.notification') {
+                        commit('setNotificationTitle', received_info["notification"]["title"]);
+                        commit('setNotificationBody', received_info["notification"]["message"]);
+                        commit('setNotificationSetting', received_info["notification"]["setting"]);
+                        commit('setShowNotification', true);
+                    }
                     if (received_info['type'] === 'ping') {
                         websocket.send(JSON.stringify({'msg_type': 'ping'}));
                     }

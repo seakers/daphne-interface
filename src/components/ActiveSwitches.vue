@@ -1,5 +1,5 @@
 <template>
-    <div class="active-menu">
+    <div class="active-menu" v-if="logged_in">
         <label class="checkbox">
             <input type="checkbox" v-model="runBackgroundSearch">
             Run Background Search
@@ -37,6 +37,7 @@
                 },
                 set (value) {
                     this.$store.commit('setShowFoundArchitectures', value);
+                    this.$store.dispatch("updateActiveSettings");
                 }
             },
             runDiversifier: {
@@ -45,6 +46,7 @@
                 },
                 set (value) {
                     this.$store.commit('setRunDiversifier', value);
+                    this.$store.dispatch("updateActiveSettings");
                 }
             },
             showSuggestions: {
@@ -53,7 +55,11 @@
                 },
                 set (value) {
                     this.$store.commit('setShowSuggestions', value);
+                    this.$store.dispatch("updateActiveSettings");
                 }
+            },
+            logged_in() {
+                return this.$store.state.auth.isLoggedIn;
             }
         }
     }

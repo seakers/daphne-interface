@@ -1,21 +1,60 @@
 <template>
-    <article class="message is-info">
+    <article v-if="show" class="message is-info">
         <div class="message-header">
-            <p>Info</p>
-            <button class="delete" aria-label="delete"></button>
+            <p>{{ title }}</p>
+            <button class="delete" aria-label="delete" v-on:click="closeNotification"></button>
         </div>
         <div class="message-body">
-           {{ message }}
+            <p>{{ body }}</p>
+            <div class="field is-grouped">
+                <div class="control">
+                    <button class="button is-link" v-on:click="activateSetting">Yes</button>
+                </div>
+                <div class="control">
+                    <button class="button is-link" v-on:click="closeNotification">No</button>
+                </div>
+            </div>
         </div>
     </article>
 </template>
 
 <script>
+    import { mapState } from 'vuex';
+
     export default {
         name: "ActiveMessage",
         data() {
             return {
-                'message': "Hi!"
+            }
+        },
+        computed: {
+            ...mapState({
+                title: state => state.active.notificationTitle,
+                body: state => state.active.notificationBody,
+                show: state => state.active.showNotification,
+                setting: state => state.active.notificationSetting,
+            }),
+        },
+        methods: {
+            closeNotification() {
+                this.$store.commit("setShowNotification", false);
+            },
+            activateSetting() {
+                console.log(this.setting);
+                if (this.setting === "show_background_search_feedback") {
+                    this.$store.commit('setShowFoundArchitectures', true);
+                }
+                else if (this.setting === "check_for_diversity") {
+                    this.$store.commit('setRunDiversifier', true);
+                }
+                else if (this.setting === "show_arch_suggestions") {
+                    this.$store.commit('setShowSuggestions', true);
+                }
+                if (this.setting !== "") {
+                    this.$store.dispatch("updateActiveSettings");
+                    this.$store.commit("setShowNotification", false);
+                }
+
             }
         }
     }

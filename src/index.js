@@ -63,7 +63,9 @@ store.subscribe(async (mutation, state) => {
             state.websocket.send(JSON.stringify({
                 msg_type: 'context_add',
                 new_context: {
-                    current_design_id: mutation.payload
+                    eosscontext: {
+                        selected_arch_id: mutation.payload
+                    }
                 }
             }));
         }
