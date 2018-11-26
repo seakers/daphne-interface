@@ -33,6 +33,7 @@
                 body: state => state.active.notificationBody,
                 show: state => state.active.showNotification,
                 setting: state => state.active.notificationSetting,
+                modification: state => state.active.modification,
             }),
         },
         methods: {
@@ -50,6 +51,12 @@
                 else if (this.setting === "show_arch_suggestions") {
                     this.$store.commit('setShowSuggestions', true);
                 }
+                else if (this.setting === "modification") {
+                    if (this.modification["type"] === "set_diversifier_id") {
+                         this.$store.commit("updateClickedArch", this.modification["arch_id"])
+                    }
+                }
+
                 if (this.setting !== "") {
                     this.$store.dispatch("updateActiveSettings");
                     this.$store.commit("setShowNotification", false);

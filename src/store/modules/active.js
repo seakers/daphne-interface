@@ -11,6 +11,7 @@ const state = {
     notificationBody: "",
     notificationSetting: "",
     showNotification: false,
+    modification: null
 };
 
 const initialState = _.cloneDeep(state);
@@ -106,6 +107,9 @@ const mutations = {
     },
     setShowNotification(state, showNotification) {
         state.showNotification = showNotification;
+    },
+    setActiveModification(state, activeModification) {
+        state.modification = activeModification
     }
 };
 
