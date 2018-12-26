@@ -110,6 +110,17 @@ export default new Vuex.Store({
                         commit('setNotificationSetting', "modification");
                         commit('setShowNotification', true);
                     }
+                    if (received_info['type'] === 'active.live_suggestion') {
+                        if (received_info['agent'] === 'engineer') {
+                            let daphneResponse = {
+                                "visual_answer_type": "list",
+                                "visual_answer": {
+                                    "list": received_info['suggestion_list']
+                                }
+                            };
+                            commit('setResponse', daphneResponse);
+                        }
+                    }
                     if (received_info['type'] === 'ping') {
                         websocket.send(JSON.stringify({'msg_type': 'ping'}));
                     }
