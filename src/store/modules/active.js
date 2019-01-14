@@ -1,6 +1,7 @@
 // initial state
 import * as _ from 'lodash-es';
 import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
+import Vue from 'vue';
 
 const state = {
     runBackgroundSearch: true,
@@ -11,13 +12,26 @@ const state = {
     notificationBody: "",
     notificationSetting: "",
     showNotification: false,
-    modification: null
+    modification: null,
+    suggestionsByType: {}
 };
 
 const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
+    getFullSuggestionsList(state) {
+        let fullSuggestionsList = [];
+        for (let key in state.suggestionsByType) {
+            // skip loop if the property is from prototype
+            if (!state.suggestionsByType.hasOwnProperty(key)) continue;
+
+            let suggestionsList = state.suggestionsByType[key];
+            console.log(key, suggestionsList);
+            fullSuggestionsList.push(...suggestionsList);
+        }
+        return fullSuggestionsList;
+    }
 };
 
 // actions
@@ -110,6 +124,12 @@ const mutations = {
     },
     setActiveModification(state, activeModification) {
         state.modification = activeModification
+    },
+    addSuggestionListType(state, suggestionsInfo) {
+        Vue.set(state.suggestionsByType, suggestionsInfo.type, suggestionsInfo.list);
+    },
+    clearSuggestionsByType(state) {
+        state.suggestionsByType = {};
     }
 };
 

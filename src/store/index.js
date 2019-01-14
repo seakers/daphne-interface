@@ -75,7 +75,7 @@ export default new Vuex.Store({
                 commit('addFunctionality', functionality);
             }
         },
-        async startWebsocket({ state, commit, dispatch }) {
+        async startWebsocket({ state, commit, dispatch, getters }) {
             return new Promise((resolve, reject) => {
                 // Websocket connection
                 let websocket = new ReconnectingWebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
@@ -112,14 +112,25 @@ export default new Vuex.Store({
                     }
                     if (received_info['type'] === 'active.live_suggestion') {
                         if (received_info['agent'] === 'engineer') {
-                            let daphneResponse = {
-                                "visual_answer_type": "list",
-                                "visual_answer": {
-                                    "list": received_info['suggestion_list']
-                                }
-                            };
-                            commit('setResponse', daphneResponse);
+                            commit('addSuggestionListType', {
+                                type: 'engineer',
+                                list: received_info['suggestion_list']
+                            });
+
                         }
+                        if (received_info['agent'] === 'historian') {
+                            commit('addSuggestionListType', {
+                                type: 'historian',
+                                list: received_info['suggestion_list']
+                            });
+                        }
+                        let daphneResponse = {
+                            "visual_answer_type": "list",
+                            "visual_answer": {
+                                "list": getters.getFullSuggestionsList
+                            }
+                        };
+                        commit('setResponse', daphneResponse);
                     }
                     if (received_info['type'] === 'ping') {
                         websocket.send(JSON.stringify({'msg_type': 'ping'}));
