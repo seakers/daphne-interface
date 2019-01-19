@@ -2,7 +2,7 @@
     <div class="panel-block functionality content">
         <img src="assets/img/loader.svg" style="margin: auto;" height="64" width="64" v-if="isLoading">
         <template v-else>
-            <component v-if="!emptyResponse" v-bind:is="responseTypes[daphneResponse['visual_answer_type']]" v-bind:size="size"></component>
+            <component v-if="!emptyResponse" v-for="(response, index) in receivedResponses" v-bind:is="responseTypes[receivedResponseTypes[index]]" v-bind:response="response"></component>
             <p v-else>The answers from Daphne will be displayed here.</p>
         </template>
     </div>
@@ -35,6 +35,12 @@
             }),
             emptyResponse() {
                 return Object.keys(this.daphneResponse).length === 0;
+            },
+            receivedResponseTypes() {
+                return this.daphneResponse['visual_answer_type'];
+            },
+            receivedResponses() {
+                return this.daphneResponse['visual_answer'];
             }
         },
         components: {

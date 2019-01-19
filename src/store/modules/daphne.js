@@ -39,6 +39,7 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
+                console.log(data['response']['visual_answer_type']);
                 commit('setResponse', data['response']);
             }
             else {
