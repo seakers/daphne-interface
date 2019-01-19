@@ -81,7 +81,7 @@
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
                     try {
-                        let dataResponse = await fetchPost('/api/vassar/evaluate-architecture', reqData);
+                        let dataResponse = await fetchPost(API_URL + 'vassar/evaluate-architecture', reqData);
                         if (dataResponse.ok) {
                             let newArch = await dataResponse.json();
                             this.$store.dispatch('addNewData', newArch);

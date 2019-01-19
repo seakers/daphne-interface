@@ -71,7 +71,7 @@
                         }
                     }
 
-                    let dataResponse = await fetchPost('/api/daphne/commands', reqData);
+                    let dataResponse = await fetchPost(API_URL + 'daphne/commands', reqData);
 
                     if (dataResponse.ok) {
                         // Add the new functionality

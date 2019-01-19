@@ -21,7 +21,7 @@ const actions = {
     async loginUser({ state, commit, rootState }, form) {
         try {
             let reqData = new FormData(form);
-            let dataResponse = await fetchPost('/api/auth/login', reqData);
+            let dataResponse = await fetchPost(API_URL + 'auth/login', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
@@ -43,7 +43,7 @@ const actions = {
     async logoutUser({ state, commit, rootState }) {
         try {
             let reqData = new FormData();
-            let dataResponse = await fetchPost('/api/auth/logout', reqData);
+            let dataResponse = await fetchPost(API_URL + 'auth/logout', reqData);
 
             if (dataResponse.ok) {
                 await dataResponse.json();

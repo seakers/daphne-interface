@@ -62,7 +62,7 @@ const actions = {
             reqData.append('input_num', state.inputNum);
             reqData.append('input_type', state.inputType);
             reqData.append('output_num', state.outputNum);
-            let dataResponse = await fetchPost('/api/daphne/import-data', reqData);
+            let dataResponse = await fetchPost(API_URL + 'daphne/import-data', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
@@ -118,7 +118,7 @@ const actions = {
                 vassarPort = port;
             }
             reqData.append('port', vassarPort);
-            let dataResponse = await fetchPost('/api/vassar/change-port', reqData);
+            let dataResponse = await fetchPost(API_URL + 'vassar/change-port', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
@@ -136,7 +136,7 @@ const actions = {
             commit('setProblemName', problemName);
             let reqData = new FormData();
             reqData.append('problem', problemName);
-            let dataResponse = await fetchPost('/api/daphne/dataset-list', reqData);
+            let dataResponse = await fetchPost(API_URL + 'daphne/dataset-list', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();

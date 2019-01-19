@@ -180,7 +180,7 @@
 
             // Check if user is logged in before putting prompt
             try {
-                fetchGet('/api/auth/check-status').then(async (response) => {
+                fetchGet(API_URL + 'auth/check-status').then(async (response) => {
                     if (response.ok) {
                         let data = await response.json();
                         // Start by setting problem name and current dataset

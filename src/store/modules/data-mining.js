@@ -52,7 +52,7 @@ const actions = {
             reqData.append('featureExpression', rootState.featureApplication.clickedExpression);
             reqData.append('logical_connective', 'AND');
 
-            let dataResponse = await fetchPost('/api/data-mining/get-marginal-driving-features', reqData);
+            let dataResponse = await fetchPost(API_URL + 'data-mining/get-marginal-driving-features', reqData);
 
             if (dataResponse.ok) {
                 let features = await dataResponse.json();
@@ -93,7 +93,7 @@ const actions = {
             reqData.append('featureExpression', rootState.featureApplication.clickedExpression);
             reqData.append('logical_connective', 'OR');
 
-            let dataResponse = await fetchPost('/api/data-mining/get-marginal-driving-features', reqData);
+            let dataResponse = await fetchPost(API_URL + 'data-mining/get-marginal-driving-features', reqData);
 
             if (dataResponse.ok) {
                 let features = await dataResponse.json();
@@ -131,7 +131,7 @@ const actions = {
             reqData.append('problem', rootState.problem.problemName);
             reqData.append('input_type', rootState.problem.inputType);
 
-            let dataResponse = await fetchPost('/api/data-mining/get-driving-features', reqData);
+            let dataResponse = await fetchPost(API_URL + 'data-mining/get-driving-features', reqData);
 
             if (dataResponse.ok) {
                 let features = await dataResponse.json();

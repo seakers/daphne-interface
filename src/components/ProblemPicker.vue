@@ -62,7 +62,7 @@
             async changeProblem() {
                 // Flush the Daphne session if we are changing problems
                 try {
-                    let dataResponse = await fetchPost('/api/daphne/clear-session', new FormData());
+                    let dataResponse = await fetchPost(API_URL + 'daphne/clear-session', new FormData());
                     if (dataResponse.ok) {
                         // Stop all running background tasks
                         await this.$store.dispatch('stopBackgroundTasks');

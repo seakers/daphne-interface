@@ -62,7 +62,7 @@ export default new Vuex.Store({
             }
             let reqData = new FormData();
             reqData.append('port', problem.vassarPort);
-            await fetchPost('/api/vassar/change-port', reqData);
+            await fetchPost(API_URL + 'vassar/change-port', reqData);
             commit('updateExtra', await problem.initFunction(state.problem.problemName));
 
             // Load all the initial functionalities

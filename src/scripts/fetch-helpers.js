@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 
 export async function fetchGet(url) {
-    return fetch(url, {credentials: 'same-origin'});
+    return fetch(url, {credentials: 'include'});
 }
 
 export async function fetchPost(url, postBody) {
@@ -15,7 +15,7 @@ export async function fetchPost(url, postBody) {
         {
             method: 'POST',
             body: postBody,
-            credentials: 'same-origin',
+            credentials: 'include',
             headers: reqHeaders
         }
     );

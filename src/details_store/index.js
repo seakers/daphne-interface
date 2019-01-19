@@ -29,7 +29,7 @@ export default new Vuex.Store({
                 let reqData = new FormData();
                 reqData.append('arch_id', state.archID);
                 reqData.append('problem', state.problem);
-                let dataResponse = await fetchPost('/api/vassar/get-arch-details', reqData);
+                let dataResponse = await fetchPost(API_URL + 'vassar/get-arch-details', reqData);
 
                 if (dataResponse.ok) {
                     let archData = await dataResponse.json();

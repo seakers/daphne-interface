@@ -236,7 +236,7 @@ const actions = {
     async startExperiment({ state, commit }) {
         // Call server to start experiment
         try {
-            let response = await fetchGet('/api/experiment/start-experiment');
+            let response = await fetchGet(API_URL + 'experiment/start-experiment');
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Start the experiment: set the order of the conditions after the tutorial
@@ -261,7 +261,7 @@ const actions = {
         // Call server to start stage
         try {
             let nextStage = state.currentStageNum;
-            let response = await fetchGet('/api/experiment/start-stage/' + nextStage);
+            let response = await fetchGet(API_URL + 'experiment/start-stage/' + nextStage);
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Start the stage: get the starting time from the server information
@@ -283,7 +283,7 @@ const actions = {
         // Call server to finish stage
         try {
             let currentStage = state.currentStageNum - 1;
-            let response = await fetchGet('/api/experiment/finish-stage/' + currentStage);
+            let response = await fetchGet(API_URL + 'experiment/finish-stage/' + currentStage);
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Stage is finished!
@@ -301,7 +301,7 @@ const actions = {
     async finishExperiment({ state, commit }) {
         // Call server to finish experiment
         try {
-            let response = await fetchGet('/api/experiment/finish-experiment');
+            let response = await fetchGet(API_URL + 'experiment/finish-experiment');
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Finish the experiment: set inExperiment to false
@@ -320,7 +320,7 @@ const actions = {
     async recoverExperiment({ state, commit }) {
         // Call server to see if there is an experiment already running
         try {
-            let response = await fetchGet('/api/experiment/reload-experiment');
+            let response = await fetchGet(API_URL + 'experiment/reload-experiment');
             if (response.ok) {
                 let experimentInformation = await response.json();
                 if (experimentInformation.is_running) {

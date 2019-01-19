@@ -230,7 +230,7 @@ async function getOrbitList(problemName) {
         let reqData = new FormData();
         reqData.append('problem_name', problemName);
 
-        let dataResponse = await fetchPost('/api/vassar/get-orbit-list', reqData);
+        let dataResponse = await fetchPost(API_URL + 'vassar/get-orbit-list', reqData);
         if (dataResponse.ok) {
             return dataResponse.json();
         }
@@ -252,7 +252,7 @@ async function getInstrumentList(problemName) {
         let reqData = new FormData();
         reqData.append('problem_name', problemName);
 
-        let dataResponse = await fetchPost('/api/vassar/get-instrument-list', reqData);
+        let dataResponse = await fetchPost(API_URL + 'vassar/get-instrument-list', reqData);
         if (dataResponse.ok) {
             return dataResponse.json();
         }

@@ -15,17 +15,18 @@
   "license": "MIT",
   "dependencies": {
     "annyang": "^2.6.1",
-    "bulma": "^0.7.1",
+    "bulma": "^0.7.2",
     "d3": "^5.7.0",
     "d3-selection-multi": "^1.0.1",
+    "eslint": "^5.12.1",
     "intro.js": "^2.9.3",
     "js-cookie": "^2.2.0",
     "lodash-es": "^4.17.11",
-    "reconnecting-websocket": "^4.0.0-rc5",
+    "reconnecting-websocket": "^4.1.10",
     "speechkitt": "^1.0.0",
-    "vue": "^2.5.16",
-    "vuedraggable": "^2.16.0",
-    "vuex": "^3.0.1"
+    "vue": "^2.5.22",
+    "vuedraggable": "^2.17.0",
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
