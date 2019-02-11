@@ -8,7 +8,8 @@ module.exports = merge(common, {
     mode: 'production',
     plugins: [
         new webpack.DefinePlugin({
-            'API_URL': JSON.stringify('https://www.selva-research.com/api/')
+            'API_URL': JSON.stringify('https://selva-research.engr.tamu.edu/api/'),
+            'WS_URL': JSON.stringify('wss://selva-research.engr.tamu.edu/api/')
         })
     ],
 });

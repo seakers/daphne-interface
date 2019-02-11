@@ -374,7 +374,7 @@ const mutations = {
         state.isRecovering = isRecovering;
     },
     startExperimentWebsocket(state) {
-        state.experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/experiment');
+        state.experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + WS_URL + 'experiment');
         state.experimentWebsocket.onopen = function() {
             console.log('Experiment Web Socket Conenction Made');
         };

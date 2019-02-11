@@ -78,7 +78,7 @@ export default new Vuex.Store({
         async startWebsocket({ state, commit, dispatch, getters }) {
             return new Promise((resolve, reject) => {
                 // Websocket connection
-                let websocket = new ReconnectingWebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/daphne');
+                let websocket = new ReconnectingWebSocket(WS_URL + 'daphne');
                 websocket.onopen = function () {
                     console.log('Web Socket Connection Made');
                     resolve();
@@ -151,7 +151,7 @@ export default new Vuex.Store({
                 reqData.append('problem', rootState.problem.problemName);
                 reqData.append('inputType', rootState.problem.inputType);
 
-                let url = '/api/vassar/start-ga';
+                let url = API_URL + 'vassar/start-ga';
                 let dataResponse = await fetchPost(url, reqData);
 
                 if (dataResponse.ok) {
@@ -173,7 +173,7 @@ export default new Vuex.Store({
                 reqData.append('problem', rootState.problem.problemName);
                 reqData.append('inputType', rootState.problem.inputType);
 
-                let url = '/api/vassar/stop-ga';
+                let url = API_URL + 'vassar/stop-ga';
                 let dataResponse = await fetchPost(url, reqData);
 
                 if (dataResponse.ok) {

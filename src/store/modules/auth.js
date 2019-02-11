@@ -7,7 +7,9 @@ const state = {
     username: '',
     permissions: [],
     hasLoginError: false,
-    loginError: ''
+    loginError: '',
+    hasRegisterError: false,
+    registerError: ''
 };
 
 const initialState = _.cloneDeep(state);
@@ -51,6 +53,28 @@ const actions = {
             }
             else {
                 console.error('Error logging out.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+    async registerUser({ state, commit }, form) {
+        try {
+            let reqData = new FormData(form);
+            let dataResponse = await fetchPost(API_URL + 'auth/register', reqData);
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                if (data['status'] === 'logged_in') {
+                    commit('logUserIn', data);
+                }
+                else {
+                    commit('setLoginError', data);
+                }
+            }
+            else {
+                console.error('Error logging in.');
             }
         }
         catch(e) {

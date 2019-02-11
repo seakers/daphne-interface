@@ -8,7 +8,8 @@ module.exports = merge(common, {
     mode: 'development',
     plugins: [
         new webpack.DefinePlugin({
-            'API_URL': JSON.stringify('http://localhost:8000/api/')
+            'API_URL': JSON.stringify('http://localhost:8080/api/'),
+            'WS_URL': JSON.stringify('ws://localhost:8080/api/')
         })
     ],
     devtool: 'eval-source-map',
