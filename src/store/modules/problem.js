@@ -14,7 +14,10 @@ const state = {
     problemData: [],
     dataUpdateFrom: '',
     datasetList: [],
-    datasetFilename: 'EOSS_data_recalculated.csv', // String
+    datasetInformation: {
+        filename: 'EOSS_data_recalculated.csv',
+        user: false
+    },
     inputNum: 0,
     outputNum: 0,
     inputList: [],
@@ -51,14 +54,14 @@ const getters = {
 
 // actions
 const actions = {
-    async loadNewData({ state, commit }, fileName) {
+    async loadNewData({ state, commit }, datasetInformation) {
         console.log('Importing data...');
 
         try {
             let reqData = new FormData();
             reqData.append('problem', state.problemName);
-            reqData.append('filename', fileName);
-            reqData.append('load_user_files', false);
+            reqData.append('filename', datasetInformation.filename);
+            reqData.append('load_user_files', datasetInformation.user);
             reqData.append('input_num', state.inputNum);
             reqData.append('input_type', state.inputType);
             reqData.append('output_num', state.outputNum);
@@ -131,7 +134,7 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
-    async setProblemName({ state, commit }, problemName) {
+    async setProblemName({ state, commit, rootState }, problemName) {
         try {
             commit('setProblemName', problemName);
             let reqData = new FormData();
@@ -144,7 +147,8 @@ const actions = {
                 data['default'].forEach((dataset) => {
                     datasetList.push({
                         name: dataset,
-                        value: dataset
+                        value: dataset,
+                        user: false
                     });
                 });
                 datasetList.push({
@@ -154,7 +158,8 @@ const actions = {
                 data['user'].forEach((dataset) => {
                     datasetList.push({
                         name: dataset,
-                        value: dataset
+                        value: dataset,
+                        user: true
                     });
                 });
                 commit('setDatasetList', datasetList);
@@ -198,8 +203,8 @@ const mutations = {
     setDatasetList(state, datasetList) {
         state.datasetList = datasetList;
     },
-    setDatasetFilename(state, datasetFilename) {
-        state.datasetFilename = datasetFilename;
+    setDatasetInformation(state, datasetInformation) {
+        state.datasetInformation = datasetInformation;
     },
     updateExtra(state, extra) {
         state.extra = extra;

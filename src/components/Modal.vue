@@ -6,7 +6,7 @@
                 <component v-bind:is="modalContent" v-on:close-modal="onCloseModal"></component>
             </article>
         </div>
-        <button class="modal-close is-large" aria-label="close"></button>
+        <button class="modal-close is-large" aria-label="close"  v-on:click.prevent="$emit('close-modal')"></button>
     </div>
 </template>
 
@@ -14,6 +14,8 @@
     import Stage1Modal from './Stage1Modal';
     import Stage2Modal from './Stage2Modal';
     import LoginModal from './LoginModal';
+    import RegisterModal from './RegisterModal';
+    import SaveDatasetModal from './SaveDatasetModal';
 
     export default {
         name: 'modal',
@@ -25,7 +27,9 @@
         components: {
             Stage1Modal,
             Stage2Modal,
-            LoginModal
+            LoginModal,
+            RegisterModal,
+            SaveDatasetModal
         },
         methods: {
             onCloseModal() {

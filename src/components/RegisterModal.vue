@@ -2,7 +2,7 @@
     <div class="message-body">
         <p>Please enter your username, email and passowrd to register.</p>
         <form id="register-form">
-            <p v-if="hasRegisterError">{{ registerError }}</p>
+            <p v-if="hasRegistrationError">{{ registrationError }}</p>
             <div class="field">
                 <label class="label">Username</label>
                 <div class="control has-icons-left">
@@ -14,7 +14,7 @@
             <div class="field">
                 <label class="label">Email</label>
                 <div class="control has-icons-left">
-                    <input class="input" type="text" placeholder="Your email" name="email">
+                    <input class="input" type="email" placeholder="Your email" name="email">
                     <span class="icon is-small is-left"><i class="fas fa-at"></i></span>
                 </div>
             </div>
@@ -52,8 +52,8 @@
         computed: {
             ...mapState({
                 isLoggedIn: state => state.auth.isLoggedIn,
-                hasRegisterError: state => state.auth.hasRegisterError,
-                registerError: state => state.auth.registerError
+                hasRegistrationError: state => state.auth.hasRegistrationError,
+                registrationError: state => state.auth.registrationError
             })
         },
         methods: {

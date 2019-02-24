@@ -87,7 +87,7 @@
             ...mapState({
                 isModalActive: state => state.modal.isModalActive,
                 modalContent: state => state.modal.modalContent,
-                dataset: state => state.problem.datasetFilename
+                dataset: state => state.problem.datasetInformation
             }),
             ...mapGetters({
                 inExperiment: 'getInExperiment',
@@ -185,17 +185,21 @@
                         let data = await response.json();
                         // Start by setting problem name and current dataset
                         let problemName = data['problem'];
-                        let dataset = data['dataset'];
+                        let datasetFilename = data['dataset_filename'];
+                        let datasetUser = data['dataset_user'];
                         if (problemName === '') {
                             problemName = 'SMAP';
                         }
-                        if (dataset === '') {
-                            dataset = 'test_smap.csv';
+                        if (datasetFilename === '') {
+                            datasetFilename = 'test_smap.csv';
                         }
 
                         // Put the name and dataset back into the store
                         await this.$store.dispatch('setProblemName', problemName);
-                        this.$store.commit('setDatasetFilename', dataset);
+                        this.$store.commit('setDatasetInformation', {
+                            filename: datasetFilename,
+                            user: datasetUser
+                        });
 
                         // If the user is already logged in, just proceed with loading as usual; if not, show login screen
                         if (data['is_logged_in'] === true) {

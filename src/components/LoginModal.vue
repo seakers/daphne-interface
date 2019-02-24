@@ -25,7 +25,7 @@
                 </div>
             </div>
         </form>
-        <p>If you do not have a username, you can either register by clicking <a>here</a> or <a v-on:click.prevent="$emit('close-modal')">continue as a guest</a>.</p>
+        <p>If you do not have a username, you can either register by clicking <a v-on:click.prevent="openRegisterForm">here</a> or <a v-on:click.prevent="$emit('close-modal')">continue as a guest</a>.</p>
     </div>
 </template>
 
@@ -45,6 +45,9 @@
             login() {
                 let form = document.getElementById('login-form');
                 this.$store.dispatch('loginUser', form);
+            },
+            openRegisterForm() {
+                this.$store.commit('activateModal', 'RegisterModal');
             }
         },
         watch: {

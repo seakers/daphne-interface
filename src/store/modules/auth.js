@@ -8,8 +8,8 @@ const state = {
     permissions: [],
     hasLoginError: false,
     loginError: '',
-    hasRegisterError: false,
-    registerError: ''
+    hasRegistrationError: false,
+    registrationError: ''
 };
 
 const initialState = _.cloneDeep(state);
@@ -66,11 +66,11 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                if (data['status'] === 'logged_in') {
-                    commit('logUserIn', data);
+                if (data['status'] === 'registered') {
+                    commit('activateModal', 'LoginModal');
                 }
                 else {
-                    commit('setLoginError', data);
+                    commit('setRegistrationError', data);
                 }
             }
             else {
@@ -101,6 +101,11 @@ const mutations = {
         state.isLoggedIn = false;
         state.hasLoginError = true;
         state.loginError = loginInfo['login_error'];
+    },
+    setRegistrationError(state, registrationInfo) {
+        state.isLoggedIn = false;
+        state.hasRegistrationError = true;
+        state.registrationError = registrationInfo['login_error'];
     }
 };
 

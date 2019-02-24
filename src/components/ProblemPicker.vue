@@ -15,8 +15,8 @@
                 <label class="label">Dataset:</label>
                 <div class="control">
                     <div class="select">
-                        <select v-model="datasetFilename">
-                            <option v-for="dataset in datasetList" v-bind:value="dataset.value">{{ dataset.name }}</option>
+                        <select v-model="datasetInformation">
+                            <option v-for="dataset in datasetList" v-bind:value="{ filename: dataset.value, user: dataset.user }">{{ dataset.name }}</option>
                         </select>
                     </div>
                 </div>
@@ -26,20 +26,32 @@
                     <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
                 </div>
             </div>
+            <div class="field" v-if="isLoggedIn">
+                <div class="control">
+                    <button class="button is-link" v-on:click.prevent="openSaveModal">Save</button>
+                </div>
+            </div>
+
+            <div class="field" v-if="isLoggedIn">
+                <div class="control">
+                    <a class="button is-link" v-bind:href="downloadUrl">Download</a>
+                </div>
+            </div>
         </form>
     </div>
 </template>
 
 <script>
     import { mapState } from 'vuex';
-    import {fetchPost} from '../scripts/fetch-helpers';
+    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
 
     export default {
         name: 'ProblemPicker',
         computed: {
             ...mapState({
                 problemList: state => state.problem.problemList,
-                datasetList: state => state.problem.datasetList
+                datasetList: state => state.problem.datasetList,
+                isLoggedIn: state => state.auth.isLoggedIn
             }),
             problemName: {
                 get() {
@@ -49,13 +61,22 @@
                     this.$store.dispatch('setProblemName', newProblem);
                 }
             },
-            datasetFilename: {
+            datasetInformation: {
                 get() {
-                    return this.$store.state.problem.datasetFilename;
+                    return this.$store.state.problem.datasetInformation;
                 },
-                set(newDatasetFilename) {
-                    this.$store.commit('setDatasetFilename', newDatasetFilename);
+                set(newDatasetInformation) {
+                    this.$store.commit('setDatasetInformation', newDatasetInformation);
                 }
+            },
+            downloadUrl() {
+                let params = {
+                    filename: this.datasetInformation.filename
+                };
+                let queryString = Object.keys(params).map((key) => {
+                    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
+                }).join('&');
+                return API_URL + 'daphne/download-data?' + queryString;
             }
         },
         methods: {
@@ -69,7 +90,7 @@
                         // Init the new problem
                         await this.$store.dispatch('initProblem');
                         // Load the new dataset
-                        await this.$store.dispatch('loadNewData', this.datasetFilename);
+                        await this.$store.dispatch('loadNewData', this.datasetInformation);
                         // Start the background search algorithm
                         if (this.$store.state.auth.isLoggedIn) {
                             this.$store.dispatch("startBackgroundSearch");
@@ -82,7 +103,9 @@
                 catch(e) {
                     console.error('Networking error:', e);
                 }
-
+            },
+            openSaveModal() {
+                this.$store.commit('activateModal', 'SaveDatasetModal');
             }
         }
     }
