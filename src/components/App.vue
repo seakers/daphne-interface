@@ -2,7 +2,7 @@
     <div>
         <div class="columns">
             <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
-                <div>
+                <div class="aside-container">
                     <main-menu></main-menu>
                     <timer
                             v-if="timerExperimentCondition"
@@ -10,6 +10,9 @@
                             v-bind:start-time="stageStartTime"
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
+                    <problem-picker></problem-picker>
+                    <active-switches></active-switches>
+                    <user class="user-info"></user>
                 </div>
             </aside>
             <div class="column is-10" id="admin-panel">
@@ -31,6 +34,9 @@
                         </div>
                     </div>
                 </nav>
+                <section class="section is-small">
+                    <active-message></active-message>
+                </section>
                 <section class="section is-small">
                     <div class="columns is-mobile">
                         <tradespace-plot></tradespace-plot>
@@ -60,23 +66,29 @@
     import TradespacePlot from './TradespacePlot';
     import FunctionalityList from './FunctionalityList';
     import Modal from './Modal';
+    import User from './User';
+    import ProblemPicker from './ProblemPicker';
+    import { mapState, mapGetters } from 'vuex';
+    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
+    import ActiveMessage from "./ActiveMessage";
+    import ActiveSwitches from "./ActiveSwitches";
 
-    import EOSS from '../scripts/eoss';
-    import EOSSFilter from '../scripts/eoss-filter';
-
-    import { mapGetters } from 'vuex';
-
-    let introJs = require('intro.js').introJs;
+    let introJs = require('intro.js');
 
     export default {
         name: 'app',
         data: function () {
             return {
                 tutorial: {},
-                isModalActive: false
+                isStartup: true
             }
         },
         computed: {
+            ...mapState({
+                isModalActive: state => state.modal.isModalActive,
+                modalContent: state => state.modal.modalContent,
+                dataset: state => state.problem.datasetInformation
+            }),
             ...mapGetters({
                 inExperiment: 'getInExperiment',
                 experimentStage: 'getExperimentStage',
@@ -108,9 +120,6 @@
             },
             stageStartTime() {
                 return this.stageInformation[this.experimentStage].startTime;
-            },
-            modalContent() {
-                return this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum];
             }
         },
         methods: {
@@ -119,21 +128,93 @@
                 // First stop the current stage
                 this.$store.dispatch('finishStage').then(() => {
                     // Activate the modal with end of stage information
-                    this.isModalActive = true;
+                    this.$store.commit('activateModal', this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum]);
                 });
             },
             onCloseModal() {
-                this.isModalActive = false;
+                this.$store.commit('closeModal');
+                if (this.modalContent === 'LoginModal' && this.isStartup) {
+                    this.init();
+                }
+            },
+            async init(startData) {
+                // Stop all running background tasks
+                await this.$store.dispatch('stopBackgroundTasks');
+
+                // Start the Websocket
+                await this.$store.dispatch('startWebsocket');
+
+                // Initialize the new problem
+                await this.$store.dispatch('initProblem');
+                if (startData !== undefined && startData['modified_dataset']) {
+                    await this.$store.dispatch('reloadOldData', startData['data']);
+                }
+                else {
+                    await this.$store.dispatch('loadNewData', this.dataset);
+                }
+
+                // Initialize user-only features
+                if (this.$store.state.auth.isLoggedIn) {
+                    await this.$store.dispatch("retrieveActiveSettings");
+                    this.$store.dispatch("startBackgroundSearch");
+                }
+
+                this.isStartup = false;
             }
         },
-        components: { MainMenu, Timer, QuestionBar, TradespacePlot, FunctionalityList, Modal },
+        components: {
+            ActiveSwitches,
+            ActiveMessage,
+            MainMenu,
+            Timer,
+            QuestionBar,
+            TradespacePlot,
+            FunctionalityList,
+            Modal,
+            User,
+            ProblemPicker
+        },
         mounted() {
             // Tutorial
             this.tutorial = introJs();
 
-            // Set up initial state
-            this.$store.commit('setProblem', EOSS);
-            this.$store.commit('setFilter', EOSSFilter);
+            // Check if user is logged in before putting prompt
+            try {
+                fetchGet(API_URL + 'auth/check-status').then(async (response) => {
+                    if (response.ok) {
+                        let data = await response.json();
+                        // Start by setting problem name and current dataset
+                        let problemName = data['problem'];
+                        let datasetFilename = data['dataset_filename'];
+                        let datasetUser = data['dataset_user'];
+                        if (problemName === '') {
+                            problemName = 'SMAP';
+                        }
+                        if (datasetFilename === '') {
+                            datasetFilename = 'test_smap.csv';
+                        }
+
+                        // Put the name and dataset back into the store
+                        await this.$store.dispatch('setProblemName', problemName);
+                        this.$store.commit('setDatasetInformation', {
+                            filename: datasetFilename,
+                            user: datasetUser
+                        });
+
+                        // If the user is already logged in, just proceed with loading as usual; if not, show login screen
+                        if (data['is_logged_in'] === true) {
+                            this.$store.commit('logUserIn', data);
+                            this.init(data);
+                        }
+                        else {
+                            this.$store.commit('activateModal', 'LoginModal');
+                        }
+                    }
+                });
+            }
+            catch (e) {
+                console.error('Networking error:', e);
+            }
 
             // Experiment
             this.$store.dispatch('recoverExperiment').then(() => {
@@ -216,4 +297,18 @@
 </script>
 
 <style scoped>
+    .aside-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .user-info {
+        padding: 30px;
+        width: 100%;
+        flex-grow: 1;
+        color: #F6F7F7;
+        font-size: 16px;
+        font-weight: bold;
+    }
 </style>

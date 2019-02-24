@@ -10,6 +10,9 @@
                     <img src="assets/img/loader.svg" style="margin-right: 5px;" height="20" width="20" v-if="isComputing">
                     Evaluate Architecture
                 </a>
+                <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problem=' + problemName">
+                    Details
+                </a>
             </p>
             <component v-bind:is="displayComponent"></component>
         </div>
@@ -20,6 +23,9 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import EOSSBuilder from './EOSSBuilder';
+    import PartitionBuilder from './PartitionBuilder';
+    import {fetchPost} from "../scripts/fetch-helpers";
+
 
     export default {
         name: 'design-builder',
@@ -32,6 +38,7 @@
             ...mapGetters({
                 hoveredArch: 'getHoveredArch',
                 clickedArch: 'getClickedArch',
+                problemName: 'getProblemName',
                 problemData: 'getProblemData',
                 inExperiment: 'getInExperiment'
             }),
@@ -49,7 +56,7 @@
             }
         },
         components: {
-            EOSSBuilder
+            EOSSBuilder, PartitionBuilder
         },
         methods: {
             outputVal(index) {
@@ -73,14 +80,8 @@
                 if (!arraysAreEq) {
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
-                    reqData.append('special', this.inExperiment ? 'True' : 'False');
                     try {
-                        let dataResponse = await fetch('/api/vassar/evaluate-architecture',
-                            {
-                                method: 'POST',
-                                body: reqData,
-                                credentials: 'same-origin'
-                            });
+                        let dataResponse = await fetchPost(API_URL + 'vassar/evaluate-architecture', reqData);
                         if (dataResponse.ok) {
                             let newArch = await dataResponse.json();
                             this.$store.dispatch('addNewData', newArch);

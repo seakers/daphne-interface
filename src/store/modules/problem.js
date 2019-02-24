@@ -1,21 +1,33 @@
 import { calculateParetoRanking } from '../../scripts/utils';
 import * as _ from 'lodash-es';
+import {fetchPost} from "../../scripts/fetch-helpers";
 
 // initial state
 const state = {
+    problemList: [
+        'ClimateCentric',
+        'SMAP',
+        'Decadal2017Aerosols'
+    ],
+    problemName: '',
+    vassarPort: 9090,
     problemData: [],
-    resultFilename: '', // String
+    dataUpdateFrom: '',
+    datasetList: [],
+    datasetInformation: {
+        filename: 'EOSS_data_recalculated.csv',
+        user: false
+    },
     inputNum: 0,
     outputNum: 0,
     inputList: [],
     outputList: [],
     outputObj: [], // 1 for larger-is-better, -1 for smaller-is-better
+    inputType: 'binary',
     displayComponent: '',
-    importCallback: (data) => {
-        return {
-            problemData: data,
-            extra: {}
-        };
+    problemFunctionalities: [],
+    importCallback: (data, extra) => {
+        return {};
     }, // Callback function to be called after importing data (preprocessing)
     extra: {}, // Data that is exclusive to the problem at hand at won't be used for the general interfaces
     actualName2Index: (name, type) => -1, // To be implemented
@@ -29,6 +41,9 @@ let initialState = {};
 
 // getters
 const getters = {
+    getProblemName(state) {
+        return state.problemName;
+    },
     getProblemData(state) {
         return state.problemData;
     },
@@ -39,27 +54,25 @@ const getters = {
 
 // actions
 const actions = {
-    async loadNewData({ state, commit }, fileName) {
+    async loadNewData({ state, commit }, datasetInformation) {
         console.log('Importing data...');
 
         try {
             let reqData = new FormData();
-            reqData.append('filename', fileName);
-            let dataResponse = await fetch(
-                '/api/ifeed/import-data',
-                {
-                    method: 'POST',
-                    body: reqData,
-                    credentials: 'same-origin'
-                }
-            );
+            reqData.append('problem', state.problemName);
+            reqData.append('filename', datasetInformation.filename);
+            reqData.append('load_user_files', datasetInformation.user);
+            reqData.append('input_num', state.inputNum);
+            reqData.append('input_type', state.inputType);
+            reqData.append('output_num', state.outputNum);
+            let dataResponse = await fetchPost(API_URL + 'daphne/import-data', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                let {problemData, extra} = await state.importCallback(data);
+                let problemData = state.importCallback(data, state.extra);
                 calculateParetoRanking(problemData);
-                commit('updateExtra', extra);
                 commit('updateProblemData', problemData);
+                commit('setDataUpdateFrom', 'loadNewData');
             }
             else {
                 console.error('Error accessing the data.');
@@ -68,6 +81,12 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
+    },
+    async reloadOldData({ state, commit }, oldData) {
+        let problemData = state.importCallback(oldData, state.extra);
+        calculateParetoRanking(problemData);
+        commit('updateProblemData', problemData);
+        commit('setDataUpdateFrom', 'reloadOldData');
     },
     async addNewData({ state, commit }, newData) {
         let dataAlreadyThere = false;
@@ -80,31 +99,73 @@ const actions = {
         });
 
         if (!dataAlreadyThere) {
-            let procData = await state.importCallback([newData]);
-            commit('addProblemData', procData.problemData[0]);
+            let problemData = state.importCallback([newData], state.extra);
+            commit('addProblemData', problemData[0]);
+            commit('setDataUpdateFrom', 'addNewData');
         }
         else {
             commit('updateClickedArch', newIndex);
         }
     },
+    async addNewDataFromGA({ state, commit }, newData) {
+        // We can assume it's a new point as the server makes sure of that!
+        let problemData = state.importCallback([newData], state.extra);
+        commit('addProblemData', problemData[0]);
+        commit('setDataUpdateFrom', 'addNewDataFromGA');
+    },
     async changeVassarPort({ state, commit }, port) {
         try {
             let reqData = new FormData();
-            reqData.append('port', port);
-            let dataResponse = await fetch(
-                '/api/vassar/change-port',
-                {
-                    method: 'POST',
-                    body: reqData,
-                    credentials: 'same-origin'
-                }
-            );
+            let vassarPort = state.vassarPort;
+            if (port !== undefined) {
+                vassarPort = port;
+            }
+            reqData.append('port', vassarPort);
+            let dataResponse = await fetchPost(API_URL + 'vassar/change-port', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
             }
             else {
-                console.error('Error accessing the data.');
+                console.error('Error changing VASSAR port.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+    async setProblemName({ state, commit, rootState }, problemName) {
+        try {
+            commit('setProblemName', problemName);
+            let reqData = new FormData();
+            reqData.append('problem', problemName);
+            let dataResponse = await fetchPost(API_URL + 'daphne/dataset-list', reqData);
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                let datasetList = [];
+                data['default'].forEach((dataset) => {
+                    datasetList.push({
+                        name: dataset,
+                        value: dataset,
+                        user: false
+                    });
+                });
+                datasetList.push({
+                    name: '---',
+                    value: ''
+                });
+                data['user'].forEach((dataset) => {
+                    datasetList.push({
+                        name: dataset,
+                        value: dataset,
+                        user: true
+                    });
+                });
+                commit('setDatasetList', datasetList);
+            }
+            else {
+                console.error('Error loading the new datasets.');
             }
         }
         catch(e) {
@@ -117,12 +178,16 @@ const actions = {
 const mutations = {
     setProblem(state, problemInfo) {
         // Set the problem instance
+        state.problemName = problemInfo.problemName;
+        state.vassarPort = problemInfo.vassarPort;
         state.inputNum = problemInfo.inputNum;
         state.outputNum = problemInfo.outputNum;
         state.inputList = problemInfo.inputList;
         state.outputList = problemInfo.outputList;
         state.outputObj = problemInfo.outputObj;
+        state.inputType = problemInfo.inputType;
         state.displayComponent = problemInfo.displayComponent;
+        state.problemFunctionalities = problemInfo.problemFunctionalities;
         state.importCallback = problemInfo.importCallback;
         state.extra = problemInfo.extra;
         state.actualName2Index = problemInfo.actualName2Index;
@@ -132,6 +197,15 @@ const mutations = {
         state.ppFeatureSingle = problemInfo.ppFeatureSingle;
         initialState = _.cloneDeep(state);
     },
+    setProblemName(state, problemName) {
+        state.problemName = problemName;
+    },
+    setDatasetList(state, datasetList) {
+        state.datasetList = datasetList;
+    },
+    setDatasetInformation(state, datasetInformation) {
+        state.datasetInformation = datasetInformation;
+    },
     updateExtra(state, extra) {
         state.extra = extra;
     },
@@ -140,6 +214,9 @@ const mutations = {
     },
     addProblemData(state, newData) {
         state.problemData.push(newData);
+    },
+    setDataUpdateFrom(state, dataUpdateFrom) {
+        state.dataUpdateFrom = dataUpdateFrom;
     },
     resetProblem(state) {
         state = Object.assign(state, _.cloneDeep(initialState));

@@ -1,16 +1,11 @@
 <template>
-    <p>{{ getResponse['visual_answer'] }}</p>
+    <p>{{ response }}</p>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
     export default {
         name: 'text-response',
-        computed: {
-            ...mapGetters([
-                'getResponse'
-            ])
-        }
+        props: ['response'],
     }
 </script>
 

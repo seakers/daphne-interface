@@ -3,13 +3,22 @@
         <table class="table" id="arch-info-display-table">
             <thead>
             <tr>
+                <th>Satellite</th>
                 <th>Orbit</th>
                 <th>Instruments</th>
             </tr>
             </thead>
             <tbody>
                 <tr v-for="(row, index) in jsonArch" v-bind:key="index" v-bind:name="row.orbit">
-                    <th class="arch-cell" v-bind:name="orbitDisplayName(row.orbit)">{{ orbitDisplayName(row.orbit) }}</th>
+                    <th class="arch-cell" v-bind:name="index">
+                        <a href="#" v-on:click.prevent="onRemoveSatellite(index)" v-if="jsonArch[index].children.length === 0"><span class="icon"><span class="fas fa-times"></span></span></a>
+                        Satellite {{index}}
+                    </th>
+                    <td class="orbit-selection">
+                        <select v-on:change="onChangeOrbit">
+                            <option v-for="orbit in extraInfo.orbitList" v-bind:value="orbit" v-bind:selected="orbit === row.orbit">{{ orbit }}</option>
+                        </select>
+                    </td>
                     <draggable class="instruments-list" :element="'td'" v-bind:options="instrumentListOptions" @add="onAddInstrList">
                         <div v-for="(instrument, childIndex) in row.children" class="arch-box" v-bind:key="instrument + index" v-bind:name="instrDisplayName(instrument)">
                             {{ instrDisplayName(instrument) }}
@@ -18,11 +27,7 @@
                 </tr>
             </tbody>
         </table>
-        <draggable id="instrument-adder-list" v-bind:options="instrumentAdderOptions" @add="onAddInstrAdder">
-            <div v-for="instrument in extraInfo.instrumentList" class="arch-box" v-bind:key="instrument" v-bind:name="instrDisplayName(instrument)">
-                {{ instrDisplayName(instrument) }}
-            </div>
-        </draggable>
+        <p><a class="button" v-on:click="onAddSatellite" v-if="jsonArch.length < extraInfo.instrumentNum">Add another satellite</a></p>
     </div>
 </template>
 
@@ -31,7 +36,7 @@
     import draggable from 'vuedraggable';
 
     export default {
-        name: 'eoss-builder',
+        name: 'partition-builder',
         data() {
             return {
                 instrumentAdderOptions: {
@@ -75,20 +80,23 @@
                 let extraInfo = this.extraInfo;
                 let jsonArchitecture = [];
 
-                for (let i = 0; i < extraInfo.orbitNum; i++) {
-                    let orbit = extraInfo.orbitList[i];
-                    let assigned = [];
-
-                    for (let j = 0; j < extraInfo.instrumentNum; j++) {
-                        if (architectureInputs[i*extraInfo.instrumentNum + j] === true) {
-                            let instrument = extraInfo.instrumentList[j];
-                            //Store the instrument names assigned to jth orbit
-                            assigned.push(instrument);
-                        }
+                // First of all count the number of rows by checking the sets with a non-negative orbit
+                let numSatellites = 0;
+                for (let i = extraInfo.instrumentNum; i < 2*extraInfo.instrumentNum; ++i) {
+                    if (architectureInputs[i] !== -1) {
+                        ++numSatellites;
                     }
-                    // Store the name of the orbit and the assigned instruments
-                    jsonArchitecture.push({ 'orbit': orbit, 'children': assigned });
                 }
+
+                // with the number of satellites, create an array with this size and fill it with objects containing the
+                // orbits and the instruments for each satellite
+                for (let i = 0; i < numSatellites; ++i) {
+                    jsonArchitecture.push(({ 'orbit': extraInfo.orbitList[architectureInputs[extraInfo.instrumentNum + i]], 'children': []}));
+                }
+                for (let i = 0; i < extraInfo.instrumentNum; ++i) {
+                    jsonArchitecture[architectureInputs[i]].children.push(extraInfo.instrumentList[i]);
+                }
+
                 return jsonArchitecture;
             }
         },
@@ -104,57 +112,73 @@
                 return this.extraInfo.instrumentAlias[instrument];
             },
 
-            boolArch() {
-                let bitString = [];
-                let bitStringLength = this.extraInfo.orbitNum*this.extraInfo.instrumentNum;
-                for (let i = 0; i < bitStringLength; i++) {
-                    bitString.push(false);
+            discreteArch() {
+                let genome = [];
+                let genomeLength = 2*this.extraInfo.instrumentNum;
+                for (let i = 0; i < genomeLength; i++) {
+                    genome.push(-1);
                 }
 
+                // First fill up the instruments in the genome
                 let tableInstrumentRows = document.getElementsByClassName('instruments-list');
                 for (let i = 0; i < tableInstrumentRows.length; ++i) {
                     for (let j = 0; j < tableInstrumentRows[i].children.length; ++j) {
                         let child = tableInstrumentRows[i].children[j];
                         if (child.classList.contains('arch-box')) {
                             let position = this.$store.state.problem.displayName2Index(child.textContent.trim(), 'instrument');
-                            bitString[this.extraInfo.instrumentNum*i + +position] = true;
+                            genome[+position] = i;
                         }
                     }
                 }
-                return bitString;
-            },
 
-            getBoolArrayIndex(list, element) {
-                let tableInstrumentRows = document.getElementsByClassName('instruments-list');
-                for (let i = 0; i < tableInstrumentRows.length; ++i) {
-                    if (tableInstrumentRows[i] === list) {
-                        let position = this.$store.state.problem.displayName2Index(element.textContent.trim(), 'instrument');
-                        return this.extraInfo.instrumentNum*i + +position;
-                    }
+                // Then do the same for the orbits
+                let orbitSelectionRows = document.getElementsByClassName('orbit-selection');
+                for (let i = 0; i < orbitSelectionRows.length; ++i) {
+                    let orbitSelector = orbitSelectionRows[i].getElementsByTagName("select")[0];
+                    let orbitPosition = this.$store.state.problem.displayName2Index(orbitSelector.value.trim(), 'orbit');
+                    genome[this.extraInfo.instrumentNum + i] = +orbitPosition;
                 }
-            },
 
-            onAddInstrAdder(event) {
-                if (event.from !== event.to) {
-                    let newIndex = this.getBoolArrayIndex(event.from, event.item);
-                    event.item.remove();
-                    let boolArch = this.boolArch();
-                    boolArch[newIndex] = false;
-                    this.$store.commit('updateClickedArchInputs', boolArch);
-                }
+                return genome;
             },
 
             onAddInstrList(event) {
                 if (event.from !== event.to) {
-                    let newIndex = this.getBoolArrayIndex(event.to, event.item);
-                    event.item.remove();
-                    let boolArch = this.boolArch();
-                    if (!boolArch[newIndex]) {
-                        boolArch[newIndex] = true;
-                        this.$store.commit('updateClickedArchInputs', boolArch);
+                    let discreteArch = this.discreteArch();
+                    this.$store.commit('updateClickedArchInputs', discreteArch);
+                }
+            },
+
+            onChangeOrbit(event) {
+                let discreteArch = this.discreteArch();
+                this.$store.commit('updateClickedArchInputs', discreteArch);
+            },
+
+            onAddSatellite(event) {
+                let discreteArch = this.discreteArch();
+                let i = 0;
+                while (discreteArch[i] !== -1) {
+                    ++i;
+                }
+                discreteArch[i] = 0;
+                this.$store.commit('updateClickedArchInputs', discreteArch);
+            },
+
+            onRemoveSatellite(index) {
+                let discreteArch = this.discreteArch();
+
+                // First move all instruments with a satellite with higher index down one index
+                for (let i = 0; i < this.extraInfo.instrumentNum; ++i) {
+                    if (discreteArch[i] > index) {
+                        discreteArch[i]--;
                     }
                 }
-
+                // Then move the orbit assignments to the left in the genome
+                for (let i = this.extraInfo.instrumentNum + index; i < 2*this.extraInfo.instrumentNum - 1; ++i) {
+                    discreteArch[i] = discreteArch[i+1];
+                }
+                discreteArch[discreteArch.length-1] = -1;
+                this.$store.commit('updateClickedArchInputs', discreteArch);
             }
         }
     }
@@ -173,7 +197,7 @@
 
     .design-space {
         display: flex;
-        align-items: center;
+        flex-direction: column;
         width: 100%;
     }
 

@@ -54,10 +54,12 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
+    import { mapGetters, mapMutations, mapState } from 'vuex';
     import * as _ from 'lodash-es';
     import * as d3 from 'd3';
     import 'd3-selection-multi';
+    import {fetchGet, fetchPost} from "../scripts/fetch-helpers";
+
 
     export default {
         name: 'tradespace-plot',
@@ -287,8 +289,8 @@
                         context.fill();
                     }
                     else if (pointShape === 'cross') {
-                        context.fillRect(tx - 4, ty - 1, 8, 2);
-                        context.fillRect(tx - 1, ty - 4, 2, 8);
+                        context.fillRect(tx - 8, ty - 2, 16, 4);
+                        context.fillRect(tx - 2, ty - 8, 4, 16);
                     }
                 });
 
@@ -388,17 +390,10 @@
                     let reqData = new FormData();
                     reqData.append('selected', JSON.stringify(selected));
                     reqData.append('non_selected', JSON.stringify(non_selected));
-                    let dataResponse = await fetch(
-                        '/api/ifeed/set-target',
-                        {
-                            method: 'POST',
-                            body: reqData,
-                            credentials: 'same-origin'
-                        }
-                    );
+                    let dataResponse = await fetchPost(API_URL + 'ifeed/set-target', reqData);
 
                     if (dataResponse.ok) {
-                        console.log('Target selection updated')
+                        console.log('Target selection updated');
                     }
                     else {
                         console.error('Error obtaining the driving features.');
@@ -411,10 +406,6 @@
         },
 
         watch: {
-            problemData: function(val, oldVal) {
-                this.$store.dispatch('updatePlotData', val);
-            },
-
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
             },
@@ -616,6 +607,25 @@
         mounted() {
             window.addEventListener('resize', () => {
                 this.updatePlot(0, 1);
+            });
+
+            this.$store.subscribe((mutation, state) => {
+                if (mutation.type === 'setDataUpdateFrom') {
+                    let updateFrom = state.problem.dataUpdateFrom;
+                    if (updateFrom === 'loadNewData' || updateFrom === 'reloadOldData') {
+                        this.$store.commit('updatePlotData', this.problemData);
+                        // Mark the last point added as the selected one
+                        if (this.plotData.length > 0) {
+                            this.$store.commit('updateClickedArch', this.plotData.length - 1);
+                        }
+                    }
+                    else if (updateFrom === 'addNewData') {
+                        this.$store.commit('addPlotData', this.problemData);
+                    }
+                    else if (updateFrom === 'addNewDataFromGA') {
+                        this.$store.commit('addPlotDataFromGA', this.problemData);
+                    }
+                }
             });
         }
     }

@@ -1,11 +1,14 @@
 // initial state
 import * as _ from 'lodash-es';
+import {fetchPost} from "../../scripts/fetch-helpers";
+
 
 const state = {
     features: [],
+    featureIDsJustAdded: [],
     scores: [],
-    supportThreshold: 0.002,
-    confidenceThreshold: 0.2,
+    supportThreshold: 0.1,
+    confidenceThreshold: 0.1,
     liftThreshold: 1
 };
 
@@ -23,6 +26,89 @@ const getters = {
 
 // actions
 const actions = {
+
+    async runConjunctiveLocalSearch({ state, commit, rootState}){
+        try {
+            let reqData = new FormData();
+            // Generate list of selected and not selected point ids
+            let selectedIds = [];
+            let nonSelectedIds = [];
+            rootState.tradespacePlot.selectedArchs.forEach((point, index) => {
+                if (point) {
+                    selectedIds.push(index);
+                }
+                else {
+                    nonSelectedIds.push(index);
+                }
+            });
+            reqData.append('selected', JSON.stringify(selectedIds));
+            reqData.append('non_selected', JSON.stringify(nonSelectedIds));
+            reqData.append('supp', state.supportThreshold);
+            reqData.append('conf', state.confidenceThreshold);
+            reqData.append('lift', state.liftThreshold);
+            reqData.append('problem', rootState.problem.problemName);
+            reqData.append('input_type', rootState.problem.inputType);
+
+            reqData.append('featureExpression', rootState.featureApplication.clickedExpression);
+            reqData.append('logical_connective', 'AND');
+
+            let dataResponse = await fetchPost(API_URL + 'data-mining/get-marginal-driving-features', reqData);
+
+            if (dataResponse.ok) {
+                let features = await dataResponse.json();
+
+                commit('addFeatures', features);
+            }
+            else {
+                console.error('Error obtaining the driving features.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
+    async runDisjunctiveLocalSearch({ state, commit, rootState}){
+        try {
+            let reqData = new FormData();
+            // Generate list of selected and not selected point ids
+            let selectedIds = [];
+            let nonSelectedIds = [];
+            rootState.tradespacePlot.selectedArchs.forEach((point, index) => {
+                if (point) {
+                    selectedIds.push(index);
+                }
+                else {
+                    nonSelectedIds.push(index);
+                }
+            });
+            reqData.append('selected', JSON.stringify(selectedIds));
+            reqData.append('non_selected', JSON.stringify(nonSelectedIds));
+            reqData.append('supp', state.supportThreshold);
+            reqData.append('conf', state.confidenceThreshold);
+            reqData.append('lift', state.liftThreshold);
+            reqData.append('problem', rootState.problem.problemName);
+            reqData.append('input_type', rootState.problem.inputType);
+
+            reqData.append('featureExpression', rootState.featureApplication.clickedExpression);
+            reqData.append('logical_connective', 'OR');
+
+            let dataResponse = await fetchPost(API_URL + 'data-mining/get-marginal-driving-features', reqData);
+
+            if (dataResponse.ok) {
+                let features = await dataResponse.json();
+
+                commit('addFeatures', features);
+            }
+            else {
+                console.error('Error obtaining the driving features.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
     async getDrivingFeatures({ state, commit, rootState }) {
         try {
             let reqData = new FormData();
@@ -42,14 +128,10 @@ const actions = {
             reqData.append('supp', state.supportThreshold);
             reqData.append('conf', state.confidenceThreshold);
             reqData.append('lift', state.liftThreshold);
-            let dataResponse = await fetch(
-                '/api/data-mining/get-driving-features',
-                {
-                    method: 'POST',
-                    body: reqData,
-                    credentials: 'same-origin'
-                }
-            );
+            reqData.append('problem', rootState.problem.problemName);
+            reqData.append('input_type', rootState.problem.inputType);
+
+            let dataResponse = await fetchPost(API_URL + 'data-mining/get-driving-features-epsilon-moea', reqData);
 
             if (dataResponse.ok) {
                 let features = await dataResponse.json();
@@ -107,6 +189,7 @@ function computeScores(features) {
 const mutations = {
     setFeatures(state, features) {
         state.features = features;
+        state.featureIDsJustAdded = [];
         state.scores = computeScores(features);
 
         let utopiaPoint = getNewUtopiaPoint(features);
@@ -122,17 +205,22 @@ const mutations = {
             state.features[i].id = i;
         }
     },
-    addFeature(state, feature) {
-        // Add new feature
-        state.features.push(feature);
+    addFeatures(state, features) {
+        // Add a list of new features
+        state.features = state.features.concat(features);
+        state.featureIDsJustAdded = [];
 
-        // Initialize id
-        let lastFeatureIndex = state.features.length-1;
-        state.features[lastFeatureIndex].id = lastFeatureIndex;
+        for(let i = 0; i < features.length; i++){
+            let index = state.features.length - 1 - features.length + i;
 
-        // Compute new score
-        let score = 1 - Math.sqrt(Math.pow(1 - feature.metrics[2], 2) + Math.pow(1 - feature.metrics[3], 2));
-        state.scores.push(score);
+            // Initialize id
+            state.features[index].id = index;
+            state.featureIDsJustAdded.push(index);
+
+            // Compute new score
+            let score = 1 - Math.sqrt(Math.pow(1 - features[i].metrics[2], 2) + Math.pow(1 - features[i].metrics[3], 2));
+            state.scores.push(score);
+        }
 
         // Remove old utopia point
         state.features.shift();

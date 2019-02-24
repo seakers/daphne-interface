@@ -1,5 +1,6 @@
 import store from '../store';
-import * as _ from 'lodash-es';
+import {fetchGet, fetchPost} from "./fetch-helpers";
+
 
 class Architecture {
     constructor(id, inputs, outputs) {
@@ -10,15 +11,35 @@ class Architecture {
 }
 
 export default {
-    inputNum: 60,
+    problemName: 'ClimateCentric',
+    vassarPort: 9090,
+    inputNum: 1,
     outputNum: 2,
     inputList: [],
-    outputList: ['Science', 'Cost ($K)'],
+    outputList: ['Science', 'Cost ($M)'],
     outputObj: [1, -1],
+    inputType: 'binary',
     displayComponent: 'EOSSBuilder',
-    importCallback: async (data) => {
+    problemFunctionalities: [
+        'DesignBuilder',
+        'DaphneAnswer',
+        'DataMining',
+        'EOSSFilter',
+        'FeatureApplication',
+        'OrbitInstrInfo',
+        'AvailableCommands',
+        'CommandsInformation',
+    ],
+    shownFunctionalities: [
+        'DesignBuilder',
+        'DaphneAnswer',
+        'OrbitInstrInfo',
+        'AvailableCommands',
+        'CommandsInformation'
+    ],
+    async initFunction(problemName) {
         let extra = {};
-        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(), getInstrumentList()]);
+        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(problemName), getInstrumentList(problemName)]);
         extra.orbitNum = extra.orbitList.length;
         extra.instrumentNum = extra.instrumentList.length;
 
@@ -47,11 +68,10 @@ export default {
             extra.instrumentInvAlias[element[1]] = element[0];
         });
 
-        let problemData = preprocessing(data);
-        return {
-            problemData: problemData,
-            extra: extra
-        }
+        return extra;
+    },
+    importCallback(data, extra) {
+        return preprocessing(data, extra);
     },
     extra: {},
     actualName2Index: (name, type) => {
@@ -205,9 +225,12 @@ export default {
     Returns the list of orbits
     @return orbitList: a string list containing the names of orbits
     */
-async function getOrbitList() {
+async function getOrbitList(problemName) {
     try {
-        let dataResponse = await fetch('/api/vassar/get-orbit-list', {credentials: 'same-origin'});
+        let reqData = new FormData();
+        reqData.append('problem_name', problemName);
+
+        let dataResponse = await fetchPost(API_URL + 'vassar/get-orbit-list', reqData);
         if (dataResponse.ok) {
             return dataResponse.json();
         }
@@ -224,9 +247,12 @@ async function getOrbitList() {
     Returns the list of instruments
     @return instrumentList: a string list containing the names of instruments
     */
-async function getInstrumentList() {
+async function getInstrumentList(problemName) {
     try {
-        let dataResponse = await fetch('/api/vassar/get-instrument-list', {credentials: 'same-origin'});
+        let reqData = new FormData();
+        reqData.append('problem_name', problemName);
+
+        let dataResponse = await fetchPost(API_URL + 'vassar/get-instrument-list', reqData);
         if (dataResponse.ok) {
             return dataResponse.json();
         }
@@ -239,24 +265,31 @@ async function getInstrumentList() {
     }
 }
 
-function preprocessing(data) {
+function preprocessing(data, extra) {
     let output = [];
-    data.forEach(d => {
-        // convert string to numbers
-        d.science = Number(d.science);
-        d.cost = Number(d.cost);
-        if (d.cost === 100000) {
-            d.cost = 0;
-            d.science = 0;
-        }
-        let outputs = d.outputs;
-        let inputs = d.inputs;
-        let id = +d.id;
-
-        let arch = new Architecture(id, inputs, outputs);
-
+    if (data.length === 0 || data[0].inputs.length !== extra.orbitNum*extra.instrumentNum) {
+        let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
+        let arch = new Architecture(0, inputs, [0, 0]);
         output.push(arch);
-    });
+    }
+    else {
+        data.forEach(d => {
+            // convert string to numbers
+            d.science = Number(d.science);
+            d.cost = Number(d.cost);
+            if (d.cost === 100000) {
+                d.cost = 0;
+                d.science = 0;
+            }
+            let outputs = d.outputs;
+            let inputs = d.inputs;
+            let id = +d.id;
+
+            let arch = new Architecture(id, inputs, outputs);
+
+            output.push(arch);
+        });
+    }
 
     return output;
 }

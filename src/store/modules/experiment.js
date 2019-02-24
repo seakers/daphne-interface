@@ -1,5 +1,6 @@
 // initial state
 import * as _ from "lodash-es";
+import {fetchGet} from "../../scripts/fetch-helpers";
 
 const state = {
     inExperiment: false,
@@ -235,7 +236,7 @@ const actions = {
     async startExperiment({ state, commit }) {
         // Call server to start experiment
         try {
-            let response = await fetch('/api/experiment/start-experiment', {credentials: 'same-origin'});
+            let response = await fetchGet(API_URL + 'experiment/start-experiment');
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Start the experiment: set the order of the conditions after the tutorial
@@ -260,7 +261,7 @@ const actions = {
         // Call server to start stage
         try {
             let nextStage = state.currentStageNum;
-            let response = await fetch('/api/experiment/start-stage/' + nextStage, {credentials: 'same-origin'});
+            let response = await fetchGet(API_URL + 'experiment/start-stage/' + nextStage);
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Start the stage: get the starting time from the server information
@@ -282,7 +283,7 @@ const actions = {
         // Call server to finish stage
         try {
             let currentStage = state.currentStageNum - 1;
-            let response = await fetch('/api/experiment/finish-stage/' + currentStage, {credentials: 'same-origin'});
+            let response = await fetchGet(API_URL + 'experiment/finish-stage/' + currentStage);
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Stage is finished!
@@ -300,7 +301,7 @@ const actions = {
     async finishExperiment({ state, commit }) {
         // Call server to finish experiment
         try {
-            let response = await fetch('/api/experiment/finish-experiment', {credentials: 'same-origin'});
+            let response = await fetchGet(API_URL + 'experiment/finish-experiment');
             if (response.ok) {
                 let experimentInformation = await response.json();
                 // Finish the experiment: set inExperiment to false
@@ -319,7 +320,7 @@ const actions = {
     async recoverExperiment({ state, commit }) {
         // Call server to see if there is an experiment already running
         try {
-            let response = await fetch('/api/experiment/reload-experiment', {credentials: 'same-origin'});
+            let response = await fetchGet(API_URL + 'experiment/reload-experiment');
             if (response.ok) {
                 let experimentInformation = await response.json();
                 if (experimentInformation.is_running) {
@@ -373,7 +374,7 @@ const mutations = {
         state.isRecovering = isRecovering;
     },
     startExperimentWebsocket(state) {
-        state.experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + window.location.host + '/api/experiment');
+        state.experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + WS_URL + 'experiment');
         state.experimentWebsocket.onopen = function() {
             console.log('Experiment Web Socket Conenction Made');
         };
