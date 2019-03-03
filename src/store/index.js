@@ -83,6 +83,14 @@ export default new Vuex.Store({
                 let websocket = new ReconnectingWebSocket(WS_URL + 'daphne');
                 websocket.onopen = function () {
                     console.log('Web Socket Connection Made');
+
+                    // Start ping routine
+                    setInterval(() => {
+                        console.log("Ping sent!");
+                        websocket.send(JSON.stringify({'msg_type': 'ping'}));
+                    }, 30000);
+
+                    // Resolve the promise
                     resolve();
                 };
                 websocket.onmessage = function (event) {
@@ -135,7 +143,7 @@ export default new Vuex.Store({
                         commit('setResponse', daphneResponse);
                     }
                     if (received_info['type'] === 'ping') {
-                        websocket.send(JSON.stringify({'msg_type': 'ping'}));
+                        console.log("Ping back!");
                     }
                 };
                 commit('setWebsocket', websocket);
