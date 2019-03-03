@@ -20,13 +20,16 @@ const getters = {
 
 // actions
 const actions = {
-    async loginUser({ state, commit, rootState }, form) {
+    async loginUser({ state, commit, rootState }, { username, password }) {
         try {
-            let reqData = new FormData(form);
+            let reqData = new FormData();
+            reqData.append("username", username);
+            reqData.append("password", password);
             let dataResponse = await fetchPost(API_URL + 'auth/login', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
+                console.log(data);
                 if (data['status'] === 'logged_in') {
                     commit('logUserIn', data);
                 }
@@ -106,6 +109,11 @@ const mutations = {
         state.isLoggedIn = false;
         state.hasRegistrationError = true;
         state.registrationError = registrationInfo['login_error'];
+    },
+    restoreAuth(state, recoveredState) {
+        Object.keys(recoveredState).forEach((key) => {
+            state[key] = recoveredState[key];
+        });
     }
 };
 

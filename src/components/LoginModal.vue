@@ -43,8 +43,12 @@
         },
         methods: {
             login() {
-                let form = document.getElementById('login-form');
-                this.$store.dispatch('loginUser', form);
+                let formData = new FormData(document.getElementById('login-form'));
+
+                this.$store.dispatch('loginUser', {
+                    username: formData.get("username"),
+                    password: formData.get("password")
+                });
             },
             openRegisterForm() {
                 this.$store.commit('activateModal', 'RegisterModal');

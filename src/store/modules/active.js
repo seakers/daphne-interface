@@ -130,6 +130,14 @@ const mutations = {
     },
     clearSuggestionsByType(state) {
         state.suggestionsByType = {};
+    },
+    resetActive(state) {
+        state = Object.assign(state, _.cloneDeep(initialState));
+    },
+    restoreActive(state, recoveredState) {
+        Object.keys(recoveredState).forEach((key) => {
+            state[key] = recoveredState[key];
+        });
     }
 };
 

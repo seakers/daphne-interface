@@ -87,7 +87,9 @@
             ...mapState({
                 isModalActive: state => state.modal.isModalActive,
                 modalContent: state => state.modal.modalContent,
-                dataset: state => state.problem.datasetInformation
+                dataset: state => state.problem.datasetInformation,
+                datasetInformations: state => state.experiment.datasetInformations,
+                problems: state => state.experiment.problems
             }),
             ...mapGetters({
                 inExperiment: 'getInExperiment',
@@ -95,9 +97,7 @@
                 stageInformation: 'getStageInformation',
                 websocket: 'getWebsocket',
                 isRecovering: 'getIsRecovering',
-                currentStageNum: 'getCurrentStageNum',
-                datasets: 'getDatasets',
-                vassarPort: 'getVassarPort'
+                currentStageNum: 'getCurrentStageNum'
             }),
             questionBarExperimentCondition() {
                 if (!this.inExperiment) {
@@ -179,7 +179,7 @@
             this.tutorial = introJs();
 
             // Check if user is logged in before putting prompt
-            try {
+            /*try {
                 fetchGet(API_URL + 'auth/check-status').then(async (response) => {
                     if (response.ok) {
                         let data = await response.json();
@@ -214,82 +214,88 @@
             }
             catch (e) {
                 console.error('Networking error:', e);
-            }
+            }*/
 
             // Experiment
-            this.$store.dispatch('recoverExperiment').then(() => {
+            this.$store.dispatch('recoverExperiment').then(async () => {
                 this.$store.commit('setIsRecovering', false);
+
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
-                    this.$store.dispatch('startExperiment').then(() => {
-                        this.$store.commit('setInExperiment', true);
+                    this.$store.dispatch('startExperiment').then(async () => {
+                        let form = new FormData();
+                        form.append("username", "jpl-experiment");
+                        form.append("password", "nasa2019");
+                        await this.$store.dispatch('loginUser', {
+                            username: "jpl-experiment",
+                            password: "nasa2019"
+                        });
+                        // Restart WS after login
+                        await this.$store.dispatch('startWebsocket');
+                        this.$store.commit('startExperimentWebsocket');
+
+                        // Set the tutorial
                         this.$store.commit('setExperimentStage', 'tutorial');
+                        this.$store.commit('setInExperiment', true);
                     });
                 }
             });
 
-            /*this.$store.commit('addFunctionality', 'DesignBuilder');
-            this.$store.commit('addFunctionality', 'DataMining');
-            this.$store.commit('addFunctionality', 'FeatureApplication');
-            this.$store.commit('addFunctionality', 'EOSSFilter');
-            this.$store.commit('addFunctionality', 'DaphneAnswer');
-            this.$store.commit('addFunctionality', 'OrbitInstrInfo');
-            this.$store.commit('addFunctionality', 'AvailableCommands');
-            this.$store.commit('addFunctionality', 'CommandsInformation');
-            this.$store.dispatch('loadNewData', 'EOSS_data_recalculated.csv');*/
         },
         watch: {
-            experimentStage: function (val, oldVal) {
+            experimentStage: async function (val, oldVal) {
                 if (this.inExperiment && !this.isRecovering) {
-                    // Reset state
-                    this.$store.commit('resetDaphne');
-                    this.$store.commit('resetTradespacePlot');
-                    this.$store.commit('resetProblem');
-                    this.$store.commit('resetFunctionalityList');
-                    this.$store.commit('resetDataMining');
-                    this.$store.commit('resetFilter');
-                    this.$store.commit('resetFeatureApplication');
+                    // Set problem for this stage and load the corresponding dataset
+                    console.log(this.problems, this.currentStageNum);
+                    await this.$store.dispatch('setProblemName', this.problems[this.currentStageNum]);
+                    this.$store.commit('setDatasetInformation', this.datasetInformations[this.currentStageNum]);
+
+                    // Stop all running background tasks
+                    await this.$store.dispatch('stopBackgroundTasks');
+
+                    // Initialize the new problem
+                    await this.$store.dispatch('initProblem');
+                    await this.$store.dispatch('loadNewData', this.dataset);
 
                     // Add functionalities
                     for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
                         this.$store.commit('addFunctionality', shownFunc);
                     }
 
-                    // Load stage dataset
-                    this.$store.dispatch('loadNewData', this.datasets[this.currentStageNum]).then(async () => {
-                        // Switch the VASSAR models for the new ones specific to this dataset
-                        await this.$store.dispatch('changeVassarPort', this.vassarPort[this.currentStageNum]);
-                        // Stage specific behaviour
-                        switch (this.experimentStage) {
-                            case 'tutorial': {
-                                this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
-                                this.tutorial.setOption('exitOnOverlayClick', false);
-                                this.tutorial.setOption('exitOnEsc', false);
-                                this.tutorial.setOption('showProgress', true);
-                                this.tutorial.setOption('showBullets', false);
-                                this.tutorial.oncomplete(() => {
-                                    this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
-                                        this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
-                                    });
+                    // Stage specific behaviour
+                    switch (this.experimentStage) {
+                        case 'tutorial': {
+                            this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
+                            this.tutorial.setOption('exitOnOverlayClick', false);
+                            this.tutorial.setOption('exitOnEsc', false);
+                            this.tutorial.setOption('showProgress', true);
+                            this.tutorial.setOption('showBullets', false);
+                            this.tutorial.oncomplete(() => {
+                                this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
+                                    this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
                                 });
-                                // TODO: Hijack next button action on tutorial
-                                this.tutorial.start();
-                                break;
-                            }
-                            case 'no_daphne': {
-                                break;
-                            }
-                            case 'daphne_peer': {
-                                break;
-                            }
-                            case 'daphne_assistant': {
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
+                            });
+                            // TODO: Hijack next button action on tutorial
+                            this.tutorial.start();
+                            break;
                         }
-                    });
+                        case 'no_daphne': {
+                            break;
+                        }
+                        case 'daphne_peer': {
+                            break;
+                        }
+                        case 'daphne_assistant': {
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+
+                    // Initialize user-only features
+                    await this.$store.dispatch("retrieveActiveSettings");
+                    this.$store.dispatch("startBackgroundSearch");
                 }
             }
         }

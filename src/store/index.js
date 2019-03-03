@@ -70,7 +70,9 @@ export default new Vuex.Store({
             commit('resetTradespacePlot');
             commit('resetFunctionalityList');
             commit('resetDataMining');
+            commit('resetFilter');
             commit('resetFeatureApplication');
+            commit('resetActive');
             for (let functionality of problem.shownFunctionalities) {
                 commit('addFunctionality', functionality);
             }
@@ -85,7 +87,7 @@ export default new Vuex.Store({
                 };
                 websocket.onmessage = function (event) {
                     let received_info = JSON.parse(event.data);
-                    console.log(received_info);
+                    console.log(event.data, received_info);
                     if (received_info['type'] === 'ga.new_archs') {
                         received_info['archs'].forEach((arch) => {
                             dispatch('addNewDataFromGA', arch);

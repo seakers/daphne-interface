@@ -9,8 +9,12 @@ const state = {
     experimentStage: '',
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
-    datasets: ['EOSS_data_recalculated.csv', 'stage1.csv', 'stage2.csv'],
-    vassarPort: [9090, 9091, 9092],
+    datasetInformations: [
+        { filename: 'EOSS_data_recalculated.csv', user: false },
+        { filename: 'stage1.csv', user: false },
+        { filename: 'stage2.csv', user: false }
+    ],
+    problems: ["ClimateCentric", "ClimateCentric", "ClimateCentric"],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -19,11 +23,18 @@ const state = {
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
+                'DataMining',
+                'EOSSFilter',
+                'FeatureApplication',
+                'ActiveFeatures',
                 'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
+                'DataMining',
+                'EOSSFilter',
+                'FeatureApplication',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation'
@@ -222,12 +233,6 @@ const getters = {
     },
     getCurrentStageNum(state) {
         return state.currentStageNum;
-    },
-    getDatasets(state) {
-        return state.datasets;
-    },
-    getVassarPort(state) {
-        return state.vassarPort;
     }
 };
 
@@ -238,12 +243,11 @@ const actions = {
         try {
             let response = await fetchGet(API_URL + 'experiment/start-experiment');
             if (response.ok) {
-                let experimentInformation = await response.json();
+                let experimentStages = await response.json();
                 // Start the experiment: set the order of the conditions after the tutorial
-                console.log(experimentInformation);
-                commit('setNextStage', { experimentStage: 'tutorial', nextStage: experimentInformation.stages[0].type });
-                for (let i = 0; i < experimentInformation.stages.length - 1; ++i) {
-                    commit('setNextStage', { experimentStage: experimentInformation.stages[i].type, nextStage: experimentInformation.stages[i+1].type });
+                commit('setNextStage', { experimentStage: 'tutorial', nextStage: experimentStages[0] });
+                for (let i = 0; i < experimentStages.length - 1; ++i) {
+                    commit('setNextStage', { experimentStage: experimentStages[i], nextStage: experimentStages[i+1] });
                 }
                 // Start the websockets after completing the request so the session cookie is already set
                 commit('startExperimentWebsocket');
@@ -263,10 +267,10 @@ const actions = {
             let nextStage = state.currentStageNum;
             let response = await fetchGet(API_URL + 'experiment/start-stage/' + nextStage);
             if (response.ok) {
-                let experimentInformation = await response.json();
+                let startDateData = await response.json();
                 // Start the stage: get the starting time from the server information
-                console.log(experimentInformation);
-                let startTime = experimentInformation.stages[nextStage].start_date + '+00:00';
+                console.log(startDateData);
+                let startTime = startDateData.start_date + '+00:00';
                 startTime = Date.parse(startTime);
                 commit('setStartTime', { experimentStage: stage, startTime: startTime });
             }
@@ -317,7 +321,7 @@ const actions = {
         }
     },
 
-    async recoverExperiment({ state, commit }) {
+    async recoverExperiment({ state, commit, dispatch }) {
         // Call server to see if there is an experiment already running
         try {
             let response = await fetchGet(API_URL + 'experiment/reload-experiment');
@@ -326,16 +330,22 @@ const actions = {
                 if (experimentInformation.is_running) {
                     // If experiment was already running restore the last known state
                     commit('setIsRecovering', true);
-                    commit('restoreProblem', experimentInformation.experiment_data.state.problem);
-                    commit('restoreFilter', experimentInformation.experiment_data.state.filter);
-                    commit('restoreTradespacePlot', experimentInformation.experiment_data.state.tradespacePlot);
-                    commit('restoreDaphne', experimentInformation.experiment_data.state.daphne);
-                    commit('restoreFunctionalityList', experimentInformation.experiment_data.state.functionalityList);
-                    commit('restoreDataMining', experimentInformation.experiment_data.state.dataMining);
-                    commit('restoreFeatureApplication', experimentInformation.experiment_data.state.featureApplication);
-                    commit('restoreExperiment', experimentInformation.experiment_data.state.experiment);
+                    commit('restoreAuth', experimentInformation.experiment_data.auth);
+                    commit('restoreProblem', experimentInformation.experiment_data.problem);
+                    commit('restoreFilter', experimentInformation.experiment_data.filter);
+                    commit('restoreTradespacePlot', experimentInformation.experiment_data.tradespacePlot);
+                    commit('restoreDaphne', experimentInformation.experiment_data.daphne);
+                    commit('restoreFunctionalityList', experimentInformation.experiment_data.functionalityList);
+                    commit('restoreDataMining', experimentInformation.experiment_data.dataMining);
+                    commit('restoreFeatureApplication', experimentInformation.experiment_data.featureApplication);
+                    commit('restoreActive', experimentInformation.experiment_data.active);
+                    commit('restoreExperiment', experimentInformation.experiment_data.experiment);
+                    // TODO: Start the GA again if needed
+                    // this.$store.dispatch("startBackgroundSearch");
                     // Start the websockets after completing the request so the session cookie is already set
                     commit('startExperimentWebsocket');
+                    // Start the Websocket
+                    await dispatch('startWebsocket');
                 }
             }
             else {
@@ -374,7 +384,7 @@ const mutations = {
         state.isRecovering = isRecovering;
     },
     startExperimentWebsocket(state) {
-        state.experimentWebsocket = new WebSocket(((window.location.protocol === 'https:') ? 'wss://' : 'ws://') + WS_URL + 'experiment');
+        state.experimentWebsocket = new WebSocket(WS_URL + 'experiment');
         state.experimentWebsocket.onopen = function() {
             console.log('Experiment Web Socket Conenction Made');
         };
