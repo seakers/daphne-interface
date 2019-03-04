@@ -149,7 +149,7 @@
                 let yValue = d => d.outputs[yIndex]; // data -> value
                 let yScale = d3.scaleLinear().range([this.plotHeight, 0]); // value -> display
                 let yBuffer = Math.max((d3.max(this.plotData, yValue) - d3.min(this.plotData, yValue)) * 0.05, 0.05);
-                yScale.domain([Math.min(d3.min(this.plotData, yValue) - yBuffer, 1000-yBuffer), Math.max(d3.max(this.plotData, yValue) + yBuffer, 10000+yBuffer)]);
+                yScale.domain([d3.min(this.plotData, yValue) - yBuffer, d3.max(this.plotData, yValue) + yBuffer]);
                 this.yMap = d => yScale(yValue(d)); // data -> display
                 let yAxis = d3.axisLeft(yScale);
 
@@ -163,13 +163,6 @@
                         this.transform = d3.event.transform;
                         gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
                         gY.call(yAxis.scale(this.transform.rescaleY(yScale)));
-                        // Experiment lines
-                        minLine
-                            .attr("y1", this.transform.applyY(yScale(1000)))
-                            .attr("y2", this.transform.applyY(yScale(1000)));
-                        maxLine
-                            .attr("y1", this.transform.applyY(yScale(10000)))
-                            .attr("y2", this.transform.applyY(yScale(10000)));
                         this.drawPoints(this.context, false);
                     });
 
@@ -234,37 +227,12 @@
                     .style('font-size', '18px')
                     .text(this.$store.state.problem.outputList[yIndex]);
 
-                // Experiment related lines
-                let minLine = svg.append("line")
-                    .attr("x1", 0)
-                    .attr("y1", yScale(1000))
-                    .attr("x2", this.plotWidth)
-                    .attr("y2", yScale(1000))
-                    .attr("stroke-width", 2)
-                    .attr("stroke", "red");
-
-                let maxLine = svg.append("line")
-                    .attr("x1", 0)
-                    .attr("y1", yScale(10000))
-                    .attr("x2", this.plotWidth)
-                    .attr("y2", yScale(10000))
-                    .attr("stroke-width", 2)
-                    .attr("stroke", "red");
-
                 // Canvas related functions
                 this.drawPoints(this.context, false);
 
                 // Restore old zoom values if they are there
                 gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
                 gY.call(yAxis.scale(this.transform.rescaleY(yScale)));
-                
-                // Experiment lines
-                minLine
-                    .attr("y1", this.transform.applyY(yScale(1000)))
-                    .attr("y2", this.transform.applyY(yScale(1000)));
-                maxLine
-                    .attr("y1", this.transform.applyY(yScale(10000)))
-                    .attr("y2", this.transform.applyY(yScale(10000)));
 
                 // Canvas interaction
                 let self = this;

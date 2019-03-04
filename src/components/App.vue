@@ -179,7 +179,7 @@
             this.tutorial = introJs();
 
             // Check if user is logged in before putting prompt
-            /*try {
+            try {
                 fetchGet(API_URL + 'auth/check-status').then(async (response) => {
                     if (response.ok) {
                         let data = await response.json();
@@ -214,10 +214,10 @@
             }
             catch (e) {
                 console.error('Networking error:', e);
-            }*/
+            }
 
             // Experiment
-            this.$store.dispatch('recoverExperiment').then(async () => {
+            /*this.$store.dispatch('recoverExperiment').then(async () => {
                 this.$store.commit('setIsRecovering', false);
 
                 // Only start experiment if it wasn't already running
@@ -239,7 +239,7 @@
                         this.$store.commit('setInExperiment', true);
                     });
                 }
-            });
+            });*/
 
         },
         watch: {
