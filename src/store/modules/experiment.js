@@ -10,11 +10,11 @@ const state = {
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
     datasetInformations: [
-        { filename: 'EOSS_data_recalculated.csv', user: false },
-        { filename: 'stage1.csv', user: false },
-        { filename: 'stage2.csv', user: false }
+        { filename: 'jpl_tutorial.csv', user: false },
+        { filename: 'start.csv', user: false },
+        { filename: 'start.csv', user: false }
     ],
-    problems: ["ClimateCentric", "ClimateCentric", "ClimateCentric"],
+    problems: ["SMAP", "SMAP_JPL1", "SMAP_JPL2"],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [

@@ -50,6 +50,17 @@ export default new Vuex.Store({
                 break;
             case 'SMAP':
                 problem = SMAP;
+                problem.problemName = 'SMAP';
+                filter = EOSSFilter;
+                break;
+            case 'SMAP_JPL1':
+                problem = SMAP;
+                problem.problemName = 'SMAP_JPL1';
+                filter = EOSSFilter;
+                break;
+            case 'SMAP_JPL2':
+                problem = SMAP;
+                problem.problemName = 'SMAP_JPL2';
                 filter = EOSSFilter;
                 break;
             case 'Decadal2017Aerosols':

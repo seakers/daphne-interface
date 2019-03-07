@@ -7,6 +7,8 @@ const state = {
     problemList: [
         'ClimateCentric',
         'SMAP',
+        'SMAP_JPL1',
+        'SMAP_JPL2',
         'Decadal2017Aerosols'
     ],
     problemName: '',
