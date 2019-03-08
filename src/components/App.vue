@@ -10,9 +10,9 @@
                             v-bind:start-time="stageStartTime"
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
-                    <problem-picker></problem-picker>
+                    <problem-picker v-if="!inExperiment"></problem-picker>
                     <active-switches></active-switches>
-                    <user class="user-info"></user>
+                    <user class="user-info" v-if="!inExperiment"></user>
                 </div>
             </aside>
             <div class="column is-10" id="admin-panel">
@@ -112,7 +112,7 @@
                     return false;
                 }
                 else {
-                    return this.experimentStage === 'no_daphne' || this.experimentStage === 'daphne_peer' || this.experimentStage === 'daphne_assistant';
+                    return this.experimentStage === 'no_daphne' || this.experimentStage === 'daphne_traditional' || this.experimentStage === 'daphne_new';
                 }
             },
             stageDuration() {
@@ -222,14 +222,16 @@
 
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
+                    // First of all login
+                    let form = new FormData();
+                    form.append("username", "jpl-experiment");
+                    form.append("password", "nasa2019");
+                    await this.$store.dispatch('loginUser', {
+                        username: "jpl-experiment",
+                        password: "nasa2019"
+                    });
+
                     this.$store.dispatch('startExperiment').then(async () => {
-                        let form = new FormData();
-                        form.append("username", "jpl-experiment");
-                        form.append("password", "nasa2019");
-                        await this.$store.dispatch('loginUser', {
-                            username: "jpl-experiment",
-                            password: "nasa2019"
-                        });
                         // Restart WS after login
                         await this.$store.dispatch('startWebsocket');
                         this.$store.commit('startExperimentWebsocket');

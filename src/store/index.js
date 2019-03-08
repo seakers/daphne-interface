@@ -50,6 +50,17 @@ export default new Vuex.Store({
                 break;
             case 'SMAP':
                 problem = SMAP;
+                problem.problemName = 'SMAP';
+                filter = EOSSFilter;
+                break;
+            case 'SMAP_JPL1':
+                problem = SMAP;
+                problem.problemName = 'SMAP_JPL1';
+                filter = EOSSFilter;
+                break;
+            case 'SMAP_JPL2':
+                problem = SMAP;
+                problem.problemName = 'SMAP_JPL2';
                 filter = EOSSFilter;
                 break;
             case 'Decadal2017Aerosols':
@@ -73,19 +84,23 @@ export default new Vuex.Store({
             commit('resetFilter');
             commit('resetFeatureApplication');
             commit('resetActive');
-            for (let functionality of problem.shownFunctionalities) {
-                commit('addFunctionality', functionality);
+            if (!state.experiment.inExperiment) {
+                for (let functionality of problem.shownFunctionalities) {
+                    commit('addFunctionality', functionality);
+                }
             }
         },
         async startWebsocket({ state, commit, dispatch, getters }) {
             return new Promise((resolve, reject) => {
                 // Websocket connection
                 let websocket = new ReconnectingWebSocket(WS_URL + 'daphne');
+                let pingIntervalId = null;
+
                 websocket.onopen = function () {
                     console.log('Web Socket Connection Made');
 
                     // Start ping routine
-                    setInterval(() => {
+                    pingIntervalId = setInterval(() => {
                         console.log("Ping sent!");
                         websocket.send(JSON.stringify({'msg_type': 'ping'}));
                     }, 30000);
@@ -93,9 +108,16 @@ export default new Vuex.Store({
                     // Resolve the promise
                     resolve();
                 };
+                websocket.onclose = (event) => {
+                    console.error("WebSocket error observed:", event);
+                };
+                websocket.onclose = (event) => {
+                    console.log("Websockets closed", event);
+                    clearInterval(pingIntervalId);
+                };
                 websocket.onmessage = function (event) {
                     let received_info = JSON.parse(event.data);
-                    console.log(event.data, received_info);
+                    console.log(received_info);
                     if (received_info['type'] === 'ga.new_archs') {
                         received_info['archs'].forEach((arch) => {
                             dispatch('addNewDataFromGA', arch);

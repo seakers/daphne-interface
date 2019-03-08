@@ -27,16 +27,20 @@
                 problemFunctionalities: state => state.problem.problemFunctionalities,
             }),
             availableFunctionalities() {
-                let funcFilter = [];
+                let allAvailableFuncs = [];
                 for (let functionality of this.allAvailableFunctionalities) {
-                    funcFilter.push(functionality.name);
+                    allAvailableFuncs.push(functionality.name);
                 }
-                // First filter those available only in experiments, by creating a list of functionalities which are to be excluded
+
+                // Filter by the problem
+                let funcFilter = _.difference(allAvailableFuncs, this.problemFunctionalities);
+
+                //If in experiment, create a second filter and merge the two by union
                 if (this.inExperiment) {
-                    funcFilter = _.difference(funcFilter, this.stageInformation[this.experimentStage].availableFunctionalities);
+                    let experimentFuncFilter = [];
+                    experimentFuncFilter = _.difference(allAvailableFuncs, this.stageInformation[this.experimentStage].availableFunctionalities);
+                    funcFilter = _.union(funcFilter, experimentFuncFilter);
                 }
-                // Then filter by the problem
-                funcFilter = _.difference(funcFilter, this.problemFunctionalities);
 
                 // Create the list of avaliable functionalities
                 let functionalities = [];
