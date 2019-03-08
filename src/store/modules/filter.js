@@ -34,6 +34,9 @@ const mutations = {
 
         initialState = _.cloneDeep(state);
     },
+    setFilterFunctions(state, filterInfo) {
+        state.processFilterExpression = filterInfo.processFilterExpression;
+    },
     setSelectedFilter(state, selectedFilter) {
         state.selectedFilter = selectedFilter;
     },
