@@ -7,6 +7,8 @@ const state = {
     problemList: [
         'ClimateCentric',
         'SMAP',
+        'SMAP_JPL1',
+        'SMAP_JPL2',
         'Decadal2017Aerosols'
     ],
     problemName: '',
@@ -196,6 +198,15 @@ const mutations = {
         state.index2DisplayName = problemInfo.index2DisplayName;
         state.ppFeatureSingle = problemInfo.ppFeatureSingle;
         initialState = _.cloneDeep(state);
+    },
+    setProblemFunctions(state, problemInfo) {
+        // Set the problem instance
+        state.importCallback = problemInfo.importCallback;
+        state.actualName2Index = problemInfo.actualName2Index;
+        state.index2ActualName = problemInfo.index2ActualName;
+        state.displayName2Index = problemInfo.displayName2Index;
+        state.index2DisplayName = problemInfo.index2DisplayName;
+        state.ppFeatureSingle = problemInfo.ppFeatureSingle;
     },
     setProblemName(state, problemName) {
         state.problemName = problemName;

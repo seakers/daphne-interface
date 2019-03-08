@@ -136,6 +136,10 @@
                     - document.getElementById('selections-block').offsetWidth - 30;
                 let margin = this.mainPlotParams.margin;
 
+                // Experiment lines
+                let minCost = 800;
+                let maxCost = 4000;
+
                 // setup x
                 let xValue = d => d.outputs[xIndex]; // data -> value
                 let xScale = d3.scaleLinear().range([0, this.plotWidth]); // value -> display
