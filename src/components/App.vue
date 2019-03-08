@@ -222,14 +222,16 @@
 
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
+                    // First of all login
+                    let form = new FormData();
+                    form.append("username", "jpl-experiment");
+                    form.append("password", "nasa2019");
+                    await this.$store.dispatch('loginUser', {
+                        username: "jpl-experiment",
+                        password: "nasa2019"
+                    });
+
                     this.$store.dispatch('startExperiment').then(async () => {
-                        let form = new FormData();
-                        form.append("username", "jpl-experiment");
-                        form.append("password", "nasa2019");
-                        await this.$store.dispatch('loginUser', {
-                            username: "jpl-experiment",
-                            password: "nasa2019"
-                        });
                         // Restart WS after login
                         await this.$store.dispatch('startWebsocket');
                         this.$store.commit('startExperimentWebsocket');
