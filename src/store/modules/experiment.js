@@ -458,12 +458,14 @@ const actions = {
                     commit('restoreFeatureApplication', experimentInformation.experiment_data.featureApplication);
                     commit('restoreActive', experimentInformation.experiment_data.active);
                     commit('restoreExperiment', experimentInformation.experiment_data.experiment);
-                    // TODO: Start the GA again if needed
-                    // this.$store.dispatch("startBackgroundSearch");
                     // Start the websockets after completing the request so the session cookie is already set
                     commit('startExperimentWebsocket');
                     // Start the Websocket
                     await dispatch('startWebsocket');
+                    await dispatch('stopBackgroundTasks');
+                    if (state.stageInformation[state.experimentStage].availableFunctionalities.includes('ActiveFeatures')) {
+                        dispatch("startBackgroundSearch");
+                    }
                 }
             }
             else {
