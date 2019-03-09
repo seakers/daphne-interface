@@ -39,6 +39,11 @@
 </template>
 
 <script>
+    import { mapState, mapGetters } from 'vuex';
+    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
+    import {wsTools} from "../scripts/websocket-tools";
+    import Shepherd from 'shepherd.js';
+
     import MainMenu from './MainMenu';
     import Timer from './Timer';
     import QuestionBar from './QuestionBar';
@@ -47,14 +52,9 @@
     import Modal from './Modal';
     import User from './User';
     import ProblemPicker from './ProblemPicker';
-    import { mapState, mapGetters } from 'vuex';
-    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import ActiveMessage from "./ActiveMessage";
     import ActiveSwitches from "./ActiveSwitches";
     import ChatWindow from "./ChatWindow";
-    import {wsTools} from "../scripts/websocket-tools";
-
-    let introJs = require('intro.js');
 
     export default {
         name: 'app',
@@ -161,7 +161,13 @@
         },
         async mounted() {
             // Tutorial
-            this.tutorial = introJs();
+            this.tutorial = new Shepherd.Tour({
+                defaultStepOptions: {
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: true
+                },
+                useModalOverlay: true
+            });
 
             // Generate the session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
@@ -258,12 +264,22 @@
                     // Stage specific behaviour
                     switch (this.experimentStage) {
                         case 'tutorial': {
-                            this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
-                            this.tutorial.setOption('exitOnOverlayClick', false);
-                            this.tutorial.setOption('exitOnEsc', false);
-                            this.tutorial.setOption('showProgress', true);
-                            this.tutorial.setOption('showBullets', false);
-                            this.tutorial.oncomplete(() => {
+                            this.$store.state.experiment.stageInformation.tutorial.steps.forEach(step => {
+                                this.tutorial.addStep({
+                                        ...step,
+                                        buttons: [
+                                            {
+                                                text: 'Previous',
+                                                action: this.tutorial.back
+                                            },
+                                            {
+                                                text: 'Next',
+                                                action: this.tutorial.next
+                                            }
+                                        ]
+                                    });
+                            });
+                            this.tutorial.on("complete", () => {
                                 this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
                                     this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
                                 });
