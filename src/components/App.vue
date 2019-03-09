@@ -11,7 +11,7 @@
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
                     <problem-picker v-if="!inExperiment"></problem-picker>
-                    <active-switches></active-switches>
+                    <active-switches v-if="activeExperimentCondition"></active-switches>
                     <user class="user-info" v-if="!inExperiment"></user>
                 </div>
             </aside>
@@ -85,6 +85,14 @@
                 }
                 else {
                     return this.experimentStage === 'no_daphne' || this.experimentStage === 'daphne_traditional' || this.experimentStage === 'daphne_new';
+                }
+            },
+            activeExperimentCondition() {
+                if (!this.inExperiment) {
+                    return true;
+                }
+                else {
+                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('ActiveFeatures');
                 }
             },
             stageDuration() {
@@ -280,7 +288,16 @@
 
                     // Initialize user-only features
                     await this.$store.dispatch("retrieveActiveSettings");
-                    this.$store.dispatch("startBackgroundSearch");
+                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('ActiveFeatures')) {
+                        this.$store.dispatch("startBackgroundSearch");
+                    }
+                    else {
+                        this.$store.commit('setShowFoundArchitectures', false);
+                        this.$store.commit('setRunDiversifier', false);
+                        this.$store.commit('setShowSuggestions', false);
+                        this.$store.dispatch("updateActiveSettings");
+                    }
+
                 }
             }
         }
