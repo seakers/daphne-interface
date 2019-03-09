@@ -6,14 +6,19 @@ import store from '../store';
 export function calculateParetoRanking(data) {
     let n = data.length;
     let dominationCounter = _.fill(Array(data.length), 0);
+    let objectiveMultiplier = _.clone(store.state.problem.outputObj);
+    for (let i = 0; i < objectiveMultiplier.length; ++i) {
+        objectiveMultiplier[i] = -objectiveMultiplier[i];
+    }
     for (let i = 0; i < n; ++i) {
         for (let j = i + 1; j < n; ++j) {
             // Check each objective for dominance
-            if (dominates(data[j].outputs, data[i].outputs, store.state.problem.outputObj)) {
-                dominationCounter[i] += 1;
-            }
-            else {
+            let dominance = dominates(data[i].outputs, data[j].outputs, objectiveMultiplier);
+            if (dominance === -1) {
                 dominationCounter[j] += 1;
+            }
+            else if (dominance === 1) {
+                dominationCounter[i] += 1;
             }
         }
     }
@@ -23,28 +28,36 @@ export function calculateParetoRanking(data) {
 }
 
 function dominates(metrics1, metrics2, objective) {
-    let atLeastAsGoodAs = true;
-    let betterThanInOne = false;
+    let nobj = metrics1.length;
+    let dominate = _.fill(nobj, 0);
+
     if (!objective) {
         objective = [];
-        for (let i = 0; i < metrics1.length; i++) {
+        for (let i = 0; i < nobj; i++) {
             objective.push(1);
         }
     }
-    for (let i = 0; i < metrics1.length; i++) {
+
+    for (let i = 0; i < nobj; ++i) {
         let val1 = objective[i] * metrics1[i];
         let val2 = objective[i] * metrics2[i];
 
-        if (val1 > val2) {
-            // First better than Second
-            betterThanInOne = true;
+        if (val1 < val2) {
+            dominate[i] = -1;
         }
-        else if (val1 < val2) {
-            // First is worse than Second
-            atLeastAsGoodAs = false;
+        else if(val1 > val2) {
+            dominate[i] = 1;
         }
     }
-    return atLeastAsGoodAs && betterThanInOne; // First dominates Second
+
+    if (!dominate.includes(-1) && dominate.includes(1)) {
+        return 1;
+    }
+    else if (dominate.includes(-1) && !dominate.includes(1)) {
+        return -1;
+    }
+
+    return 0;
 }
 
 export function roundNum(num, decimal) {
