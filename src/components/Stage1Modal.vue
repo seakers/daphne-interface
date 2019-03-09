@@ -25,7 +25,9 @@
                 });
             },
             changeButtons() {
-                this.firstButton = false;
+                window.setTimeout(() => {
+                    this.firstButton = false;
+                }, 500);
             }
         }
     }
