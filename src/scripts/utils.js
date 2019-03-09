@@ -69,10 +69,30 @@ export function removeOuterParentheses(expression, outerLevel) {
     else {
         newOuterLevel = 0;
     }
-    while (cleanExpression[0] === '(' && cleanExpression[cleanExpression.length-1] === ')') {
-        cleanExpression = cleanExpression.substring(1, cleanExpression.length-1);
-        newOuterLevel++;
+
+    let hasOuter = cleanExpression[0] === '(';
+    while (hasOuter) {
+        let level = 1;
+        for (let i = 1; i < cleanExpression.length - 1; ++i) {
+            if (cleanExpression[i] === '(') {
+                ++level;
+            }
+            else if (cleanExpression[i] === ')') {
+                --level;
+            }
+
+            if (level === 0) {
+                hasOuter = false;
+            }
+        }
+
+        if (hasOuter) {
+            cleanExpression = cleanExpression.substring(1, cleanExpression.length-1);
+            hasOuter = cleanExpression[0] === '(';
+            newOuterLevel++;
+        }
     }
+
     if (outerLevel !== undefined) {
         return {
             expression: cleanExpression,
