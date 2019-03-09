@@ -1,7 +1,7 @@
 <template>
     <div class="message-body">
         <p>That's it for the first stage of the experiment! Click the button to take a test about what you just did. When you're done click on Continue to go to the second stage.</p>
-        <a class="button" href="https://tamu.qualtrics.com/jfe/form/SV_cJcS5t6xKM00ylD" target="_blank" v-on:click="changeButtons" v-if="firstButton">Take test</a>
+        <a class="button" href="https://tamu.qualtrics.com/jfe/form/SV_cJcS5t6xKM00ylD" target="_blank" v-on:click="changeButtons" v-show="firstButton">Take test</a>
         <a class="button" v-on:click.prevent="goToNextStage" v-if="!firstButton">Continue</a>
     </div>
 </template>
