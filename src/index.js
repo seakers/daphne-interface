@@ -13,8 +13,8 @@ let SpeechKITT = window.SpeechKITT;
 let responsiveVoice = window.responsiveVoice;
 
 // Styles
-import 'intro.js/introjs.css';
 import './styles/app.scss';
+import 'shepherd.js/dist/css/shepherd-theme-default.css';
 
 // Record state and mutations when inside an experiment
 let stateTimer = 0;

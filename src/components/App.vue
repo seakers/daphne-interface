@@ -72,8 +72,8 @@
     import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import ActiveMessage from "./ActiveMessage";
     import ActiveSwitches from "./ActiveSwitches";
+    import Shepherd from 'shepherd.js';
 
-    let introJs = require('intro.js');
 
     export default {
         name: 'app',
@@ -184,7 +184,13 @@
         },
         mounted() {
             // Tutorial
-            this.tutorial = introJs();
+            this.tutorial = new Shepherd.Tour({
+                defaultStepOptions: {
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: true
+                },
+                useModalOverlay: true
+            });
 
             // Check if user is logged in before putting prompt
             /*try {
@@ -274,12 +280,22 @@
                     // Stage specific behaviour
                     switch (this.experimentStage) {
                         case 'tutorial': {
-                            this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
-                            this.tutorial.setOption('exitOnOverlayClick', false);
-                            this.tutorial.setOption('exitOnEsc', false);
-                            this.tutorial.setOption('showProgress', true);
-                            this.tutorial.setOption('showBullets', false);
-                            this.tutorial.oncomplete(() => {
+                            this.$store.state.experiment.stageInformation.tutorial.steps.forEach(step => {
+                                this.tutorial.addStep({
+                                        ...step,
+                                        buttons: [
+                                            {
+                                                text: 'Previous',
+                                                action: this.tutorial.back
+                                            },
+                                            {
+                                                text: 'Next',
+                                                action: this.tutorial.next
+                                            }
+                                        ]
+                                    });
+                            });
+                            this.tutorial.on("complete", () => {
                                 this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
                                     this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
                                 });

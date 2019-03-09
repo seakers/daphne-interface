@@ -23,6 +23,7 @@
     "js-cookie": "^2.2.0",
     "lodash-es": "^4.17.11",
     "reconnecting-websocket": "^4.1.10",
+    "shepherd.js": "^2.4.0",
     "speechkitt": "^1.0.0",
     "vue": "^2.5.22",
     "vuedraggable": "^2.17.0",
