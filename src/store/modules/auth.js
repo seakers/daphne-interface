@@ -9,7 +9,8 @@ const state = {
     hasLoginError: false,
     loginError: '',
     hasRegistrationError: false,
-    registrationError: ''
+    registrationError: '',
+    resetPasswordSent: false
 };
 
 const initialState = _.cloneDeep(state);
@@ -77,7 +78,29 @@ const actions = {
                 }
             }
             else {
-                console.error('Error logging in.');
+                console.error('Error registering.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+    async resetPasswordEmail({ state, commit }, form) {
+        try {
+            let reqData = new FormData(form);
+            let dataResponse = await fetchPost(API_URL + 'auth/reset-password', reqData);
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                if (data['status'] === 'email sent') {
+                    commit('setResetPasswordSent', true);
+                }
+                else {
+                    commit('setRegistrationError', data);
+                }
+            }
+            else {
+                console.error('Error sending the email.');
             }
         }
         catch(e) {
@@ -109,6 +132,9 @@ const mutations = {
         state.isLoggedIn = false;
         state.hasRegistrationError = true;
         state.registrationError = registrationInfo['login_error'];
+    },
+    setResetPasswordSent(state, resetPasswordSent) {
+        state.resetPasswordSent = true;
     },
     restoreAuth(state, recoveredState) {
         Object.keys(recoveredState).forEach((key) => {

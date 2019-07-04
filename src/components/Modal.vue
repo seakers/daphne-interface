@@ -16,6 +16,7 @@
     import LoginModal from './LoginModal';
     import RegisterModal from './RegisterModal';
     import SaveDatasetModal from './SaveDatasetModal';
+    import ResetPasswordModal from './ResetPasswordModal';
 
     export default {
         name: 'modal',
@@ -29,7 +30,8 @@
             Stage2Modal,
             LoginModal,
             RegisterModal,
-            SaveDatasetModal
+            SaveDatasetModal,
+            ResetPasswordModal
         },
         methods: {
             onCloseModal() {

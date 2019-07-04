@@ -26,6 +26,7 @@
             </div>
         </form>
         <p>If you do not have a username, you can either register by clicking <a v-on:click.prevent="openRegisterForm">here</a> or <a v-on:click.prevent="$emit('close-modal')">continue as a guest</a>.</p>
+        <p>In case you have forgotten your password, click <a v-on:click.prevent="openResetPasswordForm">here</a> to recover it.</p>
     </div>
 </template>
 
@@ -52,6 +53,9 @@
             },
             openRegisterForm() {
                 this.$store.commit('activateModal', 'RegisterModal');
+            },
+            openResetPasswordForm() {
+                this.$store.commit('activateModal', 'ResetPasswordModal');
             }
         },
         watch: {
