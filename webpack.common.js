@@ -2,9 +2,9 @@
 
 const path = require('path'),
     webpack = require('webpack'),
-    CleanWebpackPlugin = require('clean-webpack-plugin'),
     HtmlWebpackPlugin = require('html-webpack-plugin'),
     MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 
 
@@ -81,7 +81,7 @@ module.exports = {
 
     plugins: [
         // cleaning up only 'dist' folder
-        new CleanWebpackPlugin(['dist']),
+        new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: './src/index.html',
             chunks: ['index'],
