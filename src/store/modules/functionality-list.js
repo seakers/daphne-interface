@@ -1,16 +1,16 @@
 import * as _ from 'lodash-es';
 
 let functionalityTypes = new Map();
-functionalityTypes.set('DaphneAnswer', { title: 'Answers', component: 'DaphneAnswer', class: 'answers', minSize: 'one-third', maxRepeat: 1});
-functionalityTypes.set('DesignBuilder', { title: 'Design Builder', component: 'DesignBuilder', class: 'design-builder', minSize: 'two-thirds', maxRepeat: 1});
-functionalityTypes.set('DataMining', { title: 'Data Mining', component: 'DataMining', class: 'data-mining', minSize: 'one-third', maxRepeat: 1});
-functionalityTypes.set('EOSSFilter', { title: 'Filter', component: 'EOSSFilter', class: 'filter', minSize: 'one-third', maxRepeat: 1});
-functionalityTypes.set('FeatureApplication', { title: 'Feature Application', component: 'FeatureApplication', class: 'feature-application', minSize: 'one-third', maxRepeat: 1});
+functionalityTypes.set('DaphneAnswer', { title: 'Answers', component: 'DaphneAnswer', class: 'answers', minSize: 'half', maxRepeat: 1});
+functionalityTypes.set('DesignBuilder', { title: 'Design Builder', component: 'DesignBuilder', class: 'design-builder', minSize: 'full', maxRepeat: 1});
+functionalityTypes.set('DataMining', { title: 'Data Mining', component: 'DataMining', class: 'data-mining', minSize: 'half', maxRepeat: 1});
+functionalityTypes.set('EOSSFilter', { title: 'Filter', component: 'EOSSFilter', class: 'filter', minSize: 'half', maxRepeat: 1});
+functionalityTypes.set('FeatureApplication', { title: 'Feature Application', component: 'FeatureApplication', class: 'feature-application', minSize: 'half', maxRepeat: 1});
 functionalityTypes.set('OrbitInstrInfo', {
     title: 'Orbits and Instruments Information',
     component: 'Cheatsheet',
     class: 'orbit-instr-info',
-    minSize: 'one-third',
+    minSize: 'half',
     maxRepeat: 10,
     optionsList: [
         {name: "", value: ""},
@@ -21,7 +21,7 @@ functionalityTypes.set('AvailableCommands', {
     title: 'Available Commands',
     component: 'Cheatsheet',
     class: 'available-commands',
-    minSize: 'one-third',
+    minSize: 'half',
     maxRepeat: 10,
     optionsList: [
         {name: "", value: ""},
@@ -35,7 +35,7 @@ functionalityTypes.set('CommandsInformation', {
     title: 'Commands Information',
     component: 'Cheatsheet',
     class: 'commands-information',
-    minSize: 'one-third',
+    minSize: 'half',
     maxRepeat: 10,
     optionsList: [
         {name: "", value: ""},

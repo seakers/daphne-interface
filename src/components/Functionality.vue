@@ -23,8 +23,7 @@
     import FeatureApplication from './FeatureApplication';
 
     let sizeScale = [
-        'one-third',
-        'two-thirds',
+        'half',
         'full'
     ];
 

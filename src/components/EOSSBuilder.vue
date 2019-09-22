@@ -10,7 +10,7 @@
             <tbody>
                 <tr v-for="(row, index) in jsonArch" v-bind:key="index" v-bind:name="row.orbit">
                     <th class="arch-cell" v-bind:name="orbitDisplayName(row.orbit)">{{ orbitDisplayName(row.orbit) }}</th>
-                    <draggable class="instruments-list" :element="'td'" v-bind:options="instrumentListOptions" @add="onAddInstrList">
+                    <draggable class="instruments-list" tag="td" v-bind="instrumentListOptions" @add="onAddInstrList">
                         <div v-for="(instrument, childIndex) in row.children" class="arch-box" v-bind:key="instrument + index" v-bind:name="instrDisplayName(instrument)">
                             {{ instrDisplayName(instrument) }}
                         </div>
@@ -18,7 +18,7 @@
                 </tr>
             </tbody>
         </table>
-        <draggable id="instrument-adder-list" v-bind:options="instrumentAdderOptions" @add="onAddInstrAdder">
+        <draggable id="instrument-adder-list" v-bind="instrumentAdderOptions" @add="onAddInstrAdder">
             <div v-for="instrument in extraInfo.instrumentList" class="arch-box" v-bind:key="instrument" v-bind:name="instrDisplayName(instrument)">
                 {{ instrDisplayName(instrument) }}
             </div>

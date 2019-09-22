@@ -54,7 +54,7 @@ const actions = {
             reqData.append('check_for_diversity', state.runDiversifier);
             reqData.append('show_arch_suggestions', state.showSuggestions);
 
-            let url = API_URL + 'daphne/active-feedback-settings';
+            let url = API_URL + 'eoss/settings/active-feedback-settings';
             let dataResponse = await fetchPost(url, reqData);
 
             if (dataResponse.ok) {
@@ -73,7 +73,7 @@ const actions = {
     async retrieveActiveSettings({ commit }) {
         // Get the settings from the server to have them synced
         try {
-            let url = API_URL + 'daphne/active-feedback-settings';
+            let url = API_URL + 'eoss/settings/active-feedback-settings';
             let dataResponse = await fetchGet(url);
 
             if (dataResponse.ok) {

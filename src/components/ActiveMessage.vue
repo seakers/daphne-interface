@@ -1,21 +1,23 @@
 <template>
-    <article v-if="show" class="message is-info">
-        <div class="message-header">
-            <p>{{ title }}</p>
-            <button class="delete" aria-label="delete" v-on:click="closeNotification"></button>
-        </div>
-        <div class="message-body">
-            <p>{{ body }}</p>
-            <div class="field is-grouped">
-                <div class="control">
-                    <button class="button is-link" v-on:click="activateSetting">Yes</button>
-                </div>
-                <div class="control">
-                    <button class="button is-link" v-on:click="closeNotification">No</button>
+    <section v-if="show">
+        <article class="message is-info">
+            <div class="message-header">
+                <p>{{ title }}</p>
+                <button class="delete" aria-label="delete" v-on:click="closeNotification"></button>
+            </div>
+            <div class="message-body">
+                <p>{{ body }}</p>
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-link" v-on:click="activateSetting">Yes</button>
+                    </div>
+                    <div class="control">
+                        <button class="button is-link" v-on:click="closeNotification">No</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </article>
+        </article>
+    </section>
 </template>
 
 <script>

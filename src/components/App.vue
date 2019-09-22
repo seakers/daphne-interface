@@ -15,28 +15,8 @@
                     <user class="user-info" v-if="!inExperiment"></user>
                 </div>
             </aside>
-            <div class="column is-10" id="admin-panel">
-                <nav class="navbar">
-                    <div class="navbar-brand">
-                        <a class="navbar-item" href="https://www.selva-research.com/daphne">Daphne</a>
-                        <div class="navbar-burger burger">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-                    </div>
-
-                    <div class="navbar-menu">
-                        <div class="navbar-start is-fullwidth">
-                            <div class="navbar-item is-fullwidth">
-                                <question-bar v-if="questionBarExperimentCondition" id="question-bar"></question-bar>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-                <section class="section is-small">
-                    <active-message></active-message>
-                </section>
+            <div class="column" id="admin-panel">
+                <active-message class="section is-small"></active-message>
                 <section class="section is-small">
                     <div class="columns is-mobile">
                         <tradespace-plot></tradespace-plot>
@@ -44,6 +24,8 @@
                     <functionality-list></functionality-list>
                 </section>
             </div>
+            <div class="vertical-divider"></div>
+            <chat-window class="column is-3"></chat-window>
         </div>
         <footer class="footer">
             <div class="container">
@@ -72,6 +54,7 @@
     import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import ActiveMessage from "./ActiveMessage";
     import ActiveSwitches from "./ActiveSwitches";
+    import ChatWindow from "./ChatWindow";
 
     let introJs = require('intro.js');
 
@@ -163,6 +146,7 @@
             }
         },
         components: {
+            ChatWindow,
             ActiveSwitches,
             ActiveMessage,
             MainMenu,
@@ -304,7 +288,9 @@
     }
 </script>
 
-<style scoped>
+<style lang="scss">
+    @import "../../node_modules/bulma/sass/utilities/initial-variables";
+
     .aside-container {
         display: flex;
         flex-direction: column;
@@ -318,5 +304,10 @@
         color: #F6F7F7;
         font-size: 16px;
         font-weight: bold;
+    }
+
+    .vertical-divider {
+        background: $grey-light;
+        width: 1px;
     }
 </style>

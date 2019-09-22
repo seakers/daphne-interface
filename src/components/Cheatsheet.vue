@@ -71,7 +71,7 @@
                         }
                     }
 
-                    let dataResponse = await fetchPost(API_URL + 'daphne/commands', reqData);
+                    let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/commands', reqData);
 
                     if (dataResponse.ok) {
                         // Add the new functionality

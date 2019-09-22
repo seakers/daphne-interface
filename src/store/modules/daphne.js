@@ -35,7 +35,7 @@ const actions = {
                     reqData.append('allowed_commands', JSON.stringify(restrictedQuestions));
                 }
             }
-            let dataResponse = await fetchPost(API_URL + 'daphne/command', reqData);
+            let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/command', reqData);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();

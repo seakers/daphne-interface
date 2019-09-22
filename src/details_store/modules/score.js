@@ -19,7 +19,7 @@ const actions = {
             reqData.append('arch_id', rootState.archID);
             reqData.append('subobjective', subobjective);
             reqData.append('problem', rootState.problem);
-            let dataResponse = await fetchPost(API_URL + 'vassar/get-subobjective-details', reqData);
+            let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-subobjective-details', reqData);
 
             if (dataResponse.ok) {
                 let archData = await dataResponse.json();

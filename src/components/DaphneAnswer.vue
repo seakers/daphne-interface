@@ -2,7 +2,7 @@
     <div class="panel-block functionality content">
         <img src="assets/img/loader.svg" style="margin: auto;" height="64" width="64" v-if="isLoading">
         <template v-else>
-            <component v-if="!emptyResponse" v-for="(response, index) in receivedResponses" v-bind:is="responseTypes[receivedResponseTypes[index]]" v-bind:response="response"></component>
+            <component v-if="!emptyResponse" v-for="(response, index) in receivedResponses" v-bind:is="responseTypes[receivedResponseTypes[index]]" :response="response" :key="index"></component>
             <p v-else>The answers from Daphne will be displayed here.</p>
         </template>
     </div>

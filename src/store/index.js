@@ -73,7 +73,7 @@ export default new Vuex.Store({
             }
             let reqData = new FormData();
             reqData.append('port', problem.vassarPort);
-            await fetchPost(API_URL + 'vassar/change-port', reqData);
+            await fetchPost(API_URL + 'eoss/settings/change-port', reqData);
             commit('updateExtra', await problem.initFunction(state.problem.problemName));
 
             // Load all the initial functionalities
@@ -93,7 +93,7 @@ export default new Vuex.Store({
         async startWebsocket({ state, commit, dispatch, getters }) {
             return new Promise((resolve, reject) => {
                 // Websocket connection
-                let websocket = new ReconnectingWebSocket(WS_URL + 'daphne');
+                let websocket = new ReconnectingWebSocket(WS_URL + 'eoss/ws');
                 let pingIntervalId = null;
 
                 websocket.onopen = function () {
@@ -183,7 +183,7 @@ export default new Vuex.Store({
                 reqData.append('problem', rootState.problem.problemName);
                 reqData.append('inputType', rootState.problem.inputType);
 
-                let url = API_URL + 'vassar/start-ga';
+                let url = API_URL + 'eoss/explorer/start-ga';
                 let dataResponse = await fetchPost(url, reqData);
 
                 if (dataResponse.ok) {
@@ -205,7 +205,7 @@ export default new Vuex.Store({
                 reqData.append('problem', rootState.problem.problemName);
                 reqData.append('inputType', rootState.problem.inputType);
 
-                let url = API_URL + 'vassar/stop-ga';
+                let url = API_URL + 'eoss/explorer/stop-ga';
                 let dataResponse = await fetchPost(url, reqData);
 
                 if (dataResponse.ok) {

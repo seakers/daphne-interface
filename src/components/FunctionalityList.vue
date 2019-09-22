@@ -1,13 +1,13 @@
 <template>
-    <draggable id="functionalities-list" class="columns is-mobile is-multiline" v-bind:options="funcListOptions">
+    <draggable id="functionalities-list" class="columns is-mobile is-multiline" v-bind="funcListOptions">
         <functionality
                 v-for="functionality in functionalities"
-                v-bind:name="functionality.name"
-                v-bind:component="functionality.component"
-                v-bind:title="functionality.title"
-                v-bind:func-class="functionality.funcClass"
-                v-bind:initial-size="functionality.initialSize"
-                v-bind:key="functionality.id">
+                :name="functionality.name"
+                :component="functionality.component"
+                :title="functionality.title"
+                :func-class="functionality.funcClass"
+                :initial-size="functionality.initialSize"
+                :key="functionality.id">
         </functionality>
     </draggable>
 </template>

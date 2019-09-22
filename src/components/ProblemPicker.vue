@@ -76,14 +76,14 @@
                 let queryString = Object.keys(params).map((key) => {
                     return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
                 }).join('&');
-                return API_URL + 'daphne/download-data?' + queryString;
+                return API_URL + 'eoss/data/download-data?' + queryString;
             }
         },
         methods: {
             async changeProblem() {
                 // Flush the Daphne session if we are changing problems
                 try {
-                    let dataResponse = await fetchPost(API_URL + 'daphne/clear-session', new FormData());
+                    let dataResponse = await fetchPost(API_URL + 'eoss/settings/clear-session', new FormData());
                     if (dataResponse.ok) {
                         // Stop all running background tasks
                         await this.$store.dispatch('stopBackgroundTasks');

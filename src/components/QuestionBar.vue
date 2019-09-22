@@ -11,7 +11,7 @@
             </a>
         </div>
         <div class="control">
-            <a class="button is-info" id="send_command" v-on:click.prevent="sendCommand">Do it!</a>
+            <a class="button is-info" id="send_command" v-on:click.prevent="sendCommand">Send</a>
         </div>
     </div>
 </template>
