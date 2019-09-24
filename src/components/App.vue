@@ -136,6 +136,9 @@
                     await this.$store.dispatch('loadNewData', this.dataset);
                 }
 
+                // Load past dialogue
+                await this.$store.dispatch("loadDialogue");
+
                 // Initialize user-only features
                 if (this.$store.state.auth.isLoggedIn) {
                     await this.$store.dispatch("retrieveActiveSettings");

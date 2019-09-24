@@ -2,8 +2,8 @@
     <div>
         <div class="chat-container">
             <section ref="chatArea" class="chat-area">
-                <p v-for="message in messages" class="chat-message" :class="{ 'chat-message-user': message.author === 'you', 'chat-message-daphne': message.author !== 'you' }">
-                    {{ message.body }}
+                <p v-for="piece in dialogueHistory" class="chat-message" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }">
+                    <component v-for="(response, index) in piece['visual_message']" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
                 </p>
             </section>
 
@@ -14,50 +14,42 @@
 
 <script>
     import QuestionBar from "./QuestionBar";
+    import TextResponse from './TextResponse';
+    import ListResponse from './ListResponse';
+    import TimelineResponse from './TimelineResponse';
+    import {mapState} from "vuex";
+
     export default {
         name: "ChatWindow",
-        components: {QuestionBar},
+        components: {
+            QuestionBar,
+            TextResponse,
+            ListResponse,
+            TimelineResponse
+        },
         data() {
             return {
-                bobMessage: '',
-                youMessage: '',
-                messages: [
-                    {
-                        body: 'Welcome to the chat, I\'m Bob!',
-                        author: 'bob'
-                    },
-                    {
-                        body: 'Thank you Bob',
-                        author: 'you'
-                    },
-                    {
-                        body: 'You\'re most welcome',
-                        author: 'bob'
-                    }
-                ]
+                responseTypes: {
+                    text: 'TextResponse',
+                    list: 'ListResponse',
+                    timeline_plot: 'TimelineResponse'
+                }
             }
         },
+        computed: {
+            ...mapState({
+                dialogueHistory: state => state.daphne.dialogueHistory
+            })
+        },
         methods: {
-            sendMessage(direction) {
-                if (!this.youMessage && !this.bobMessage) {
-                    return;
+        },
+        watch: {
+            addDialoguePiece: function(val, oldVal) {
+                if (this.speakOut) {
+                    if (val["writer"] === "daphne") {
+                        responsiveVoice.speak(val['voice_answer']);
+                    }
                 }
-                if (direction === 'out') {
-                    this.messages.push({body: this.youMessage, author: 'you'});
-                    this.youMessage = '';
-                } else if (direction === 'in') {
-                    this.messages.push({body: this.bobMessage, author: 'bob'});
-                    this.bobMessage = '';
-                } else {
-                    alert('something went wrong');
-                }
-                Vue.nextTick(() => {
-                    let messageDisplay = this.$refs.chatArea;
-                    messageDisplay.scrollTop = messageDisplay.scrollHeight;
-                })
-            },
-            clearAllMessages() {
-                this.messages = [];
             }
         }
     }

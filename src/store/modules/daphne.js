@@ -5,7 +5,7 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 
 const state = {
     command: '',
-    response: {},
+    dialogueHistory: [],
     isLoading: false
 };
 
@@ -13,9 +13,6 @@ const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
-    getResponse(state) {
-        return state.response;
-    },
     getIsLoading(state) {
         return state.isLoading;
     }
@@ -23,11 +20,33 @@ const getters = {
 
 // actions
 const actions = {
+    async loadDialogue({ state, commit, rootState }) {
+        try {
+            let dataResponse = await fetchGet(API_URL + 'eoss/dialogue/history');
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                commit('setDialogueHistory', data['dialogue_pieces']);
+            }
+            else {
+                console.error('Error retrieving past conversation history.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
     async executeCommand({ state, commit, rootState }) {
         commit('setIsLoading', true);
         try {
             let reqData = new FormData();
             reqData.append('command', state.command);
+            commit('addDialoguePiece', {
+                "voice_message": state.command,
+                "visual_message_type": ["text"],
+                "visual_message": [state.command],
+                "writer": "user"
+            });
             if (rootState.experiment.inExperiment) {
                 let experimentStage = rootState.experiment.experimentStage;
                 let restrictedQuestions = rootState.experiment.stageInformation[experimentStage].restrictedQuestions;
@@ -40,7 +59,7 @@ const actions = {
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
                 console.log(data['response']['visual_answer_type']);
-                commit('setResponse', data['response']);
+                commit('addDialoguePiece', data['response']);
             }
             else {
                 console.error('Error processing the command.');
@@ -58,8 +77,11 @@ const mutations = {
     setCommand(state, command) {
         state.command = command;
     },
-    setResponse(state, response) {
-        state.response = response;
+    setDialogueHistory(state, dialogueHistory) {
+        state.dialogueHistory = dialogueHistory;
+    },
+    addDialoguePiece(state, dialoguePiece) {
+        state.dialogueHistory.push(dialoguePiece);
     },
     setIsLoading(state, isLoading) {
         state.isLoading = isLoading;

@@ -54,13 +54,6 @@
                 this.speakOut = !this.speakOut;
             }
         },
-        watch: {
-            getResponse: function(val, oldVal) {
-                if (this.speakOut) {
-                    responsiveVoice.speak(this.getResponse['voice_answer']);
-                }
-            }
-        }
     }
 </script>
 
