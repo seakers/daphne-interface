@@ -25,6 +25,9 @@ export default {
         'DataMining',
         'EOSSFilter',
         'FeatureApplication',
+
+        'Teacher',
+
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',

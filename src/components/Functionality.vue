@@ -21,6 +21,7 @@
     import DataMining from './DataMining';
     import EOSSFilter from './EOSSFilter';
     import FeatureApplication from './FeatureApplication';
+    import Teacher from './TeacherAgent'
 
     let sizeScale = [
         'half',
@@ -42,7 +43,8 @@
             DaphneAnswer,
             DataMining,
             EOSSFilter,
-            FeatureApplication
+            FeatureApplication,
+            Teacher
         },
         computed: {
             sizeClass: function () {

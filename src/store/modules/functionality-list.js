@@ -2,22 +2,21 @@ import * as _ from 'lodash-es';
 
 let functionalityTypes = new Map();
 functionalityTypes.set('DaphneAnswer', { title: 'Answers', component: 'DaphneAnswer', class: 'answers', minSize: 'half', maxRepeat: 1});
-functionalityTypes.set('DesignBuilder', { title: 'Design Builder', component: 'DesignBuilder', class: 'design-builder', minSize: 'full', maxRepeat: 1});
+
+functionalityTypes.set('DesignBuilder', {
+    title: 'Design Builder',
+    component: 'DesignBuilder',
+    class: 'design-builder',
+    minSize: 'full',
+    maxRepeat: 1});
 
 functionalityTypes.set('DataMining', {
     title: 'Data Mining',
     component: 'DataMining',
     class: 'data-mining',
     minSize: 'half',
-    maxRepeat: 1});
-
-
-functionalityTypes.set('TeacherAgent', {
-    title: 'Teacher Agent',
-    component: 'Cheatsheet',
-    class: 'available-commands',
-    minSize: 'half',
-    maxRepeat: 1});
+    maxRepeat: 1
+});
 
 
 functionalityTypes.set('EOSSFilter', { title: 'Filter', component: 'EOSSFilter', class: 'filter', minSize: 'half', maxRepeat: 1});
@@ -27,7 +26,23 @@ functionalityTypes.set('FeatureApplication', {
     class: 'feature-application',
     minSize: 'half',
     maxRepeat: 1
-    });
+});
+
+
+
+
+
+functionalityTypes.set('Teacher', {
+    title: 'Teacher',
+    component: 'Teacher',
+    class: 'teacher-agent',
+    minSize: 'full',
+    maxRepeat: 1
+});
+
+
+
+
 functionalityTypes.set('OrbitInstrInfo', {
     title: 'Orbits and Instruments Information',
     component: 'Cheatsheet',
@@ -38,7 +53,9 @@ functionalityTypes.set('OrbitInstrInfo', {
         {name: "", value: ""},
         {name: "Orbits Information", value: "orb_info"},
         {name: "Instruments Information", value: "instr_info"}
-    ]});
+    ]
+});
+
 functionalityTypes.set('AvailableCommands', {
     title: 'Available Commands',
     component: 'Cheatsheet',
@@ -52,7 +69,9 @@ functionalityTypes.set('AvailableCommands', {
         {name: "Analyst", value: "analyst"},
         {name: "Critic", value: "critic"},
         {name: "Historian", value: "historian"}
-    ]});
+    ]
+});
+
 functionalityTypes.set('CommandsInformation', {
     title: 'Commands Information',
     component: 'Cheatsheet',
@@ -70,7 +89,8 @@ functionalityTypes.set('CommandsInformation', {
         {name: "Historical Missions", value: "missions"},
         {name: "Historical Technologies", value: "technologies"},
         {name: "Historical Space Agencies", value: "space_agencies"}
-    ]});
+    ]
+});
 
 
 let newFunctionalityId = 0;
@@ -82,11 +102,11 @@ const state = {
         { name: 'DaphneAnswer', title: 'Answers', icon: 'fa-comments' },
         { name: 'DesignBuilder', title: 'Design Builder', icon: 'fa-search' },
         { name: 'DataMining', title: 'Data Mining', icon: 'fa-chart-bar' },
-
-        { name: 'TeacherAgent', title: 'Teacher Agent', icon: 'fa-graduation-cap' },
-
         { name: 'EOSSFilter', title: 'Filter', icon: 'fa-filter' },
         { name: 'FeatureApplication', title: 'Feature Application', icon: 'fa-sitemap' },
+
+        { name: 'Teacher', title: 'Teacher', icon: 'fa-graduation-cap' },
+
         { name: 'OrbitInstrInfo', title: 'Orbits and Instruments Information', icon: 'fa-book' },
         { name: 'AvailableCommands', title: 'Available Commands', icon: 'fa-book' },
         { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' }
@@ -96,11 +116,11 @@ const state = {
         'DaphneAnswer': 0,
         'DesignBuilder': 0,
         'DataMining': 0,
-
-        'TeacherAgent': 0,
-
         'EOSSFilter': 0,
         'FeatureApplication': 0,
+
+        'Teacher': 0,
+
         'OrbitInstrInfo': 0,
         'AvailableCommands': 0,
         'CommandsInformation': 0
@@ -111,6 +131,7 @@ const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
+    // eslint-disable-next-line no-unused-vars
     getOptionsList: (state) => (name) => {
         return functionalityTypes.get(name).optionsList;
     }
@@ -144,6 +165,7 @@ const mutations = {
         state.functionalities.splice(funcIndex, 1);
         state.functionalityCount[funcName]--;
     },
+    // eslint-disable-next-line no-unused-vars
     resetFunctionalityList(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
     },
