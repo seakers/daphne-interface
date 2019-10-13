@@ -164,6 +164,9 @@ export default new Vuex.Store({
                         };
                         commit('setResponse', daphneResponse);
                     }
+                    if (received_info['type'] === 'active.message') {
+                        commit('addDialoguePiece', received_info['message']);
+                    }
                     if (received_info['type'] === 'ping') {
                         console.log("Ping back!");
                     }

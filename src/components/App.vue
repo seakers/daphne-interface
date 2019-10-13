@@ -16,7 +16,6 @@
                 </div>
             </aside>
             <div class="column" id="admin-panel">
-                <active-message class="section is-small"></active-message>
                 <section class="section is-small">
                     <div class="columns is-mobile">
                         <tradespace-plot></tradespace-plot>

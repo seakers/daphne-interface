@@ -2,9 +2,9 @@
     <div>
         <div class="chat-container">
             <section ref="chatArea" class="chat-area">
-                <p v-for="piece in dialogueHistory" class="chat-message" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }">
+                <div v-for="piece in dialogueHistory" class="chat-message content" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }">
                     <component v-for="(response, index) in piece['visual_message']" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
-                </p>
+                </div>
             </section>
 
             <QuestionBar class="sticky-textbox"></QuestionBar>
@@ -17,6 +17,7 @@
     import TextResponse from './TextResponse';
     import ListResponse from './ListResponse';
     import TimelineResponse from './TimelineResponse';
+    import ActiveMessage from "./ActiveMessage";
     import {mapState} from "vuex";
 
     export default {
@@ -25,14 +26,16 @@
             QuestionBar,
             TextResponse,
             ListResponse,
-            TimelineResponse
+            TimelineResponse,
+            ActiveMessage
         },
         data() {
             return {
                 responseTypes: {
                     text: 'TextResponse',
                     list: 'ListResponse',
-                    timeline_plot: 'TimelineResponse'
+                    timeline_plot: 'TimelineResponse',
+                    active_message: 'ActiveMessage'
                 }
             }
         },
@@ -59,6 +62,7 @@
     @import "../../node_modules/bulma/sass/utilities/initial-variables";
 
     .chat-container {
+        position: fixed;
         display: flex;
         flex-direction: column;
         height: 100%;
