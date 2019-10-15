@@ -54,6 +54,7 @@
     import ActiveMessage from "./ActiveMessage";
     import ActiveSwitches from "./ActiveSwitches";
     import ChatWindow from "./ChatWindow";
+    import {wsTools} from "../scripts/websocket-tools";
 
     let introJs = require('intro.js');
 
@@ -77,18 +78,9 @@
                 inExperiment: 'getInExperiment',
                 experimentStage: 'getExperimentStage',
                 stageInformation: 'getStageInformation',
-                websocket: 'getWebsocket',
                 isRecovering: 'getIsRecovering',
                 currentStageNum: 'getCurrentStageNum'
             }),
-            questionBarExperimentCondition() {
-                if (!this.inExperiment) {
-                    return true;
-                }
-                else {
-                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('QuestionBar');
-                }
-            },
             timerExperimentCondition() {
                 if (!this.inExperiment) {
                     return false;
@@ -124,7 +116,7 @@
                 await this.$store.dispatch('stopBackgroundTasks');
 
                 // Start the Websocket
-                await this.$store.dispatch('startWebsocket');
+                await wsTools.wsConnect(this.$store);
 
                 // Initialize the new problem
                 await this.$store.dispatch('initProblem');

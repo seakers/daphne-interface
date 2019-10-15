@@ -18,7 +18,6 @@ import Decadal2017Aerosols from '../scripts/decadal';
 import DecadalFilter from '../scripts/decadal-filter';
 import EOSSFilter from '../scripts/eoss-filter';
 import {fetchPost} from "../scripts/fetch-helpers";
-import ReconnectingWebSocket from "reconnecting-websocket";
 
 Vue.use(Vuex);
 
@@ -26,17 +25,10 @@ const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
     state: {
-        websocket: null
     },
     getters: {
-        getWebsocket(state) {
-            return state.websocket;
-        }
     },
     mutations: {
-        setWebsocket(state, websocket) {
-            state.websocket = websocket;
-        },
     },
     actions: {
         async initProblem({ commit, state }) {
@@ -90,89 +82,61 @@ export default new Vuex.Store({
                 }
             }
         },
-        async startWebsocket({ state, commit, dispatch, getters }) {
-            return new Promise((resolve, reject) => {
-                // Websocket connection
-                let websocket = new ReconnectingWebSocket(WS_URL + 'eoss/ws');
-                let pingIntervalId = null;
+        async onWebsocketsMessage({ commit, state, getters, dispatch }, message) {
+            let received_info = JSON.parse(message.data);
+            console.log(received_info);
+            if (received_info['type'] === 'ga.new_archs') {
+                received_info['archs'].forEach((arch) => {
+                    dispatch('addNewDataFromGA', arch);
+                });
+            }
+            if (received_info['type'] === 'ga.started') {
+                commit('setGaStatus', true);
+            }
+            if (received_info['type'] === 'ga.finished') {
+                commit('setGaStatus', false);
+            }
+            if (received_info['type'] === 'active.notification') {
+                commit('setNotificationTitle', received_info["notification"]["title"]);
+                commit('setNotificationBody', received_info["notification"]["message"]);
+                commit('setNotificationSetting', received_info["notification"]["setting"]);
+                commit('setShowNotification', true);
+            }
+            if (received_info['type'] === 'active.modification') {
+                commit('setNotificationTitle', received_info["notification"]["title"]);
+                commit('setNotificationBody', received_info["notification"]["message"]);
+                commit('setActiveModification', received_info["modification"]);
+                commit('setNotificationSetting', "modification");
+                commit('setShowNotification', true);
+            }
+            if (received_info['type'] === 'active.live_suggestion') {
+                if (received_info['agent'] === 'engineer') {
+                    commit('addSuggestionListType', {
+                        type: 'engineer',
+                        list: received_info['suggestion_list']
+                    });
 
-                websocket.onopen = function () {
-                    console.log('Web Socket Connection Made');
-
-                    // Start ping routine
-                    pingIntervalId = setInterval(() => {
-                        console.log("Ping sent!");
-                        websocket.send(JSON.stringify({'msg_type': 'ping'}));
-                    }, 30000);
-
-                    // Resolve the promise
-                    resolve();
-                };
-                websocket.onclose = (event) => {
-                    console.error("WebSocket error observed:", event);
-                };
-                websocket.onclose = (event) => {
-                    console.log("Websockets closed", event);
-                    clearInterval(pingIntervalId);
-                };
-                websocket.onmessage = function (event) {
-                    let received_info = JSON.parse(event.data);
-                    console.log(received_info);
-                    if (received_info['type'] === 'ga.new_archs') {
-                        received_info['archs'].forEach((arch) => {
-                            dispatch('addNewDataFromGA', arch);
-                        });
-                    }
-                    if (received_info['type'] === 'ga.started') {
-                        commit('setGaStatus', true);
-                    }
-                    if (received_info['type'] === 'ga.finished') {
-                        commit('setGaStatus', false);
-                    }
-                    if (received_info['type'] === 'active.notification') {
-                        commit('setNotificationTitle', received_info["notification"]["title"]);
-                        commit('setNotificationBody', received_info["notification"]["message"]);
-                        commit('setNotificationSetting', received_info["notification"]["setting"]);
-                        commit('setShowNotification', true);
-                    }
-                    if (received_info['type'] === 'active.modification') {
-                        commit('setNotificationTitle', received_info["notification"]["title"]);
-                        commit('setNotificationBody', received_info["notification"]["message"]);
-                        commit('setActiveModification', received_info["modification"]);
-                        commit('setNotificationSetting', "modification");
-                        commit('setShowNotification', true);
-                    }
-                    if (received_info['type'] === 'active.live_suggestion') {
-                        if (received_info['agent'] === 'engineer') {
-                            commit('addSuggestionListType', {
-                                type: 'engineer',
-                                list: received_info['suggestion_list']
-                            });
-
-                        }
-                        if (received_info['agent'] === 'historian') {
-                            commit('addSuggestionListType', {
-                                type: 'historian',
-                                list: received_info['suggestion_list']
-                            });
-                        }
-                        let daphneResponse = {
-                            "visual_answer_type": "list",
-                            "visual_answer": {
-                                "list": getters.getFullSuggestionsList
-                            }
-                        };
-                        commit('setResponse', daphneResponse);
-                    }
-                    if (received_info['type'] === 'active.message') {
-                        commit('addDialoguePiece', received_info['message']);
-                    }
-                    if (received_info['type'] === 'ping') {
-                        console.log("Ping back!");
+                }
+                if (received_info['agent'] === 'historian') {
+                    commit('addSuggestionListType', {
+                        type: 'historian',
+                        list: received_info['suggestion_list']
+                    });
+                }
+                let daphneResponse = {
+                    "visual_answer_type": "list",
+                    "visual_answer": {
+                        "list": getters.getFullSuggestionsList
                     }
                 };
-                commit('setWebsocket', websocket);
-            });
+                commit('setResponse', daphneResponse);
+            }
+            if (received_info['type'] === 'active.message') {
+                commit('addDialoguePiece', received_info['message']);
+            }
+            if (received_info['type'] === 'ping') {
+                console.log("Ping back!");
+            }
         },
         async stopBackgroundTasks({ dispatch }) {
             // Stop all background tasks
@@ -237,5 +201,5 @@ export default new Vuex.Store({
         experiment,
         modal
     },
-    strict: false
+    strict: debug
 });

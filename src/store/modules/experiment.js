@@ -6,6 +6,7 @@ import SMAP from "../../scripts/smap";
 import Decadal2017Aerosols from "../../scripts/decadal";
 import EOSSFilter from "../../scripts/eoss-filter";
 import DecadalFilter from "../../scripts/decadal-filter";
+import {wsTools} from "../../scripts/websocket-tools";
 
 function chooseProblem(problemName) {
     let problem = null;
@@ -463,7 +464,7 @@ const actions = {
                     // Start the websockets after completing the request so the session cookie is already set
                     commit('startExperimentWebsocket');
                     // Start the Websocket
-                    await dispatch('startWebsocket');
+                    await wsTools.wsConnect(this);
                 }
             }
             else {
