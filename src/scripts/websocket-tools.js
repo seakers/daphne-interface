@@ -11,7 +11,7 @@ class WebsocketTools {
             let websocket = new ReconnectingWebSocket(WS_URL + 'eoss/ws');
             let pingIntervalId = null;
 
-            websocket.onopen = function () {
+            websocket.onopen = () => {
                 console.log('Web Socket Connection Made');
 
                 // Start ping routine

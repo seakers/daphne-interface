@@ -15,13 +15,11 @@
                     <user class="user-info" v-if="!inExperiment"></user>
                 </div>
             </aside>
-            <div class="column" id="admin-panel">
-                <section class="section is-small">
-                    <div class="columns is-mobile">
-                        <tradespace-plot></tradespace-plot>
-                    </div>
-                    <functionality-list></functionality-list>
-                </section>
+            <div class="column is-7" id="admin-panel">
+                <div class="columns">
+                    <tradespace-plot></tradespace-plot>
+                </div>
+                <functionality-list></functionality-list>
             </div>
             <div class="vertical-divider"></div>
             <chat-window class="column is-3"></chat-window>
@@ -135,6 +133,8 @@
                     await this.$store.dispatch("retrieveActiveSettings");
                     this.$store.dispatch("startBackgroundSearch");
                 }
+
+                this.$store.dispatch('setProblemParameters');
 
                 this.isStartup = false;
             }

@@ -39,7 +39,6 @@
         beforeMount() {
             this.width =  770 - 35 - this.margin.left - this.margin.right;
             this.height = 310 - this.margin.top - this.margin.bottom;
-            this.$store.dispatch('setProblemParameters');
         },
         computed: {
             ...mapGetters({
