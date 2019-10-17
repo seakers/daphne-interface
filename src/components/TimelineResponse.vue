@@ -1,16 +1,15 @@
 <template>
     <div class="plot-container">
-        <p>{{ daphneResponse['visual_answer']['title'] }}</p>
+        <p>{{ response.title }}</p>
         <div class="timeline-plot"></div>
     </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
     import * as d3 from 'd3';
 
     export default {
-        name: 'text-response',
+        name: 'timeline-response',
         data() {
             return {
                 mainPlotParams: {
@@ -23,16 +22,11 @@
                 zoom: {}
             }
         },
-        props: ["size"],
+        props: ["response"],
         computed: {
-            ...mapGetters({
-                daphneResponse: 'getResponse'
-            }),
-
             plotWidth() {
                 return this.mainPlotParams.width - this.mainPlotParams.margin.right - this.mainPlotParams.margin.left;
             },
-
             plotHeight() {
                 return this.mainPlotParams.height - this.mainPlotParams.margin.top - this.mainPlotParams.margin.bottom;
             }
@@ -47,8 +41,8 @@
             drawTimeline() {
                 this.resetMainPlot();
 
-                let plotData = this.daphneResponse['visual_answer']['plot_data'];
-                console.log(this.daphneResponse, plotData);
+                let plotData = this.response['plot_data'];
+                console.log(this.response, plotData);
 
                 // Update sizes
                 this.mainPlotParams.width = document.getElementsByClassName('plot-container')[0].clientWidth;

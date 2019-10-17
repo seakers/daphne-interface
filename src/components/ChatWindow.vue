@@ -69,6 +69,7 @@
     }
 
     .chat-area {
+        width: 100%;
         padding: 1em;
         overflow: auto;
         flex-grow: 1;
