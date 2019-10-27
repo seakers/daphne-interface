@@ -1,10 +1,21 @@
 <template>
     <div class="column">
+
         <section class="panel">
+
+
+<!--            <p class="panel-heading">-->
+<!--                Tradespace exploration |-->
+<!--                Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}-->
+<!--            </p>-->
+
+
             <p class="panel-heading">
-                Tradespace exploration |
+                Tradespace exploration
                 Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}
             </p>
+
+
             <div class="panel-block" id="main-plot-block">
                 <div id="main-plot"></div>
                 <div id="selections-block">
@@ -50,6 +61,11 @@
                 </div>
             </div>
         </section>
+
+
+
+
+
     </div>
 </template>
 
