@@ -31,6 +31,8 @@ export default {
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',
+
+        '',
     ],
     shownFunctionalities: [
         'DesignBuilder',

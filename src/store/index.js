@@ -7,7 +7,7 @@ import tradespacePlot from './modules/tradespace-plot';
 import functionalityList from './modules/functionality-list';
 import daphne from './modules/daphne';
 import dataMining from './modules/data-mining';
-import teacherAgent from './modules/teacher-agent'
+import teacherAgent from './modules/teacher-agent';
 import filter from './modules/filter';
 import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
@@ -104,7 +104,7 @@ export default new Vuex.Store({
                     pingIntervalId = setInterval(() => {
                         console.log("Ping sent!");
                         websocket.send(JSON.stringify({'msg_type': 'ping'}));
-                    }, 30000);
+                    }, 10000);
 
                     // Resolve the promise
                     resolve();
