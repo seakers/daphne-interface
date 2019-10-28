@@ -50,7 +50,7 @@ store.subscribe(async (mutation, state) => {
                     msg_type: 'update_state',
                     state: state
                 }));
-            }, 10000);
+            }, 30000);
         }
     }
     else {
