@@ -722,10 +722,6 @@
                 console.log("In TeacherAgent.vue --> method: setSecondLevelDesignSpace");
                 this.$store.dispatch('actionComputeSecondLevelDesignSpace');
             },
-
-
-
-
             getObjectiveGroupInfo(data) {
                 console.log("reached");
                 console.log(this.objectiveGroupData);
@@ -743,8 +739,24 @@
 
 
 
+            stopProactiveTeacherOnReload() {
+                this.$store.dispatch('turnProactiveTeacherOff');
+            },
 
+        },
 
+        //--> Functions for the proactive teacher agent
+        mounted() {
+            //--> We turn off the proactive teacher when the page is closed
+            //--> ISSUE --> If the page is RELOADED the teacher thread in daphne_brain will still be RUNNING
+            window.addEventListener('unload', this.stopProactiveTeacherOnReload);
+
+            console.log("Teacher Agent mounted, enabling proactive");
+            this.$store.dispatch('turnProactiveTeacherOn');
+        },
+        destroyed() {
+            console.log("Teacher Agent destroyed, disabling proactive");
+            this.$store.dispatch('turnProactiveTeacherOff');
         },
 
 

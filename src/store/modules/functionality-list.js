@@ -42,7 +42,6 @@ functionalityTypes.set('Teacher', {
 
 
 
-
 functionalityTypes.set('OrbitInstrInfo', {
     title: 'Orbits and Instruments Information',
     component: 'Cheatsheet',

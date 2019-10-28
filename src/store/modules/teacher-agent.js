@@ -173,9 +173,7 @@ const actions = {
 
     },
 
-
-
-
+    //--> Calls by getSubjectInformation
     async getFeaturesInformation({ commit }) {
         console.log("In teacher-agent.js --> getFeaturesInformation");
 
@@ -389,6 +387,49 @@ const actions = {
         }
 
     },
+
+
+    //--> To turn proactive teacher on or off
+    async turnProactiveTeacherOn({ commit, rootState }) {
+
+        //--> Request Data
+        let reqData = new FormData();
+        reqData.append('problem', rootState.problem.problemName);
+        reqData.append('proactiveMode', 'enabled');
+
+        //--> Receive Response
+        let dataResponse = await fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
+        console.log(dataResponse);
+
+        //--> Retrieve Response
+        if (dataResponse.ok)
+        {
+            let jsonResponse = await dataResponse.json();
+            console.log(jsonResponse);
+        }
+    },
+    async turnProactiveTeacherOff({ commit, rootState }) {
+
+        //--> Request Data
+        let reqData = new FormData();
+        reqData.append('problem', rootState.problem.problemName);
+        reqData.append('proactiveMode', 'disabled');
+
+        //--> Receive Response
+        let dataResponse = await fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
+        console.log(dataResponse);
+
+        //--> Retrieve Response
+        if (dataResponse.ok)
+        {
+            let jsonResponse = await dataResponse.json();
+            console.log(jsonResponse);
+        }
+    },
+
+
+
+
 
 
 
