@@ -7,7 +7,7 @@
                 <a id="clear_all_features" class="button">Clear</a>
             </div>
         </div>
-        <div id="feature-application-panel" class="container is-fluid"></div>
+        <div id="feature-application-panel" style="max-width: 100%"></div>
     </div>
 </template>
 
@@ -208,7 +208,6 @@
 
                 // Normalize for fixed-depth.
                 nodes.forEach(d => { d.y = d.depth * 180; });
-
                 let svg = d3.select('#feature-application-panel').select('svg').select('g');
 
                 let diagonal = this.diagonal;
@@ -459,6 +458,8 @@
                     .append('svg')
                     .attr('width', width + margin.left + margin.right)
                     .attr('height', height + margin.bottom + margin.top)
+                    .style('width', width + margin.left + margin.right + 'px')
+                    .style('height', height + margin.bottom + margin.top + 'px')
                     .append('g')
                     .attr('transform', 'translate('+ margin.left + ',' + margin.top + ')');
 

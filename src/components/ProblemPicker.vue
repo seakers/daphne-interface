@@ -95,6 +95,8 @@
                         if (this.$store.state.auth.isLoggedIn) {
                             this.$store.dispatch("startBackgroundSearch");
                         }
+                        // Set data mining settings
+                        this.$store.dispatch('setProblemParameters');
                     }
                     else {
                         console.error('Error changing the problem.');

@@ -125,9 +125,6 @@ const actions = {
             });
             reqData.append('selected', JSON.stringify(selectedIds));
             reqData.append('non_selected', JSON.stringify(nonSelectedIds));
-            reqData.append('supp', state.supportThreshold);
-            reqData.append('conf', state.confidenceThreshold);
-            reqData.append('lift', state.liftThreshold);
             reqData.append('problem', rootState.problem.problemName);
             reqData.append('input_type', rootState.problem.inputType);
 
@@ -141,6 +138,30 @@ const actions = {
 
                 commit('setFeatures', features);
             }
+            else {
+                console.error('Error obtaining the driving features.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+
+    async setProblemParameters({ state, commit, rootState }) {
+        try {
+            let reqData = new FormData();
+            reqData.append('problem', rootState.problem.problemName);
+            if (!rootState.problem.extra){
+                console.error("Data mining cannot run as there is no orbit or instrument info");
+            } else if(!rootState.problem.extra.instrumentList || !rootState.problem.extra.orbitList){
+                console.error("Data mining cannot run as there is no orbit or instrument info");
+            }else {
+                let params = {orbit_list: rootState.problem.extra.orbitList, instrument_list: rootState.problem.extra.instrumentList};
+                reqData.append('params', JSON.stringify(params));
+            }
+            let dataResponse = await fetchPost(API_URL + 'eoss/analyst/set-problem-parameters', reqData);
+
+            if (dataResponse.ok) {}
             else {
                 console.error('Error obtaining the driving features.');
             }

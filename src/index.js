@@ -4,8 +4,7 @@ import Vue from 'vue';
 
 import App from './components/App';
 import store from './store';
-
-import ReconnectingWebSocket from "reconnecting-websocket";
+import {wsTools} from "./scripts/websocket-tools";
 
 // Non ES-modularized libraries
 let annyang = require('annyang');
@@ -64,7 +63,7 @@ store.subscribe(async (mutation, state) => {
     if (updatesContextList.includes(mutation.type)) {
         // Lazily create the Websocket to ensure the session is already created by this point
         if (mutation.type === 'updateClickedArch') {
-            state.websocket.send(JSON.stringify({
+            wsTools.websocket.send(JSON.stringify({
                 msg_type: 'context_add',
                 new_context: {
                     eosscontext: {
@@ -89,7 +88,7 @@ store.subscribe(async (mutation, state) => {
                 numberOfEngChanges = 0;
                 console.log(mutation);
                 // Send a WS request for expert information on current arch
-                state.websocket.send(JSON.stringify({
+                wsTools.websocket.send(JSON.stringify({
                     msg_type: 'active_engineer',
                     type: 'binary', // TODO!
                     genome: mutation.payload
@@ -107,7 +106,7 @@ store.subscribe(async (mutation, state) => {
             if (numberOfHistChanges >= 3) {
                 numberOfHistChanges = 0;
                 // Send a WS request for historian information on current arch
-                state.websocket.send(JSON.stringify({
+                wsTools.websocket.send(JSON.stringify({
                     msg_type: 'active_historian',
                     type: 'binary', // TODO!
                     genome: mutation.payload

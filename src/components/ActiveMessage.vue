@@ -1,67 +1,45 @@
 <template>
-    <section v-if="show">
-        <article class="message is-info">
-            <div class="message-header">
-                <p>{{ title }}</p>
-                <button class="delete" aria-label="delete" v-on:click="closeNotification"></button>
+    <div>
+        <p>{{ response.message }}</p>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-link" v-on:click="activateSetting">Yes</button>
             </div>
-            <div class="message-body">
-                <p>{{ body }}</p>
-                <div class="field is-grouped">
-                    <div class="control">
-                        <button class="button is-link" v-on:click="activateSetting">Yes</button>
-                    </div>
-                    <div class="control">
-                        <button class="button is-link" v-on:click="closeNotification">No</button>
-                    </div>
-                </div>
+            <div class="control">
+                <button class="button is-link">No</button>
             </div>
-        </article>
-    </section>
+        </div>
+    </div>
 </template>
 
 <script>
-    import { mapState } from 'vuex';
-
     export default {
         name: "ActiveMessage",
         data() {
             return {
             }
         },
-        computed: {
-            ...mapState({
-                title: state => state.active.notificationTitle,
-                body: state => state.active.notificationBody,
-                show: state => state.active.showNotification,
-                setting: state => state.active.notificationSetting,
-                modification: state => state.active.modification,
-            }),
-        },
+        props: ['response'],
         methods: {
-            closeNotification() {
-                this.$store.commit("setShowNotification", false);
-            },
             activateSetting() {
-                console.log(this.setting);
-                if (this.setting === "show_background_search_feedback") {
+                console.log(this.response.setting);
+                if (this.response.setting === "show_background_search_feedback") {
                     this.$store.commit('setShowFoundArchitectures', true);
                 }
-                else if (this.setting === "check_for_diversity") {
+                else if (this.response.setting === "check_for_diversity") {
                     this.$store.commit('setRunDiversifier', true);
                 }
-                else if (this.setting === "show_arch_suggestions") {
+                else if (this.response.setting === "show_arch_suggestions") {
                     this.$store.commit('setShowSuggestions', true);
                 }
-                else if (this.setting === "modification") {
+                else if (this.response.setting === "modification") {
                     if (this.modification["type"] === "set_diversifier_id") {
                          this.$store.commit("updateClickedArch", this.modification["arch_id"])
                     }
                 }
 
-                if (this.setting !== "") {
+                if (this.response.setting !== "") {
                     this.$store.dispatch("updateActiveSettings");
-                    this.$store.commit("setShowNotification", false);
                 }
 
             }

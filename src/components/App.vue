@@ -15,14 +15,11 @@
                     <user class="user-info" v-if="!inExperiment"></user>
                 </div>
             </aside>
-            <div class="column" id="admin-panel">
-                <active-message class="section is-small"></active-message>
-                <section class="section is-small">
-                    <div class="columns is-mobile">
-                        <tradespace-plot></tradespace-plot>
-                    </div>
-                    <functionality-list></functionality-list>
-                </section>
+            <div class="column is-7" id="admin-panel">
+                <div class="columns">
+                    <tradespace-plot></tradespace-plot>
+                </div>
+                <functionality-list></functionality-list>
             </div>
             <div class="vertical-divider"></div>
             <chat-window class="column is-3"></chat-window>
@@ -55,6 +52,7 @@
     import ActiveMessage from "./ActiveMessage";
     import ActiveSwitches from "./ActiveSwitches";
     import ChatWindow from "./ChatWindow";
+    import {wsTools} from "../scripts/websocket-tools";
 
     let introJs = require('intro.js');
 
@@ -78,18 +76,9 @@
                 inExperiment: 'getInExperiment',
                 experimentStage: 'getExperimentStage',
                 stageInformation: 'getStageInformation',
-                websocket: 'getWebsocket',
                 isRecovering: 'getIsRecovering',
                 currentStageNum: 'getCurrentStageNum'
             }),
-            questionBarExperimentCondition() {
-                if (!this.inExperiment) {
-                    return true;
-                }
-                else {
-                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('QuestionBar');
-                }
-            },
             timerExperimentCondition() {
                 if (!this.inExperiment) {
                     return false;
@@ -125,7 +114,7 @@
                 await this.$store.dispatch('stopBackgroundTasks');
 
                 // Start the Websocket
-                await this.$store.dispatch('startWebsocket');
+                await wsTools.wsConnect(this.$store);
 
                 // Initialize the new problem
                 await this.$store.dispatch('initProblem');
@@ -144,6 +133,8 @@
                     await this.$store.dispatch("retrieveActiveSettings");
                     this.$store.dispatch("startBackgroundSearch");
                 }
+
+                this.$store.dispatch('setProblemParameters');
 
                 this.isStartup = false;
             }
