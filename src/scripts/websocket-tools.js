@@ -31,6 +31,10 @@ class WebsocketTools {
             websocket.onmessage = (event) => store.dispatch("onWebsocketsMessage", event);
         });
     }
+
+    async wsRefresh() {
+        this.websocket.refresh();
+    }
 }
 
 export let wsTools = new WebsocketTools();

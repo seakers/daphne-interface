@@ -21,7 +21,10 @@
                 this.$store.commit('activateModal', 'LoginModal');
             },
             logout() {
-                this.$store.dispatch('logoutUser');
+                this.$store.dispatch('logoutUser').then(async () => {
+                    // Start the Websocket
+                    await wsTools.wsRefresh();
+                });
             }
         }
     }

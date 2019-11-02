@@ -49,6 +49,9 @@
                 this.$store.dispatch('loginUser', {
                     username: formData.get("username"),
                     password: formData.get("password")
+                }).then(async () => {
+                    // Start the Websocket
+                    await wsTools.wsRefresh();
                 });
             },
             openRegisterForm() {

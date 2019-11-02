@@ -113,9 +113,6 @@
                 // Stop all running background tasks
                 await this.$store.dispatch('stopBackgroundTasks');
 
-                // Start the Websocket
-                await wsTools.wsConnect(this.$store);
-
                 // Initialize the new problem
                 await this.$store.dispatch('initProblem');
                 if (startData !== undefined && startData['modified_dataset']) {
@@ -152,9 +149,12 @@
             User,
             ProblemPicker
         },
-        mounted() {
+        async mounted() {
             // Tutorial
             this.tutorial = introJs();
+
+            // Start the Websocket
+            await wsTools.wsConnect(this.$store);
 
             // Check if user is logged in before putting prompt
             try {
