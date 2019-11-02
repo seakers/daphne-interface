@@ -20,6 +20,8 @@ import DecadalFilter from '../scripts/decadal-filter';
 import EOSSFilter from '../scripts/eoss-filter';
 import {fetchPost} from "../scripts/fetch-helpers";
 
+import store from '../store';
+
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
@@ -37,28 +39,28 @@ export default new Vuex.Store({
             let problem = null;
             let filter = null;
             switch (state.problem.problemName) {
-                case 'ClimateCentric':
-                    problem = ClimateCentric;
-                    filter = EOSSFilter;
-                    break;
-                case 'SMAP':
-                    problem = SMAP;
-                    problem.problemName = 'SMAP';
-                    filter = EOSSFilter;
-                    break;
-                case 'SMAP_JPL1':
-                    problem = SMAP;
-                    problem.problemName = 'SMAP_JPL1';
-                    filter = EOSSFilter;
-                    break;
-                case 'SMAP_JPL2':
-                    problem = SMAP;
-                    problem.problemName = 'SMAP_JPL2';
-                    filter = EOSSFilter;
-                    break;
-                case 'Decadal2017Aerosols':
-                    problem = Decadal2017Aerosols;
-                    filter = DecadalFilter;
+            case 'ClimateCentric':
+                problem = ClimateCentric;
+                filter = EOSSFilter;
+                break;
+            case 'SMAP':
+                problem = SMAP;
+                problem.problemName = 'SMAP';
+                filter = EOSSFilter;
+                break;
+            case 'SMAP_JPL1':
+                problem = SMAP;
+                problem.problemName = 'SMAP_JPL1';
+                filter = EOSSFilter;
+                break;
+            case 'SMAP_JPL2':
+                problem = SMAP;
+                problem.problemName = 'SMAP_JPL2';
+                filter = EOSSFilter;
+                break;
+            case 'Decadal2017Aerosols':
+                problem = Decadal2017Aerosols;
+                filter = DecadalFilter;
             }
             commit('setProblem', problem);
             if (filter !== null) {
@@ -85,7 +87,47 @@ export default new Vuex.Store({
         },
         async onWebsocketsMessage({ commit, state, getters, dispatch }, message) {
             let received_info = JSON.parse(message.data);
-            console.log(received_info);
+
+            //--> Proactive Teacher Message
+            console.log("Websocket Message - Testing Proactive Teacher");
+            if (received_info['type'] === 'teacher.design_space') {
+                console.log('Success !!!!!');
+            }
+            if (received_info['type'] === 'teacher.objective_space') {
+                console.log('Success !!!!!');
+            }
+            if (received_info['type'] === 'teacher.sensitivities') {
+                console.log('Success !!!!!');
+                let responsiveVoice = window.responsiveVoice;
+                //store.state.daphne.dialogueHistory.push(received_info['speak']);
+
+
+                store.commit('setSensitivities', received_info['data']);
+                store.commit('setFirstOrderSensitivityPlot');
+                store.commit('addDialoguePiece', {
+                    "voice_message": 'testing',
+                    "visual_message_type": ["sensitivity_plot"],
+                    "visual_message": ["ping"],
+                    "writer": "daphne"
+                });
+
+
+
+                //--> Display the chart then make the thing speak about it
+                //responsiveVoice.speak(received_info['speak']);
+                // commit('setNotificationTitle', 'ddd');
+                // commit('setNotificationBody', 'ddd');
+                // commit('setNotificationSetting', 'ddd');
+                // commit('setShowNotification', true);
+                console.log(received_info)
+            }
+            if (received_info['type'] === 'teacher.features') {
+                console.log('Success !!!!!');
+            }
+
+
+
+
             if (received_info['type'] === 'ga.new_archs') {
                 received_info['archs'].forEach((arch) => {
                     dispatch('addNewDataFromGA', arch);

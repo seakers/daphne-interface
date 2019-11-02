@@ -748,7 +748,7 @@
         //--> Functions for the proactive teacher agent
         mounted() {
             //--> We turn off the proactive teacher when the page is closed
-            //--> ISSUE --> If the page is RELOADED the teacher thread in daphne_brain will still be RUNNING
+            window.addEventListener('beforeunload', this.stopProactiveTeacherOnReload);
             window.addEventListener('unload', this.stopProactiveTeacherOnReload);
 
             console.log("Teacher Agent mounted, enabling proactive");

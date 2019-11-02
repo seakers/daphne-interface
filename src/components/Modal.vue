@@ -36,6 +36,9 @@
         methods: {
             onCloseModal() {
                 this.$emit('close-modal');
+
+                //--> Clears the Proactive Teacher Database context for this user and session
+                this.$store.dispatch('clearTeacherUserContext');
             }
         }
     }

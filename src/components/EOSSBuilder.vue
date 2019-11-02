@@ -141,6 +141,11 @@
                     let boolArch = this.boolArch();
                     boolArch[newIndex] = false;
                     this.$store.commit('updateClickedArchInputs', boolArch);
+
+                    //--> Teacher agent records when an arch was changed
+                    let teacherUpdateData = {'arch_id': this.clickedArch,
+                                             'inputs': boolArch};
+                    this.$store.dispatch('recordArchitectureUpdate', teacherUpdateData);
                 }
             },
 
@@ -152,6 +157,11 @@
                     if (!boolArch[newIndex]) {
                         boolArch[newIndex] = true;
                         this.$store.commit('updateClickedArchInputs', boolArch);
+
+                        //--> Teacher agent records when an arch was changed
+                        let teacherUpdateData = {'arch_id': this.clickedArch,
+                                                 'inputs': boolArch};
+                        this.$store.dispatch('recordArchitectureUpdate', teacherUpdateData);
                     }
                 }
 

@@ -347,6 +347,12 @@
                     // Only update if there is a change in the selection
                     if (this.clickedArch !== point) {
                         this.updateClickedArch(point);
+
+                        //--> Teacher agent records the architectures the user selected
+                        let teacherUpdateData = {'point': point,
+                                                'inputs': this.plotData[point].inputs,
+                                                'outputs': this.plotData[point].outputs};
+                        this.$store.dispatch('recordSelectedArchitecture', teacherUpdateData);
                     }
                 }
             },

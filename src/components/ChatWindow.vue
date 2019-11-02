@@ -1,13 +1,13 @@
 <template>
     <div>
-        <div class="chat-container">
+        <div class="chat-container" style="width: inherit">
             <section ref="chatArea" class="chat-area">
                 <div v-for="piece in dialogueHistory" class="chat-message content" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }">
                     <component v-for="(response, index) in piece['visual_message']" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
                 </div>
             </section>
 
-            <QuestionBar class="sticky-textbox"></QuestionBar>
+            <QuestionBar class="sticky-textbox" style="position: relative"></QuestionBar>
         </div>
     </div>
 </template>
@@ -18,6 +18,12 @@
     import ListResponse from './ListResponse';
     import TimelineResponse from './TimelineResponse';
     import ActiveMessage from "./ActiveMessage";
+
+    import PlotResponse from "./PlotResponse";
+    import SensitivityPlot from "./SensitivityPlot";
+    import DesignSpacePlot from "./DesignSpacePlot";
+    import ObjectiveSpacePlot from "./ObjectiveSpacePlot";
+    import FeaturePlot from "./FeaturePlot";
     import {mapState} from "vuex";
 
     export default {
@@ -27,7 +33,13 @@
             TextResponse,
             ListResponse,
             TimelineResponse,
-            ActiveMessage
+            ActiveMessage,
+
+            PlotResponse,
+            SensitivityPlot,
+            DesignSpacePlot,
+            ObjectiveSpacePlot,
+            FeaturePlot,
         },
         data() {
             return {
@@ -35,7 +47,13 @@
                     text: 'TextResponse',
                     list: 'ListResponse',
                     timeline_plot: 'TimelineResponse',
-                    active_message: 'ActiveMessage'
+                    active_message: 'ActiveMessage',
+
+                    plotly_plot: 'PlotResponse',
+                    sensitivity_plot: 'SensitivityPlot',
+                    design_space_plot: 'DesignSpacePlot',
+                    objective_space_plot: 'ObjectiveSpacePlot',
+                    feature_plot: 'FeaturePlot',
                 }
             }
         },

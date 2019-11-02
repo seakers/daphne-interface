@@ -24,12 +24,20 @@ let mutationBlackList = ['setIsLoading', 'resetDaphne', 'clearFeatures', 'resetD
     'setIsRecovering'];
 let updatesContextList = ['updateClickedArch', 'updateClickedArchInputs'];
 
+//----> Mutation types for teacher agent
+//--> Architecture the user currently has selected (first architecture doesn't count) use 'updateClickedArch' done
+//--> How the user changes a currently selected architecture done
+//--> Architecture that user requested to have evaluated done
+let teacherMutationTypes = ['setSelectedArchitecture', 'setUpdatedArchitecture', 'setLastEvaluatedArchitecture'];
+
 // Active timers
 let numberOfEngChanges = 0;
 let numberOfHistChanges = 0;
 
 // Experiment Websocket connection
 store.subscribe(async (mutation, state) => {
+    //console.log(mutation.type);
+
     // Only update if inside experiment
     if (state.experiment.inExperiment) {
         // Only update mutations if after tutorial (currentStageNum > 0)
@@ -46,7 +54,7 @@ store.subscribe(async (mutation, state) => {
         if (stateTimer === 0) {
             stateTimer = window.setInterval(async () => {
                 state.experiment.experimentWebsocket.send(JSON.stringify({
-                    msg_type: 'update_state',
+                    msg_type: 'recordDetailView',
                     state: state
                 }));
             }, 30000);
@@ -58,6 +66,31 @@ store.subscribe(async (mutation, state) => {
             stateTimer = 0;
         }
     }
+
+
+    //--> Mutations that will be used by the teacher agent
+    if (teacherMutationTypes.includes(mutation.type)) {
+        if (mutation.type === 'setSelectedArchitecture') {
+            wsTools.websocket.send(JSON.stringify({
+                msg_type: 'teacher_clicked_arch',
+                teacher_context: mutation.payload,
+            }));
+        }
+        if (mutation.type === 'setUpdatedArchitecture') {
+            wsTools.websocket.send(JSON.stringify({
+                msg_type: 'teacher_clicked_arch_update',
+                teacher_context: mutation.payload,
+            }));
+        }
+        if (mutation.type === 'setLastEvaluatedArchitecture') {
+            wsTools.websocket.send(JSON.stringify({
+                msg_type: 'teacher_evaluated_arch',
+                teacher_context: mutation.payload,
+            }));
+        }
+    }
+
+
 
     // Context updates TODO: Refactor into something more modular
     if (updatesContextList.includes(mutation.type)) {

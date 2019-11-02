@@ -20,6 +20,11 @@ const state = {
     instrumentList: [],
     plotData: [],
 
+    //--> Items that will be sent to the backend for proactive teacher
+    lastEvaluatedArchitecture: {},
+    selectedArchData: {},
+    updatedArchData: {},
+
 
     // -----------------------------------
     // ---------- SENSITIVITIES ----------
@@ -54,7 +59,7 @@ const state = {
     secondOrderInstrument: '',
 
     sensitivityOrder: 'First Order',
-    numSensitivitiesToShow: '7',
+    numSensitivitiesToShow: '10',
     sensitivitiesObjective: 'Science',
 
     areFirstOrderSensitivitiesComputed: false,
@@ -135,7 +140,35 @@ const initialState = _.cloneDeep(state);
 // ---------------------------
 // Getters
 // ---------------------------
-const getters = {};
+const getters = {
+
+    //--> Getters for SensitivityPlot.vue
+    get_s1_cost_mins(state){
+        return state.s1_cost_mins;
+    },
+    get_s1_science_mins(state){
+        return state.s1_science_mins;
+    },
+
+
+    get_s1_cost_plot(state){
+        return state.s1_cost_plot;
+    },
+    get_s1_cost_plot_layout(state){
+        return state.s1_cost_plot_layout;
+    },
+
+    get_level_one_design_space_plot(state) {
+        return state.level_one_design_space_plot;
+    },
+    get_level_one_design_space_plot_layout(state){
+        return state.level_one_design_space_plot_layout;
+    }
+
+
+
+
+};
 
 
 
@@ -392,9 +425,47 @@ const actions = {
     //--> To turn proactive teacher on or off
     async turnProactiveTeacherOn({ commit, rootState }) {
 
+        //--> Get Problem Orbits
+        let orbit_names = [];
+        let orbit_loop_break = false;
+        let orbit_loop_counter = 0;
+        let orbit_name = '';
+        while(orbit_loop_break === false){
+            orbit_name = store.state.problem.index2ActualName(orbit_loop_counter,"orbit");
+            if(typeof(orbit_name) === 'string'){
+                orbit_names.push(orbit_name)
+                orbit_loop_counter = orbit_loop_counter + 1;
+            }
+            else{
+                orbit_loop_break = true;
+                break;
+            }
+        }
+        commit('setOrbitList', orbit_names);
+
+        //--> Get Problem Instruments
+        let instrument_names = [];
+        let instrument_loop_break = false;
+        let instrument_loop_counter = 0;
+        let instrument_name = '';
+        while(instrument_loop_break === false){
+            instrument_name = store.state.problem.index2ActualName(instrument_loop_counter,"instrument");
+            if(typeof(instrument_name) === 'string'){
+                instrument_names.push(instrument_name)
+                instrument_loop_counter = instrument_loop_counter + 1;
+            }
+            else{
+                instrument_loop_break = true;
+                break;
+            }
+        }
+        commit('setInstrumentList', instrument_names);
+
         //--> Request Data
         let reqData = new FormData();
         reqData.append('problem', rootState.problem.problemName);
+        reqData.append('orbits', JSON.stringify(orbit_names));
+        reqData.append('instruments', JSON.stringify(instrument_names));
         reqData.append('proactiveMode', 'enabled');
 
         //--> Receive Response
@@ -475,7 +546,33 @@ const actions = {
     actionComputeSecondLevelDesignSpace({ commit }) {
         commit('computeSecondLevelDesignSpace');
         commit('setLevelTwoDesignSpacePlot');
-    }
+    },
+
+
+
+
+    //--> This function is called when the user has an architecture evaluated and gets results
+    async recordEvaluatedArchitecture({ commit }, evaluatedArchData) {
+        commit('setLastEvaluatedArchitecture', evaluatedArchData);
+    },
+
+    async recordSelectedArchitecture({ commit }, selectedArchData) {
+        commit('setSelectedArchitecture', selectedArchData);
+    },
+
+    async recordArchitectureUpdate({ commit }, updatedArchData) {
+        commit('setUpdatedArchitecture', updatedArchData);
+    },
+
+    //--> This will tell Django to clear the TeacherContextDatabase for this user
+    async clearTeacherUserContext() {
+        //--> Request Data
+        let reqData = new FormData();
+        let dataResponse = await fetchPost(API_URL + 'eoss/teacher/clear-teacher-user-data', reqData);
+        if (dataResponse.ok) {
+            console.log("Teacher Context Database Cleared");
+        }
+    },
 };
 
 
@@ -501,6 +598,18 @@ const mutations = {
     setPlotData(state, plotData) {
         console.log("PLOT DATA ", plotData);
         state.plotData = plotData;
+    },
+
+    //--> Teacher Agent hooks for proactive teacher to receive data
+    setLastEvaluatedArchitecture(state, lastEvaluatedArchitecture) {
+        state.lastEvaluatedArchitecture = lastEvaluatedArchitecture;
+    },
+    setSelectedArchitecture(state, selectedArchData) {
+        state.selectedArchData = selectedArchData;
+    },
+    setUpdatedArchitecture(state, updatedArchData) {
+        state.updatedArchData = updatedArchData;
+        console.log(state.updatedArchData);
     },
 
 
