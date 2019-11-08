@@ -88,42 +88,115 @@ export default new Vuex.Store({
         async onWebsocketsMessage({ commit, state, getters, dispatch }, message) {
             let received_info = JSON.parse(message.data);
 
-            //--> Proactive Teacher Message
+            //----> Teacher: receive websocket messages ----------------------------------------------------------------
+            //--> ---------------------------------------------------------------------------------Design Space messages
             console.log("Websocket Message - Testing Proactive Teacher");
             if (received_info['type'] === 'teacher.design_space') {
                 console.log('Success !!!!!');
+
+
+                if(received_info['name'] === 'displayDesignSpaceInformation'){
+                    //--> Set design space information
+                    store.commit('setDesignSpaceInformation', received_info['data']);
+
+                    //--> Set design space plot
+                    store.commit('addDialoguePiece', {
+                        "voice_message": 'testing',
+                        "visual_message_type": ["design_space_plot"],
+                        "visual_message": ["ping"],
+                        "writer": "daphne"
+                    });
+                }
+                if(received_info['name'] === 'designQuestion'){
+                    store.commit('set_current_question_type', 'design');
+                    store.commit('set_teacher_choice_one', received_info['first_choice']);
+                    store.commit('set_teacher_choice_two', received_info['second_choice']);
+                    store.commit('set_teacher_choice_one_revealed', received_info['first_choice']);
+                    store.commit('set_teacher_choice_two_revealed', received_info['second_choice']);
+                    store.commit('set_correct_choice', received_info['correct_answer']);
+                    store.commit('set_current_teacher_question', received_info['question']);
+
+                    //--> Display question
+                    store.commit('addDialoguePiece', {
+                        "voice_message": 'testing',
+                        "visual_message_type": ["question_template"],
+                        "visual_message": ["ping"],
+                        "writer": "daphne"
+                    });
+                }
             }
+
+            //--> ----------------------------------------------------------------------------- Objective Space messages
             if (received_info['type'] === 'teacher.objective_space') {
                 console.log('Success !!!!!');
+
+                if(received_info['name'] === 'displayObjectiveSpaceInformation') {
+
+                    //--> Set plot informaiton in teacher so component can find it
+                    store.commit('set_objective_chat_plot_info', received_info['data']);
+
+                    //--> This message places objective space plot in chatbox
+                    store.commit('addDialoguePiece', {
+                        "voice_message": 'testing',
+                        "visual_message_type": ["objective_space_plot"],
+                        "visual_message": ["ping"],
+                        "writer": "daphne"
+                    });
+                }
+
             }
+
+            //--> ------------------------------------------------------------------------------- Sensitivities messages
             if (received_info['type'] === 'teacher.sensitivities') {
                 console.log('Success !!!!!');
                 let responsiveVoice = window.responsiveVoice;
                 //store.state.daphne.dialogueHistory.push(received_info['speak']);
 
 
-                store.commit('setSensitivities', received_info['data']);
-                store.commit('setFirstOrderSensitivityPlot');
-                store.commit('addDialoguePiece', {
-                    "voice_message": 'testing',
-                    "visual_message_type": ["sensitivity_plot"],
-                    "visual_message": ["ping"],
-                    "writer": "daphne"
-                });
+                if(received_info['name'] === 'displaySensitivityInformation'){
+
+                    //--> Set sensitivities so SensitivityPlot.vue will have information
+                    store.commit('setSensitivities', received_info['data']);
+
+                    //--> This message places sensitivity plot in chatbox
+                    store.commit('addDialoguePiece', {
+                        "voice_message": 'testing',
+                        "visual_message_type": ["sensitivity_plot"],
+                        "visual_message": ["ping"],
+                        "writer": "daphne"
+                    });
+                }
+
+
+                if(received_info['name'] === 'sensitivityQuestion'){
+                    //--> Set question information
+                    store.commit('set_current_question_type', 'sensitivity');
+                    store.commit('set_teacher_choice_one', received_info['first_choice']);
+                    store.commit('set_teacher_choice_two', received_info['second_choice']);
+                    store.commit('set_teacher_choice_one_revealed', received_info['first_choice_revealed']);
+                    store.commit('set_teacher_choice_two_revealed', received_info['second_choice_revealed']);
+                    store.commit('set_correct_choice', received_info['correct_answer']);
+                    store.commit('set_current_teacher_question', received_info['question']);
+
+                    //--> Display question
+                    store.commit('addDialoguePiece', {
+                        "voice_message": 'testing',
+                        "visual_message_type": ["question_template"],
+                        "visual_message": ["ping"],
+                        "writer": "daphne"
+                    });
+
+                }
 
 
 
-                //--> Display the chart then make the thing speak about it
-                //responsiveVoice.speak(received_info['speak']);
-                // commit('setNotificationTitle', 'ddd');
-                // commit('setNotificationBody', 'ddd');
-                // commit('setNotificationSetting', 'ddd');
-                // commit('setShowNotification', true);
-                console.log(received_info)
             }
+
+            //--> ------------------------------------------------------------------------------------ Features messages
             if (received_info['type'] === 'teacher.features') {
                 console.log('Success !!!!!');
             }
+            //----------------------------------------------------------------------------------------------------------
 
 
 

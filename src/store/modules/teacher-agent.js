@@ -20,6 +20,15 @@ const state = {
     instrumentList: [],
     plotData: [],
 
+    current_teacher_question: 'Question not set',
+    current_question_type: '', //--> Either design or sensitivity
+    teacher_choice_one: 'Choice 1 not set',
+    teacher_choice_two: 'Choice 2 not set',
+    teacher_choice_one_revealed: 'Reveal 1 not set',
+    teacher_choice_two_revealed: 'Reveal 2 not set',
+    correct_choice: 1,
+
+
     //--> Items that will be sent to the backend for proactive teacher
     lastEvaluatedArchitecture: {},
     selectedArchData: {},
@@ -121,6 +130,9 @@ const state = {
     objectiveGroupCostBounds: [],
     objectiveGroupScienceBounds: [],
 
+    //--> For chat window plot
+    objective_chat_plot_info: [],
+
 
 
 
@@ -134,13 +146,38 @@ const initialState = _.cloneDeep(state);
 
 
 
-
-
-
 // ---------------------------
 // Getters
 // ---------------------------
 const getters = {
+
+    get_objective_chat_plot_info(state){
+        return state.objective_chat_plot_info;
+    },
+
+    get_current_question_type(state){
+        return state.current_question_type;
+    },
+
+    get_teacher_choice_one_revealed(state){
+        return state.teacher_choice_one_revealed;
+    },
+    get_teacher_choice_two_revealed(state){
+        return state.teacher_choice_two_revealed;
+    },
+    get_correct_choice(state){
+        return state.correct_choice;
+    },
+    get_current_teacher_question(state){
+        return state.current_teacher_question;
+    },
+    get_teacher_choice_one(state){
+        return state.teacher_choice_one;
+    },
+    get_teacher_choice_two(state){
+        return state.teacher_choice_two;
+    },
+
 
     //--> Getters for SensitivityPlot.vue
     get_s1_cost_mins(state){
@@ -158,12 +195,25 @@ const getters = {
         return state.s1_cost_plot_layout;
     },
 
+
     get_level_one_design_space_plot(state) {
         return state.level_one_design_space_plot;
     },
     get_level_one_design_space_plot_layout(state){
         return state.level_one_design_space_plot_layout;
-    }
+    },
+
+    get_all_level_one_design_space_info(state){
+        return state.all_level_one_design_space_info;
+    },
+
+
+    get_orbit_list(state){
+        return state.orbitList;
+    },
+    get_instrument_list(state){
+        return state.instrumentList;
+    },
 
 
 
@@ -171,17 +221,50 @@ const getters = {
 };
 
 
-
-
-
-
-
-
-
 // ---------------------------
 // Actions
 // ---------------------------
 const actions = {
+
+    async computeOrbitList({ commit }){
+        //--> Get Problem Orbits
+        let orbit_loop_break = false;
+        let orbit_loop_counter = 0;
+        let orbit_name = '';
+        let orbit_names = [];
+        while(orbit_loop_break === false){
+            orbit_name = store.state.problem.index2ActualName(orbit_loop_counter,"orbit");
+            if(typeof(orbit_name) === 'string'){
+                orbit_names.push(orbit_name);
+                orbit_loop_counter = orbit_loop_counter + 1;
+            }
+            else{
+                orbit_loop_break = true;
+                break;
+            }
+        }
+        commit('setOrbitList', orbit_names);
+    },
+    async computeInstrumentList({ commit }){
+        //--> Get Problem Instruments
+        let instrument_loop_break = false;
+        let instrument_loop_counter = 0;
+        let instrument_name = '';
+        let instrument_names = [];
+        while(instrument_loop_break === false){
+            instrument_name = store.state.problem.index2ActualName(instrument_loop_counter,"instrument");
+            if(typeof(instrument_name) === 'string'){
+                instrument_names.push(instrument_name)
+                instrument_loop_counter = instrument_loop_counter + 1;
+            }
+            else{
+                instrument_loop_break = true;
+                break;
+            }
+        }
+        commit('setInstrumentList', instrument_names);
+    },
+
 
     //--> When the user changes the 'Subject' dropdown a new subject will be taught in the teacher panel
     async getSubjectInformation({ commit, dispatch }) {
@@ -236,7 +319,7 @@ const actions = {
         while(orbit_loop_break === false){
             orbit_name = store.state.problem.index2ActualName(orbit_loop_counter,"orbit");
             if(typeof(orbit_name) === 'string'){
-                orbit_names.push(orbit_name)
+                orbit_names.push(orbit_name);
                 orbit_loop_counter = orbit_loop_counter + 1;
             }
             else{
@@ -467,6 +550,7 @@ const actions = {
         reqData.append('orbits', JSON.stringify(orbit_names));
         reqData.append('instruments', JSON.stringify(instrument_names));
         reqData.append('proactiveMode', 'enabled');
+        reqData.append('plotData', JSON.stringify(state.plotData));
 
         //--> Receive Response
         let dataResponse = await fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
@@ -576,14 +660,6 @@ const actions = {
 };
 
 
-
-
-
-
-
-
-
-
 // ---------------------------
 // Mutations
 // ---------------------------
@@ -591,12 +667,39 @@ const mutations = {
     // -----------------------------
     // ---------- GENERAL ----------
     // -----------------------------
+    set_current_question_type(state, current_question_type){
+        state.current_question_type = current_question_type; //--> Either design or sensitivity
+    },
+
+    set_teacher_choice_one(state, teacher_choice_one){
+        state.teacher_choice_one = teacher_choice_one;
+    },
+    set_teacher_choice_two(state, teacher_choice_two){
+        state.teacher_choice_two = teacher_choice_two;
+    },
+    set_teacher_choice_one_revealed(state, teacher_choice_one_revealed){
+        state.teacher_choice_one_revealed = teacher_choice_one_revealed;
+    },
+    set_teacher_choice_two_revealed(state, teacher_choice_two_revealed){
+        state.teacher_choice_two_revealed = teacher_choice_two_revealed;
+    },
+    set_correct_choice(state, correct_choice){
+        state.correct_choice = correct_choice;
+    },
+    set_current_teacher_question(state, current_teacher_question){
+        state.current_teacher_question = current_teacher_question;
+    },
+
+    set_objective_chat_plot_info(state, objective_chat_plot_info){
+        state.objective_chat_plot_info = objective_chat_plot_info;
+    },
+
+
     setSubject(state, selectedSubject) {
         state.selectedSubject = selectedSubject;
     },
 
     setPlotData(state, plotData) {
-        console.log("PLOT DATA ", plotData);
         state.plotData = plotData;
     },
 
@@ -681,7 +784,7 @@ const mutations = {
         state.objectiveGroupData = {};
 
         //--> Create the plot data
-        let plot_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
+        let plot_colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#7F00FF', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
         let plot_data = [];
         let shapes = [];
         for(var y = 0; y < groups.length; y++) {     //--> Iterate over each group
@@ -1155,8 +1258,6 @@ const mutations = {
 };
 
 
-
-
 //--> Returns [orbit, instrument, String(value)]
 function indexValueToTriple(obj, orbitList, instrumentList) {
     let triple = [];
@@ -1175,11 +1276,6 @@ function indexValueToTriple(obj, orbitList, instrumentList) {
 
     return triple;
 }
-
-
-
-
-
 
 
 export default {

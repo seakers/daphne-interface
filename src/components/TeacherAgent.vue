@@ -372,7 +372,6 @@
             VuePlotly
         },
 
-
         computed: {
 
             ...mapGetters({
@@ -693,9 +692,6 @@
 
         },
 
-
-
-
         methods: {
 
             //--> This method will send the subject request over to daphne
@@ -746,6 +742,11 @@
         },
 
         //--> Functions for the proactive teacher agent
+        created() {
+            this.$store.dispatch('computeOrbitList');
+            this.$store.dispatch('computeInstrumentList');
+            this.$store.commit('setPlotData', this.plotData);
+        },
         mounted() {
             //--> We turn off the proactive teacher when the page is closed
             window.addEventListener('beforeunload', this.stopProactiveTeacherOnReload);

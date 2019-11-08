@@ -24,6 +24,8 @@
     import DesignSpacePlot from "./DesignSpacePlot";
     import ObjectiveSpacePlot from "./ObjectiveSpacePlot";
     import FeaturePlot from "./FeaturePlot";
+    import QuestionTemplate from "./QuestionTemplate";
+
     import {mapState} from "vuex";
 
     export default {
@@ -40,6 +42,7 @@
             DesignSpacePlot,
             ObjectiveSpacePlot,
             FeaturePlot,
+            QuestionTemplate,
         },
         data() {
             return {
@@ -54,6 +57,7 @@
                     design_space_plot: 'DesignSpacePlot',
                     objective_space_plot: 'ObjectiveSpacePlot',
                     feature_plot: 'FeaturePlot',
+                    question_template: 'QuestionTemplate',
                 }
             }
         },
