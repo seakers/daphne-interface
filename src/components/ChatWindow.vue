@@ -5,6 +5,7 @@
                 <div v-for="piece in dialogueHistory" class="chat-message content" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }">
                     <component v-for="(response, index) in piece['visual_message']" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
                 </div>
+                <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="64" width="64" v-if="isLoading" alt="Loading spinner">
             </section>
 
             <QuestionBar class="sticky-textbox"></QuestionBar>
@@ -13,12 +14,16 @@
 </template>
 
 <script>
+    import * as _ from 'lodash-es';
     import QuestionBar from "./QuestionBar";
     import TextResponse from './TextResponse';
     import ListResponse from './ListResponse';
+    import MultiListResponse from './MultiListResponse';
     import TimelineResponse from './TimelineResponse';
     import ActiveMessage from "./ActiveMessage";
     import {mapState} from "vuex";
+
+    let loaderImage = require('../images/loader.svg');
 
     export default {
         name: "ChatWindow",
@@ -26,6 +31,7 @@
             QuestionBar,
             TextResponse,
             ListResponse,
+            MultiListResponse,
             TimelineResponse,
             ActiveMessage
         },
@@ -34,6 +40,7 @@
                 responseTypes: {
                     text: 'TextResponse',
                     list: 'ListResponse',
+                    multilist: 'MultiListResponse',
                     timeline_plot: 'TimelineResponse',
                     active_message: 'ActiveMessage'
                 }
@@ -41,19 +48,33 @@
         },
         computed: {
             ...mapState({
-                dialogueHistory: state => state.daphne.dialogueHistory
+                dialogueHistory: state => state.daphne.dialogueHistory,
+                isLoading: state => state.daphne.isLoading,
             })
         },
         methods: {
+            scrollToBottom: function() {
+                console.log("Scrolling to bottom");
+                let container = this.$el.querySelector(".chat-area");
+                container.scrollTop = container.scrollHeight;
+            }
         },
         watch: {
-            addDialoguePiece: function(val, oldVal) {
+            dialogueHistory: function(val, oldVal) {
+                this.$nextTick(() => {
+                    this.scrollToBottom();
+                });
                 if (this.speakOut) {
                     if (val["writer"] === "daphne") {
                         responsiveVoice.speak(val['voice_answer']);
                     }
                 }
-            }
+            },
+            isLoading: function(val, oldVal) {
+                if (val === true) {
+                    _.delay(() => { this.scrollToBottom(); }, 500);
+                }
+            },
         }
     }
 </script>
@@ -66,6 +87,7 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        background: white;
     }
 
     .chat-area {

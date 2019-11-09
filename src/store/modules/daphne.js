@@ -13,9 +13,6 @@ const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
-    getIsLoading(state) {
-        return state.isLoading;
-    }
 };
 
 // actions
@@ -37,16 +34,17 @@ const actions = {
         }
     },
     async executeCommand({ state, commit, rootState }) {
-        commit('setIsLoading', true);
         try {
-            let reqData = new FormData();
-            reqData.append('command', state.command);
+            commit('setIsLoading', true);
             commit('addDialoguePiece', {
                 "voice_message": state.command,
                 "visual_message_type": ["text"],
                 "visual_message": [state.command],
                 "writer": "user"
             });
+
+            let reqData = new FormData();
+            reqData.append('command', state.command);
             if (rootState.experiment.inExperiment) {
                 let experimentStage = rootState.experiment.experimentStage;
                 let restrictedQuestions = rootState.experiment.stageInformation[experimentStage].restrictedQuestions;

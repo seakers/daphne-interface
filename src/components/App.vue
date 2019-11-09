@@ -22,7 +22,7 @@
                 <functionality-list></functionality-list>
             </div>
             <div class="vertical-divider"></div>
-            <chat-window class="column is-3"></chat-window>
+            <chat-window class="column is-3" ref="chatWindow"></chat-window>
         </div>
         <footer class="footer">
             <div class="container">
@@ -124,6 +124,8 @@
 
                 // Load past dialogue
                 await this.$store.dispatch("loadDialogue");
+                // Scroll chat window to bottom
+                this.$refs.chatWindow.scrollToBottom();
 
                 // Initialize user-only features
                 if (this.$store.state.auth.isLoggedIn) {
@@ -152,6 +154,9 @@
         async mounted() {
             // Tutorial
             this.tutorial = introJs();
+
+            // Generate the session
+            await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
             // Start the Websocket
             await wsTools.wsConnect(this.$store);
