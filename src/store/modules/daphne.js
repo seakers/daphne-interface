@@ -33,6 +33,23 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
+    async clearHistory({ state, commit, rootState }) {
+        try {
+            let reqData = new FormData();
+            let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/clear-history', reqData);
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                commit('setDialogueHistory', []);
+            }
+            else {
+                console.error('Error clearing conversation history.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
     async executeCommand({ state, commit, rootState }) {
         try {
             commit('setIsLoading', true);

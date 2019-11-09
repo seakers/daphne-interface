@@ -88,6 +88,7 @@
         flex-direction: column;
         height: 100%;
         background: white;
+        width: inherit;
     }
 
     .chat-area {
@@ -113,7 +114,6 @@
 
     .sticky-textbox {
         padding: 1em;
-        position: sticky;
         bottom: 0;
     }
 

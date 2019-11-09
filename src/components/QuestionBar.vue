@@ -11,6 +11,9 @@
             </a>
         </div>
         <div class="control">
+            <a class="button is-info" id="clear_history" v-on:click.prevent="clearHistory">Clear</a>
+        </div>
+        <div class="control">
             <a class="button is-info" id="send_command" v-on:click.prevent="sendCommand">Send</a>
         </div>
     </div>
@@ -41,6 +44,9 @@
             }
         },
         methods: {
+            clearHistory(event) {
+                this.$store.dispatch('clearHistory');
+            },
             sendCommand(event) {
                 if (this.command === 'stop') {
                     responsiveVoice.cancel();
