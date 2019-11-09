@@ -209,6 +209,8 @@ function computeScores(features) {
 // mutations
 const mutations = {
     setFeatures(state, features) {
+        console.log("FEATURES");
+        console.log(features);
         state.features = features;
         state.featureIDsJustAdded = [];
         state.scores = computeScores(features);

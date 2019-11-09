@@ -44,10 +44,6 @@
             ...mapGetters({
                 objective_chat_plot_info: 'get_objective_chat_plot_info',
             }),
-
-
-
-
         },
 
         methods: {

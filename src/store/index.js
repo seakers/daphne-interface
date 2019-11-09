@@ -195,6 +195,32 @@ export default new Vuex.Store({
             //--> ------------------------------------------------------------------------------------ Features messages
             if (received_info['type'] === 'teacher.features') {
                 console.log('Success !!!!!');
+
+                if(received_info['name'] === 'displayFeatureInformation'){
+
+                    store.commit('set_features', received_info['data']);
+                    store.commit('addDialoguePiece', {
+                        "voice_message": 'testing',
+                        "visual_message_type": ["feature_plot"],
+                        "visual_message": ["ping"],
+                        "writer": "daphne"
+                    });
+                }
+
+                if(received_info['name'] === 'featureQuestion'){
+                    console.log("Feature Question");
+                }
+
+                if(received_info['name'] === 'featureSuggestion'){
+                    console.log("Feature Suggestion");
+                }
+
+
+
+
+
+
+
             }
             //----------------------------------------------------------------------------------------------------------
 

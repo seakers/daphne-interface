@@ -11,6 +11,7 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import VuePlotly from '@statnett/vue-plotly'
+    import { removeOuterParentheses, getNestedParenthesisDepth, collapseParenIntoSymbol } from '../scripts/utils';
     export default {
         name: "DesignSpacePlot",
         components: {
@@ -43,7 +44,6 @@
                     "marker": {'color': '#209cee'},
                 }];
                 return histogram_data;
-                console.log(histogram_data);
             },
 
 
@@ -57,7 +57,6 @@
                     paper_bgcolor:"whitesmoke",
                 };
                 return histogram_layout
-                console.log(histogram_layout);
             },
 
 

@@ -33,6 +33,7 @@ const state = {
     lastEvaluatedArchitecture: {},
     selectedArchData: {},
     updatedArchData: {},
+    features: [],
 
 
     // -----------------------------------
@@ -150,6 +151,10 @@ const initialState = _.cloneDeep(state);
 // Getters
 // ---------------------------
 const getters = {
+
+    get_features(state){
+        return state.features;
+    },
 
     get_objective_chat_plot_info(state){
         return state.objective_chat_plot_info;
@@ -551,6 +556,7 @@ const actions = {
         reqData.append('instruments', JSON.stringify(instrument_names));
         reqData.append('proactiveMode', 'enabled');
         reqData.append('plotData', JSON.stringify(state.plotData));
+        reqData.append('input_type', rootState.problem.inputType);
 
         //--> Receive Response
         let dataResponse = await fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
@@ -667,6 +673,10 @@ const mutations = {
     // -----------------------------
     // ---------- GENERAL ----------
     // -----------------------------
+    set_features(state, features){
+        state.features = features;
+    },
+
     set_current_question_type(state, current_question_type){
         state.current_question_type = current_question_type; //--> Either design or sensitivity
     },

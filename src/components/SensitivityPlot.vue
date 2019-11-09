@@ -107,7 +107,6 @@
 
         methods: {
             changeObjective() {
-                console.log(this.objective);
                 if(this.objective === "Science Sensitivities"){
                     this.objective_cost = false;
                 }
