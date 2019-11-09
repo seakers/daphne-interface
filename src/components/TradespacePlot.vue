@@ -248,9 +248,9 @@
                 context.clearRect(0, 0, this.plotWidth, this.plotHeight);
                 context.save();
 
-                this.plotData.forEach((point, index) => {
-                    let pointColor = this.$store.getters.getPointColor(index);
-                    let pointShape = this.$store.getters.getPointShape(index);
+                this.plotData.forEach(point => {
+                    let pointColor = this.$store.getters.getPointColor(point.id);
+                    let pointShape = this.$store.getters.getPointShape(point.id);
                     let tx = this.transform.applyX(this.xMap(point));
                     let ty = this.transform.applyY(this.yMap(point));
                     context.fillStyle = hidden ? point.interactColor : pointColor;
