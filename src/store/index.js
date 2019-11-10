@@ -78,7 +78,7 @@ export default new Vuex.Store({
             commit('resetActive');
             if (!state.experiment.inExperiment) {
                 for (let functionality of problem.shownFunctionalities) {
-                    commit('addFunctionality', functionality);
+                    commit('addFunctionality', { functionality: functionality, funcData: null });
                 }
             }
         },

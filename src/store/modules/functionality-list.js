@@ -51,6 +51,13 @@ functionalityTypes.set('CommandsInformation', {
         {name: "Technologies (Historian)", value: "historian_technologies"},
         {name: "Space Agencies (Historian)", value: "historian_space_agencies"}
     ]});
+functionalityTypes.set('TimelinePlot', {
+    title: 'Timeline Plot',
+    component: 'TimelinePlot',
+    class: 'timeline-plot',
+    minSize: 'half',
+    maxRepeat: 10
+});
 
 
 let newFunctionalityId = 0;
@@ -77,7 +84,8 @@ const state = {
         'FeatureApplication': 0,
         'OrbitInstrInfo': 0,
         'AvailableCommands': 0,
-        'CommandsInformation': 0
+        'CommandsInformation': 0,
+        'TimelinePlot': 0
     }
 };
 
@@ -96,7 +104,7 @@ const actions = {
 
 // mutations
 const mutations = {
-    addFunctionality(state, functionality) {
+    addFunctionality(state, {functionality, funcData}) {
         let funcInfo = functionalityTypes.get(functionality);
 
         if (state.functionalityCount[functionality] < funcInfo.maxRepeat) {
@@ -107,7 +115,8 @@ const mutations = {
                 title: funcInfo.title,
                 funcClass: funcInfo.class,
                 initialSize: funcInfo.minSize,
-                id: newFunctionalityId++
+                id: newFunctionalityId++,
+                funcData: funcData
             });
             state.functionalityCount[functionality]++;
         }

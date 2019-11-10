@@ -13,7 +13,7 @@
         },
         methods: {
             addFunctionality() {
-                this.$store.commit('addFunctionality', this.name);
+                this.$store.commit('addFunctionality', { functionality: this.name, funcData: null });
             }
         }
     }

@@ -244,7 +244,7 @@
 
                     // Add functionalities
                     for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
-                        this.$store.commit('addFunctionality', shownFunc);
+                        this.$store.commit('addFunctionality', { functionality: shownFunc, funcData: null });
                     }
 
                     // Stage specific behaviour

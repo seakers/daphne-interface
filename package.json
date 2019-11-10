@@ -42,7 +42,7 @@
     "html-webpack-plugin": "^3.2.0",
     "mini-css-extract-plugin": "^0.8.0",
     "node-notifier-cli": "^1.1.2",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
     "script-loader": "^0.7.2",
     "style-loader": "^1.0.0",
