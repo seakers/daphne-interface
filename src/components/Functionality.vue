@@ -1,6 +1,6 @@
 <template>
-    <div class="column is-full-mobile" v-bind:class="sizeClass">
-        <section class="panel func-panel" v-bind:class="funcClass">
+    <div class="column is-full-mobile" :class="sizeClass">
+        <section class="panel func-panel" :class="funcClass" :id="funcIdString">
             <p class="panel-heading">
 
                 <!-- Normal panel-heading when the chosen functionality is NOT Teacher -->
@@ -31,7 +31,7 @@
 
 
             </p>
-            <component v-bind:is="chosenFunctionality" v-bind:name="name" v-bind:size="size"></component>
+            <component :is="chosenFunctionality" :name="name" :size="size" :func-data="funcData" :func-id="funcIdString"></component>
         </section>
     </div>
 </template>
@@ -43,6 +43,7 @@
     import DataMining from './DataMining';
     import EOSSFilter from './EOSSFilter';
     import FeatureApplication from './FeatureApplication';
+    import TimelinePlot from "./TimelinePlot";
     import Teacher from './TeacherAgent';
 
     let sizeScale = [
@@ -52,7 +53,7 @@
 
     export default {
         name: 'functionality',
-        props: ['name', 'component', 'title', 'funcClass', 'initialSize'],
+        props: ['name', 'component', 'title', 'funcClass', 'initialSize', 'funcData', 'funcId'],
         data () {
             return {
                 size: this.initialSize,
@@ -69,6 +70,7 @@
             DataMining,
             EOSSFilter,
             FeatureApplication,
+            TimelinePlot,
             Teacher,
         },
         computed: {
@@ -80,6 +82,9 @@
             },
             isMaxSize: function () {
                 return this.size === sizeScale[sizeScale.length - 1];
+            },
+            funcIdString() {
+                return "functionality" + this.funcId;
             }
         },
         methods: {
