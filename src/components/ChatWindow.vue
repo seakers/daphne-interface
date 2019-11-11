@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="chat-container">
+        <div class="chat-container" style="width: inherit">
             <section ref="chatArea" class="chat-area">
                 <div v-for="piece in dialogueHistory" class="chat-message content" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }">
                     <component v-for="(response, index) in piece['visual_message']" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
@@ -8,7 +8,7 @@
                 <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="64" width="64" v-if="isLoading" alt="Loading spinner">
             </section>
 
-            <QuestionBar class="sticky-textbox"></QuestionBar>
+            <QuestionBar class="sticky-textbox" style="position: relative"></QuestionBar>
         </div>
     </div>
 </template>
@@ -21,6 +21,14 @@
     import MultiListResponse from './MultiListResponse';
     import TimelineResponse from './TimelineResponse';
     import ActiveMessage from "./ActiveMessage";
+
+    import PlotResponse from "./PlotResponse";
+    import SensitivityPlot from "./SensitivityPlot";
+    import DesignSpacePlot from "./DesignSpacePlot";
+    import ObjectiveSpacePlot from "./ObjectiveSpacePlot";
+    import FeaturePlot from "./FeaturePlot";
+    import QuestionTemplate from "./QuestionTemplate";
+
     import {mapState} from "vuex";
 
     let loaderImage = require('../images/loader.svg');
@@ -33,7 +41,14 @@
             ListResponse,
             MultiListResponse,
             TimelineResponse,
-            ActiveMessage
+            ActiveMessage,
+
+            PlotResponse,
+            SensitivityPlot,
+            DesignSpacePlot,
+            ObjectiveSpacePlot,
+            FeaturePlot,
+            QuestionTemplate,
         },
         data() {
             return {
@@ -42,7 +57,14 @@
                     list: 'ListResponse',
                     multilist: 'MultiListResponse',
                     timeline_plot: 'TimelineResponse',
-                    active_message: 'ActiveMessage'
+                    active_message: 'ActiveMessage',
+
+                    plotly_plot: 'PlotResponse',
+                    sensitivity_plot: 'SensitivityPlot',
+                    design_space_plot: 'DesignSpacePlot',
+                    objective_space_plot: 'ObjectiveSpacePlot',
+                    feature_plot: 'FeaturePlot',
+                    question_template: 'QuestionTemplate',
                 }
             }
         },

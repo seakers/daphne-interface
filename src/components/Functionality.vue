@@ -27,7 +27,6 @@
         'half',
         'full'
     ];
-
     export default {
         name: 'functionality',
         props: ['name', 'component', 'title', 'funcClass', 'initialSize', 'funcData', 'funcId'],
@@ -82,5 +81,4 @@
 </script>
 
 <style scoped>
-
 </style>

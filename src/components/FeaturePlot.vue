@@ -1,26 +1,44 @@
 <template>
-    <div class="panel-block functionality">
-        <div id="feature_expression_panel" class="container is-fluid">
-            <div class="buttons has-addons is-centered">
-                <a id="conjunctive_local_search" class="button" v-on:click="conjunctive_local_search">Improve Specificity</a>
-                <a id="disjunctive_local_search" class="button" v-on:click="disjunctive_local_search">Improve Coverage</a>
-                <a id="clear_all_features" class="button">Clear</a>
-            </div>
+    <div>
+        <div style="margin-bottom: 7px; text-align: center; border-bottom: 1px solid #dbdbdb;"><b>Teacher</b></div>
+        <div style="">
+            I have found some information about driving features! Click on a feature in the plot below to view feature information
         </div>
-        <div id="feature-application-panel" style="max-width: 100%"></div>
+        <vue-plotly :data="plotData" :layout="plotLayout" :options="{displayModeBar: false}" v-on:click="createSubPlot"/>
+
+        <template v-if="showFeatureInfo === true">
+            <div style="text-align: center; border-bottom: 1px solid #dbdbdb; padding-top: 10px;"><b>Feature Information</b></div>
+        </template>
+        <div id="feature-details-view" style="max-width: 100%"></div>
+
+
+
     </div>
 </template>
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
-    import * as d3 from 'd3';
+    import VuePlotly from '@statnett/vue-plotly'
     import { removeOuterParentheses, getNestedParenthesisDepth, collapseParenIntoSymbol } from '../scripts/utils';
-    import * as _ from 'lodash-es';
-    
+    import * as d3 from 'd3';
+    import smap from '../scripts/smap';
     export default {
-        name: 'feature-application',
+        name: "FeaturePlot",
+
+        components: {
+            VuePlotly,
+        },
+
         data() {
-            return  {
+            return {
+                plot_features: [],
+                plotData: [],
+                plotLayout: {},
+                showFeatureInfo: false,
+
+                tree: {},
+                nextIndex: 0,
+                selectedNode: null,
                 color: {
                     'default': '#616161',
                     'logic': '#2383FF',
@@ -28,51 +46,116 @@
                     'deactivated': '#E3E3E3',
                     'temp': '#C6F3B6'
                 },
+                expressionTree: [],
+                width: 300,
+                height: 200,
                 margin: {
-                    left: 70,
+                    left: 35,
                     right: 20,
                     top: 10,
                     bottom: 20
                 },
-                width: 1500,
-                height: 320,
-                tree: {},
-                nextIndex: 0,
-                selectedNode: null
             }
         },
-        beforeMount() {
-            this.width =  1500 - this.margin.left - this.margin.right;
-            this.height = 310 - this.margin.top - this.margin.bottom;
-        },
+
         computed: {
             ...mapGetters({
-                hoveredExpression: 'getHoveredExpression',
-                clickedExpression: 'getClickedExpression'
+                features_teacher: 'get_features',
             }),
-            shownExpression() {
-                if (this.hoveredExpression !== '') {
-                    return this.hoveredExpression;
-                }
-                else {
-                    return this.clickedExpression;
-                }
-            },
-            expressionTree() {
-                this.nextIndex = 0;
-                return this.constructTree(this.shownExpression);
-            }
         },
-        methods: {
-            conjunctive_local_search(){
-                // Remove all highlights in the scatter plot (retain target solutions)
-                this.$store.commit('clearHighlightedArchs');
-                this.$store.dispatch('runConjunctiveLocalSearch');
-            },
 
-            disjunctive_local_search(){
-                this.$store.commit('clearHighlightedArchs');
-                this.$store.dispatch('runDisjunctiveLocalSearch');
+        methods: {
+
+            //--> Set plotData and plotLayout
+            computePlot() {
+                let features = this.plot_features;
+
+                // expression: "({notInOrbit[2;1;]})"
+                // id: 0
+                // metrics: Array(4)
+                // 0: 0.12024048096192384
+                // 1: 1.2608439316095343
+                // 2: 0.1566579634464752
+                // 3: 0.967741935483871
+                // length: 4
+                // __ob__: Observer {value: Array(4), dep: Dep, vmCount: 0}
+                // __proto__: Array
+                // name: "({notInOrbit[2;1;]})"
+
+                let plot_data = [];
+                let xValues = [];
+                let yValues = [];
+                let marker_symbol = [];
+                let marker_text = [];
+                let feature_trees = [];
+                for(let x = 0; x < features.length; x++){
+                    let feature = features[x];
+
+                    let expression = feature.expression;
+                    let treeElements = this.constructTree(expression);
+                    feature_trees.push(treeElements);
+                    let id = feature.id;
+                    let name = feature.name;
+                    let metrics = feature.metrics;
+                    let supps = metrics[0];
+                    let lifts = metrics[1];
+                    let conf1s = metrics[2];
+                    let conf2s = metrics[3];
+
+                    xValues.push(conf1s);
+                    yValues.push(conf2s);
+                    marker_symbol.push("diamond");
+
+                    let text = '<b>Support:</b> ' + (supps.toFixed(2)).toString() + '<br>';
+                    text = text + '<b>Lifts:</b> ' + (lifts.toFixed(2)).toString() + '<br>';
+                    text = text + '<b>Specifity:</b> ' + (conf1s.toFixed(2)).toString() + '<br>';
+                    text = text + '<b>Coverage:</b> ' + (conf2s.toFixed(2)).toString() + '<br>';
+                    marker_text.push(text);
+                }
+
+                //--> Normalize x value
+                let x_norms = [];
+                let xMin = Math.min(...xValues);
+                let xMax = Math.max(...xValues);
+                for(let z = 0; z < xValues.length; z++){
+                    let value = xValues[z];
+                    let normalized = (value - xMin) / (xMax - xMin);
+                    x_norms.push(normalized);
+                }
+
+                plot_data.push({
+                    x: xValues,
+                    y: yValues,
+                    mode: 'markers',
+                    hoverinfo: "text",
+                    text: marker_text,
+                    customdata: feature_trees,
+                    marker: {
+                        symbol: marker_symbol,
+                        size: 10,
+                        color: x_norms,
+                        colorscale: [[0, 'hsl(141, 53%, 53%)'], [1, 'hsl(348, 86%, 61%)']],
+                    }
+                });
+
+                this.plotData = plot_data;
+
+                let plot_layout = {
+                    xaxis: {title: 'Specifity'},
+                    yaxis: {title: 'Coverage'},
+                    margin: {
+                        t: 25, //top margin
+                        l: 55, //left margin
+                        r: 20, //right margin
+                        b: 45 //bottom margin
+                    },
+                    // showlegend: false,
+                    plot_bgcolor:"whitesmoke",
+                    paper_bgcolor:"whitesmoke",
+                };
+
+                this.plotLayout = plot_layout;
+
             },
 
             constructTree(expression, depth) {
@@ -154,46 +237,35 @@
 
                 return thisNode;
             },
-            
-            visitNodes(source, func, reverse) {
-                let re;
-                if (typeof func !== 'undefined') {
-                    re = func(source);
-                    // If func is a function that returns something, stop traversing tree and return. Otherwise, apply func and keep traversing the tree
-                    if (re) {
-                        return re;
-                    }
-                }
-                if (reverse) {
-                    if (source.parent) {
-                        re = this.visitNodes(source.parent, func, true);
-                        if (re) {
-                            return re;
-                        }
-                    }
-                }
-                else {
-                    if (source) {
-                        if (source.children) {
-                            for (let i = 0; i < source.children.length; i++) {
-                                re = this.visitNodes(source.children[i], func);
-                                if (re) {
-                                    return re;
-                                }
-                            }
-                        }
-                    }
-                }
-                return null;
-            },
-            
-            drawTree() {
-                if (_.isEmpty(this.expressionTree)) {
-                    d3.selectAll('.node').remove();
-                    d3.selectAll('.link').remove();
-                    return;
-                }
 
+            createSubPlot(data){
+                this.showFeatureInfo = true;
+                let margin = this.margin;
+                let width = this.width;
+                let height = this.height;
+                let expressionTree = data['points'][0]['customdata'];
+                this.expressionTree = expressionTree;
+
+                //--> Set the size of the plot
+                this.tree = d3.tree().size([this.height, this.width]);
+
+                d3.select('#feature-details-view').select('svg').remove();
+                let svg = d3.select('#feature-details-view')
+                    .append('svg')
+                    .attr('width', '100%')
+                    .attr('height', '200px')
+                    .style('width', '100%')
+                    .style('height', '200px')
+                    .append('g')
+                    .attr('transform', 'translate('+ 35 + ',' + 0 + ')');
+
+
+                this.drawTree();
+
+
+            },
+
+            drawTree() {
                 let duration = d3.event && d3.event.altKey ? 5000 : 500;
 
                 let root = d3.hierarchy(this.expressionTree, d => d.children);
@@ -206,9 +278,11 @@
                 let nodes = treeStructure.descendants();
                 let links = treeStructure.descendants().slice(1);
 
-                // Normalize for fixed-depth.
-                nodes.forEach(d => { d.y = d.depth * 180; });
-                let svg = d3.select('#feature-application-panel').select('svg').select('g');
+                // Normalize for fixed-depth
+
+                //--> How far each node is spread apart vertically!
+                nodes.forEach(d => { d.y = d.depth * 30; });
+                let svg = d3.select('#feature-details-view').select('svg').select('g');
 
                 let diagonal = this.diagonal;
 
@@ -221,9 +295,11 @@
                     .attr('class', 'node')
                     .attr('transform', d => {
                         if (d.depth === 0) {
+                            // return 'translate(' + d.x0 + ',' + d.y0 + ')';
                             return 'translate(' + d.y0 + ',' + d.x0 + ')';
                         }
                         else {
+                            // return 'translate(' + d.parent.x0 + ',' + d.parent.y0 + ')';
                             return 'translate(' + d.parent.y0 + ',' + d.parent.x0 + ')';
                         }
                     });
@@ -259,34 +335,35 @@
                     .duration(duration)
                     //.attr('transform', d => 'translate(' + d.y + ',' + d.x + ')');
                     .attr("transform", (d) => {
-                            if(d.parent){
-                                if(d.verticalOffset){
-                                    // pass
+                        if(d.parent){
+                            if(d.verticalOffset){
+                                // pass
 
-                                }else{
-                                    // Adjust the vertical location of each node so that it doesn't overlap with other nodes
-                                    let offset = 28;
-                                    let sibling = d.parent.children;
-                                    let depth = d.depth;
+                            }else{
+                                // Adjust the vertical location of each node so that it doesn't overlap with other nodes
+                                let offset = 28;
+                                let sibling = d.parent.children;
+                                let depth = d.depth;
 
-                                    if(sibling.length % 2 === 1 && depth % 2 === 0){
-                                        // When the number of children is odd, add offset to the vertical position
-                                        let index = sibling.indexOf(d);
-                                        let mid = (sibling.length - 1) / 2;
-                                        if(index === mid){
-                                            // Do nothing, as this one is in the middle
-                                        }else if(index < mid){
-                                            d.x = d.x - offset;
-                                        }else{
-                                            d.x = d.x + offset;
-                                        }
-
-                                        d.verticalOffset = true;
+                                if(sibling.length % 2 === 1 && depth % 2 === 0){
+                                    // When the number of children is odd, add offset to the vertical position
+                                    let index = sibling.indexOf(d);
+                                    let mid = (sibling.length - 1) / 2;
+                                    if(index === mid){
+                                        // Do nothing, as this one is in the middle
+                                    }else if(index < mid){
+                                        d.x = d.x - offset;
+                                    }else{
+                                        d.x = d.x + offset;
                                     }
+
+                                    d.verticalOffset = true;
                                 }
                             }
-                            return "translate(" + d.y+ "," + d.x + ")";
-                        });
+                        }
+                        // return "translate(" + d.x + "," + d.y + ")";
+                        return "translate(" + d.y+ "," + d.x + ")";
+                    });
 
                 nodeUpdate.select('circle')
                     .attr('r', 9.5)
@@ -311,7 +388,6 @@
                             }
                         }
                     });
-
                 nodeUpdate.select('text')
                     .attr('x', d => {
                         if (d.children) {
@@ -329,7 +405,7 @@
                             return 'start';
                         }
                     })
-                    .text(d => this.$store.state.problem.ppFeatureSingle(d.data.name))
+                    .text(d => this.baseFeatureTextConverter(d.data.name))
                     .style('fill', d => {
                         if (d.data.type === 'logic' && d.data.add) {
                             return this.color.add;
@@ -338,7 +414,7 @@
                             return 'black';
                         }
                     })
-                    .style('font-size', 23)
+                    .style('font-size', 10)
                     .style('fill-opacity', 1);
 
                 // Transition exiting nodes to the parent's new position.
@@ -436,36 +512,91 @@
                 //
                 //            });
             },
-            
+
+
+            baseFeatureTextConverter(expression) {
+                let exp = expression;
+                if (exp[0] === '{') {
+                    exp = exp.substring(1, exp.length-1);
+                }
+                let featureName = exp.split('[')[0];
+
+                if (featureName === 'paretoFront' || featureName === 'FeatureToBeAdded' ||
+                    featureName === 'AND' || featureName === 'OR') {
+                    return exp;
+                }
+
+                if (featureName[0] === '~') {
+                    featureName = 'NOT '+ featureName.substring(1);
+                }
+
+                let featureArg = exp.split('[')[1];
+                featureArg = featureArg.substring(0, featureArg.length-1);
+
+                //--> Get our orbits
+                let orbits = featureArg.split(';')[0].split(',');
+
+                //--> Get our instruments
+                let instruments = featureArg.split(';')[1].split(',');
+
+                let numbers = featureArg.split(';')[2];
+
+                let pporbits = '';
+                let ppinstruments = '';
+                for (let i = 0; i < orbits.length; i++) {
+                    if (orbits[i].length === 0) {
+                        continue;
+                    }
+                    if (i > 0) {
+                        pporbits += ',';
+                    }
+                    pporbits += smap.index2DisplayName(orbits[i], 'orbit');
+                }
+                for (let i = 0; i < instruments.length; i++) {
+                    if (instruments[i].length === 0) {
+                        continue;
+                    }
+                    if (i > 0) {
+                        ppinstruments += ',';
+                    }
+                    ppinstruments += smap.index2DisplayName(instruments[i], 'instrument');
+                }
+                return featureName + '[' + pporbits + ';' + ppinstruments + ';' + numbers + ']';
+            },
+
+
+            // Vertical
+            // diagonal(s, d) {
+            //     return `M ${s.x} ${s.y}
+            //     C ${(s.x + d.x) / 2} ${s.y},
+            //       ${(s.x + d.x) / 2} ${d.y},
+            //       ${d.x} ${d.y}`;
+            // },
+
+            // Horizontal
             diagonal(s, d) {
                 return `M ${s.y} ${s.x}
                 C ${(s.y + d.y) / 2} ${s.x},
                   ${(s.y + d.y) / 2} ${d.x},
                   ${d.y} ${d.x}`;
             }
+
+
+
+
         },
+
+        created() {
+            this.plot_features = this.features_teacher;
+            this.computePlot();
+        },
+
         watch: {
-            expressionTree: function(val, oldVal) {
-                let margin = this.margin;
-                let width = this.width;
-                let height = this.height;
 
-                this.tree = d3.tree().size([height, width]);
+        },
 
-                d3.select('#feature-application-panel').select('svg').remove();
 
-                let svg = d3.select('#feature-application-panel')
-                    .append('svg')
-                    .attr('width', width + margin.left + margin.right)
-                    .attr('height', height + margin.bottom + margin.top)
-                    .style('width', width + margin.left + margin.right + 'px')
-                    .style('height', height + margin.bottom + margin.top + 'px')
-                    .append('g')
-                    .attr('transform', 'translate('+ margin.left + ',' + margin.top + ')');
 
-                this.drawTree();
-            }
-        }
     }
 </script>
 

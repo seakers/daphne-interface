@@ -1,10 +1,21 @@
 <template>
     <div class="column">
+
         <section class="panel">
+
+
+<!--            <p class="panel-heading">-->
+<!--                Tradespace exploration |-->
+<!--                Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}-->
+<!--            </p>-->
+
+
             <p class="panel-heading">
-                Tradespace exploration |
+                Tradespace exploration
                 Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}
             </p>
+
+
             <div class="panel-block" id="main-plot-block">
                 <div id="main-plot"></div>
                 <div id="selections-block">
@@ -50,6 +61,11 @@
                 </div>
             </div>
         </section>
+
+
+
+
+
     </div>
 </template>
 
@@ -331,6 +347,12 @@
                     // Only update if there is a change in the selection
                     if (this.clickedArch !== point) {
                         this.updateClickedArch(point);
+
+                        //--> Teacher agent records the architectures the user selected
+                        let teacherUpdateData = {'point': point,
+                                                'inputs': this.plotData[point].inputs,
+                                                'outputs': this.plotData[point].outputs};
+                        this.$store.dispatch('recordSelectedArchitecture', teacherUpdateData);
                     }
                 }
             },
