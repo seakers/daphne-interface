@@ -55,6 +55,14 @@ functionalityTypes.set('OrbitInstrInfo', {
     ]
 });
 
+functionalityTypes.set('TimelinePlot', {
+    title: 'Timeline Plot',
+    component: 'TimelinePlot',
+    class: 'timeline-plot',
+    minSize: 'half',
+    maxRepeat: 10
+});
+
 functionalityTypes.set('AvailableCommands', {
     title: 'Available Commands',
     component: 'Cheatsheet',
@@ -65,9 +73,13 @@ functionalityTypes.set('AvailableCommands', {
         {name: "", value: ""},
         {name: "General", value: "general"},
         {name: "iFEED", value: "ifeed"},
+        {name: "Engineer", value: "engineer"},
         {name: "Analyst", value: "analyst"},
         {name: "Critic", value: "critic"},
-        {name: "Historian", value: "historian"}
+        {name: "Historian", value: "historian"},
+        {name: "Explorer", value: "explorer"},
+        {name: "Historian", value: "historian"},
+        {name: "Critic", value: "critic"}
     ]
 });
 
@@ -79,15 +91,16 @@ functionalityTypes.set('CommandsInformation', {
     maxRepeat: 10,
     optionsList: [
         {name: "", value: ""},
-        {name: "Analyst Instruments", value: "analyst_instruments"},
-        {name: "Analyst Instrument Parameters", value: "analyst_instrument_parameters"},
-        {name: "Analyst Measurements", value: "analyst_measurements"},
-        {name: "Analyst Stakeholders", value: "analyst_stakeholders"},
-        {name: "Analyst Objectives", value: "objectives"},
-        {name: "Historical Measurements", value: "measurements"},
-        {name: "Historical Missions", value: "missions"},
-        {name: "Historical Technologies", value: "technologies"},
-        {name: "Historical Space Agencies", value: "space_agencies"}
+        {name: "Instruments (Engineer)", value: "engineer_instruments"},
+        {name: "Instrument Parameters (Engineer)", value: "engineer_instrument_parameters"},
+        {name: "Measurements (Engineer)", value: "engineer_measurements"},
+        {name: "Stakeholders (Engineer)", value: "engineer_stakeholders"},
+        {name: "Objectives (Engineer)", value: "engineer_objectives"},
+        {name: "Subobjectives (Engineer)", value: "engineer_subobjectives"},
+        {name: "Measurements (Historian)", value: "historian_measurements"},
+        {name: "Missions (Historian)", value: "historian_missions"},
+        {name: "Technologies (Historian)", value: "historian_technologies"},
+        {name: "Space Agencies (Historian)", value: "historian_space_agencies"}
     ]
 });
 
@@ -122,7 +135,8 @@ const state = {
 
         'OrbitInstrInfo': 0,
         'AvailableCommands': 0,
-        'CommandsInformation': 0
+        'CommandsInformation': 0,
+        'TimelinePlot': 0
     }
 };
 
@@ -142,7 +156,7 @@ const actions = {
 
 // mutations
 const mutations = {
-    addFunctionality(state, functionality) {
+    addFunctionality(state, {functionality, funcData}) {
         let funcInfo = functionalityTypes.get(functionality);
 
         if (state.functionalityCount[functionality] < funcInfo.maxRepeat) {
@@ -153,7 +167,8 @@ const mutations = {
                 title: funcInfo.title,
                 funcClass: funcInfo.class,
                 initialSize: funcInfo.minSize,
-                id: newFunctionalityId++
+                id: newFunctionalityId++,
+                funcData: funcData
             });
             state.functionalityCount[functionality]++;
         }
