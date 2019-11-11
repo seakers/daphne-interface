@@ -132,9 +132,9 @@
                     x1: this.high_science,
                     y1: this.high_cost,
                     opacity: 0.6,
-                    fillcolor: 'hsl(141, 53%, 53%)',
+                    fillcolor: '#ee6820',
                     line: {
-                        color: 'hsl(141, 53%, 53%)'
+                        color: '#ee6820'
                     },
                 };
                 shapes.push(unexplored_shape);

@@ -732,9 +732,6 @@
                 this.$store.commit('setObjectiveGroupSelected', true);
                 this.$store.dispatch('actionObjectiveGroupRequest', groupSelected);
             },
-
-
-
             stopProactiveTeacherOnReload() {
                 this.$store.dispatch('turnProactiveTeacherOff');
             },

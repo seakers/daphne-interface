@@ -511,65 +511,29 @@ const actions = {
 
 
     //--> To turn proactive teacher on or off
-    async turnProactiveTeacherOn({ commit, rootState }) {
-
-        //--> Get Problem Orbits
-        let orbit_names = [];
-        let orbit_loop_break = false;
-        let orbit_loop_counter = 0;
-        let orbit_name = '';
-        while(orbit_loop_break === false){
-            orbit_name = store.state.problem.index2ActualName(orbit_loop_counter,"orbit");
-            if(typeof(orbit_name) === 'string'){
-                orbit_names.push(orbit_name)
-                orbit_loop_counter = orbit_loop_counter + 1;
-            }
-            else{
-                orbit_loop_break = true;
-                break;
-            }
-        }
-        commit('setOrbitList', orbit_names);
-
-        //--> Get Problem Instruments
-        let instrument_names = [];
-        let instrument_loop_break = false;
-        let instrument_loop_counter = 0;
-        let instrument_name = '';
-        while(instrument_loop_break === false){
-            instrument_name = store.state.problem.index2ActualName(instrument_loop_counter,"instrument");
-            if(typeof(instrument_name) === 'string'){
-                instrument_names.push(instrument_name)
-                instrument_loop_counter = instrument_loop_counter + 1;
-            }
-            else{
-                instrument_loop_break = true;
-                break;
-            }
-        }
-        commit('setInstrumentList', instrument_names);
+    turnProactiveTeacherOn({ commit, state, rootState }) {
 
         //--> Request Data
         let reqData = new FormData();
         reqData.append('problem', rootState.problem.problemName);
-        reqData.append('orbits', JSON.stringify(orbit_names));
-        reqData.append('instruments', JSON.stringify(instrument_names));
+        reqData.append('orbits', JSON.stringify(state.orbitList));
+        reqData.append('instruments', JSON.stringify(state.instrumentList));
         reqData.append('proactiveMode', 'enabled');
         reqData.append('plotData', JSON.stringify(state.plotData));
         reqData.append('input_type', rootState.problem.inputType);
 
         //--> Receive Response
-        let dataResponse = await fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
+        let dataResponse = fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
         console.log(dataResponse);
 
         //--> Retrieve Response
         if (dataResponse.ok)
         {
-            let jsonResponse = await dataResponse.json();
+            let jsonResponse = dataResponse.json();
             console.log(jsonResponse);
         }
     },
-    async turnProactiveTeacherOff({ commit, rootState }) {
+    turnProactiveTeacherOff({ rootState }) {
 
         //--> Request Data
         let reqData = new FormData();
@@ -577,13 +541,13 @@ const actions = {
         reqData.append('proactiveMode', 'disabled');
 
         //--> Receive Response
-        let dataResponse = await fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
+        let dataResponse = fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
         console.log(dataResponse);
 
         //--> Retrieve Response
         if (dataResponse.ok)
         {
-            let jsonResponse = await dataResponse.json();
+            let jsonResponse = dataResponse.json();
             console.log(jsonResponse);
         }
     },
