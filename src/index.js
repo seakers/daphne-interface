@@ -35,7 +35,7 @@ store.subscribe(async (mutation, state) => {
         // Only update mutations if after tutorial (currentStageNum > 0)
         if (state.experiment.currentStageNum > 0 && !mutationBlackList.includes(mutation.type)) {
             // Upload mutation to server
-            state.experiment.experimentWebsocket.send(JSON.stringify({
+            wsTools.experimentWebsocket.send(JSON.stringify({
                 msg_type: 'add_action',
                 stage: state.experiment.currentStageNum - 1,
                 action: mutation
@@ -45,7 +45,7 @@ store.subscribe(async (mutation, state) => {
         // Upload new state to server
         if (stateTimer === 0) {
             stateTimer = window.setInterval(async () => {
-                state.experiment.experimentWebsocket.send(JSON.stringify({
+                wsTools.experimentWebsocket.send(JSON.stringify({
                     msg_type: 'update_state',
                     state: state
                 }));

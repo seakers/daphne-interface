@@ -169,7 +169,7 @@
                 useModalOverlay: true
             });
 
-            // Generate the session
+            /*// Generate the session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
             // Start the Websocket
@@ -211,34 +211,37 @@
             }
             catch (e) {
                 console.error('Networking error:', e);
-            }
+            }*/
+
+            // Generate the session
+            await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
             // Experiment
-            /*this.$store.dispatch('recoverExperiment').then(async () => {
+            this.$store.dispatch('recoverExperiment').then(async () => {
                 this.$store.commit('setIsRecovering', false);
 
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
                     // First of all login
                     let form = new FormData();
-                    form.append("username", "jpl-experiment");
-                    form.append("password", "nasa2019");
+                    form.append("username", "tamu-experiment");
+                    form.append("password", "tamu2019");
                     await this.$store.dispatch('loginUser', {
-                        username: "jpl-experiment",
-                        password: "nasa2019"
+                        username: "tamu-experiment",
+                        password: "tamu2019"
                     });
 
                     this.$store.dispatch('startExperiment').then(async () => {
                         // Restart WS after login
-                        await this.$store.dispatch('startWebsocket');
-                        this.$store.commit('startExperimentWebsocket');
+                        await wsTools.wsConnect(this.$store);
+                        await wsTools.experimentWsConnect();
 
                         // Set the tutorial
                         this.$store.commit('setExperimentStage', 'tutorial');
                         this.$store.commit('setInExperiment', true);
                     });
                 }
-            });*/
+            });
 
         },
         watch: {

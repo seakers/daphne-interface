@@ -44,7 +44,6 @@ function chooseProblem(problemName) {
 const state = {
     inExperiment: false,
     isRecovering: false,
-    experimentWebsocket: {},
     experimentStage: '',
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
@@ -79,17 +78,18 @@ const state = {
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                analyst: ['2000', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'],
-                critic: ['3000', '3005'],
+                engineer: ['2000', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+                analyst: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
-                ifeed: [],
-                analyst_instruments: [],
-                analyst_instrument_parameters: [],
-                analyst_measurements: [],
-                measurements: [],
-                missions: [],
-                objectives: [],
-                space_agencies: []
+                critic: ['3000', '3005'],
+                engineer_instruments: [],
+                engineer_instrument_parameters: [],
+                engineer_measurements: [],
+                engineer_objectives: [],
+                engineer_subobjectives: [],
+                historian_measurements: [],
+                historian_missions: [],
+                historian_space_agencies: []
             },
             nextStage: '',
             steps: [
@@ -334,7 +334,7 @@ start the experiment!`
             startTime: 0,
             stageDuration: 60*20
         },
-        daphne_traditional: {
+        daphne_assistant: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DataMining',
@@ -350,25 +350,24 @@ start the experiment!`
                 'OrbitInstrInfo',
             ],
             restrictedQuestions: {
+                engineer: [],
                 analyst: [],
-                critic: [],
                 historian: [],
-                ifeed: [],
-                analyst_instruments: [],
-                analyst_instrument_parameters: [],
-                analyst_measurements: [],
-                analyst_stakeholders: [],
-                measurements: [],
-                missions: [],
-                technologies: [],
-                objectives: [],
-                space_agencies: []
+                critic: [],
+                engineer_instruments: [],
+                engineer_instrument_parameters: [],
+                engineer_measurements: [],
+                engineer_objectives: [],
+                engineer_subobjectives: [],
+                historian_measurements: [],
+                historian_missions: [],
+                historian_space_agencies: []
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*20
+            stageDuration: 60*15
         },
-        daphne_new: {
+        daphne_peer: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'DaphneAnswer',
@@ -386,14 +385,14 @@ start the experiment!`
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                analyst: ['2000', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'],
-                critic: ['3000', '3005'],
+                engineer: ['2000', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+                analyst: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
-                ifeed: []
+                critic: ['3000', '3005'],
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*20
+            stageDuration: 60*15
         }
     }
 };
@@ -431,7 +430,7 @@ const actions = {
                     commit('setNextStage', { experimentStage: experimentStages[i], nextStage: experimentStages[i+1] });
                 }
                 // Start the websockets after completing the request so the session cookie is already set
-                commit('startExperimentWebsocket');
+                await wsTools.experimentWsConnect();
             }
             else {
                 console.error('Error starting the experiment.');
@@ -526,7 +525,7 @@ const actions = {
                     commit('restoreActive', experimentInformation.experiment_data.active);
                     commit('restoreExperiment', experimentInformation.experiment_data.experiment);
                     // Start the websockets after completing the request so the session cookie is already set
-                    commit('startExperimentWebsocket');
+                    await wsTools.experimentWsConnect();
                     // Start the Websocket
                     await wsTools.wsConnect(this);
                     await dispatch('stopBackgroundTasks');
@@ -570,13 +569,6 @@ const mutations = {
     setIsRecovering(state, isRecovering) {
         state.isRecovering = isRecovering;
     },
-    startExperimentWebsocket(state) {
-        state.experimentWebsocket = new WebSocket(WS_URL + 'experiment');
-        state.experimentWebsocket.onopen = function() {
-            console.log('Experiment Web Socket Conenction Made');
-        };
-        state.experimentWebsocket.onmessage = function (data) {};
-    }
 };
 
 export default {
