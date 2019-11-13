@@ -33,8 +33,8 @@
                     this.$store.commit('setShowSuggestions', true);
                 }
                 else if (this.response.setting === "modification") {
-                    if (this.modification["type"] === "set_diversifier_id") {
-                         this.$store.commit("updateClickedArch", this.modification["arch_id"])
+                    if (this.response.modification["type"] === "set_diversifier_id") {
+                         this.$store.commit("updateClickedArch", this.response.modification["arch_id"])
                     }
                 }
 

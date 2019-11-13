@@ -62,8 +62,12 @@
             DataMining,
             EOSSFilter,
             FeatureApplication,
+<<<<<<< HEAD
             TimelinePlot,
             Teacher,
+=======
+            TimelinePlot
+>>>>>>> master
         },
         computed: {
             sizeClass: function () {

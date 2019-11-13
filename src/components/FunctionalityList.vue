@@ -7,7 +7,9 @@
                 :title="functionality.title"
                 :func-class="functionality.funcClass"
                 :initial-size="functionality.initialSize"
-                :key="functionality.id">
+                :func-data="functionality.funcData"
+                :key="functionality.id"
+                :func-id="functionality.id">
         </functionality>
     </draggable>
 </template>

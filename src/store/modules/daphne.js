@@ -13,9 +13,6 @@ const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
-    getIsLoading(state) {
-        return state.isLoading;
-    }
 };
 
 // actions
@@ -36,17 +33,35 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
-    async executeCommand({ state, commit, rootState }) {
-        commit('setIsLoading', true);
+    async clearHistory({ state, commit, rootState }) {
         try {
             let reqData = new FormData();
-            reqData.append('command', state.command);
+            let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/clear-history', reqData);
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                commit('setDialogueHistory', []);
+            }
+            else {
+                console.error('Error clearing conversation history.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
+    async executeCommand({ state, commit, rootState }) {
+        try {
+            commit('setIsLoading', true);
             commit('addDialoguePiece', {
                 "voice_message": state.command,
                 "visual_message_type": ["text"],
                 "visual_message": [state.command],
                 "writer": "user"
             });
+
+            let reqData = new FormData();
+            reqData.append('command', state.command);
             if (rootState.experiment.inExperiment) {
                 let experimentStage = rootState.experiment.experimentStage;
                 let restrictedQuestions = rootState.experiment.stageInformation[experimentStage].restrictedQuestions;

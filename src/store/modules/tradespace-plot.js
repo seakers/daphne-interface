@@ -128,9 +128,9 @@ const mutations = {
 
         // Add one unique color to each point and save the backreference
         state.colorMap = {};
-        plotData.forEach((point, index) => {
+        plotData.forEach(point => {
             point.interactColor = genColor();
-            state.colorMap[point.interactColor] = index;
+            state.colorMap[point.interactColor] = point.id;
         });
 
         state.plotData = plotData;
@@ -156,7 +156,7 @@ const mutations = {
             state.gaArchs.push(false);
             let plotPoint = JSON.parse(JSON.stringify(problemData[state.plotData.length+i]));
             plotPoint.interactColor = genColor();
-            state.colorMap[plotPoint.interactColor] = state.plotData.length+i;
+            state.colorMap[plotPoint.interactColor] = plotPoint.id;
             state.plotData.push(plotPoint);
         }
 
@@ -185,7 +185,7 @@ const mutations = {
             state.gaArchs.push(true);
             let plotPoint = JSON.parse(JSON.stringify(problemData[state.plotData.length+i]));
             plotPoint.interactColor = genColor();
-            state.colorMap[plotPoint.interactColor] = state.plotData.length+i;
+            state.colorMap[plotPoint.interactColor] = plotPoint.id;
             state.plotData.push(plotPoint);
         }
     },

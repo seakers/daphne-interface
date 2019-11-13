@@ -57,16 +57,12 @@ functionalityTypes.set('AvailableCommands', {
     optionsList: [
         {name: "", value: ""},
         {name: "General", value: "general"},
-        {name: "iFEED", value: "ifeed"},
         {name: "Engineer", value: "engineer"},
         {name: "Analyst", value: "analyst"},
-        {name: "Critic", value: "critic"},
-        {name: "Historian", value: "historian"},
         {name: "Explorer", value: "explorer"},
         {name: "Historian", value: "historian"},
         {name: "Critic", value: "critic"}
-    ]
-});
+    ]});
 functionalityTypes.set('CommandsInformation', {
     title: 'Commands Information',
     component: 'Cheatsheet',
@@ -85,8 +81,16 @@ functionalityTypes.set('CommandsInformation', {
         {name: "Missions (Historian)", value: "historian_missions"},
         {name: "Technologies (Historian)", value: "historian_technologies"},
         {name: "Space Agencies (Historian)", value: "historian_space_agencies"}
-    ]
+    ]});
+functionalityTypes.set('TimelinePlot', {
+    title: 'Timeline Plot',
+    component: 'TimelinePlot',
+    class: 'timeline-plot',
+    minSize: 'half',
+    maxRepeat: 10
 });
+
+
 let newFunctionalityId = 0;
 // initial state
 // shape: [{ id, quantity }]
