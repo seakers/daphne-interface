@@ -19,6 +19,7 @@ const state = {
     orbitList: [],
     instrumentList: [],
     plotData: [],
+    evaluated_architectures: [],
 
     current_teacher_question: 'Question not set',
     current_question_type: '', //--> Either design or sensitivity
@@ -151,6 +152,10 @@ const initialState = _.cloneDeep(state);
 // Getters
 // ---------------------------
 const getters = {
+
+    get_evaluated_architectures(state){
+        return state.evaluated_architectures;
+    },
 
     get_features(state){
         return state.features;
@@ -637,6 +642,10 @@ const mutations = {
     // -----------------------------
     // ---------- GENERAL ----------
     // -----------------------------
+    set_evaluated_architectures(state, architecture){
+        state.evaluated_architectures.push(architecture);
+    },
+
     set_features(state, features){
         state.features = features;
     },

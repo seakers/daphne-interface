@@ -85,6 +85,7 @@
                         if (dataResponse.ok) {
                             let newArch = await dataResponse.json();
                             this.$store.dispatch('addNewData', newArch);
+                            this.$store.commit('set_evaluated_architectures', newArch);
 
                             //--> Teacher agent records when an arch was evaluated from design builder
                             this.$store.dispatch('recordEvaluatedArchitecture', newArch);

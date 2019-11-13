@@ -83,6 +83,8 @@
         },
         watch: {
             dialogueHistory: function(val, oldVal) {
+                console.log("Dialog History");
+                console.log(this.dialogueHistory);
                 this.$nextTick(() => {
                     this.scrollToBottom();
                 });

@@ -2,7 +2,7 @@
     <div style="width: fit-content;">
 
         <div class="table-container">
-            <div class="table is-striped">
+            <div class="table">
                 <thead style="font-size: smaller">
                     <tr>
                         <th v-for="col in design_table_columns">{{ col }}</th>
