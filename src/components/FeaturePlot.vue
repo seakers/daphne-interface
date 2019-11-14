@@ -1,8 +1,12 @@
 <template>
     <div>
-        <div style="margin-bottom: 7px; text-align: center; border-bottom: 1px solid #dbdbdb;"><b>Teacher</b></div>
         <div style="">
-            I have found some information about driving features! Click on a feature in the plot below to view feature information
+            <ul>
+                <li>
+                    A collection of design decisions common to a group of designs (called a feature) can help explain the performance of that design group.
+                    The features below were found from designs in the pareto front. Click on them to highlight the designs that contain them and view information.
+                </li>
+            </ul>
         </div>
         <vue-plotly :data="plotData" :layout="plotLayout" :options="{displayModeBar: false}" v-on:click="createSubPlot"/>
 
@@ -70,30 +74,22 @@
             computePlot() {
                 let features = this.plot_features;
 
-                // expression: "({notInOrbit[2;1;]})"
-                // id: 0
-                // metrics: Array(4)
-                // 0: 0.12024048096192384
-                // 1: 1.2608439316095343
-                // 2: 0.1566579634464752
-                // 3: 0.967741935483871
-                // length: 4
-                // __ob__: Observer {value: Array(4), dep: Dep, vmCount: 0}
-                // __proto__: Array
-                // name: "({notInOrbit[2;1;]})"
 
                 let plot_data = [];
                 let xValues = [];
                 let yValues = [];
                 let marker_symbol = [];
                 let marker_text = [];
-                let feature_trees = [];
+                let custom_data = [];
                 for(let x = 0; x < features.length; x++){
+                    let point_data = [];
                     let feature = features[x];
 
                     let expression = feature.expression;
                     let treeElements = this.constructTree(expression);
-                    feature_trees.push(treeElements);
+                    point_data.push(treeElements);
+                    point_data.push(expression);
+                    custom_data.push(point_data);
                     let id = feature.id;
                     let name = feature.name;
                     let metrics = feature.metrics;
@@ -129,7 +125,7 @@
                     mode: 'markers',
                     hoverinfo: "text",
                     text: marker_text,
-                    customdata: feature_trees,
+                    customdata: custom_data,
                     marker: {
                         symbol: marker_symbol,
                         size: 10,
@@ -141,15 +137,10 @@
                 this.plotData = plot_data;
 
                 let plot_layout = {
-                    xaxis: {title: 'Specifity'},
-                    yaxis: {title: 'Coverage'},
-                    margin: {
-                        t: 25, //top margin
-                        l: 55, //left margin
-                        r: 20, //right margin
-                        b: 45 //bottom margin
-                    },
-                    // showlegend: false,
+                    xaxis: {title: 'Specifity', nticks: 10, zeroline: true, showgrid: true},
+                    yaxis: {title: 'Coverage', nticks: 10, zeroline: true, showgrid: true, range: [0,1.1]},
+                    margin: {t: 25, l: 55, r: 20, b: 45},
+                    hovermode: 'closest',
                     plot_bgcolor:"whitesmoke",
                     paper_bgcolor:"whitesmoke",
                 };
@@ -243,8 +234,12 @@
                 let margin = this.margin;
                 let width = this.width;
                 let height = this.height;
-                let expressionTree = data['points'][0]['customdata'];
+                let expressionTree = data['points'][0]['customdata'][0];
+                let expression = data['points'][0]['customdata'][1];
                 this.expressionTree = expressionTree;
+                console.log('_____________________________________');
+                console.log(expression);
+                this.$store.commit('setCurrentExpression', expression);
 
                 //--> Set the size of the plot
                 this.tree = d3.tree().size([this.height, this.width]);
