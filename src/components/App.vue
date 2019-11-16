@@ -166,7 +166,8 @@
                     classes: 'shadow-md bg-purple-dark',
                     scrollTo: true
                 },
-                useModalOverlay: true
+                useModalOverlay: true,
+                exitOnEsc: false
             });
 
             /*// Generate the session

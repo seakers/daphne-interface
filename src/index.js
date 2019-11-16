@@ -13,7 +13,7 @@ let responsiveVoice = window.responsiveVoice;
 
 // Styles
 import './styles/app.scss';
-import 'shepherd.js/dist/css/shepherd-theme-default.css';
+import 'shepherd.js/dist/css/shepherd.css';
 
 // Record state and mutations when inside an experiment
 let stateTimer = 0;
