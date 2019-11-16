@@ -80,6 +80,7 @@ const state = {
             restrictedQuestions: {
                 engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
                 analyst: [],
+                explorer: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
                 engineer_instruments: [],
@@ -324,9 +325,7 @@ for these fields. If a part of a question is inside square brackets it means it 
 One of them will talk about a Background Search. This is a search algorithm that is running behind the scenes, trying to
  help you find better designs. If you accept its suggestion you may see a few blue points appear on your dataset. The 
  designs it finds will be shown in blue to differentiate them from the ones already there that you found. This feature 
- will always be active for you. Note that in order to use Data Mining you need to stop the updates or it will not work. 
- Once you are finished you can reactivate the "Show New Architectures" feature and everything the system found for you 
- will be shown again`
+ will always be active for you.`
                 },
                 {
                     attachTo: {
@@ -368,7 +367,7 @@ Remember, you have two objectives: <b>1. Find a range of designs with good scien
 and $4,000M</b> and <b>2. Try to learn any patterns useful to discern between designs with high and low science benefit 
 with similar costs, so you can do the short tests afterwards</b>. For example, you may try to find which 
 instrument-orbits pairings appear most often in the best architectures you can find. The Data Mining capability should
- be helpful for this. <b>Whether you start with the full Virtual Assistant or with the simpler tool is randomized</b>.
+ be helpful for this. <b>Whether you start with Assistant Daphne or Peer Daphne is randomized</b>.
   You are also encouraged to take notes during each task, as this will probably be helpful to do well in the test. 
   The first stage will be to design the Surface Water focused mission and the second one will be for the Applications 
   focused mission. And once again, <b>trying to reuse good designs from the first task for the second task will likely 
@@ -418,6 +417,7 @@ instrument-orbits pairings appear most often in the best architectures you can f
             restrictedQuestions: {
                 engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
                 analyst: [],
+                explorer: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: [],
                 engineer_instruments: [],
@@ -437,6 +437,7 @@ instrument-orbits pairings appear most often in the best architectures you can f
             availableFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
+                'AvailableCommands',
                 'BackgroundSearch',
                 'Diversifier',
                 'LiveSuggestions'
@@ -444,10 +445,12 @@ instrument-orbits pairings appear most often in the best architectures you can f
             shownFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
+                'AvailableCommands',
             ],
             restrictedQuestions: {
                 engineer: [],
                 analyst: [],
+                explorer: [],
                 historian: [],
                 critic: ['3000', '3005'],
             },

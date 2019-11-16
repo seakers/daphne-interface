@@ -1,6 +1,6 @@
 <template>
     <div class="notification" id="experiment-timer">
-        <p class="has-text-white is-size-1">{{minutes}} : {{seconds}}</p>
+        <p class="is-size-1">{{minutes}} : {{seconds}}</p>
     </div>
 
 </template>

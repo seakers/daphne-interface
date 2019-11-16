@@ -10,7 +10,7 @@
                     <img src="assets/img/loader.svg" style="margin-right: 5px;" height="20" width="20" v-if="isComputing">
                     Evaluate Architecture
                 </a>
-                <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problem=' + problemName">
+                <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problem=' + problemName" v-if="detailsExperimentCondition">
                     Details
                 </a>
             </p>
@@ -52,7 +52,7 @@
             pointID() {
                 return this.hoveredArch === -1 ? this.clickedArch : this.hoveredArch;
             },
-            timerExperimentCondition() {
+            detailsExperimentCondition() {
                 if (!this.inExperiment) {
                     return false;
                 }
