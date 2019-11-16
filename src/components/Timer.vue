@@ -1,5 +1,8 @@
 <template>
-    <p class="has-text-white is-size-1">{{minutes}} : {{seconds}}</p>
+    <div class="notification" id="experiment-timer">
+        <p class="has-text-white is-size-1">{{minutes}} : {{seconds}}</p>
+    </div>
+
 </template>
 
 <script>
@@ -50,7 +53,9 @@
 </script>
 
 <style scoped>
-    p {
-        padding-left: 40px;
+    #experiment-timer {
+        position: fixed;
+        bottom: 40px;
+        left: 40px;
     }
 </style>

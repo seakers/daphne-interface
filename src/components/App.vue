@@ -11,7 +11,7 @@
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
                     <problem-picker v-if="!inExperiment"></problem-picker>
-                    <active-switches v-if="activeExperimentCondition"></active-switches>
+                    <active-switches></active-switches>
                     <user class="user-info" v-if="!inExperiment"></user>
                 </div>
             </aside>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-    import { mapState, mapGetters } from 'vuex';
+    import { mapState } from 'vuex';
     import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import {wsTools} from "../scripts/websocket-tools";
     import Shepherd from 'shepherd.js';
@@ -70,29 +70,19 @@
                 modalContent: state => state.modal.modalContent,
                 dataset: state => state.problem.datasetInformation,
                 datasetInformations: state => state.experiment.datasetInformations,
-                problems: state => state.experiment.problems
-            }),
-            ...mapGetters({
-                inExperiment: 'getInExperiment',
-                experimentStage: 'getExperimentStage',
-                stageInformation: 'getStageInformation',
-                isRecovering: 'getIsRecovering',
-                currentStageNum: 'getCurrentStageNum'
+                problems: state => state.experiment.problems,
+                inExperiment: state => state.experiment.inExperiment,
+                experimentStage: state => state.experiment.experimentStage,
+                stageInformation: state => state.experiment.stageInformation,
+                isRecovering: state => state.experiment.isRecovering,
+                currentStageNum: state => state.experiment.currentStageNum,
             }),
             timerExperimentCondition() {
                 if (!this.inExperiment) {
                     return false;
                 }
                 else {
-                    return this.experimentStage === 'no_daphne' || this.experimentStage === 'daphne_traditional' || this.experimentStage === 'daphne_new';
-                }
-            },
-            activeExperimentCondition() {
-                if (!this.inExperiment) {
-                    return true;
-                }
-                else {
-                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('ActiveFeatures');
+                    return this.currentStageNum > 0;
                 }
             },
             stageDuration() {
@@ -224,9 +214,6 @@
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
                     // First of all login
-                    let form = new FormData();
-                    form.append("username", "tamu-experiment");
-                    form.append("password", "tamu2019");
                     await this.$store.dispatch('loginUser', {
                         username: "tamu-experiment",
                         password: "tamu2019"
@@ -308,15 +295,26 @@
 
                     // Initialize user-only features
                     await this.$store.dispatch("retrieveActiveSettings");
-                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('ActiveFeatures')) {
+                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
                         this.$store.dispatch("startBackgroundSearch");
                     }
-                    else {
-                        this.$store.commit('setShowFoundArchitectures', false);
-                        this.$store.commit('setRunDiversifier', false);
-                        this.$store.commit('setShowSuggestions', false);
-                        this.$store.dispatch("updateActiveSettings");
+                    this.$store.commit('setShowFoundArchitectures', false);
+
+
+                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier')) {
+                        this.$store.commit('setRunDiversifier', true);
                     }
+                    else {
+                        this.$store.commit('setRunDiversifier', false);
+                    }
+
+                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions')) {
+                        this.$store.commit('setShowSuggestions', true);
+                    }
+                    else {
+                        this.$store.commit('setShowSuggestions', false);
+                    }
+                    this.$store.dispatch("updateActiveSettings");
 
                     // Data Mining initialization
                     this.$store.dispatch('setProblemParameters');

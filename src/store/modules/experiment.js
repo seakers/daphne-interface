@@ -63,7 +63,10 @@ const state = {
                 'DataMining',
                 'EOSSFilter',
                 'FeatureApplication',
-                'ActiveFeatures'
+                'Details',
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
@@ -75,7 +78,7 @@ const state = {
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
                 analyst: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
@@ -398,6 +401,10 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'EOSSFilter',
                 'FeatureApplication',
                 'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+                'Details',
+                'BackgroundSearch'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
@@ -405,11 +412,13 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'EOSSFilter',
                 'FeatureApplication',
                 'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
             ],
             restrictedQuestions: {
-                engineer: [],
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
                 analyst: [],
-                historian: [],
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: [],
                 engineer_instruments: [],
                 engineer_instrument_parameters: [],
@@ -428,20 +437,18 @@ instrument-orbits pairings appear most often in the best architectures you can f
             availableFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
-                'AvailableCommands',
-                'CommandsInformation',
-                'ActiveFeatures',
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
-                'AvailableCommands',
-                'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+                engineer: [],
                 analyst: [],
-                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                historian: [],
                 critic: ['3000', '3005'],
             },
             nextStage: '',
@@ -453,21 +460,6 @@ instrument-orbits pairings appear most often in the best architectures you can f
 
 // getters
 const getters = {
-    getInExperiment(state) {
-        return state.inExperiment;
-    },
-    getExperimentStage(state) {
-        return state.experimentStage;
-    },
-    getStageInformation(state) {
-        return state.stageInformation;
-    },
-    getIsRecovering(state) {
-        return state.isRecovering;
-    },
-    getCurrentStageNum(state) {
-        return state.currentStageNum;
-    }
 };
 
 // actions
@@ -583,7 +575,7 @@ const actions = {
                     // Start the Websocket
                     await wsTools.wsConnect(this);
                     await dispatch('stopBackgroundTasks');
-                    if (state.stageInformation[state.experimentStage].availableFunctionalities.includes('ActiveFeatures')) {
+                    if (state.stageInformation[state.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
                         dispatch("startBackgroundSearch");
                     }
                     dispatch('setProblemParameters');

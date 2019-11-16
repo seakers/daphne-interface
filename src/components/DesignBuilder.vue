@@ -43,12 +43,22 @@
                 outputList: state => state.problem.outputList,
                 displayComponent: state => state.problem.displayComponent,
                 inExperiment: state => state.experiment.inExperiment,
+                experimentStage: state => state.experiment.experimentStage,
+                stageInformation: state => state.experiment.stageInformation,
             }),
             isPointSelected() {
                 return this.hoveredArch !== -1 || this.clickedArch !== -1;
             },
             pointID() {
                 return this.hoveredArch === -1 ? this.clickedArch : this.hoveredArch;
+            },
+            timerExperimentCondition() {
+                if (!this.inExperiment) {
+                    return false;
+                }
+                else {
+                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('Details');
+                }
             },
         },
         components: {
