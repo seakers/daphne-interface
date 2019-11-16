@@ -318,6 +318,8 @@
                         this.$store.dispatch("updateActiveSettings");
                     }
 
+                    // Data Mining initialization
+                    this.$store.dispatch('setProblemParameters');
                 }
             }
         }

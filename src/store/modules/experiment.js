@@ -57,19 +57,16 @@ const state = {
         tutorial: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'DaphneAnswer',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
                 'DataMining',
                 'EOSSFilter',
                 'FeatureApplication',
-                'ActiveFeatures',
-                'QuestionBar'
+                'ActiveFeatures'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'DaphneAnswer',
                 'DataMining',
                 'EOSSFilter',
                 'FeatureApplication',
@@ -135,7 +132,10 @@ how to actually design new satellite constellations! It's important to try out t
 as this will help you perform better during the experiment.`
                 },
                 {
-                    attachTo: '#arch-info-display-table right',
+                    attachTo: {
+                        element: '#arch-info-display-table',
+                        on: 'right'
+                    },
                     text: `Each satellite constellation design is represented by a table as shown here. Each row 
 represents one spacecraft in the constellation. At the left side of each row in bold we have the orbit in which 
 spacecraft will fly, which is defined by various parameters, such as altitude, inclination and local time of the 
@@ -144,19 +144,28 @@ single instrument present in that spacecraft. If one orbit has no small boxes co
 there is no spacecraft flying in that orbit for this constellation.`
                 },
                 {
-                    attachTo:  '.panel.orbit-instr-info right',
+                    attachTo: {
+                        element: '.panel.orbit-instr-info',
+                        on: 'right'
+                    },
                     text: `Detailed information on what these orbits and instruments are is given in the Orbits and 
 Instruments Information panel. <b>You should read about them now by clicking on the elements of the dropdown list.</b>`
                 },
                 {
-                    attachTo: '#main-plot-block bottom',
+                    attachTo: {
+                        element: '#main-plot-block',
+                        on: 'bottom'
+                    },
                     text: `Your first task in the experiment is, again, to come up with a range of constellation 
 designs with the highest science benefit for a range of costs. To make things specific, we have set up lower and upper 
 cost bounds at $800M and $4,000M. You can see some initial constellation designs here, but you will learn how to create 
 new ones in a moment.`
                 },
                 {
-                    attachTo: '#main-plot-block bottom',
+                    attachTo: {
+                        element: '#main-plot-block',
+                        on: 'bottom'
+                    },
                     text: `This is the plot that shows the trade-space of the constellation designs you come up with. 
 This set of constellation designs comes from a different problem, so don't worry if you see something different when 
 the actual focused task begins. Each dot here is a single constellation design, and each design has an associated 
@@ -164,14 +173,20 @@ science/societal score and a cost. The science score, just as a reminder, is a m
 well you are satisfying a set of requirements which are decided by different stakeholders.`
                 },
                 {
-                    attachTo: '#admin-panel',
+                    attachTo: {
+                        element: '#admin-panel',
+                        on: 'top right'
+                    },
                     text: `As you hover over each dot on the scatter plot, you can see the corresponding information 
 being changed in the Design Builder space. If you click on a dot, it is replaced by a cross. The cross means you have 
 selected that constellation design. <b>Try selecting a design which has the highest science benefit for a certain cost 
 (so the one the furthest right for any cost).</b>`
                 },
                 {
-                    attachTo: '.design-builder right',
+                    attachTo: {
+                        element: '.design-builder',
+                        on: 'right'
+                    },
                     text: `You can move the instruments from one orbit to another, add new instruments, or remove them 
 using drag-and-drop. After modifying the constellation design, you can evaluate it using the 
 <b>"Evaluate Architecture"</b> button on the top-right side. After the evaluation is finished, a new red cross will 
@@ -181,7 +196,10 @@ much you improved or worsened the design! <b>Try coming up with a new constellat
 with the tutorial.</b>`
                 },
                 {
-                    attachTo: '.design-builder right',
+                    attachTo: {
+                        element: '.design-builder',
+                        on: 'right'
+                    },
                     text: `You will also notice how there is a Details button in this window. If you click on it 
 will open a new window with more information on this architecture. This is one of the features only available on the
  Assistant version of Daphne. There you can see a detailed breakdown of the science score and the lifecycle cost. 
@@ -189,7 +207,10 @@ will open a new window with more information on this architecture. This is one o
  advice to use with caution (perhaps a few times at the beginning and then only when needed).`
                 },
                 {
-                    attachTo: '.data-mining left',
+                    attachTo: {
+                        element: '.data-mining',
+                        on: 'left'
+                    },
                     text: `While this is the basic functionality for tradespace analysis, you have more tools available 
 to you in this experiment. The first of them, and the one you will have available in the Assistant Daphne, is 
 Data Mining. The Data Mining feature allows you to select a set of points in the dataset either by drawing squares in 
@@ -198,12 +219,18 @@ characteristics shared by a group of designs, such as having an L-band radar and
 Let's see how it works step by step.`
                 },
                 {
-                    attachTo: '#main-plot-block bottom',
+                    attachTo: {
+                        element: '#main-plot-block',
+                        on: 'bottom'
+                    },
                     text: `First of all, choose Drag-select in the Mouse Selection panel. This allows you to select a 
 subset of points from which you want to obtain relevant features. <b>Try making a selection.</b>`
                 },
                 {
-                    attachTo: '.data-mining right',
+                    attachTo: {
+                        element: '.data-mining',
+                        on: 'right'
+                    },
                     text: `With that done, ,<b>click on Run data mining</b> to see the features. They are represented 
 as triangles in this plot, where two important metrics for them are represented: Coverage and Specificity. Coverage 
 measures how many points in your selection are covered by this feature, while Specificity measures which percentage of 
@@ -212,36 +239,50 @@ selected points are inside it) and Specificity (no points outside your selection
 a feature, we have the Feature Application. <b>Before clicking on Next, click on one Feature</b>`
                 },
                 {
-                    attachTo: '.feature-application left',
+                    attachTo: {
+                        element: '.feature-application',
+                        on: 'left'
+                    },
                     text: `In this window you can see how a feature is described. The tree you see is how the feature 
 explains itself. Thus, if you have found a feature you want your designs to have, this window here will tell you how to 
 ensure that. Now on to the last feature of the Data Mining functionality.`
                 },
                 {
-                    attachTo: '.filter left',
+                    attachTo: {
+                        element: '.filter',
+                        on: 'left'
+                    },
                     text: `This last window is the Filters window. Instead of selecting a group of features manually in 
                     the dataset, you can use this window to select a set of designs that have something in common. You 
                     can try using any of those, as they're pretty self explanatory.`
                 },
                 {
-                    attachTo: '#admin-panel',
+                    attachTo: {
+                        element: '#admin-panel'
+                    },
                     text: `The next feature you need to know about is how to communicate with the Virtual Assistant. 
                     Let's learn how you can ask questions.`
                 },
                 {
-                    attachTo: '.chat-container left',
+                    attachTo: {
+                        element: '.chat-container'
+                    },
                     text: `To ask a question, you can write it down here, and then either click Send or press Enter
 on your keyboard.`
                 },
                 {
-                    attachTo: '.chat-container left',
+                    attachTo: {
+                        element: '.chat-container'
+                    },
                     text: `For example, you can ask Daphne what she thinks about the current design. After thinking for 
 a while, Daphne will give her thoughts on the design along with some suggestions on how to improve it. 
 <b>Try writing or copying the following question into the Question Bar: "What do you think of this design?"</b> 
 If you want to hear the output instead of just reading it, you can unmute Daphne by clicking on the speaker.`
                 },
                 {
-                    attachTo: '.chat-container left',
+                    attachTo: {
+                        element: '.chat-container'
+                    },
                     text: `You can read all the suggestions Daphne has for you about your design in here. You can see 
 there is advice from different roles: the Expert Critic will give advice based on a knowledge base with simple rules of 
 thumb about how to design Earth observing systems (e.g., don't put a visible light instrument in a dawn-dusk orbit); 
@@ -260,7 +301,9 @@ has a certain score), WHAT questions (e.g., information on past and planned Eart
  the Assistant Daphne, while the last one will be answered by Daphne Peer.`
                 },
                 {
-                    attachTo: '#app',
+                    attachTo: {
+                        element: 'body'
+                    },
                     text: `You can now try choosing a question from those available at the Available Commands lists. 
 There you will see the questions listed by role (Engineer, Analyst, Explorer, Historian, Critic). If you look at the 
 Engineer list, you will see that there are terms between curly brackets such as $\\{engineer_stakeholder}. You can look 
@@ -268,10 +311,12 @@ at the lists in Commands Information such as Stakeholders (Engineer) or Technolo
 for these fields. If a part of a question is inside square brackets it means it is optional. <b>For example, one way to
  use the Engineer is to first ask "Why does this design have this science benefit?" and then ask "Which instruments 
  improve the science score for stakeholder $\\{analyst_stakeholder}?" with a stakeholder that has a low score. Another 
- example question (which you can try!) would be: "Which orbit is most common for passive microwave radiometers?"</b>`
+ example question (which you can try!) would be: "Which orbit is most common for radar altimeters?"</b>`
                 },
                 {
-                    attachTo: '.chat-container left',
+                    attachTo: {
+                        element: '.chat-container'
+                    },
                     text: `You might have seen some messages from Daphne that appear without you asking a question.
 One of them will talk about a Background Search. This is a search algorithm that is running behind the scenes, trying to
  help you find better designs. If you accept its suggestion you may see a few blue points appear on your dataset. The 
@@ -281,18 +326,27 @@ One of them will talk about a Background Search. This is a search algorithm that
  will be shown again`
                 },
                 {
-                    attachTo: '.active-menu right',
+                    attachTo: {
+                        element: '.active-menu',
+                        on: 'right'
+                    },
                     text: `You can activate or deactivate this background search here, as well as choose whether you want 
 to see the new results it finds or not. You will also notice how there are two other options in this same menu.`
                 },
                 {
-                    attachTo: '.active-menu right',
+                    attachTo: {
+                        element: '.active-menu',
+                        on: 'right'
+                    },
                     text: `The Diversifier will track in real time which architectures you have been adding and will 
 suggest areas of the datasets that you have left unexplored in case you want to change the area you're exploring. This 
 will only be available for the Daphne Peer version.`
                 },
                 {
-                    attachTo: '.active-menu right',
+                    attachTo: {
+                        element: '.active-menu',
+                        on: 'right'
+                    },
                     text: `The Suggestions will keep track of the changes you make in the Design Builder, and will give 
 you real time advice on how that design can be improved without having to Evaluate it or ask the Critic what it thinks 
 about it. Again, this will only be available on the Daphne Peer version.`
@@ -373,16 +427,13 @@ instrument-orbits pairings appear most often in the best architectures you can f
         daphne_peer: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'DaphneAnswer',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
                 'ActiveFeatures',
-                'QuestionBar'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'DaphneAnswer',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation'
@@ -535,6 +586,7 @@ const actions = {
                     if (state.stageInformation[state.experimentStage].availableFunctionalities.includes('ActiveFeatures')) {
                         dispatch("startBackgroundSearch");
                     }
+                    dispatch('setProblemParameters');
                 }
             }
             else {

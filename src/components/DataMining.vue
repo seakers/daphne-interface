@@ -17,7 +17,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
+    import { mapState } from 'vuex';
     import * as d3 from 'd3';
     import { roundNum } from '../scripts/utils';
     import * as _ from 'lodash-es';
@@ -41,14 +41,14 @@
             this.height = 310 - this.margin.top - this.margin.bottom;
         },
         computed: {
-            ...mapGetters({
-                plotData: 'getPlotData',
-                selectedArchs: 'getSelectedArchs',
-                features: 'getFeatures',
-                scores: 'getScores'
+            ...mapState({
+                plotData: state => state.tradespacePlot.plotData,
+                selectedArchs: state => state.tradespacePlot.selectedArchs,
+                features: state => state.dataMining.features,
+                scores: state => state.dataMining.scores
             }),
             numSelectedPoints() {
-                return this.selectedArchs.filter(point => point).length;
+                return this.selectedArchs.length;
             }
         },
         methods: {
