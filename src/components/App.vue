@@ -160,7 +160,7 @@
                 exitOnEsc: false
             });
 
-            /*// Generate the session
+            // Generate the session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
             // Start the Websocket
@@ -202,9 +202,9 @@
             }
             catch (e) {
                 console.error('Networking error:', e);
-            }*/
+            }
 
-            // Generate the session
+            /*// Generate the session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
             // Experiment
@@ -229,7 +229,7 @@
                         this.$store.commit('setInExperiment', true);
                     });
                 }
-            });
+            });*/
 
         },
         watch: {
