@@ -76,6 +76,9 @@ store.subscribe(async (mutation, state) => {
         // Live Recommender System
         if (mutation.type === "updateClickedArchInputs") {
             // TODO: Find a way to differentiate between binary and discrete problems
+            let liveSuggestionsExperimentCondition = !state.experiment.inExperiment
+                || state.experiment.stageInformation[state.experiment.experimentStage].availableFunctionalities.includes('LiveSuggestions');
+
             // Active Engineer
             window.setTimeout(function() {
                 if (numberOfEngChanges > 0) {
@@ -84,7 +87,7 @@ store.subscribe(async (mutation, state) => {
             },60*1000);
             ++numberOfEngChanges;
 
-            if (numberOfEngChanges >= 3) {
+            if (numberOfEngChanges >= 3 && liveSuggestionsExperimentCondition) {
                 numberOfEngChanges = 0;
                 console.log(mutation);
                 // Send a WS request for expert information on current arch
@@ -103,7 +106,7 @@ store.subscribe(async (mutation, state) => {
             }, 60*1000);
             ++numberOfHistChanges;
 
-            if (numberOfHistChanges >= 3) {
+            if (numberOfHistChanges >= 3 && liveSuggestionsExperimentCondition) {
                 numberOfHistChanges = 0;
                 // Send a WS request for historian information on current arch
                 wsTools.websocket.send(JSON.stringify({
