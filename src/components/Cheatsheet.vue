@@ -20,6 +20,7 @@
 
 <script>
     import {fetchPost} from "../scripts/fetch-helpers";
+    import {mapGetters, mapState} from "vuex";
 
     export default {
         name: 'cheatsheet',
@@ -31,10 +32,18 @@
         },
         props: ['name'],
         computed: {
+            ...mapState({
+                inExperiment: state => state.experiment.inExperiment,
+                stageInformation: state => state.experiment.stageInformation,
+                experimentStage: state => state.experiment.experimentStage,
+            }),
+            ...mapGetters({
+                getOptionsList: 'getOptionsList'
+            }),
             filteredList() {
-                if (this.$store.getters.getInExperiment) {
-                    let stageInformation = this.$store.getters.getStageInformation;
-                    let currStageInfo = stageInformation[this.$store.getters.getExperimentStage];
+                if (this.inExperiment) {
+                    let stageInformation = this.stageInformation;
+                    let currStageInfo = stageInformation[this.experimentStage];
                     let newList = [];
                     this.optionsList.forEach((option) => {
                         if (currStageInfo['restrictedQuestions'] !== null && option.value in currStageInfo.restrictedQuestions) {
@@ -53,7 +62,7 @@
                 }
             },
             optionsList() {
-                return this.$store.getters.getOptionsList(this.name);
+                return this.getOptionsList(this.name);
             }
         },
         methods: {
@@ -63,9 +72,9 @@
                     reqData.append('command_list', this.selectedList);
                     // Limit number of cheatsheet answers
 
-                    if (this.$store.getters.getInExperiment) {
-                        let stageInformation = this.$store.getters.getStageInformation;
-                        let currStageInfo = stageInformation[this.$store.getters.getExperimentStage];
+                    if (this.inExperiment) {
+                        let stageInformation = this.stageInformation;
+                        let currStageInfo = stageInformation[this.experimentStage];
                         if (currStageInfo['restrictedQuestions'] !== null && this.selectedList in currStageInfo.restrictedQuestions) {
                             reqData.append('restricted_list', currStageInfo.restrictedQuestions[this.selectedList])
                         }

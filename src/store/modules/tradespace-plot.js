@@ -31,12 +31,6 @@ const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
-    getPlotData(state) {
-        return state.plotData;
-    },
-    getColorMap(state) {
-        return state.colorMap;
-    },
     getNumPoints(state) {
         return state.plotData.length;
     },
@@ -46,7 +40,7 @@ const getters = {
     getClickedArch(state) {
         return state.clickedArch;
     },
-    getPointColor: (state) => (index) => {
+    getPointColor: (state) => (index, selectedArchsSet, highlightedArchsSet, gaArchsSet) => {
         if (state.clickedArch === index) {
             return state.colorList.important;
         }
@@ -55,16 +49,16 @@ const getters = {
                 return state.colorList.mouseover;
             }
             else {
-                if (state.selectedArchs[index] && state.highlightedArchs[index]) {
+                if (selectedArchsSet.has(index) && highlightedArchsSet.has(index)) {
                     return state.colorList.overlap;
                 }
-                else if (state.selectedArchs[index]) {
+                else if (selectedArchsSet.has(index)) {
                     return state.colorList.selected;
                 }
-                else if (state.highlightedArchs[index]) {
+                else if (highlightedArchsSet.has(index)) {
                     return state.colorList.highlighted;
                 }
-                else if (state.gaArchs[index]) {
+                else if (gaArchsSet.has(index)) {
                     return state.colorList.ga;
                 }
                 else {
@@ -84,12 +78,6 @@ const getters = {
     getSelectedArchs(state) {
         return state.selectedArchs;
     },
-    getHighlightedArchs(state) {
-        return state.highlightedArchs;
-    },
-    getHiddenArchs(state) {
-        return state.hiddenArchs;
-    }
 };
 
 // actions
@@ -102,17 +90,9 @@ const mutations = {
         let plotData = JSON.parse(JSON.stringify(problemData));
         // Create aux arrays
         state.selectedArchs = [];
-        state.selectedArchs.length = plotData.length;
-        state.selectedArchs.fill(false);
         state.highlightedArchs = [];
-        state.highlightedArchs.length = plotData.length;
-        state.highlightedArchs.fill(false);
         state.hiddenArchs = [];
-        state.hiddenArchs.length = plotData.length;
-        state.hiddenArchs.fill(false);
         state.gaArchs = [];
-        state.gaArchs.length = plotData.length;
-        state.gaArchs.fill(false);
 
         // Function to create new colours for the picking.
         function genColor() {
@@ -147,22 +127,11 @@ const mutations = {
             }
             return 'rgb(' + ret.join(',') + ')';
         }
-
-        let lengthDiff = problemData.length - state.plotData.length;
-        for (let i = 0; i < lengthDiff; ++i) {
-            state.selectedArchs.push(false);
-            state.highlightedArchs.push(false);
-            state.hiddenArchs.push(false);
-            state.gaArchs.push(false);
-            let plotPoint = JSON.parse(JSON.stringify(problemData[state.plotData.length+i]));
-            plotPoint.interactColor = genColor();
-            state.colorMap[plotPoint.interactColor] = plotPoint.id;
-            state.plotData.push(plotPoint);
-        }
-
-        if (lengthDiff !== 0) {
-            state.clickedArch = state.plotData.length - 1;
-        }
+        let plotPoint = JSON.parse(JSON.stringify(problemData));
+        plotPoint.interactColor = genColor();
+        state.colorMap[plotPoint.interactColor] = plotPoint.id;
+        state.plotData.splice(plotPoint.id, 0, plotPoint);
+        state.clickedArch = plotPoint.id;
     },
     addPlotDataFromGA(state, problemData) {
         // Function to create new colours for the picking.
@@ -177,21 +146,15 @@ const mutations = {
             return 'rgb(' + ret.join(',') + ')';
         }
 
-        let lengthDiff = problemData.length - state.plotData.length;
-        for (let i = 0; i < lengthDiff; ++i) {
-            state.selectedArchs.push(false);
-            state.highlightedArchs.push(false);
-            state.hiddenArchs.push(false);
-            state.gaArchs.push(true);
-            let plotPoint = JSON.parse(JSON.stringify(problemData[state.plotData.length+i]));
-            plotPoint.interactColor = genColor();
-            state.colorMap[plotPoint.interactColor] = plotPoint.id;
-            state.plotData.push(plotPoint);
-        }
+        let plotPoint = JSON.parse(JSON.stringify(problemData));
+        plotPoint.interactColor = genColor();
+        state.colorMap[plotPoint.interactColor] = plotPoint.id;
+        state.plotData.splice(plotPoint.id, 0, plotPoint);
+        state.gaArchs.push(plotPoint.id);
     },
     updateClickedArch(state, clickedArch) {
         state.clickedArch = clickedArch;
-        state.clickedArchInputs = state.plotData[state.clickedArch].inputs;
+        state.clickedArchInputs = state.plotData.find((point) => point.id === state.clickedArch).inputs;
     },
     updateHoveredArch(state, hoveredArch) {
         state.hoveredArch = hoveredArch;
@@ -210,8 +173,6 @@ const mutations = {
     },
     clearSelectedArchs(state) {
         state.selectedArchs = [];
-        state.selectedArchs.length = state.plotData.length;
-        state.selectedArchs.fill(false);
     },
     setGaStatus(state, gaStatus) {
         console.log("Setting GA Status", gaStatus);
@@ -219,13 +180,9 @@ const mutations = {
     },
     clearHighlightedArchs(state) {
         state.highlightedArchs = [];
-        state.highlightedArchs.length = state.plotData.length;
-        state.highlightedArchs.fill(false);
     },
     clearGaArchs(state) {
         state.gaArchs = [];
-        state.gaArchs.length = state.plotData.length;
-        state.gaArchs.fill(false);
     },
     resetTradespacePlot(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
