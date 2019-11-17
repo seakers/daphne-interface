@@ -83,14 +83,6 @@ const state = {
                 explorer: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
             },
             nextStage: '',
             steps: [
@@ -310,11 +302,11 @@ has a certain score), WHAT questions (e.g., information on past and planned Eart
                     },
                     text: `You can now try choosing a question from those available at the Available Commands lists. 
 There you will see the questions listed by role (Engineer, Analyst, Explorer, Historian, Critic). If you look at the 
-Engineer list, you will see that there are terms between curly brackets such as $\\{engineer_stakeholder}. You can look 
+Engineer list, you will see that there are terms between curly brackets such as $\{engineer_stakeholder}. You can look 
 at the lists in Commands Information such as Stakeholders (Engineer) or Technologies (Historian) to know valid values 
 for these fields. If a part of a question is inside square brackets it means it is optional. <b>For example, one way to
  use the Engineer is to first ask "Why does this design have this science benefit?" and then ask "Which instruments 
- improve the science score for stakeholder $\\{analyst_stakeholder}?" with a stakeholder that has a low score. Another 
+ improve the science score for stakeholder $\{engineer_stakeholder}?" with a stakeholder that has a low score. Another 
  example question (which you can try!) would be: "Which orbit is most common for radar altimeters?"</b>`
                 },
                 {
@@ -420,14 +412,6 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 explorer: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: [],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
             },
             nextStage: '',
             startTime: 0,
@@ -453,6 +437,16 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 explorer: [],
                 historian: [],
                 critic: ['3000', '3005'],
+                engineer_instruments: [],
+                engineer_instrument_parameters: [],
+                engineer_measurements: [],
+                engineer_stakeholders: [],
+                engineer_objectives: [],
+                engineer_subobjectives: [],
+                historian_technologies: [],
+                historian_measurements: [],
+                historian_missions: [],
+                historian_space_agencies: []
             },
             nextStage: '',
             startTime: 0,
