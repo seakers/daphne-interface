@@ -157,7 +157,7 @@ export default new Vuex.Store({
                 if(received_info['name'] === 'displaySensitivityInformation'){
 
                     //--> Set sensitivities so SensitivityPlot.vue will have information
-                    store.commit('setSensitivities', received_info['data']);
+                    store.commit('set_all_sensitivities', received_info['data']);
 
                     //--> This message places sensitivity plot in chatbox
                     store.commit('addDialoguePiece', {

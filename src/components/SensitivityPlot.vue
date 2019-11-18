@@ -26,7 +26,7 @@
             </div>
         </div>
 
-        <vue-plotly :data="computeSensitivityPlotData" :layout="computeSensitivityPlotLayout" :options="{displayModeBar: false}"/>
+        <vue-plotly :data="plotData" :layout="plotLayout" :options="{displayModeBar: false}"/>
     </div>
 
 </template>
@@ -53,29 +53,23 @@
         computed: {
 
             ...mapGetters({
-                s1_cost_mins: 'get_s1_cost_mins',
-                s1_science_mins: 'get_s1_science_mins',
-
+                all_sensitivities: 'get_all_sensitivities',
             }),
 
-            computeSensitivityPlotData(){
+            plotData(){
                 let sensitivity_data = [];
                 let objective = '';
                 if(this.objective_cost){
-                    sensitivity_data = this.s1_cost_mins;
+                    sensitivity_data = this.all_sensitivities['cost']['S1_mins'];
                     objective = 'cost';
                 }
                 else{
-                    sensitivity_data = this.s1_science_mins;
+                    sensitivity_data = this.all_sensitivities['science']['S1_mins'];
                     objective = 'science';
                 }
 
                 let xValues = [];
                 let yValues = [];
-                let yValuesCost = [];
-                let xValuesCost = [];
-                let yValuesScience = [];
-                let xValuesScience = [];
                 let hover_text = [];
                 for(var x = 0; x < sensitivity_data.length; x++) {
                     let orbit = sensitivity_data[x][0];
@@ -100,11 +94,7 @@
                 return plot_data;
             },
 
-
-
-
-
-            computeSensitivityPlotLayout(){
+            plotLayout(){
                 let plot_layout = {
                     yaxis: {automargin: true, nticks: 10, tickformat: '%.00'},
                     xaxis: {automargin: true, tickmode: "linear"},

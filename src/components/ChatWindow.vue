@@ -22,7 +22,6 @@
     import TimelineResponse from './TimelineResponse';
     import ActiveMessage from "./ActiveMessage";
 
-    import PlotResponse from "./PlotResponse";
     import SensitivityPlot from "./SensitivityPlot";
     import DesignSpacePlot from "./DesignSpacePlot";
     import ObjectiveSpacePlot from "./ObjectiveSpacePlot";
@@ -43,7 +42,6 @@
             TimelineResponse,
             ActiveMessage,
 
-            PlotResponse,
             SensitivityPlot,
             DesignSpacePlot,
             ObjectiveSpacePlot,
@@ -59,7 +57,6 @@
                     timeline_plot: 'TimelineResponse',
                     active_message: 'ActiveMessage',
 
-                    plotly_plot: 'PlotResponse',
                     sensitivity_plot: 'SensitivityPlot',
                     design_space_plot: 'DesignSpacePlot',
                     objective_space_plot: 'ObjectiveSpacePlot',

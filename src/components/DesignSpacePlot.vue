@@ -22,23 +22,23 @@
         computed: {
 
             ...mapGetters({
-                all_level_one_design_space_info: 'get_all_level_one_design_space_info',
-
-                level_one_design_space_plot: 'get_level_one_design_space_plot',
-                level_one_design_space_plot_layout: 'get_level_one_design_space_plot_layout',
+                all_design_space_info: 'get_all_design_space_info',
             }),
 
 
             computeDesignSpacePlotData() {
                 //--> Get list of orb / inst names
+                let data = this.all_design_space_info["level_one_analysis"];
+
+
                 let xValues = [];
                 let yValues = [];
                 let hover_text = [];
                 for(let x = 0; x < 10; x++) {
-                    let percent_text = (parseFloat(this.all_level_one_design_space_info[x]['percent'])).toFixed(1);
-                    let percent_data = (parseFloat(this.all_level_one_design_space_info[x]['percent']) / 100.0).toFixed(5);
-                    let orbit = this.all_level_one_design_space_info[x]['orbit'];
-                    let instrument = this.all_level_one_design_space_info[x]['instrument'];
+                    let percent_text = (parseFloat(data[x]['percent'])).toFixed(1);
+                    let percent_data = (parseFloat(data[x]['percent']) / 100.0).toFixed(5);
+                    let orbit = data[x]['orbit'];
+                    let instrument = data[x]['instrument'];
                     xValues.push( (orbit + " | " + instrument + " ") );
                     yValues.push(percent_data);
                     let text = '<b>Design Decision</b><br>' + instrument + ' is assigned to ' + orbit + ' <br>in ' + percent_text + '% of designs';
@@ -60,9 +60,11 @@
 
 
             computeDesignSpacePlotLayout() {
+                let data = this.all_design_space_info["level_one_analysis"];
+
                 let max_percent = 0;
                 for(let x = 0; x < 10; x++) {
-                    let percent = (parseFloat(this.all_level_one_design_space_info[x]['percent']) / 100.0).toFixed(2);
+                    let percent = (parseFloat(data[x]['percent']) / 100.0).toFixed(2);
                     if(percent > max_percent){
                         max_percent = percent;
                     }
