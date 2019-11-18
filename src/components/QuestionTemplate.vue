@@ -1,9 +1,12 @@
 <template>
     <!-- Container for question -->
     <div>
-        <div style="margin-bottom: 7px; text-align: center; border-bottom: 1px solid #dbdbdb;"><b>Teacher</b></div>
         <div class="content">
-            {{ current_question_display }}
+            <ul>
+                <li>
+                    {{ current_question_display }}
+                </li>
+            </ul>
         </div>
 
         <template v-if="answered === false">
@@ -26,7 +29,23 @@
                     </button>
                 </div>
             </template>
+
+            <template v-if="question_type === 'feature'">
+                <div class="buttons">
+                    <button style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;" v-on:click="evaluateAnswerOne">
+                        <feature-model v-bind:featureDetails="choice_one_display['expression']"></feature-model>
+                    </button>
+
+                    <button style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;" v-on:click="evaluateAnswerTwo">
+                        <feature-model v-bind:featureDetails="choice_two_display['expression']"></feature-model>
+                    </button>
+                </div>
+            </template>
         </template>
+
+
+
+
 
         <template v-if="answered === true">
             <template v-if="question_type === 'sensitivity'">
@@ -48,6 +67,18 @@
                     </button>
                 </div>
             </template>
+
+            <template v-if="question_type === 'feature'">
+                <div class="buttons">
+                    <button v-bind:class="{ 'correct-answer': first_is_correct, 'wrong-answer': first_is_incorrect }" style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;">
+                        <feature-model v-bind:featureDetails="choice_one_display['expression']"></feature-model>
+                    </button>
+
+                    <button v-bind:class="{ 'correct-answer': second_is_correct, 'wrong-answer': second_is_incorrect }" style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;">
+                        <feature-model v-bind:featureDetails="choice_two_display['expression']"></feature-model>
+                    </button>
+                </div>
+            </template>
         </template>
 
     </div>
@@ -56,6 +87,7 @@
 <script>
     import { mapGetters, mapMutations } from 'vuex';
     import DesignModel from "./DesignModel";
+    import FeatureModel from "./FeatureModel";
     export default {
         name: "QuestionTemplate",
 
@@ -82,6 +114,7 @@
 
         components: {
             'design-model': DesignModel,
+            'feature-model': FeatureModel,
         },
 
 

@@ -210,6 +210,18 @@ export default new Vuex.Store({
 
                 if(received_info['name'] === 'featureQuestion'){
                     console.log("Feature Question");
+                    store.commit('set_current_question_type', 'feature');
+                    store.commit('set_teacher_choice_one', received_info['first_choice']);
+                    store.commit('set_teacher_choice_two', received_info['second_choice']);
+                    store.commit('set_correct_choice', received_info['correct_answer']);
+                    store.commit('set_current_teacher_question', received_info['question']);
+
+                    store.commit('addDialoguePiece', {
+                        "voice_message": 'testing',
+                        "visual_message_type": ["question_template"],
+                        "visual_message": ["ping"],
+                        "writer": "daphne"
+                    });
                 }
 
                 if(received_info['name'] === 'featureSuggestion'){

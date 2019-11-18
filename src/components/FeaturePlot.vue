@@ -3,25 +3,45 @@
         <div style="">
             <ul>
                 <li>
-                    A collection of design decisions common to a group of designs (called a feature) can help explain the performance of that design group.
-                    The features below were found from designs in the pareto front. Click on them to highlight the designs that contain them and view information.
+                    When multiple designs have common performance measures, it is likely they share a common feature.
+                    Here are some features mined from the pareto front. Hover over a feature to highlight the designs containing it and
+                    click a feature to get feature information.
                 </li>
             </ul>
         </div>
-        <vue-plotly :data="plotData" :layout="plotLayout" :options="{displayModeBar: false}" v-on:click="createSubPlot"/>
 
-        <template v-if="showFeatureInfo === true">
-            <div style="text-align: center; border-bottom: 1px solid #dbdbdb; padding-top: 10px;"><b>Feature Information</b></div>
-        </template>
-        <div id="feature-details-view" style="max-width: 100%"></div>
+        <div style="padding: 5px;" @mouseover="mouseOverOne" @mouseleave="mouseGone">
+            <button class="button is-link is-small" title="Show feature 1 info" style="margin-left: 10px;" v-on:click="toggle_feature_one">Feature 1</button>
+            <template v-if="show_one === true"><feature-model v-bind:featureDetails="plot_features[0]['expression']"></feature-model></template>
+        </div>
 
+        <div style="padding: 5px;" @mouseover="mouseOverTwo" @mouseleave="mouseGone">
+            <button class="button is-link is-small" title="Show feature 2 info" style="margin-left: 10px;" v-on:click="toggle_feature_two">Feature 2</button>
+            <template v-if="show_two === true"><feature-model v-bind:featureDetails="plot_features[1]['expression']"></feature-model></template>
+        </div>
 
+        <div style="padding: 5px;" @mouseover="mouseOverThree" @mouseleave="mouseGone">
+            <button class="button is-link is-small" title="Show feature 3 info" style="margin-left: 10px;" v-on:click="toggle_feature_three">Feature 3</button>
+            <template v-if="show_three === true"><feature-model v-bind:featureDetails="plot_features[2]['expression']"></feature-model></template>
+        </div>
+
+        <div style="padding: 5px;" @mouseover="mouseOverFour" @mouseleave="mouseGone">
+            <button class="button is-link is-small" title="Show feature 4 info" style="margin-left: 10px;" v-on:click="toggle_feature_four">Feature 4</button>
+            <template v-if="show_four === true"><feature-model v-bind:featureDetails="plot_features[3]['expression']"></feature-model></template>
+        </div>
+
+        <div style="padding: 5px;" @mouseover="mouseOverFive" @mouseleave="mouseGone">
+            <button class="button is-link is-small" title="Show feature 5 info" style="margin-left: 10px;" v-on:click="toggle_feature_five">Feature 5</button>
+            <template v-if="show_five === true"><feature-model v-bind:featureDetails="plot_features[4]['expression']"></feature-model></template>
+        </div>
+<!--        <vue-plotly :data="plotData" :layout="plotLayout" :options="{displayModeBar: false}" v-on:click="createSubPlot"/>-->
 
     </div>
 </template>
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
+    import FeatureModel from "./FeatureModel";
     import VuePlotly from '@statnett/vue-plotly'
     import { removeOuterParentheses, getNestedParenthesisDepth, collapseParenIntoSymbol } from '../scripts/utils';
     import * as d3 from 'd3';
@@ -31,10 +51,17 @@
 
         components: {
             VuePlotly,
+            "feature-model": FeatureModel,
         },
 
         data() {
             return {
+                show_one: false,
+                show_two: false,
+                show_three: false,
+                show_four: false,
+                show_five: false,
+
                 plot_features: [],
                 plotData: [],
                 plotLayout: {},
@@ -69,6 +96,67 @@
         },
 
         methods: {
+            mouseOverOne(){
+                this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setCurrentExpression', this.plot_features[0]['expression']);
+            },
+            mouseOverTwo(){
+                this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setCurrentExpression', this.plot_features[1]['expression']);
+            },
+            mouseOverThree(){
+                this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setCurrentExpression', this.plot_features[2]['expression']);
+            },
+            mouseOverFour(){
+                this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setCurrentExpression', this.plot_features[3]['expression']);
+            },
+            mouseOverFive(){
+                this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setCurrentExpression', this.plot_features[4]['expression']);
+            },
+            mouseGone(){
+                this.$store.commit('setCurrentExpression', '');
+            },
+
+            toggle_feature_one(){
+                this.show_one = !this.show_one;
+                this.$store.commit('setCurrentExpression', '');
+                if(this.show_one === true){
+                    this.$store.commit('setCurrentExpression', this.plot_features[0]['expression']);
+                }
+            },
+            toggle_feature_two(){
+                this.show_two = !this.show_two;
+                this.$store.commit('setCurrentExpression', '');
+                if(this.show_two === true){
+                    this.$store.commit('setCurrentExpression', this.plot_features[1]['expression']);
+                }
+            },
+            toggle_feature_three(){
+                this.show_three = !this.show_three;
+                this.$store.commit('setCurrentExpression', '');
+                if(this.show_three === true){
+                    this.$store.commit('setCurrentExpression', this.plot_features[2]['expression']);
+                }
+            },
+            toggle_feature_four(){
+                this.show_four = !this.show_four;
+                this.$store.commit('setCurrentExpression', '');
+                if(this.show_four === true){
+                    this.$store.commit('setCurrentExpression', this.plot_features[3]['expression']);
+                }
+            },
+            toggle_feature_five(){
+                this.show_five = !this.show_five;
+                this.$store.commit('setCurrentExpression', '');
+                if(this.show_five === true){
+                    this.$store.commit('setCurrentExpression', this.plot_features[4]['expression']);
+                }
+            },
+
+
 
             //--> Set plotData and plotLayout
             computePlot() {
@@ -558,15 +646,6 @@
                 }
                 return featureName + '[' + pporbits + ';' + ppinstruments + ';' + numbers + ']';
             },
-
-
-            // Vertical
-            // diagonal(s, d) {
-            //     return `M ${s.x} ${s.y}
-            //     C ${(s.x + d.x) / 2} ${s.y},
-            //       ${(s.x + d.x) / 2} ${d.y},
-            //       ${d.x} ${d.y}`;
-            // },
 
             // Horizontal
             diagonal(s, d) {
