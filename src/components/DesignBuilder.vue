@@ -54,7 +54,7 @@
             },
             detailsExperimentCondition() {
                 if (!this.inExperiment) {
-                    return false;
+                    return true;
                 }
                 else {
                     return this.stageInformation[this.experimentStage].availableFunctionalities.includes('Details');
