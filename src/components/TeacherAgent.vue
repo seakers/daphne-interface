@@ -13,7 +13,7 @@
                     <div class="field is-narrow">
                         <div class="control">
                             <div class="select is-fullwidth">
-                                <select v-on:change="teachSubject" v-model="selectedSubject">
+                                <select v-model="selectedSubject">
                                     <option>Features</option>
                                     <option>Sensitivities</option>
                                     <option>Design Space</option>
@@ -205,7 +205,7 @@
         </div>
 
         <!-- Right Column: This view will depend on the subject selected -->
-        <div class="panel-block functionality" style="padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;">
+        <div class="panel-block functionality" style="padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"  ref="teacherContentWindow">
 
             <!-- Features -->
             <template v-if="selectedSubject === 'Features'">
@@ -215,7 +215,7 @@
 
             <!-- Sensitivities -->
             <template v-if="selectedSubject === 'Sensitivities'">
-                <div style="padding: 5px; width: 100%; align-items: flex-start; overflow-y: auto;" ref="sensitivitiesChartArea">
+                <div style="width: 100%; align-items: flex-start; overflow-y: auto;" ref="sensitivitiesChartArea">
                     <vue-plotly :data="sensitivityPlotData" :layout="sensitivityPlotLayout" :options="{displayModeBar: false}"/>
                 </div>
             </template>
@@ -223,7 +223,7 @@
 
             <!-- Design Space -->
             <template v-if="selectedSubject === 'Design Space'">
-                <div style="padding: 5px; width: 100%; align-items: flex-start; overflow-y: auto;" ref="designSpaceChartArea">
+                <div style="width: 100%; align-items: flex-start; overflow-y: auto;" ref="designSpaceChartArea">
                     <vue-plotly :data="designSpacePlotData" :layout="designSpacePlotLayout" :options="{displayModeBar: false}"/>
                 </div>
             </template>
@@ -232,7 +232,7 @@
             <!-- Objective Space -->
             <template v-if="selectedSubject === 'Objective Space'">
                 <div style="display: flex; flex-direction: row; flex-grow: 1; overflow: auto; width: 100%;">
-                    <div style="display: flex; flex-direction: row; flex-grow: 1; overflow: auto; width: 70%;" ref="objectiveSpacePlotDiv">
+                    <div style="display: flex; flex-direction: row; flex-grow: 1; overflow: auto; width: 70%;">
                         <vue-plotly :data="objectiveSpacePlotData" :layout="objectiveSpacePlotLayout" :options="{displayModeBar: false}"/>
                     </div>
                 </div>
@@ -241,6 +241,7 @@
 
 
         </div>
+
     </div>
 </template>
 
@@ -273,6 +274,9 @@
                 scores: 'getScores'
             }),
 
+            // ---------------------------------------------------------
+            // ------------------------ GENERAL ------------------------
+            // ---------------------------------------------------------
             selectedSubject: {
                 get() {
                     return this.$store.state.teacherAgent.selectedSubject;
@@ -291,6 +295,12 @@
             instrumentList: {
                 get() {
                     return this.$store.state.teacherAgent.instrumentList;
+                }
+            },
+
+            contentWindowRef: {
+                get() {
+                    return this.$refs.teacherContentWindow;
                 }
             },
 
@@ -424,9 +434,9 @@
                     });
 
                     //--> Annotations for unexplored region
-                    let annotation_x_position = (((high_science - low_science) / 2) + low_science);
-                    let annotation_y_position = this.high_cost;
-                    let annotation_text = '<b>Unexplored Region</b><br>Science: ' + low_science.toString() + ' - ' + high_science.toString();
+                    let annotation_x_position = low_science;
+                    let annotation_y_position = high_cost;
+                    let annotation_text = '<b>Unexplored Region</b>';
                     let plot_annotations = [
                         {
                             x: annotation_x_position, y: annotation_y_position,
@@ -435,22 +445,31 @@
                             align:"center",
                             showarrow: true,
                             arrowhead:2, arrowsize:1, arrowwidth:2, arrowcolor:"#636363",
-                            font: {family : "Courier New, monospace", size : 12, color : "#ffffff"},
-                            ax: 0, ay: -60,
-                            bordercolor:"#c7c7c7", borderwidth:2, borderpad:4, bgcolor:"#ff7f0e",
+                            font: {family : "Courier New, monospace", size : 12, color : "#1a1717"},
+                            ax: -45, ay: -60,
+                            bordercolor:"#c7c7c7", borderwidth:2, borderpad:4, bgcolor:"#fff",
                             clicktoshow: 'onoff',
-                            visible: false,
+                            visible: true,
                         }
                     ];
 
-                    //--> Plot Layout
+                    //--> LAYOUT
+                    let width = 500;
+                    let height = 300;
+                    if(this.contentWindowRef !== undefined){
+                        width = this.contentWindowRef.clientWidth;
+                        height = this.contentWindowRef.clientHeight;
+                    }
                     let layout = {
+                        title: "Objective Space",
                         shapes: shapes,
                         xaxis: {title: 'Science'}, yaxis: {range: [0, 6000], title: 'Cost'},
-                        margin: {t: 25, l: 55, r: 20,},
+                        margin: {l: 60, t: 45, r: 20, b: 45},
+                        autosize: true,
+                        width: width,
+                        height: height,
                         annotations: plot_annotations,
                         showlegend: false,
-                        width:450,
                         plot_bgcolor:"whitesmoke", paper_bgcolor:"whitesmoke",
                     };
 
@@ -544,7 +563,7 @@
                             xValues.push(orbit + ' | ' + instrument + " ");
                             yValues.push(parseFloat(value));
                             value = (Math.abs(value * 100)).toFixed(1);
-                            let text = '<b>Design Decision</b><br>' + 'Assinging ' + instrument + ' to orbit ' + orbit + '<br> is responsible for ' + value + '% of ' + objective + ' variance';
+                            let text = '<b>Design Decision</b><br>' + 'When ' + this.sensitivityInstrument + ' is assigned to ' + this.sensitivityOrbit + ',<br>' + 'assinging ' + instrument + ' to ' + orbit + '<br> is responsible for ' + value + '% of ' + objective + ' variance';
                             hover_text.push(text);
                         }
                         plotData = [{
@@ -571,13 +590,22 @@
                     let plotLayout = {};
                     if(order === 'First Order'){}
                     else if(order === 'Second Order'){}
+                    let width = 500;
+                    let height = 300;
+                    if(this.contentWindowRef !== undefined){
+                        width = this.contentWindowRef.clientWidth;
+                        height = this.contentWindowRef.clientHeight;
+                    }
                     plotLayout = {
                         title: 'Sensitivity Analysis',
                         yaxis: {automargin: true, nticks: 10, tickformat: '%.00'},
                         xaxis: {automargin: true, tickmode: "linear"},
-                        margin: {t: 25, l: 55, r: 20,},
+                        margin: {l: 60, t: 45, r: 20, b: 45},
                         autosize: true,
+                        width: width,
+                        height: height,
                         hoverlabel: { bgcolor: "#FFF" },
+                        plot_bgcolor:"whitesmoke", paper_bgcolor:"whitesmoke",
                     };
                     return plotLayout;
                 },
@@ -684,7 +712,7 @@
                             let instrument = data[x]['instrument'];
                             xValues.push( (orbit + " | " + instrument + " ") );
                             yValues.push(percent_data);
-                            let text = '<b>Design Decision</b><br>' + instrument + ' is assigned to ' + orbit + ' <br>in ' + percent_text + '% of designs';
+                            let text = '<b>Design Decision</b><br>' + percent_text + '% of designs contain<br>' + instrument + ' assigned to ' + orbit + '<br>when<br>' + this.designSpaceInstrument + ' is assigned to ' + this.designSpaceOrbit;
                             hover_text.push(text);
                         }
                         plotData = [{
@@ -711,7 +739,10 @@
                         data = this.designSpaceInfo['level_one_analysis'];
                     }
                     else if(this.designSpaceLevel === 'Level Two'){
-                        data = this.designSpaceInfo['level_one_analysis'];
+                        if(this.designSpaceOrbit === '' || this.designSpaceInstrument === ''){
+                            return plotLayout;
+                        }
+                        data = this.designSpaceInfo['level_two_analysis'][this.designSpaceOrbit][this.designSpaceInstrument];
                     }
                     let max_percent = 0;
                     for(let x = 0; x < 10; x++) {
@@ -721,19 +752,28 @@
                         }
                     }
                     let upper_bound = 0;
-                    if((max_percent + 0.1) > 1){
+                    if((max_percent + 0.2) > 1){
                         upper_bound = 1;
                     }
                     else{
-                        upper_bound = max_percent + 0.1;
+                        upper_bound = max_percent * 1.2;
+                    }
+                    let width = 500;
+                    let height = 300;
+                    if(this.contentWindowRef !== undefined){
+                        width = this.contentWindowRef.clientWidth;
+                        height = this.contentWindowRef.clientHeight;
                     }
                     plotLayout = {
                         title: 'Design Space Analysis',
                         yaxis: {automargin: true, nticks: 10, tickformat: '%.00', range: [0,upper_bound], zeroline: true, showgrid: true},
                         xaxis: {automargin: true, tickmode: "linear", zeroline: true},
-                        autosize: true,
                         hoverlabel: { bgcolor: "#FFF" },
-                        margin: {t: 25, l: 55, r: 20,},
+                        autosize: true,
+                        width: width,
+                        height: height,
+                        margin: {l: 60, t: 45, r: 20, b: 45},
+                        plot_bgcolor:"whitesmoke", paper_bgcolor:"whitesmoke",
                     };
 
                     return plotLayout;
@@ -784,17 +824,6 @@
         },
 
         methods: {
-            teachSubject(){
-
-                console.log("In TeacherAgent.vue --> method: teachSubject");
-
-                //--> Set all the plot data - this includes all the data for all the architectures
-                this.$store.commit('setPlotData', this.plotData);
-
-                //--> Get the appropriate information for each subject
-                this.$store.dispatch('getSubjectInformation');
-            },
-
             stopProactiveTeacherOnReload() {
                 this.$store.dispatch('turnProactiveTeacherOff');
             },
