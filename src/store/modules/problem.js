@@ -43,9 +43,6 @@ let initialState = {};
 
 // getters
 const getters = {
-    getProblemName(state) {
-        return state.problemName;
-    },
     getProblemData(state) {
         return state.problemData;
     },
@@ -103,7 +100,7 @@ const actions = {
         if (!dataAlreadyThere) {
             let problemData = state.importCallback([newData], state.extra);
             commit('addProblemData', problemData[0]);
-            commit('setDataUpdateFrom', 'addNewData');
+            commit('addPlotData', problemData[0]);
         }
         else {
             commit('updateClickedArch', newIndex);
@@ -113,7 +110,7 @@ const actions = {
         // We can assume it's a new point as the server makes sure of that!
         let problemData = state.importCallback([newData], state.extra);
         commit('addProblemData', problemData[0]);
-        commit('setDataUpdateFrom', 'addNewDataFromGA');
+        commit('addPlotDataFromGA', problemData[0]);
     },
     async changeVassarPort({ state, commit }, port) {
         try {
@@ -224,7 +221,7 @@ const mutations = {
         state.problemData = problemData;
     },
     addProblemData(state, newData) {
-        state.problemData.push(newData);
+        state.problemData.splice(newData.id, 0, newData);
     },
     setDataUpdateFrom(state, dataUpdateFrom) {
         state.dataUpdateFrom = dataUpdateFrom;

@@ -27,7 +27,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
+    import { mapState } from 'vuex';
     import draggable from 'vuedraggable';
 
     export default {
@@ -54,11 +54,11 @@
             }
         },
         computed: {
-            ...mapGetters({
-                hoveredArch: 'getHoveredArch',
-                clickedArch: 'getClickedArch',
-                problemData: 'getProblemData',
-                extraInfo: 'getExtraInfo'
+            ...mapState({
+                hoveredArch: state => state.tradespacePlot.hoveredArch,
+                clickedArch: state => state.tradespacePlot.clickedArch,
+                problemData: state => state.problem.problemData,
+                extraInfo: state => state.problem.extra,
             }),
             pointID() {
                 return this.hoveredArch === -1 ? this.clickedArch : this.hoveredArch;
@@ -67,7 +67,7 @@
                 // Pick information depending on whether we are showing clicked or hovered arch
                 let architectureInputs = [];
                 if (this.hoveredArch !== -1) {
-                    architectureInputs = this.problemData[this.pointID].inputs;
+                    architectureInputs = this.problemData.find((point) => point.id === this.pointID).inputs;
                 }
                 else {
                     architectureInputs = this.$store.state.tradespacePlot.clickedArchInputs;

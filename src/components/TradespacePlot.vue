@@ -96,16 +96,19 @@
             }
         },
         computed: {
+            ...mapState({
+                problemData: state => state.problem.problemData,
+                plotData: state => state.tradespacePlot.plotData,
+                colorMap: state => state.tradespacePlot.colorMap,
+                hoveredArch: state => state.tradespacePlot.hoveredArch,
+                clickedArch: state => state.tradespacePlot.clickedArch,
+                selectedArchs: state => state.tradespacePlot.selectedArchs,
+                highlightedArchs: state => state.tradespacePlot.highlightedArchs,
+                gaArchs: state => state.tradespacePlot.gaArchs,
+                hiddenArchs: state => state.tradespacePlot.hiddenArchs,
+            }),
             ...mapGetters({
-                problemData: 'getProblemData',
-                plotData: 'getPlotData',
-                colorMap: 'getColorMap',
-                hoveredArch: 'getHoveredArch',
-                clickedArch: 'getClickedArch',
                 numPoints: 'getNumPoints',
-                selectedArchs: 'getSelectedArchs',
-                highlightedArchs: 'getHighlightedArchs',
-                hiddenArchs: 'getHiddenArchs',
                 currentExpression: 'getCurrentExpression'
             }),
 
@@ -118,7 +121,7 @@
             },
 
             numSelectedPoints() {
-                return this.selectedArchs.filter(point => point).length;
+                return this.selectedArchs.length;
             },
 
             selectionMode: {
@@ -264,12 +267,26 @@
                 context.clearRect(0, 0, this.plotWidth, this.plotHeight);
                 context.save();
 
+                // Generate sets for optimization
+                let selectedArchsSet = new Set(this.selectedArchs);
+                let highlightedArchsSet = new Set(this.highlightedArchs);
+                let gaArchsSet = new Set(this.gaArchs);
+
                 this.plotData.forEach(point => {
-                    let pointColor = this.$store.getters.getPointColor(point.id);
+                    let pointColor;
+                    if (hidden) {
+                        pointColor = point.interactColor;
+                    }
+                    else {
+                        pointColor = this.$store.getters.getPointColor(point.id,
+                                                                       selectedArchsSet,
+                                                                       highlightedArchsSet,
+                                                                       gaArchsSet);
+                    }
                     let pointShape = this.$store.getters.getPointShape(point.id);
                     let tx = this.transform.applyX(this.xMap(point));
                     let ty = this.transform.applyY(this.yMap(point));
-                    context.fillStyle = hidden ? point.interactColor : pointColor;
+                    context.fillStyle = pointColor;
                     if (hidden || pointShape === 'circle') {
                         context.beginPath();
                         context.arc(tx, ty, 3.3, 0, 2 * Math.PI);
@@ -368,21 +385,22 @@
             },
 
             async updateTargetSelection() {
+                let selectedArchsSet = new Set(this.selectedArchs);
                 let selectedIds = [];
                 let nonSelectedIds = [];
-                this.selectedArchs.forEach((point, index) => {
-                    if (point) {
-                        selectedIds.push(index);
+                this.plotData.forEach(point => {
+                    if (selectedArchsSet.has(point.id)) {
+                        selectedIds.push(point.id);
                     }
                     else {
-                        nonSelectedIds.push(index);
+                        nonSelectedIds.push(point.id);
                     }
                 });
 
                 try {
                     let reqData = new FormData();
-                    reqData.append('selected', JSON.stringify(selected));
-                    reqData.append('non_selected', JSON.stringify(non_selected));
+                    reqData.append('selected', JSON.stringify(selectedIds));
+                    reqData.append('non_selected', JSON.stringify(nonSelectedIds));
                     let dataResponse = await fetchPost(API_URL + 'ifeed/set-target', reqData);
 
                     if (dataResponse.ok) {
@@ -418,15 +436,15 @@
 
                 if (this.selectionMode === 'zoom-pan') { // Zoom
                     d3.select('#main-plot').select('svg')
-                        .on('mousedown.modes',null)
-                        .on('mousemove.modes',null)
-                        .on('mouseup.modes',null)
+                        .on('mousedown.modes', null)
+                        .on('mousemove.modes', null)
+                        .on('mouseup.modes', null)
                         .call(this.zoom);
 
                     d3.select('#main-plot').selectAll('canvas')
-                        .on('mousedown.modes',null)
-                        .on('mousemove.modes',null)
-                        .on('mouseup.modes.modes',null)
+                        .on('mousedown.modes', null)
+                        .on('mousemove.modes', null)
+                        .on('mouseup.modes.modes', null)
                         .call(this.zoom);
                 }
                 else {
@@ -499,7 +517,9 @@
 
                             selection.attrs(box);
 
-                            let newSelectedArchs = self.selectedArchs.slice();
+                            let hiddenArchsSet = new Set(self.hiddenArchs);
+                            let selectedArchsSet = new Set(self.selectedArchs);
+                            let newSelectedArchs = new Set(self.selectedArchs);
 
                             if (self.selectionMode === 'drag-select') { // Make selection
                                 self.plotData.forEach((point, index) => {
@@ -509,19 +529,18 @@
                                     if( tx >= box.x && tx <= box.x + box.width &&
                                         ty >= box.y && ty <= box.y + box.height)
                                     {
-                                        if (!self.hiddenArchs[index] && !self.selectedArchs[index]) {
+                                        if (!hiddenArchsSet.has(point.id) && !selectedArchsSet.has(point.id)) {
                                             // Select
-                                            newSelectedArchs[index] = true;
-                                            justSelectedArchs.add(index);
+                                            newSelectedArchs.add(point.id);
+                                            justSelectedArchs.add(point.id);
                                             selectionUpdated = true;
-
                                         }
                                     }
                                     else {
-                                        if (!self.hiddenArchs[index] && justSelectedArchs.has(index)) {
-                                            // Select
-                                            newSelectedArchs[index] = false;
-                                            justSelectedArchs.delete(index);
+                                        if (!hiddenArchsSet.has(point.id) && justSelectedArchs.has(point.id)) {
+                                            // Deselect already selected points
+                                            newSelectedArchs.delete(point.id);
+                                            justSelectedArchs.delete(point.id);
                                             selectionUpdated = true;
                                         }
                                     }
@@ -535,16 +554,16 @@
                                     if( tx >= box.x && tx <= box.x + box.width &&
                                         ty >= box.y && ty <= box.y + box.height)
                                     {
-                                        if (!self.hiddenArchs[index] && self.selectedArchs[index]) {
-                                            newSelectedArchs[index] = false;
-                                            justSelectedArchs.add(index);
+                                        if (!hiddenArchsSet.has(point.id) && selectedArchsSet.has(point.id)) {
+                                            newSelectedArchs.delete(point.id);
+                                            justSelectedArchs.add(point.id);
                                             selectionUpdated = true;
                                         }
                                     }
                                     else {
-                                        if (!self.hiddenArchs[index] && justSelectedArchs.has(index)) {
-                                            newSelectedArchs[index] = true;
-                                            justSelectedArchs.delete(index);
+                                        if (!hiddenArchsSet.has(point.id) && justSelectedArchs.has(point.id)) {
+                                            newSelectedArchs.add(point.id);
+                                            justSelectedArchs.delete(point.id);
                                             selectionUpdated = true;
                                         }
                                     }
@@ -552,7 +571,7 @@
                             }
 
                             if (selectionUpdated) {
-                                self.$store.commit('updateSelectedArchs', newSelectedArchs);
+                                self.$store.commit('updateSelectedArchs', Array.from(newSelectedArchs));
                             }
                         }
                     }
@@ -587,13 +606,15 @@
                 this.$store.commit('clearHighlightedArchs');
 
                 // If filter expression is not empty, do something
-                let highlightedArchs = _.clone(this.highlightedArchs);
+                let highlightedArchsSet = new Set();
                 if (featureExpression !== '' || featureExpression) {
                     this.plotData.forEach((point, index) => {
-                        highlightedArchs[index] = this.$store.state.filter.processFilterExpression(point, featureExpression, '&&');
+                        if (this.$store.state.filter.processFilterExpression(point, featureExpression, '&&')) {
+                            highlightedArchsSet.add(point.id);
+                        }
                     });
                 }
-                this.$store.commit('updateHighlightedArchs', highlightedArchs);
+                this.$store.commit('updateHighlightedArchs', Array.from(highlightedArchsSet));
             }
         },
 
@@ -611,12 +632,6 @@
                         if (this.plotData.length > 0) {
                             this.$store.commit('updateClickedArch', this.plotData.length - 1);
                         }
-                    }
-                    else if (updateFrom === 'addNewData') {
-                        this.$store.commit('addPlotData', this.problemData);
-                    }
-                    else if (updateFrom === 'addNewDataFromGA') {
-                        this.$store.commit('addPlotDataFromGA', this.problemData);
                     }
                 }
             });

@@ -10,7 +10,7 @@
                     <img src="assets/img/loader.svg" style="margin-right: 5px;" height="20" width="20" v-if="isComputing">
                     Evaluate Architecture
                 </a>
-                <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problem=' + problemName">
+                <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problem=' + problemName" v-if="detailsExperimentCondition">
                     Details
                 </a>
             </p>
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
+    import { mapState } from 'vuex';
     import EOSSBuilder from './EOSSBuilder';
     import PartitionBuilder from './PartitionBuilder';
     import {fetchPost} from "../scripts/fetch-helpers";
@@ -35,12 +35,16 @@
             }
         },
         computed: {
-            ...mapGetters({
-                hoveredArch: 'getHoveredArch',
-                clickedArch: 'getClickedArch',
-                problemName: 'getProblemName',
-                problemData: 'getProblemData',
-                inExperiment: 'getInExperiment'
+            ...mapState({
+                hoveredArch: state => state.tradespacePlot.hoveredArch,
+                clickedArch: state => state.tradespacePlot.clickedArch,
+                problemData: state => state.problem.problemData,
+                problemName: state => state.problem.problemName,
+                outputList: state => state.problem.outputList,
+                displayComponent: state => state.problem.displayComponent,
+                inExperiment: state => state.experiment.inExperiment,
+                experimentStage: state => state.experiment.experimentStage,
+                stageInformation: state => state.experiment.stageInformation,
             }),
             isPointSelected() {
                 return this.hoveredArch !== -1 || this.clickedArch !== -1;
@@ -48,19 +52,21 @@
             pointID() {
                 return this.hoveredArch === -1 ? this.clickedArch : this.hoveredArch;
             },
-            outputList() {
-                return this.$store.state.problem.outputList;
+            detailsExperimentCondition() {
+                if (!this.inExperiment) {
+                    return true;
+                }
+                else {
+                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('Details');
+                }
             },
-            displayComponent() {
-                return this.$store.state.problem.displayComponent;
-            }
         },
         components: {
             EOSSBuilder, PartitionBuilder
         },
         methods: {
             outputVal(index) {
-                let rawValue = this.problemData[this.pointID].outputs[index];
+                let rawValue = this.problemData.find((point) => point.id === this.pointID).outputs[index];
                 if (typeof rawValue === "number") {
                     if (rawValue > 100) {
                         return rawValue.toFixed(2);
@@ -73,7 +79,7 @@
             async evaluateArch(event) {
                 this.isComputing = true;
                 let newInputs = this.$store.state.tradespacePlot.clickedArchInputs;
-                let oldInputs = this.problemData[this.pointID].inputs;
+                let oldInputs = this.problemData.find((point) => point.id === this.pointID).inputs;
                 let arraysAreEq = (newInputs.length === oldInputs.length) && newInputs.every((element, index) => {
                     return element === oldInputs[index];
                 });

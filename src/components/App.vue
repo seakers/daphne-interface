@@ -39,6 +39,11 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex';
+    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
+    import {wsTools} from "../scripts/websocket-tools";
+    import Shepherd from 'shepherd.js';
+
     import MainMenu from './MainMenu';
     import Timer from './Timer';
     import QuestionBar from './QuestionBar';
@@ -47,14 +52,9 @@
     import Modal from './Modal';
     import User from './User';
     import ProblemPicker from './ProblemPicker';
-    import { mapState, mapGetters } from 'vuex';
-    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import ActiveMessage from "./ActiveMessage";
     import ActiveSwitches from "./ActiveSwitches";
     import ChatWindow from "./ChatWindow";
-    import {wsTools} from "../scripts/websocket-tools";
-
-    let introJs = require('intro.js');
 
     export default {
         name: 'app',
@@ -70,21 +70,19 @@
                 modalContent: state => state.modal.modalContent,
                 dataset: state => state.problem.datasetInformation,
                 datasetInformations: state => state.experiment.datasetInformations,
-                problems: state => state.experiment.problems
-            }),
-            ...mapGetters({
-                inExperiment: 'getInExperiment',
-                experimentStage: 'getExperimentStage',
-                stageInformation: 'getStageInformation',
-                isRecovering: 'getIsRecovering',
-                currentStageNum: 'getCurrentStageNum'
+                problems: state => state.experiment.problems,
+                inExperiment: state => state.experiment.inExperiment,
+                experimentStage: state => state.experiment.experimentStage,
+                stageInformation: state => state.experiment.stageInformation,
+                isRecovering: state => state.experiment.isRecovering,
+                currentStageNum: state => state.experiment.currentStageNum,
             }),
             timerExperimentCondition() {
                 if (!this.inExperiment) {
                     return false;
                 }
                 else {
-                    return this.experimentStage === 'no_daphne' || this.experimentStage === 'daphne_traditional' || this.experimentStage === 'daphne_new';
+                    return this.currentStageNum > 0;
                 }
             },
             stageDuration() {
@@ -153,7 +151,14 @@
         },
         async mounted() {
             // Tutorial
-            this.tutorial = introJs();
+            this.tutorial = new Shepherd.Tour({
+                defaultStepOptions: {
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: true
+                },
+                useModalOverlay: true,
+                exitOnEsc: false
+            });
 
             // Generate the session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
@@ -199,25 +204,25 @@
                 console.error('Networking error:', e);
             }
 
+            /*// Generate the session
+            await fetchPost(API_URL + 'auth/generate-session', new FormData());
+
             // Experiment
-            /*this.$store.dispatch('recoverExperiment').then(async () => {
+            this.$store.dispatch('recoverExperiment').then(async () => {
                 this.$store.commit('setIsRecovering', false);
 
                 // Only start experiment if it wasn't already running
                 if (!this.inExperiment) {
                     // First of all login
-                    let form = new FormData();
-                    form.append("username", "jpl-experiment");
-                    form.append("password", "nasa2019");
                     await this.$store.dispatch('loginUser', {
-                        username: "jpl-experiment",
-                        password: "nasa2019"
+                        username: "tamu-experiment",
+                        password: "tamu2019"
                     });
 
                     this.$store.dispatch('startExperiment').then(async () => {
                         // Restart WS after login
-                        await this.$store.dispatch('startWebsocket');
-                        this.$store.commit('startExperimentWebsocket');
+                        await wsTools.wsConnect(this.$store);
+                        await wsTools.experimentWsConnect();
 
                         // Set the tutorial
                         this.$store.commit('setExperimentStage', 'tutorial');
@@ -250,12 +255,22 @@
                     // Stage specific behaviour
                     switch (this.experimentStage) {
                         case 'tutorial': {
-                            this.tutorial.addSteps(this.$store.state.experiment.stageInformation.tutorial.steps);
-                            this.tutorial.setOption('exitOnOverlayClick', false);
-                            this.tutorial.setOption('exitOnEsc', false);
-                            this.tutorial.setOption('showProgress', true);
-                            this.tutorial.setOption('showBullets', false);
-                            this.tutorial.oncomplete(() => {
+                            this.$store.state.experiment.stageInformation.tutorial.steps.forEach(step => {
+                                this.tutorial.addStep({
+                                        ...step,
+                                        buttons: [
+                                            {
+                                                text: 'Previous',
+                                                action: this.tutorial.back
+                                            },
+                                            {
+                                                text: 'Next',
+                                                action: this.tutorial.next
+                                            }
+                                        ]
+                                    });
+                            });
+                            this.tutorial.on("complete", () => {
                                 this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
                                     this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
                                 });
@@ -280,7 +295,29 @@
 
                     // Initialize user-only features
                     await this.$store.dispatch("retrieveActiveSettings");
-                    this.$store.dispatch("startBackgroundSearch");
+                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
+                        this.$store.dispatch("startBackgroundSearch");
+                    }
+                    this.$store.commit('setShowFoundArchitectures', false);
+
+
+                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier')) {
+                        this.$store.commit('setRunDiversifier', true);
+                    }
+                    else {
+                        this.$store.commit('setRunDiversifier', false);
+                    }
+
+                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions')) {
+                        this.$store.commit('setShowSuggestions', true);
+                    }
+                    else {
+                        this.$store.commit('setShowSuggestions', false);
+                    }
+                    this.$store.dispatch("updateActiveSettings");
+
+                    // Data Mining initialization
+                    this.$store.dispatch('setProblemParameters');
                 }
             }
         }

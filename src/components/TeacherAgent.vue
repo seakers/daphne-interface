@@ -246,7 +246,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
+    import { mapState } from 'vuex';
     import * as _ from 'lodash-es';
     import {fetchPost} from "../scripts/fetch-helpers";
     import { indexValueToTriple } from '../store/modules/teacher-agent'
@@ -268,11 +268,11 @@
 
         computed: {
 
-            ...mapGetters({
-                plotData: 'getPlotData',
-                selectedArchs: 'getSelectedArchs',
-                features: 'getFeatures',
-                scores: 'getScores'
+            ...mapState({
+                plotData: state => state.tradespacePlot.plotData,
+                selectedArchs: state => state.tradespacePlot.selectedArchs, // getSelectedArchs
+                features: state => state.dataMining.features,
+                scores: state => state.dataMining.scores,
             }),
 
             // ---------------------------------------------------------

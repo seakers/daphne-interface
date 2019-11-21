@@ -24,6 +24,7 @@
     "js-cookie": "^2.2.1",
     "lodash-es": "^4.17.15",
     "reconnecting-websocket": "^4.2.0",
+    "shepherd.js": "^6.0.2",
     "speechkitt": "^1.0.0",
     "transform-loader": "^0.2.4",
     "vue": "^2.6.10",
