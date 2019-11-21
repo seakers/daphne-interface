@@ -31,6 +31,7 @@
                 plot_info: [],
                 plot_data: {},
                 plot_layout:{},
+                plot_height: 300,
                 low_science:'',
                 high_science:'',
                 low_cost:'',
@@ -258,6 +259,7 @@
                     margin: {t: 25, l: 55, r: 20,},
                     annotations: plot_annotations,
                     showlegend: false,
+                    height: this.plot_height,
                     plot_bgcolor:"whitesmoke", paper_bgcolor:"whitesmoke",
                 };
 

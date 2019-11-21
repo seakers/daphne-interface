@@ -23,7 +23,7 @@ const state = {
     selectedArchData:            {},
     updatedArchData:             {},
 
-    features:                    [],
+    features:                    [], //--> Set by websocket message from teacher thread
     selectedSubject:             'Features',
 
     // -----------------------------------

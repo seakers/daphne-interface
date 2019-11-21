@@ -198,7 +198,6 @@ export default new Vuex.Store({
                 console.log('Success !!!!!');
 
                 if(received_info['name'] === 'displayFeatureInformation'){
-
                     store.commit('set_features', received_info['data']);
                     store.commit('addDialoguePiece', {
                         "voice_message": 'testing',
@@ -207,7 +206,6 @@ export default new Vuex.Store({
                         "writer": "daphne"
                     });
                 }
-
                 if(received_info['name'] === 'featureQuestion'){
                     console.log("Feature Question");
                     store.commit('set_current_question_type', 'feature');
@@ -215,7 +213,6 @@ export default new Vuex.Store({
                     store.commit('set_teacher_choice_two', received_info['second_choice']);
                     store.commit('set_correct_choice', received_info['correct_answer']);
                     store.commit('set_current_teacher_question', received_info['question']);
-
                     store.commit('addDialoguePiece', {
                         "voice_message": 'testing',
                         "visual_message_type": ["question_template"],

@@ -250,6 +250,7 @@
     import * as _ from 'lodash-es';
     import {fetchPost} from "../scripts/fetch-helpers";
     import { indexValueToTriple } from '../store/modules/teacher-agent'
+    import { featureExpressionToSentence } from '../scripts/utils'
     import VuePlotly from '@statnett/vue-plotly'
 
     export default {
@@ -843,12 +844,9 @@
             //--> We turn off the proactive teacher when the page is closed
             window.addEventListener('beforeunload', this.stopProactiveTeacherOnReload);
             window.addEventListener('unload', this.stopProactiveTeacherOnReload);
-
-            console.log("Teacher Agent mounted, enabling proactive");
             this.$store.dispatch('turnProactiveTeacherOn');
         },
         destroyed() {
-            console.log("Teacher Agent destroyed, disabling proactive");
             this.$store.dispatch('turnProactiveTeacherOff');
         },
 
