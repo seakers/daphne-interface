@@ -25,18 +25,16 @@ export default {
         'DataMining',
         'EOSSFilter',
         'FeatureApplication',
-
-        'Teacher',
-
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',
+        'Teacher',
     ],
     shownFunctionalities: [
         'DesignBuilder',
         'OrbitInstrInfo',
         'AvailableCommands',
-        'CommandsInformation'
+        'CommandsInformation',
     ],
     async initFunction(problemName) {
         let extra = {};

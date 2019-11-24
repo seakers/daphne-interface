@@ -1,5 +1,5 @@
 <template>
-    <div style="width: fit-content;">
+    <div v-bind:class="{shadow: show_shadow}" style="background-color: grey; transition-duration: 0.4s; -webkit-transition-duration: 0.4s; padding: 10px; margin: 5px; border: 2px solid grey; border-radius: 4px; cursor: pointer; width: fit-content;" @mouseover="mouseOverDesign" @mouseleave="mouseLeaveDesign">
 
         <div class="table-container">
             <div class="table">
@@ -38,7 +38,7 @@
         //--> Variables this vue object contains
         data() {
             return {
-
+                show_shadow: false,
             }
         },
 
@@ -90,7 +90,12 @@
 
         //--> Functions that hang off of the vue object
         methods: {
-
+            mouseOverDesign() {
+                this.show_shadow = true;
+            },
+            mouseLeaveDesign(){
+                this.show_shadow = false;
+            },
         },
 
         //--> Observe properties and perform logic when these properties change
@@ -104,5 +109,8 @@
 </script>
 
 <style scoped>
+    .shadow{
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);
+    }
 
 </style>

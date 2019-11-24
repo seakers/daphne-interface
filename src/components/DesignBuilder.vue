@@ -1,5 +1,5 @@
 <template>
-    <div class="panel-block functionality">
+    <div class="panel-block functionality" style="overflow-y: hidden;">
         <div id="arch-info-display" v-if="isPointSelected">
             <p id="output-info">
                 <span><b>Design ID</b>: D{{ pointID }}; </span>

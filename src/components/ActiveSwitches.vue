@@ -16,6 +16,10 @@
             <input type="checkbox" v-model="showSuggestions">
             Enable Suggestions
         </label>
+        <label class="checkbox" v-if="true">
+            <input type="checkbox" v-model="runProactiveTeacher">
+            Enable Teacher
+        </label>
     </div>
 </template>
 
@@ -30,6 +34,14 @@
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
             }),
+            runProactiveTeacher: {
+                get () {
+                    return this.$store.state.active.runProactiveTeacher;
+                },
+                set (value) {
+                    this.$store.dispatch('toggleProactiveTeacher', value);
+                }
+            },
             runBackgroundSearch: {
                 get () {
                     return this.$store.state.active.runBackgroundSearch;

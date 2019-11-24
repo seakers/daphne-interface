@@ -2,20 +2,16 @@
     <div>
         <div style="">
             <ul>
-                <li>Exploring different areas of the objective space will foster design innovation. Try creating designs that fall in the green area of the objective space.</li>
+                <li>
+                    Populating empty regions of the pareto front creates a diverse set of designs.
+                    Try creating/evaluating designs that are in this region.
+                </li>
+                <li style="padding-top: 5px;">
+                    <button class="button is-link is-small" title="Click me to load the nearest architecture into the Design Builder!" v-on:click="loadSuggestion">Load Suggestion</button>
+                </li>
             </ul>
-            <div>
-                <button class="button is-link is-small" title="Use this as a starting point!" style="margin-left: 10px;" v-on:click="toggleSuggestion">Toggle Suggestion</button>
-            </div>
-            <template v-if="show_suggestion === true">
-                <div style="text-align: center; font-weight: 500; margin-left: 10px; margin-top: 5px;">
-                    <design-model v-bind:designDetails="designModelInfo"></design-model>
-                </div>
-            </template>
-
-
         </div>
-        <vue-plotly :data="plot_data" :layout="plot_layout" :options="{displayModeBar: false}"/>
+        <vue-plotly :data="plot_data" :layout="plot_layout" :options="{displayModeBar: false, responsive: true}"/>
     </div>
 </template>
 
@@ -38,6 +34,7 @@
                 high_cost:'',
                 show_suggestion: false,
                 suggested_design: {},
+                mark_suggested_design: false,
                 objective_completed: false,
             }
         },
@@ -55,50 +52,18 @@
                 instrument_list: 'get_instrument_list',
             }),
 
-            designModelInfo: {
-                get(){
-                    if(this.suggested_design === {}){
-                        return [];
-                    }
-                    else{
-                        let design = this.suggested_design;
-                        let inputs = design['inputs'];
-                        let design_elements = [];
-                        for(let x = 0; x < inputs.length; x++){
-                            if(inputs[x] === true){
-                                design_elements.push(this.getOrbitInstrumentFromIndex(x));
-                            }
-                        }
-                        let design_dict = {};
-                        for(let x = 0; x < design_elements.length; x++){
-                            let element = design_elements[x];
-                            let key = element[0];
-                            let inst = element[1];
-                            if(!(key in design_dict)){
-                                design_dict[key] = [];
-                            }
-                            design_dict[key].push(inst);
-                        }
-                        return design_dict;
-                    }
-                }
-            }
-
         },
 
         methods: {
-            getOrbitInstrumentFromIndex(index){
-                let orbit_index = Math.floor(index / this.instrument_list.length);
-                let instrument_index = index - (orbit_index * this.instrument_list.length);
-                return [this.orbit_list[orbit_index], this.instrument_list[instrument_index]]
-            },
-
-            toggleSuggestion(){
-                this.show_suggestion = !(this.show_suggestion);
+            loadSuggestion(){
+                if(this.suggested_design !== {}){
+                    this.$store.commit("updateClickedArch", this.suggested_design['id']);
+                    this.mark_suggested_design = true;
+                    this.computePlot();
+                }
             },
 
             computePlot(){
-
                 //--> Remove empty groups
                 let groups = [];
                 for(let x = 0; x < this.plot_info.length; x++) {
@@ -196,6 +161,21 @@
                 this.suggested_design = target_design;
 
 
+                if(this.mark_suggested_design === true){
+                    let xSuggested = [];
+                    let ySuggested = [];
+                    xSuggested.push(this.suggested_design['outputs'][0]);
+                    ySuggested.push(this.suggested_design['outputs'][1]);
+                    plot_data.push({
+                        x: xSuggested,
+                        y: ySuggested,
+                        mode: 'markers',
+                        marker: {color: 'red', opacity: 0.99, size: 9, symbol: 'cross-dot'},
+                        name: 'Suggested',
+                    });
+                }
+
+
                 //--> Evaluated Architectures
                 let xEvaluated_in_region = [];
                 let yEvaluated_in_region = [];
@@ -233,9 +213,9 @@
 
 
                 //--> Annotations for unexplored region
-                let annotation_x_position = (((this.high_science - this.low_science) / 2) + this.low_science);
+                let annotation_x_position = this.low_science;
                 let annotation_y_position = this.high_cost;
-                let annotation_text = '<b>Unexplored Region</b><br>Science: ' + this.low_science.toString() + ' - ' + this.high_science.toString();
+                let annotation_text = '<b>Region</b>';
                 let plot_annotations = [
                     {
                         x: annotation_x_position, y: annotation_y_position,
@@ -244,18 +224,18 @@
                         align:"center",
                         showarrow: true,
                         arrowhead:2, arrowsize:1, arrowwidth:2, arrowcolor:"#636363",
-                        font: {family : "Courier New, monospace", size : 12, color : "#ffffff"},
-                        ax: 0, ay: -60,
-                        bordercolor:"#c7c7c7", borderwidth:2, borderpad:4, bgcolor:"#ff7f0e",
+                        font: {family : "Courier New, monospace", size : 10, color : "#1a1717"},
+                        ax: -45, ay: -60,
+                        bordercolor:"#c7c7c7", borderwidth:2, borderpad:4, bgcolor:"#fff",
                         clicktoshow: 'onoff',
-                        visible: false,
+                        visible: true,
                     }
                 ];
 
                 //--> Plot Layout
                 let layout = {
                     shapes: shapes,
-                    xaxis: {title: 'Science'}, yaxis: {range: [0, 6000], title: 'Cost'},
+                    xaxis: {title: 'Science'}, yaxis: {range: [0, 6000], title: 'Cost ($M)'},
                     margin: {t: 25, l: 55, r: 20,},
                     annotations: plot_annotations,
                     showlegend: false,

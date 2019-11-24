@@ -88,10 +88,7 @@ export default new Vuex.Store({
         async onWebsocketsMessage({ commit, state, getters, dispatch }, message) {
             let received_info = JSON.parse(message.data);
 
-            //----> Teacher: receive websocket messages ----------------------------------------------------------------
             //--> ---------------------------------------------------------------------------------Design Space messages
-            console.log("Websocket Message - Testing Proactive Teacher");
-            console.log(received_info);
             if (received_info['type'] === 'teacher.design_space') {
                 console.log('Success !!!!!');
 
@@ -150,7 +147,7 @@ export default new Vuex.Store({
             //--> ------------------------------------------------------------------------------- Sensitivities messages
             if (received_info['type'] === 'teacher.sensitivities') {
                 console.log('Success !!!!!');
-                let responsiveVoice = window.responsiveVoice;
+                // let responsiveVoice = window.responsiveVoice;
                 //store.state.daphne.dialogueHistory.push(received_info['speak']);
 
 
@@ -225,7 +222,6 @@ export default new Vuex.Store({
                     console.log("Feature Suggestion");
                 }
             }
-            //----------------------------------------------------------------------------------------------------------
 
 
 
@@ -277,7 +273,7 @@ export default new Vuex.Store({
                 commit('setResponse', daphneResponse);
             }
             if (received_info['type'] === 'active.message') {
-                //commit('addDialoguePiece', received_info['message']);
+                commit('addDialoguePiece', received_info['message']);
             }
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");

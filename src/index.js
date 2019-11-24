@@ -117,16 +117,17 @@ store.subscribe(async (mutation, state) => {
             },60*1000);
             ++numberOfEngChanges;
 
-            if (numberOfEngChanges >= 3) {
-                numberOfEngChanges = 0;
-                console.log(mutation);
-                // Send a WS request for expert information on current arch
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: 'active_engineer',
-                    type: 'binary', // TODO!
-                    genome: mutation.payload
-                }));
-            }
+            //--> Causing websocket connection to break
+            // if (numberOfEngChanges >= 3) {
+            //     numberOfEngChanges = 0;
+            //     console.log(mutation);
+            //     // Send a WS request for expert information on current arch
+            //     wsTools.websocket.send(JSON.stringify({
+            //         msg_type: 'active_engineer',
+            //         type: 'binary', // TODO!
+            //         genome: mutation.payload
+            //     }));
+            // }
 
             // Active Historian
             window.setTimeout(function() {
@@ -136,15 +137,18 @@ store.subscribe(async (mutation, state) => {
             }, 60*1000);
             ++numberOfHistChanges;
 
-            if (numberOfHistChanges >= 3) {
-                numberOfHistChanges = 0;
-                // Send a WS request for historian information on current arch
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: 'active_historian',
-                    type: 'binary', // TODO!
-                    genome: mutation.payload
-                }));
-            }
+            //--> Causing websocket connection to break
+            // if (numberOfHistChanges >= 3) {
+            //     numberOfHistChanges = 0;
+            //     // Send a WS request for historian information on current arch
+            //     wsTools.websocket.send(JSON.stringify({
+            //         msg_type: 'active_historian',
+            //         type: 'binary', // TODO!
+            //         genome: mutation.payload
+            //     }));
+            // }
+
+
         }
     }
 });

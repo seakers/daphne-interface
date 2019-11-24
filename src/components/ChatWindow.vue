@@ -3,7 +3,7 @@
         <div class="chat-container" style="width: inherit">
             <section ref="chatArea" class="chat-area">
                 <div v-for="piece in dialogueHistory" class="chat-message content" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }">
-                    <component v-for="(response, index) in piece['visual_message']" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
+                    <component v-for="(response, index) in piece['visual_message']" v-bind:isClickable="false" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
                 </div>
                 <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="64" width="64" v-if="isLoading" alt="Loading spinner">
             </section>

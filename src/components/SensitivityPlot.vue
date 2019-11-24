@@ -3,8 +3,10 @@
     <div>
         <div style="padding-bottom: 10px;">
             <ul>
-                <li>Every design decision is responsible for a percentage of the variance seen in objective values.
-                Hover over the plot to see which design decisions cause the highest variance for the selected objective.</li>
+                <li>
+                    Changing design decisions with high sensitivities will cause a larger change in objective value.
+                    Click on a design decision in the plot to add or remove it from the current design.
+                </li>
             </ul>
         </div>
 
@@ -26,7 +28,7 @@
             </div>
         </div>
 
-        <vue-plotly :data="plotData" :layout="plotLayout" :options="{displayModeBar: false}"/>
+        <vue-plotly :data="plotData" :layout="plotLayout" :options="{displayModeBar: false, responsive: true}" v-on:click="toggleDesignDecision" v-on:hover="highlightData" v-on:unhover="unhighlightData"/>
     </div>
 
 </template>
@@ -35,7 +37,9 @@
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
+    import { mapState } from 'vuex';
     import VuePlotly from '@statnett/vue-plotly'
+    import { getDesignIndex } from '../scripts/utils'
     export default {
         name: "SensitivityPlot",
 
@@ -47,15 +51,18 @@
             return {
                 objective_cost: false,
                 objective: 'Science',
+                hoveredX: [],
+                resize: 0,
             }
         },
 
         computed: {
-
             ...mapGetters({
                 all_sensitivities: 'get_all_sensitivities',
             }),
-
+            ...mapState({
+                clickedArchInputs: state => state.tradespacePlot.clickedArchInputs,
+            }),
             plotData(){
                 let sensitivity_data = [];
                 let objective = '';
@@ -71,38 +78,47 @@
                 let xValues = [];
                 let yValues = [];
                 let hover_text = [];
-                for(var x = 0; x < sensitivity_data.length; x++) {
+                let colors = [];
+                for(var x = 0; x < 5; x++) {
                     let orbit = sensitivity_data[x][0];
                     let instrument = sensitivity_data[x][1];
                     let value = sensitivity_data[x][2];
-                    xValues.push(orbit + ' | ' + instrument + " ");
-                    yValues.push(parseFloat(value));
+                    let xVal = orbit + ' | ' + instrument + " ";
+                    let yVal = Math.abs(parseFloat(value));
+                    xValues.push(xVal);
+                    yValues.push(yVal);
                     value = (Math.abs(value * 100)).toFixed(1);
                     let text = '<b>Design Decision</b><br>' + 'Assinging ' + instrument + ' to orbit ' + orbit + '<br> is responsible for ' + value + '% of ' + objective + ' variance';
                     hover_text.push(text);
+                    if(this.hoveredX.includes(xVal)){colors.push('#13356d');}
+                    else{colors.push('#3273dc');}
                 }
 
                 let plot_data = [{
                     x: xValues,
                     y: yValues,
-                    "type": 'bar',
-                    "marker": {'color': '#3273dc'},
-                    "hoverinfo": "text",
-                    "hovertext": hover_text,
+                    type: 'bar',
+                    marker: {'color': colors},
+                    hoverinfo: "text",
+                    hovertext: hover_text,
+                    text: xValues,
+                    textposition: 'auto',
                 }];
 
                 return plot_data;
             },
-
             plotLayout(){
+                let refresh = this.hoveredX;
+                let resize = this.resize;
                 let plot_layout = {
                     yaxis: {automargin: true, nticks: 10, tickformat: '%.00'},
-                    xaxis: {automargin: true, tickmode: "linear"},
-                    margin: {t: 25, l: 55, r: 20,},
+                    xaxis: {automargin: true, tickmode: "linear", showticklabels: false},
+                    height: 350,
                     autosize: true,
+                    hoverlabel: { bgcolor: "#FFF" },
                     plot_bgcolor:"whitesmoke",
                     paper_bgcolor:"whitesmoke",
-                    hoverlabel: { bgcolor: "#FFF" },
+                    margin: {l: 55, r: 45, t:20},
                 };
                 return plot_layout;
             },
@@ -117,9 +133,43 @@
                     this.objective_cost = true;
                 }
             },
+            highlightData(data) {
+                //--> Clear hovered data (only one can be hovered over at a time)
+                this.hoveredX = [];
+                //--> Store x data as the identifier
+                this.hoveredX.push(data['points'][0]['x'])
+            },
+            unhighlightData(data) {
+                let x = data['points'][0]['x'];
+                let index = this.hoveredX.indexOf(x);
+                if(index !== -1){
+                    this.hoveredX.splice(index,1);
+                }
+            },
+            resizeRefresh() {
+                this.resize += 1;
+            },
+            async toggleDesignDecision(data) {
+                let expression = data['points'][0]['x'];
+                let orbit = expression.split('|')[0];
+                let instrument = expression.split('|')[1];
+                orbit = orbit.trim();
+                instrument = instrument.trim();
+                let index = await getDesignIndex(orbit, instrument, "SMAP");
+                let current_design = [...this.clickedArchInputs];
+                if(current_design[index] === true){
+                    current_design[index] = false;
+                }
+                else{
+                    current_design[index] = true;
+                }
+                this.$store.commit('updateClickedArchInputs', current_design);
+            },
+        },
 
-
-        }
+        mounted() {
+            window.addEventListener("resize", this.resizeRefresh);
+        },
 
 
     }

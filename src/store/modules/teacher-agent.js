@@ -1,5 +1,6 @@
 import * as _ from 'lodash-es';
 import {fetchPost} from "../../scripts/fetch-helpers";
+import { calculateParetoRanking, getOrbitList, getInstrumentList } from '../../scripts/utils';
 import store from "../../store";
 
 
@@ -26,10 +27,13 @@ const state = {
     features:                    [], //--> Set by websocket message from teacher thread
     selectedSubject:             'Features',
 
+    plotWidth:                   500,
+    plotHeight:                  300,
+
     // -----------------------------------
     // ------------ FEATURES -------------
     // -----------------------------------
-    all_features: [],
+    all_features: null,
 
     // -----------------------------------
     // ---------- SENSITIVITIES ----------
@@ -63,11 +67,9 @@ const initialState = _.cloneDeep(state);
 
 
 const getters = {
-    //--> Getter: SensitivityPlot.vue
     get_all_sensitivities(state){
         return state.all_sensitivities;
     },
-    //--> Getter: DesignSpacePlot.vue
     get_all_design_space_info(state){
         return state.all_design_space_info;
     },
@@ -107,12 +109,17 @@ const getters = {
     get_instrument_list(state){
         return state.instrumentList;
     },
+    get_plot_width(state, plotWidth){
+        return state.plotWidth;
+    },
+    get_plot_height(state, plotHeight){
+        return state.plotHeight;
+    },
 };
 
 const actions = {
 
     async getInformation({ state, dispatch, commit, rootState }){
-        console.log("Getting all information for the Teacher Agent");
 
         let sensitivityReqData = new FormData();
         sensitivityReqData.append('plotData', JSON.stringify(state.plotData));
@@ -134,7 +141,7 @@ const actions = {
         console.log("Design Space Info");console.log(designSpaceInformation);
 
         let objectiveSpaceReqData = new FormData();
-        objectiveSpaceReqData.append('plotData', JSON.stringify(state.plotData));
+        objectiveSpaceReqData.append('plotData', JSON.stringify(store.state.tradespacePlot.plotData));
         objectiveSpaceReqData.append('problem', rootState.problem.problemName);
         objectiveSpaceReqData.append('orbits', JSON.stringify(state.orbitList));
         objectiveSpaceReqData.append('instruments', JSON.stringify(state.instrumentList));
@@ -216,15 +223,17 @@ const actions = {
         }
     },
 
-    turnProactiveTeacherOn({ commit, state, rootState }) {
+    async turnProactiveTeacherOn({ commit, state, rootState }) {
+        let orbitList = await getOrbitList("SMAP");
+        let instrumentList = await getInstrumentList("SMAP");
 
         //--> Request Data
         let reqData = new FormData();
         reqData.append('problem', rootState.problem.problemName);
-        reqData.append('orbits', JSON.stringify(state.orbitList));
-        reqData.append('instruments', JSON.stringify(state.instrumentList));
+        reqData.append('orbits', JSON.stringify(orbitList));
+        reqData.append('instruments', JSON.stringify(instrumentList));
         reqData.append('proactiveMode', 'enabled');
-        reqData.append('plotData', JSON.stringify(state.plotData));
+        reqData.append('plotData', JSON.stringify(store.state.tradespacePlot.plotData));
         reqData.append('input_type', rootState.problem.inputType);
 
         //--> Receive Response
@@ -314,6 +323,12 @@ const mutations = {
     },
     setUpdatedArchitecture(state, updatedArchData) {
         state.updatedArchData = updatedArchData;
+    },
+    setPlotWidth(state, plotWidth){
+        state.plotWidth = plotWidth;
+    },
+    setPlotHeight(state, plotHeight){
+        state.plotHeight = plotHeight;
     },
 
     // -------------------------------------

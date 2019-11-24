@@ -3,12 +3,12 @@
         <div style="">
             <ul>
                 <li>
-                    Features mined from a group of designs can help explain the scores of those designs. Here is a feature that was mined from
-                    the pareto front.
+                    Features common to a group of designs can explain the scores of those designs.
+                    Try implementing this pareto front feature into some designs.
                 </li>
             </ul>
         </div>
-        <div style="padding: 5px;" @mouseover="mouseOverFeature" @mouseleave="mouseLeaveFeature">
+        <div @mouseover="mouseOverFeature" @mouseleave="mouseLeaveFeature">
             <feature-model v-bind:featureDetails="feature['expression']"></feature-model>
         </div>
     </div>

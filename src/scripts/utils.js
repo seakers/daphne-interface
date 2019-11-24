@@ -3,6 +3,56 @@ export const INITIALIZE_FEATURE_APPLICATION = "initialize_feature_application";
 import * as _ from 'lodash-es';
 import store from '../store';
 import smap from './smap';
+import {fetchGet, fetchPost} from "./fetch-helpers";
+
+
+
+
+export async function getOrbitList(problemName) {
+    try {
+        let reqData = new FormData();
+        reqData.append('problem_name', problemName);
+
+        let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-orbit-list', reqData);
+        if (dataResponse.ok) {
+            return dataResponse.json();
+        }
+        else {
+            console.error('Error getting the orbit list');
+        }
+    }
+    catch(e) {
+        console.error('Networking error:', e);
+    }
+}
+
+export async function getInstrumentList(problemName) {
+    try {
+        let reqData = new FormData();
+        reqData.append('problem_name', problemName);
+
+        let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-instrument-list', reqData);
+        if (dataResponse.ok) {
+            return dataResponse.json();
+        }
+        else {
+            console.error('Error getting the instrument list');
+        }
+    }
+    catch(e) {
+        console.error('Networking error:', e);
+    }
+}
+
+export async function getDesignIndex(orbit, instrument, problemName){
+    let orbits = store.state.teacherAgent.orbitList;
+    let instruments = store.state.teacherAgent.instrumentList;
+    if(orbits === []){orbits = await getOrbitList(problemName);}
+    if(instruments === []){instruments = await getInstrumentList(problemName);}
+    let prevOrb = orbits.indexOf(orbit) * orbits.length;
+    let designIndex = prevOrb + instruments.indexOf(instrument);
+    return designIndex;
+}
 
 export function calculateParetoRanking(data) {
     let n = data.length;
@@ -485,6 +535,30 @@ export function featureExpressionToSentence(expression){
     }
 }
 
-export function getDesignIndex(orbit, instrument){
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -5,6 +5,7 @@ import Vue from 'vue';
 
 const state = {
     runBackgroundSearch: true,
+    runProactiveTeacher: false,
     showFoundArchitectures: false,
     runDiversifier: true,
     showSuggestions: true,
@@ -36,6 +37,16 @@ const getters = {
 
 // actions
 const actions = {
+    toggleProactiveTeacher({ state, commit, dispatch }, value) {
+        if (value) {
+            dispatch("turnProactiveTeacherOn");
+        }
+        else {
+            dispatch("turnProactiveTeacherOff");
+        }
+        commit("setRunProactiveTeacher", value);
+    },
+
     toggleRunBackgroundSearch({ state, commit, dispatch }, value) {
         if (value) {
             dispatch("startBackgroundSearch");
@@ -95,6 +106,9 @@ const actions = {
 
 // mutations
 const mutations = {
+    setRunProactiveTeacher(state, value) {
+        state.runProactiveTeacher = value;
+    },
     setRunBackgroundSearch(state, value) {
         state.runBackgroundSearch = value;
         if (value === false) {

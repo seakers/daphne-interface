@@ -27,7 +27,7 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapGetters } from 'vuex';
     import draggable from 'vuedraggable';
 
     export default {
@@ -57,6 +57,7 @@
             ...mapState({
                 hoveredArch: state => state.tradespacePlot.hoveredArch,
                 clickedArch: state => state.tradespacePlot.clickedArch,
+                clickedArchInputs: state => state.tradespacePlot.clickedArchInputs,
                 problemData: state => state.problem.problemData,
                 extraInfo: state => state.problem.extra,
             }),
@@ -70,7 +71,7 @@
                     architectureInputs = this.problemData.find((point) => point.id === this.pointID).inputs;
                 }
                 else {
-                    architectureInputs = this.$store.state.tradespacePlot.clickedArchInputs;
+                    architectureInputs = this.clickedArchInputs;
                 }
                 let extraInfo = this.extraInfo;
                 let jsonArchitecture = [];
@@ -143,8 +144,7 @@
                     this.$store.commit('updateClickedArchInputs', boolArch);
 
                     //--> Teacher agent records when an arch was changed
-                    let teacherUpdateData = {'arch_id': this.clickedArch,
-                                             'inputs': boolArch};
+                    let teacherUpdateData = {'arch_id': this.clickedArch, 'inputs': boolArch};
                     this.$store.dispatch('recordArchitectureUpdate', teacherUpdateData);
                 }
             },
@@ -159,8 +159,7 @@
                         this.$store.commit('updateClickedArchInputs', boolArch);
 
                         //--> Teacher agent records when an arch was changed
-                        let teacherUpdateData = {'arch_id': this.clickedArch,
-                                                 'inputs': boolArch};
+                        let teacherUpdateData = {'arch_id': this.clickedArch, 'inputs': boolArch};
                         this.$store.dispatch('recordArchitectureUpdate', teacherUpdateData);
                     }
                 }

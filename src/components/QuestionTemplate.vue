@@ -1,5 +1,4 @@
 <template>
-    <!-- Container for question -->
     <div>
         <div class="content">
             <ul>
@@ -8,7 +7,6 @@
                 </li>
             </ul>
         </div>
-
         <template v-if="answered === false">
             <template v-if="question_type === 'sensitivity'">
                 <div class="buttons">
@@ -16,37 +14,29 @@
                     <button class="button" v-on:click="evaluateAnswerTwo">{{ choice_two_display }}</button>
                 </div>
             </template>
-
             <template v-if="question_type === 'design'">
                 <div class="buttons">
-                    <button style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;" v-on:click="evaluateAnswerOne">
-                        <div style="padding-bottom: 3px; font-weight: 500;">Design 1</div>
+                    <div v-on:click="evaluateAnswerOne">
                         <design-model v-bind:designDetails="choice_one_display"></design-model>
-                    </button>
-                    <button style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;" v-on:click="evaluateAnswerTwo">
-                        <div style="padding-bottom: 3px; font-weight: 500;">Design 2</div>
+                    </div>
+
+                    <div v-on:click="evaluateAnswerTwo">
                         <design-model v-bind:designDetails="choice_two_display"></design-model>
-                    </button>
+                    </div>
                 </div>
             </template>
-
             <template v-if="question_type === 'feature'">
                 <div class="buttons">
-                    <button style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;" v-on:click="evaluateAnswerOne">
-                        <feature-model v-bind:featureDetails="choice_one_display['expression']"></feature-model>
-                    </button>
+                    <div v-on:click="evaluateAnswerOne" @mouseover="mouseOverChoiceOne" @mouseleave="mouseLeaveChoiceOne">
+                        <feature-model v-bind:isClickable="true" v-bind:featureDetails="choice_one_display['expression']" v-bind:class="{shadow: choice_one_shadow}" style="transition-duration: 0.4s; -webkit-transition-duration: 0.4s;"></feature-model>
+                    </div>
 
-                    <button style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;" v-on:click="evaluateAnswerTwo">
-                        <feature-model v-bind:featureDetails="choice_two_display['expression']"></feature-model>
-                    </button>
+                    <div v-on:click="evaluateAnswerTwo" @mouseover="mouseOverChoiceTwo" @mouseleave="mouseLeaveChoiceTwo">
+                        <feature-model v-bind:isClickable="true" v-bind:featureDetails="choice_two_display['expression']" v-bind:class="{shadow: choice_two_shadow}" style="transition-duration: 0.4s; -webkit-transition-duration: 0.4s;"></feature-model>
+                    </div>
                 </div>
             </template>
         </template>
-
-
-
-
-
         <template v-if="answered === true">
             <template v-if="question_type === 'sensitivity'">
                 <div class="buttons">
@@ -54,33 +44,29 @@
                     <button class="button" v-bind:class="{ 'is-success': second_is_correct, 'is-danger': second_is_incorrect }">{{ choice_two_revealed_display }}</button>
                 </div>
             </template>
-
             <template v-if="question_type === 'design'">
                 <div class="buttons">
-                    <button v-bind:class="{ 'correct-answer': first_is_correct, 'wrong-answer': first_is_incorrect }" style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;">
-                        <div style="padding-bottom: 3px; font-weight: 500;">Design 1</div>
-                        <design-model v-bind:designDetails="choice_one_display"></design-model>
-                    </button>
-                    <button v-bind:class="{ 'correct-answer': second_is_correct, 'wrong-answer': second_is_incorrect }" style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;">
-                        <div style="padding-bottom: 3px; font-weight: 500;">Design 2</div>
-                        <design-model v-bind:designDetails="choice_two_display"></design-model>
-                    </button>
+                    <div>
+                        <design-model v-bind:designDetails="choice_one_display" v-bind:class="{ 'correct-answer': first_is_correct, 'wrong-answer': first_is_incorrect }"></design-model>
+                    </div>
+
+                    <div>
+                        <design-model v-bind:designDetails="choice_two_display" v-bind:class="{ 'correct-answer': second_is_correct, 'wrong-answer': second_is_incorrect }"></design-model>
+                    </div>
                 </div>
             </template>
-
             <template v-if="question_type === 'feature'">
                 <div class="buttons">
-                    <button v-bind:class="{ 'correct-answer': first_is_correct, 'wrong-answer': first_is_incorrect }" style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;">
-                        <feature-model v-bind:featureDetails="choice_one_display['expression']"></feature-model>
-                    </button>
+                    <div>
+                        <feature-model v-bind:isClickable="false" v-bind:featureDetails="choice_one_display['expression']" v-bind:class="{ 'correct-answer': first_is_correct, 'wrong-answer': first_is_incorrect}"></feature-model>
+                    </div>
 
-                    <button v-bind:class="{ 'correct-answer': second_is_correct, 'wrong-answer': second_is_incorrect }" style="margin: 10px; padding: 10px; border-radius: 10px; border: solid grey 2px;">
-                        <feature-model v-bind:featureDetails="choice_two_display['expression']"></feature-model>
-                    </button>
+                    <div>
+                        <feature-model v-bind:isClickable="false" v-bind:featureDetails="choice_two_display['expression']" v-bind:class="{ 'correct-answer': second_is_correct, 'wrong-answer': second_is_incorrect}"></feature-model>
+                    </div>
                 </div>
             </template>
         </template>
-
     </div>
 </template>
 
@@ -90,8 +76,6 @@
     import FeatureModel from "./FeatureModel";
     export default {
         name: "QuestionTemplate",
-
-
 
         data() {
             return {
@@ -109,6 +93,9 @@
                 choice_two_revealed_display: '',
                 correct_choice_display: '',
                 current_question_display: '',
+
+                choice_one_shadow: false,
+                choice_two_shadow: false,
             }
         },
 
@@ -167,6 +154,18 @@
                 this.answered = true;
             },
 
+            mouseOverChoiceOne(){
+                this.choice_one_shadow = true;
+            },
+            mouseOverChoiceTwo(){
+                this.choice_two_shadow = true;
+            },
+            mouseLeaveChoiceOne(){
+                this.choice_one_shadow = false;
+            },
+            mouseLeaveChoiceTwo(){
+                this.choice_two_shadow = false;
+            },
 
 
 
@@ -184,10 +183,6 @@
             this.choice_two_revealed_display = this.choice_two_revealed;
         },
 
-
-
-
-
     }
 </script>
 
@@ -195,14 +190,14 @@
     @import "../../node_modules/bulma/sass/utilities/initial-variables";
 
     .correct-answer{
-        background-color: hsl(141, 53%, 53%);
+        background-color: hsl(141, 53%, 53%) !important;
         border-color: hsl(141, 53%, 53%) !important;
     }
     .wrong-answer{
-        background-color: hsl(348, 86%, 61%);
+        background-color: hsl(348, 86%, 61%) !important;
         border-color: hsl(348, 86%, 61%) !important;
     }
-
-
-
+    .shadow{
+        box-shadow: 0 6px 12px 0 rgba(0,0,0,0.2), 0 4.5px 15px 0 rgba(0,0,0,0.19);
+    }
 </style>
