@@ -282,6 +282,7 @@ export default new Vuex.Store({
         async stopBackgroundTasks({ dispatch }) {
             // Stop all background tasks
             await Promise.all([dispatch("stopBackgroundSearch")]);
+            dispatch('turnProactiveTeacherOff');
         },
         async startBackgroundSearch({ rootState }) {
             console.log("Starting the GA!!");

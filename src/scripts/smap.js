@@ -32,9 +32,7 @@ export default {
     ],
     shownFunctionalities: [
         'DesignBuilder',
-        'OrbitInstrInfo',
-        'AvailableCommands',
-        'CommandsInformation',
+        'Teacher',
     ],
     async initFunction(problemName) {
         let extra = {};
@@ -265,6 +263,8 @@ async function getInstrumentList(problemName) {
 function preprocessing(data, extra) {
     let output = [];
     if (data.length === 0 || data[0].inputs.length !== extra.orbitNum*extra.instrumentNum) {
+        console.log("PRE PROCESSING");
+        console.log(extra.orbitNum*extra.instrumentNum);
         let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
         let arch = new Architecture(0, inputs, [0, 0]);
         output.push(arch);

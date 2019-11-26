@@ -6,9 +6,9 @@ import Vue from 'vue';
 const state = {
     runBackgroundSearch: true,
     runProactiveTeacher: false,
-    showFoundArchitectures: false,
-    runDiversifier: true,
-    showSuggestions: true,
+    showFoundArchitectures: true,
+    runDiversifier: false,
+    showSuggestions: false,
     notificationTitle: "",
     notificationBody: "",
     notificationSetting: "",

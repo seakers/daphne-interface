@@ -58,6 +58,8 @@
         watch: {
             featureDetails() {
                 this.expression = this.featureDetails;
+                //this.expression = "";
+
                 this.is_clickable = this.isClickable;
                 this.phrases = featureExpressionToSentence(this.expression);
                 if(this.phrases.length > 1){this.logic = this.phrases.pop();}
@@ -66,6 +68,8 @@
 
         created() {
             this.expression = this.featureDetails;
+            //this.expression = "({notInOrbit[0;0,1,4;]}&&{inOrbit[3;0;]}&&{notInOrbit[1;0,1,4;]})";
+
             this.is_clickable = this.isClickable;
             this.phrases = featureExpressionToSentence(this.expression);
             if(this.phrases.length > 1){this.logic = this.phrases.pop();}

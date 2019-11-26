@@ -147,6 +147,7 @@ const actions = {
 
     async setProblemParameters({ state, commit, rootState }) {
         try {
+            console.log("-------> SETTING PROBLEM PARAMETERS");
             let reqData = new FormData();
             reqData.append('problem', rootState.problem.problemName);
             if (!rootState.problem.extra){

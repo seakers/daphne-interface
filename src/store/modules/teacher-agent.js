@@ -25,7 +25,7 @@ const state = {
     updatedArchData:             {},
 
     features:                    [], //--> Set by websocket message from teacher thread
-    selectedSubject:             'Features',
+    selectedSubject:             '',
 
     plotWidth:                   500,
     plotHeight:                  300,
@@ -117,6 +117,14 @@ const getters = {
     },
 };
 
+function wait(ms) {
+    var start = Date.now(),
+        now = start;
+    while (now - start < ms) {
+        now = Date.now();
+    }
+}
+
 const actions = {
 
     async getInformation({ state, dispatch, commit, rootState }){
@@ -141,7 +149,7 @@ const actions = {
         console.log("Design Space Info");console.log(designSpaceInformation);
 
         let objectiveSpaceReqData = new FormData();
-        objectiveSpaceReqData.append('plotData', JSON.stringify(store.state.tradespacePlot.plotData));
+        objectiveSpaceReqData.append('plotData', JSON.stringify(state.plotData));
         objectiveSpaceReqData.append('problem', rootState.problem.problemName);
         objectiveSpaceReqData.append('orbits', JSON.stringify(state.orbitList));
         objectiveSpaceReqData.append('instruments', JSON.stringify(state.instrumentList));
@@ -150,6 +158,54 @@ const actions = {
         commit('setObjectiveSpaceInformation', JSON.parse(objectiveSpaceInformation));
         console.log("Objective Space Info");console.log(JSON.parse(objectiveSpaceInformation));
 
+        let featureReqData = new FormData();
+        featureReqData.append('plotData', JSON.stringify(state.plotData));
+        featureReqData.append('problem', rootState.problem.problemName);
+        featureReqData.append('input_type', rootState.problem.inputType);
+        featureReqData.append('orbits', JSON.stringify(state.orbitList));
+        featureReqData.append('instruments', JSON.stringify(state.instrumentList));
+        let featureResponse = await fetchPost(API_URL + 'eoss/teacher/get-subject-features', featureReqData);
+        let featureInformation = await featureResponse.json();
+        commit('set_all_features', JSON.parse(featureInformation));
+        console.log("Feature Info");console.log(JSON.parse(featureInformation));
+    },
+
+    async getSensitivityInformation({ state, dispatch, commit, rootState }){
+        let sensitivityReqData = new FormData();
+        sensitivityReqData.append('plotData', JSON.stringify(state.plotData));
+        sensitivityReqData.append('orbits', JSON.stringify(state.orbitList));
+        sensitivityReqData.append('instruments', JSON.stringify(state.instrumentList));
+        let sensitivityResponse = await fetchPost(API_URL + 'eoss/teacher/get-subject-sensitivities', sensitivityReqData);
+        let sensitivityInformation = await sensitivityResponse.json();
+        commit('set_all_sensitivities', sensitivityInformation);
+        console.log("Sensitivity Info");console.log(sensitivityInformation);
+    },
+
+    async getDesignSpaceInformation({ state, dispatch, commit, rootState }){
+        let designSpaceReqData = new FormData();
+        designSpaceReqData.append('plotData', JSON.stringify(state.plotData));
+        designSpaceReqData.append('problem', rootState.problem.problemName);
+        designSpaceReqData.append('orbits', JSON.stringify(state.orbitList));
+        designSpaceReqData.append('instruments', JSON.stringify(state.instrumentList));
+        let designSpaceResponse = await fetchPost(API_URL + 'eoss/teacher/get-subject-design-space', designSpaceReqData);
+        let designSpaceInformation = await designSpaceResponse.json();
+        commit('setDesignSpaceInformation', designSpaceInformation);
+        console.log("Design Space Info");console.log(designSpaceInformation);
+    },
+
+    async getObjectiveSpaceInformation({ state, dispatch, commit, rootState }){
+        let objectiveSpaceReqData = new FormData();
+        objectiveSpaceReqData.append('plotData', JSON.stringify(state.plotData));
+        objectiveSpaceReqData.append('problem', rootState.problem.problemName);
+        objectiveSpaceReqData.append('orbits', JSON.stringify(state.orbitList));
+        objectiveSpaceReqData.append('instruments', JSON.stringify(state.instrumentList));
+        let objectiveSpaceResponse = await fetchPost(API_URL + 'eoss/teacher/get-subject-objective-space', sensitivityReqData);
+        let objectiveSpaceInformation = await objectiveSpaceResponse.json();
+        commit('setObjectiveSpaceInformation', JSON.parse(objectiveSpaceInformation));
+        console.log("Objective Space Info");console.log(JSON.parse(objectiveSpaceInformation));
+    },
+
+    async getFeaturesInformation({ state, dispatch, commit, rootState }){
         let featureReqData = new FormData();
         featureReqData.append('plotData', JSON.stringify(state.plotData));
         featureReqData.append('problem', rootState.problem.problemName);
@@ -224,6 +280,8 @@ const actions = {
     },
 
     async turnProactiveTeacherOn({ commit, state, rootState }) {
+        console.log("-----> Starting Proactive Teacher");
+
         let orbitList = await getOrbitList("SMAP");
         let instrumentList = await getInstrumentList("SMAP");
 

@@ -16,7 +16,7 @@
             <input type="checkbox" v-model="showSuggestions">
             Enable Suggestions
         </label>
-        <label class="checkbox" v-if="true">
+        <label class="checkbox" v-if="teacherExperimentCondition">
             <input type="checkbox" v-model="runProactiveTeacher">
             Enable Teacher
         </label>
@@ -79,6 +79,14 @@
             },
             logged_in() {
                 return this.$store.state.auth.isLoggedIn;
+            },
+            teacherExperimentCondition() {
+                if (!this.inExperiment) {
+                    return true;
+                }
+                else {
+                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('ProactiveTeacher');
+                }
             },
             backgroundSearchExperimentCondition() {
                 if (!this.inExperiment) {

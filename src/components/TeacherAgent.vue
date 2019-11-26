@@ -1,5 +1,5 @@
 <template>
-    <div style="display: flex; flex-direction: row; flex-grow: 1; overflow: auto;">
+    <div style="display: flex; flex-direction: row; flex-grow: 1; overflow: auto;" id="teacher-window">
 
         <!-- Left Column: Topic interface -->
         <div class="panel-block" style="align-items: flex-start; flex-direction: column;">
@@ -13,7 +13,7 @@
                     <div class="field is-narrow">
                         <div class="control">
                             <div class="select is-fullwidth">
-                                <select v-model="selectedSubject">
+                                <select v-model="selectedSubject" v-on:change="printPlotData">
                                     <option>Features</option>
                                     <option>Sensitivities</option>
                                     <option>Design Space</option>
@@ -272,6 +272,7 @@
     import { getDesignIndex } from '../scripts/utils'
     import VuePlotly from '@statnett/vue-plotly'
     import FeatureModel from "./FeatureModel";
+    import isEmpty from "lodash-es/isEmpty";
     export default {
         name: "teacher-agent",
 
@@ -296,6 +297,8 @@
 
                 hoveredSensitivityX: [],
                 hoveredDesignSpaceX: [],
+
+                data_is_set: false,
             }
         },
 
@@ -937,6 +940,11 @@
         },
 
         methods: {
+            printPlotData(){
+                // console.log(this.plotData);
+                // console.log(typeof this.plotData);
+            },
+
             changeFeature(index) {
                 let feature_selected = [false, false, false, false, false];
                 feature_selected[index] = true;
@@ -1033,18 +1041,32 @@
             },
         },
 
+        watch: {
+            plotData() {
+                if(isEmpty(this.plotData) === false && this.data_is_set === false){
+                    console.log("Loading Teacher Data");
+                    this.$store.commit('setPlotData', this.plotData);
+                    this.$store.dispatch('getInformation');
+                    // this.$store.dispatch('turnProactiveTeacherOn');
+                    this.data_is_set = true;
+                }
+            },
+        },
+
         created() {
-            // this.$store.dispatch('computeOrbitList');         //--> All Orbits
-            // this.$store.dispatch('computeInstrumentList');    //--> All Instruments
-            // this.$store.commit('setPlotData', this.plotData); //--> All architectures plotted
-            // this.$store.dispatch('getInformation');
+
         },
 
         mounted() {
             this.$store.dispatch('computeOrbitList');         //--> All Orbits
             this.$store.dispatch('computeInstrumentList');    //--> All Instruments
-            this.$store.commit('setPlotData', this.plotData); //--> All architectures plotted
-            this.$store.dispatch('getInformation');
+            if(isEmpty(this.plotData) === false){
+                console.log("Loading Teacher Data");
+                this.$store.commit('setPlotData', this.plotData);
+                this.$store.dispatch('getInformation');
+                // this.$store.dispatch('turnProactiveTeacherOn');
+                this.data_is_set = true;
+            }
             window.addEventListener('beforeunload', this.stopProactiveTeacherOnReload);
             window.addEventListener('unload', this.stopProactiveTeacherOnReload);
             window.addEventListener("resize", this.resizeRefresh);
