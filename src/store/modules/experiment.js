@@ -411,7 +411,7 @@ instrument-orbit pairings appear most often in the best architectures you can fi
             restrictedQuestions: null,
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*1.5
+            stageDuration: 60*15
         },
         daphne_peer: { // Non-Teacher
             availableFunctionalities: [
@@ -431,7 +431,7 @@ instrument-orbit pairings appear most often in the best architectures you can fi
             restrictedQuestions: null,
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*1.5
+            stageDuration: 60*15
         }
     }
 };
