@@ -1,5 +1,5 @@
 <template>
-    <div v-bind:class="{'clickable': is_clickable}" style="padding: 5px; margin: 5px; border: 2px solid grey; border-radius: 4px;">
+    <div v-bind:class="{'clickable': is_clickable}" style="padding: 5px; margin: 5px; border: 2px solid grey; border-radius: 4px;" @mouseenter="applyFeature" @mouseleave="clearFeature">
         <div style="font-size: 16px;">
             <template v-if="logic === null">
                 <div style="text-align: left">
@@ -52,6 +52,16 @@
             }),
         },
         methods: {
+            applyFeature() {
+                this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setHoveredExpression', '');
+                this.$store.commit('setCurrentExpression', this.expression);
+                this.$store.commit('setHoveredExpression', this.expression);
+            },
+            clearFeature() {
+                this.$store.commit('setCurrentExpression', '');
+                this.$store.commit('setHoveredExpression', '');
+            },
 
         },
 

@@ -99,21 +99,20 @@ World Meteorological Organization). <b>Your focus</b> should be on trying to get
 maximize the science/societal benefit while minimizing lifecycle cost.</p>`
                 },
                 {
-                    text: `Specifically, the task consists on designing different constellations of satellites for
-Earth observation. This means you will be assigning different sets of instruments from a predefined pool of instruments
-to different orbits and then evaluating your constellation design (e.g, the set of satellites with specific instruments
-assigned to specific orbits) to see which constellations are the best for each of the two tasks. Note that a
-constellation design that works well for one of the two problems might not work well at all for the next one, so simply
- copying designs from one stage to the next is unlikely to work well.`
+                    text: `Specifically, the task consists creating different mission designs for
+Earth observation. This means you will be assigning different sets of instruments (from a predefined pool)
+to different orbits and then evaluating your design to see how well it performs for each of the two tasks. Note that a
+design that performs well for one of the two problems will most likely not for the other problem, so simply
+ copying designs from one stage to the next will not work.`
                 },
                 {
                     text: `Again, to reiterate: for each task, you have <b>two main
 objectives</b>: <b>FIRST</b>: You need to come up with a set of constellation designs (not just one constellation)
 that spans a wide range of costs (e.g., from $800M to $4,000M) with the best science score you can come up with
-(later we will describe how to get those designs). <b>SECOND</b> After each 15 minute task, you will do a short 21 question test that has 3
-sections (Design Prediction, Feature Prediction, and Sensitivity Prediction). We are trying to find out how much you learned about the design
+(later we will describe how to get those designs). <b>SECOND</b> After each 15 minute task, you will do a short 21 question test that has 4
+sections (SUS survey, Design Prediction, Feature Prediction, and Sensitivity Prediction). We are trying to find out how much you learned about the design
 problem from the tool, so keep this in mind! With this out of the way, let's learn
-how to actually design new satellite constellations! <b>It's important to try out the functions you are being shown now,
+how to create new mission designs! <b>It's important to try out the functions you are being shown now,
 as this will help you perform better during the experiment.</b>`
                 },
 
@@ -123,17 +122,17 @@ as this will help you perform better during the experiment.</b>`
                         on: 'right'
                     },
                     text: `Each mission design is represented by a table as shown here. Each row
-represents one spacecraft in the constellation. At the left side of each row in bold we have the orbit in which
+represents one spacecraft in the design. At the left side of each row in bold we have the orbit in which
 spacecraft will fly. Each of the small boxes on the right part of the row represent a
-single instrument that spacecraft has onboard. If one orbit has no small boxes corresponding to any instrument, it means
-there is no spacecraft flying in that orbit for this constellation.`
+single instrument that spacecraft has onboard. If one orbit has no instruments, it means
+there is no spacecraft flying in that orbit for this design.`
                 },
                 {
                     attachTo: {
                         element: '.panel.orbit-instr-info',
                         on: 'right'
                     },
-                    text: `Detailed information on what these orbits and instruments are is given in the Orbits and
+                    text: `Detailed information about these orbits and instruments can be found here in the Orbits and
 Instruments Information panel. <b>You should read about them now by clicking on the elements of the dropdown list.</b>`
                 },
                 {
@@ -141,10 +140,9 @@ Instruments Information panel. <b>You should read about them now by clicking on 
                         element: '#main-plot-block',
                         on: 'bottom'
                     },
-                    text: `Remember, each task in the experiment is to come up with a wide range of constellation
-designs with the highest science benefit for a range of costs. To make things specific, we have set up lower and upper
-cost bounds at $800M and $4,000M. You can see some initial constellation designs here, but you will learn how to create
-new ones in a moment.`
+                    text: `Remember, each task in the experiment is to come up with a wide range of mission
+designs that have the highest possible science score for a range of costs. To make things specific, we have set up lower and upper
+cost bounds at $800M and $4,000M. You can see some initial mission designs here. You will be able to build off of these initial designs!`
                 },
                 {
                     attachTo: {
@@ -153,7 +151,7 @@ new ones in a moment.`
                     },
                     text: `This plot that shows all the designs you come up with.
 This set of designs will change for each of the two tasks, so don't worry if you see something different when
-the tasks begins. Each dot here is a single design, and each design has an associated
+the tasks begins. Each dot represents single design, and each design has an associated
 science score and a cost. Remember, the science score is a measure (ranging from 0 to 1) of how
 well a design satisfies the requirements of the mission. <b>The higher the science score, the better!</b>`
                 },
@@ -176,8 +174,8 @@ selected that design. <b>Try selecting a design which has the highest science be
 You can add or remove instruments from any orbit by dragging and dropping. After modifying a design, you can evaluate it by clicking the
 <b>"Evaluate Architecture"</b> button in this window. After the evaluation is finished, a new red cross will
 appear on the scatter plot with its location determined by the new science score and cost of your design!
-It is very important to evaluate the new designs you make, otherwise they won't get saved and you won't know how
-much you improved or worsened the design! Remember, create as many designs as you can! <b>Try coming up with some new designs before continuing
+It is very important to evaluate new designs you make! Otherwise, they won't get saved and you won't know how
+your changes effected the design's score! Remember, create as many designs as you can! <b>Try coming up with some new designs before continuing
 with the tutorial.</b>`
                 },
                 {
@@ -186,8 +184,8 @@ with the tutorial.</b>`
                         on: 'bottom'
                     },
                     text: `Additionally, there will be a "Background Search" service running while you are completing either task.
-                    This search will try to find optimal designs, and if it finds one, it will be plotted as a blue dot (you might notice some already plotted).
-                    You can use these dots to create new designs!`
+                    This search will try to find optimal designs.. If it finds one, it will be plotted as a blue dot (you might notice some already plotted).
+                    You can build off of these (blue dot) designs just as you can for the initial (grey dot) designs!`
                 },
                 {
                     attachTo: {
@@ -205,7 +203,7 @@ with the tutorial.</b>`
                         element: '.design-builder',
                         on: 'left'
                     },
-                    text: `While this is the basic functionality for tradespace analysis, you have more tools available
+                    text: `While this is the basic functionality for trade-space analysis, you have more tools available
 to you in this experiment. The next feature you need to know about is how to communicate with the Virtual Assistant.
                     The Virtual Assistant can answer different questions about the design task you are working on.
                     Let's learn how you can ask questions.`
@@ -230,13 +228,13 @@ Daphne will give her opinion and make some suggestions.
                         element: '.chat-container'
                     },
                     text: `Daphne will communicate to you through this chat window. You can see
-there is advice from different roles: the Expert will suggest design modifications based on a knowledge-base;
-the Explorer will suggest design modifications by search the local design area; the
-Historian will compare and contrast your design to past missions; and the Analyst will suggest
+there is advice from different roles: the <b>Expert</b> will suggest design modifications based on a knowledge-base;
+the <b>Explorer</b> will suggest design modifications by search the local design area; the
+<b>Historian</b> will compare and contrast your design to past missions; and the <b>Analyst</b> will suggest
 changes based on what the best designs in the current dataset have in common. Take Daphne's advice with
 caution - as you would with any peer's advice. While it is likely to help you, it may in some cases not help you
 achieve your current goal. "What do you think of this design" is just one question Daphne can answer, but there are a
-few more. It is worth noting this will only be available on the Daphne Peer version.`
+few more.`
                 },
                 {
                     attachTo: {
@@ -261,7 +259,7 @@ for these fields. If a part of a question is inside square brackets it means it 
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `The next and final functinality in this experiment is the Teacher window. The purpose of the Teacher is to help foster learning about
+                    text: `The next and final functionality in this experiment is the Teacher window. The purpose of the Teacher is to help foster learning about
                     the design task you are currently working on. Lets take a look at what the Teacher has to offer.`
                 },
                 {
@@ -286,9 +284,10 @@ for these fields. If a part of a question is inside square brackets it means it 
                         block: 'center'
                     },
                     text: `A "feature" is nothing more than a set of one or more design decisions (ex. orbit SSO-800-SSO-AM doesn't contain instrument BIOMASS).
-                    When a group of designs have a feature in common, this can help explain why that group of designs scored how they did (in cost and science).
-                    Here the teacher provides 5 prominent features that were found in the Pareto Front (the Pareto Front is the set of best designs currently in the design space).
-                    You can click on a feature to see its details. Click on a few then move on to the next step.`
+                    When a group of designs has a common feature, this feature might explain why that group of designs scored how they did (in cost and science).
+                    Here, the teacher provides 5 driving features that were found in the Pareto Front (the Pareto Front is the set of best designs currently in the design space).
+                    You can click on a feature to see its details. If you hover over a feature's details, the designs in the main plot that contain
+                    that feature will be highlighted. Click on a few, hover over them, then move on to the next step.`
                 },
                 {
                     attachTo: {
@@ -299,10 +298,11 @@ for these fields. If a part of a question is inside square brackets it means it 
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `Now, select the "Sensitivities" option in the Topic dropdown. Design decision sensitivity is a measure of how much variance in the selected objective that design decision is responsible for.
-                     Initially displayed is the "First Order" sensitivities. This is shows a bar-graph of the most sensitive design decisions you can hover over a bar to get info about that design decision's sensitivity.
-                     You can choose to view sensitive design decisions for the science or cost objective by selecting the "Objective" dropdown.
-                     You can also click on a bar in the graph to toggle that design decision in the design currently loaded in the Design Builder window. Try hovering over and clicking some of the bars.
+                    text: `Now, select the "Sensitivities" option in the Topic dropdown. Design decision sensitivity is a measure of how much objective value variance
+                     adding or removing a design decision causes (ex. assigning instrument BIOMASS to orbit SSO-600-SSO-DD is responsible for 50% of science variance).
+                     Initially displayed is the "First Order" sensitivities. This is shows a bar-graph of the most sensitive design decisions. You can hover over a bar to get info about that design decision's sensitivity.
+                     You can choose which objective you want sensitivities to be shown for by selecting the "Objective" dropdown.
+                     You can also click on a bar in the graph to add/remove that design decision in the Design Builder's current design. Try hovering over and clicking some of the bars.
                      Remember, it is strongly recommended to click the "Evaluate" button in the "Design Builder" window every time you click on one of the bars.
                      This is so you can see the impact of toggling this design decision. Lets move on to Second Order Sensitivities.`
                 },
@@ -315,7 +315,7 @@ for these fields. If a part of a question is inside square brackets it means it 
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `While staying on the "Sensitivities" topic, navigate to the "Order" dropdown and select "Second Order".
+                    text: `While staying on the "Sensitivities" topic, navigate to the "Analysis" dropdown and select "Second Order".
                     Second Order sensitivities are sensitivities that depend on a specific design decision. You can select a design decision in the "Orbit" and "Inst" dropdown and see what
                     design decisions are most sensitive to being paired with your selected orbit and instrument. You can still select bars on the graph to toggle that bar's design decision in the Design Builder.
                     This functionality is meant for more advanced users, so don't spend too much time here unless you are sure about what you are doing!`
@@ -344,14 +344,15 @@ for these fields. If a part of a question is inside square brackets it means it 
                     },
                     text: `Now go back to the Topic dropdown and select "Objective Space". This shows a plot of designs that are in the Pareto Front (the pareto front contains the current best designs).
                     It is useful in trade-space exploration to create designs that fall in unexplored areas of the Pareto Front, so this plot highlights to most unexplored area. You can click on the
-                    "Load Suggestion" button to load the closest design to the unexplored area in the Design Builder. A red X will appear on the point that has been loaded into the Design Builder.
-                    From here, you can start adding or removing instruments to the loaded design and evaluate them to try to create a point in the highlighted region.`
+                    "Load Suggestion" button to load the closest design to the unexplored area in the Design Builder. A red cross will appear on the point that has been loaded into the Design Builder.
+                    From here, you can start adding or removing instruments in the design builder and evaluate them to try to create a point in the highlighted region. Designs you create and evaluate will show up
+                    in this plot in blue!`
                 },
                 {
                     attachTo: {
                         element: '.chat-container'
                     },
-                    text: 'One last thing! The "Teacher" is also proactive, so every so often it will send you a notification here in the chat display. These notifications will be on one of the 4 topics (Sensitivities, Design Space, Objective Space, or Features). These messages will contain a plot, and you can interact with these plots just as you can with the plots in the "Teacher" window, so make use of them! The proactive teacher will also ask you questions about the design problem at hand to measure your knowledge. Answer these questions to the best of your ability!'
+                    text: '<b>IMPORTANT</b> One last thing! The "Teacher" is also proactive, so every so often it will send you a notification here in the chat display. These notifications will be on one of the 4 topics (Sensitivities, Design Space, Objective Space, or Features). Each message will contain a plot/feature or a question. You can interact with these plots just as you can with the plots in the "Teacher" window, so make use of them! If you get a question, make sure you answer it to the best of your ability!'
                 },
 
                 {
