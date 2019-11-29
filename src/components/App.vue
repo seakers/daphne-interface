@@ -277,7 +277,12 @@
                                             text: 'Next',
                                             action: this.tutorial.next
                                         }
-                                    ]
+                                    ],
+                                    // when: {
+                                    //     show: function() {
+                                    //         console.log("This step has been shown!");
+                                    //     }
+                                    // }
                                 });
                             });
                             this.tutorial.on("complete", () => {

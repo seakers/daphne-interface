@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="objective-space-teacher-message">
         <div style="">
             <ul>
                 <li>

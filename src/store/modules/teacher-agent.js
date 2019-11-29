@@ -29,6 +29,7 @@ const state = {
 
     plotWidth:                   500,
     plotHeight:                  300,
+    tutorialMessagesRequested:   false,
 
     // -----------------------------------
     // ------------ FEATURES -------------
@@ -114,6 +115,9 @@ const getters = {
     },
     get_plot_height(state, plotHeight){
         return state.plotHeight;
+    },
+    getTutorialMessagesRequested(state){
+        return state.tutorialMessagesRequested;
     },
 };
 
@@ -279,6 +283,40 @@ const actions = {
         }
     },
 
+    async requestTeacherTutorialMessages({ commit, state, rootState }) {
+        if(!state.tutorialMessagesRequested){
+            console.log("-----> Requesting Proactive Teacher Tutorial Messages");
+            let orbitList = await getOrbitList("SMAP");
+            let instrumentList = await getInstrumentList("SMAP");
+
+            //--> Request Data
+            let reqData = new FormData();
+            reqData.append('tutorial', true);
+            reqData.append('problem', rootState.problem.problemName);
+            reqData.append('orbits', JSON.stringify(orbitList));
+            reqData.append('instruments', JSON.stringify(instrumentList));
+            reqData.append('proactiveMode', 'enabled');
+            reqData.append('plotData', JSON.stringify(store.state.tradespacePlot.plotData));
+            reqData.append('input_type', rootState.problem.inputType);
+
+            //--> Receive Response
+            let dataResponse = fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
+            console.log(dataResponse);
+
+            //--> Retrieve Response
+            if (dataResponse.ok)
+            {
+                let jsonResponse = dataResponse.json();
+                console.log(jsonResponse);
+            }
+            commit('setTutorialMessagesRequested', 'true');
+        }
+        else{
+            console.log("------> Tutorial messages have already been requested!")
+        }
+
+    },
+
     async turnProactiveTeacherOn({ commit, state, rootState }) {
         console.log("-----> Starting Proactive Teacher");
 
@@ -287,6 +325,7 @@ const actions = {
 
         //--> Request Data
         let reqData = new FormData();
+        reqData.append('tutorial', 'false');
         reqData.append('problem', rootState.problem.problemName);
         reqData.append('orbits', JSON.stringify(orbitList));
         reqData.append('instruments', JSON.stringify(instrumentList));
@@ -331,6 +370,10 @@ const mutations = {
     // -----------------------------
     // ---------- GENERAL ----------
     // -----------------------------
+    setTutorialMessagesRequested(state, tutorialMessagesRequested){
+        state.tutorialMessagesRequested = tutorialMessagesRequested;
+    },
+
     setOrbitList(state, orbitList) {
         state.orbitList = orbitList;
     },

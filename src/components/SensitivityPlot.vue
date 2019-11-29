@@ -1,11 +1,11 @@
 <template>
 
-    <div>
+    <div id="sensitivity-teacher-message">
         <div style="padding-bottom: 10px;">
             <ul>
                 <li>
                     Changing design decisions with high sensitivities will cause a larger change in objective value.
-                    Click on a design decision in the plot to add or remove it from the current design.
+                    Click on a design decision in the bar plot below to add or remove it from the Design Builder window.
                 </li>
             </ul>
         </div>
@@ -150,12 +150,14 @@
                 this.resize += 1;
             },
             async toggleDesignDecision(data) {
+                console.log("Click Registered, toggling design decision");
                 let expression = data['points'][0]['x'];
                 let orbit = expression.split('|')[0];
                 let instrument = expression.split('|')[1];
                 orbit = orbit.trim();
                 instrument = instrument.trim();
                 let index = await getDesignIndex(orbit, instrument, "SMAP");
+                console.log(index);
                 let current_design = [...this.clickedArchInputs];
                 if(current_design[index] === true){
                     current_design[index] = false;

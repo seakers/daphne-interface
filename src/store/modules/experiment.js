@@ -58,7 +58,6 @@ const state = {
         tutorial: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'Teacher',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
@@ -67,7 +66,6 @@ const state = {
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'Teacher',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
@@ -204,24 +202,22 @@ with the tutorial.</b>`
                         on: 'left'
                     },
                     text: `While this is the basic functionality for trade-space analysis, you have more tools available
-to you in this experiment. The next feature you need to know about is how to communicate with the Virtual Assistant.
-                    The Virtual Assistant can answer different questions about the design task you are working on.
-                    Let's learn how you can ask questions.`
+to you in this experiment. Lets move on to learning about the Chat Window.`
                 },
                 {
                     attachTo: {
                         element: '.chat-container'
                     },
-                    text: `To ask a question, you can write it down here, and then either click Send or press Enter
-on your keyboard.`
+                    text: `Here we have Daphne's Chat Window. This window will serve two purposes in this experiment: 1) Allow you to <b>ask</b> Daphne
+                    useful questions, 2) Allow Daphne to <b>teach</b> you about the current design problem. Lets try asking Daphne a question first. Continue to the next step.`,
                 },
                 {
                     attachTo: {
                         element: '.chat-container'
                     },
-                    text: `For example, you can ask Daphne what she thinks about the current design. After some thinking,
+                    text: `One useful question Daphne can answer is what she thinks about the current design selected in the design plot. After some thinking,
 Daphne will give her opinion and make some suggestions.
-<b>Try copying the following question into the Question Bar: "What do you think of this design?"</b>`
+Try copying the following question into the Question Bar: <b>What do you think of this design?</b>`
                 },
                 {
                     attachTo: {
@@ -234,7 +230,7 @@ the <b>Explorer</b> will suggest design modifications by search the local design
 changes based on what the best designs in the current dataset have in common. Take Daphne's advice with
 caution - as you would with any peer's advice. While it is likely to help you, it may in some cases not help you
 achieve your current goal. "What do you think of this design" is just one question Daphne can answer, but there are a
-few more.`
+few more. Try clearing the Chat Window when you are done by hitting the Clear button where you send daphne messages.`
                 },
                 {
                     attachTo: {
@@ -252,108 +248,195 @@ for these fields. If a part of a question is inside square brackets it means it 
 
                 {
                     attachTo: {
-                        element: '#teacher-window',
-                        on: 'right'
+                        element: '.chat-container',
                     },
-                    scrollTo: {
-                        behavior: 'smooth',
-                        block: 'center'
-                    },
-                    text: `The next and final functionality in this experiment is the Teacher window. The purpose of the Teacher is to help foster learning about
-                    the design task you are currently working on. Lets take a look at what the Teacher has to offer.`
+                    text: `Now, lets learn how Daphne will try to teach you about the current design problem. Daphne has an on-board <b>Teacher</b>
+                    that will teach you about four areas of the design problem: Sensitivities, Design Space, Objective Space, and Features.
+                    By now, you should see some new messages in the chat window. These messages are from the Daphne Teacher! In the next few steps, you will learn about all the messages
+                    Daphne Teacher will send you.`,
+                    when: {
+                        show: function() {
+                            store.dispatch('requestTeacherTutorialMessages');
+                        }
+                    }
                 },
                 {
                     attachTo: {
-                        element: '#teacher-window',
-                        on: 'right'
+                        element: '#sensitivity-teacher-message',
                     },
                     scrollTo: {
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `Begin by clicking on the "Topics" dropdown. You will see four different categories: Features, Sensitivities, Design Space, and Objective Space.
-                    The teacher aims to teach you important information about each topic. Select the "Features" option in the dropdown and move on to the next step`
+                    text: `The first type of message the Daphne Teacher will send you is about design decision sensitivities. Design decision sensitivity is a measure of how much objective value variance
+                     adding or removing a design decision causes. This message contains a bar graph showing the most sensitive design decisions for your current task! You can use the dropdown to view
+                     sensitivities for either the cost or science objective.`,
                 },
                 {
                     attachTo: {
-                        element: '#teacher-window',
-                        on: 'right'
+                        element: '#sensitivity-teacher-message',
                     },
                     scrollTo: {
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `A "feature" is nothing more than a set of one or more design decisions (ex. orbit SSO-800-SSO-AM doesn't contain instrument BIOMASS).
+                    text: `You can also interact with the bar graph! If you hover over a bar in the bar graph you will get a description about that design decision's sensitivity. If you click on a bar,
+                    you will add/remove that design decision from the current design loaded in the Design Builder window. Try clicking on a few bars in the graph to see how it changes the current design in the
+                    Design Build window.`,
+                },
+                {
+                    attachTo: {
+                        element: '#sensitivity-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `<b>TIP:</b> A good strategy is to: 1) select the rightmost point in the design plot for a specific cost 2) add or remove some sensitive design decisions using this plot
+                    3) evaluate the design in the design builder by hitting the <b>Evaluate Architecture</b> button in the Design Builder.`,
+                },
+                {
+                    attachTo: {
+                        element: '#sensitivity-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `Remember sensitivity information could show on the exam! So it might be a good idea to write it down any useful plot information`,
+                },
+                {
+                    attachTo: {
+                        element: '#design-space-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `The next message the Daphne Teacher might send is about the Design Space. The Design Space is an area containing all the possible
+                    designs for this problem. This message has a bar graph showing the least used design decisions in the current design space.`,
+                },
+                {
+                    attachTo: {
+                        element: '#design-space-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `You can hover over each bar in this graph go get more information about that specific design decision. You can also click on each bar to add that design decision
+                    to the current design in the Design Builder (as long as that design decision isn't already added). Try adding a few of these to the current design in the Design Builder`,
+                },
+                {
+                    attachTo: {
+                        element: '#design-space-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `<b>TIP:</b> A good strategy is to: 1) select the rightmost point in the design plot for a specific cost 2) add or remove some uncommon design decisions using this plot
+                    3) evaluate the design in the design builder by hitting the <b>Evaluate Architecture</b> button in the Design Builder. Lets continue on to the next message type`,
+                },
+                {
+                    attachTo: {
+                        element: '#question-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `The Daphne Teacher can also ask you questions to try to gauge how much you know about the design task at hand. Here, Daphne is asking a Design Space question.
+                    These two architecture will be very similar in cost, but will produce a different science value. Click on whichever choice you think might have a higher science value then hit next.`,
+                },
+                {
+                    attachTo: {
+                        element: '#question-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `Did you get it right? If you did, the answer you selected will be highlighted in green. If not, then in red! Don't try to create these
+                     designs in the Design Builder, because these designs are already somewhere in the design plot. For now, just use your intuition. Remember, questions like these will be on the exam,
+                     so don't be afraid to guess right now if you don't know and learn from the answer!`,
+                },
+                {
+                    attachTo: {
+                        element: '#question-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `There will be two other types of Daphne Teacher questions (sensitivities and features) that we won't go over in this tutorial. However, you will see them during the experiment, so be
+                    on the lookout for them`,
+                },
+                {
+                    attachTo: {
+                        element: '#features-teacher-message',
+                    },
+                    scrollTo: {
+                        behavior: 'smooth',
+                        block: 'center'
+                    },
+                    text: `The next Teacher message type is about Design Space Features. A "feature" is nothing more than a set of one or more design decisions (ex. orbit SSO-800-SSO-AM doesn't contain instrument BIOMASS).
                     When a group of designs has a common feature, this feature might explain why that group of designs scored how they did (in cost and science).
-                    Here, the teacher provides 5 driving features that were found in the Pareto Front (the Pareto Front is the set of best designs currently in the design space).
-                    You can click on a feature to see its details. If you hover over a feature's details, the designs in the main plot that contain
-                    that feature will be highlighted. Click on a few, hover over them, then move on to the next step.`
+                    Continue to learn more about this message`,
                 },
                 {
                     attachTo: {
-                        element: '#teacher-window',
-                        on: 'right'
+                        element: '#features-teacher-message',
                     },
                     scrollTo: {
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `Now, select the "Sensitivities" option in the Topic dropdown. Design decision sensitivity is a measure of how much objective value variance
-                     adding or removing a design decision causes (ex. assigning instrument BIOMASS to orbit SSO-600-SSO-DD is responsible for 50% of science variance).
-                     Initially displayed is the "First Order" sensitivities. This is shows a bar-graph of the most sensitive design decisions. You can hover over a bar to get info about that design decision's sensitivity.
-                     You can choose which objective you want sensitivities to be shown for by selecting the "Objective" dropdown.
-                     You can also click on a bar in the graph to add/remove that design decision in the Design Builder's current design. Try hovering over and clicking some of the bars.
-                     Remember, it is strongly recommended to click the "Evaluate" button in the "Design Builder" window every time you click on one of the bars.
-                     This is so you can see the impact of toggling this design decision. Lets move on to Second Order Sensitivities.`
+                    text: `Here, the Daphne Teacher has provided you a feature that was found in the Pareto Front. If you hover over the bordered feature in the message, the designs that contain this feature
+                    will be highlighted in the design plot! It can be useful to add this feature to the current design in the Design Builder and then evaluate to see how the feature
+                    changes the performance of that design.`,
                 },
                 {
                     attachTo: {
-                        element: '#teacher-window',
-                        on: 'right'
+                        element: '#objective-space-teacher-message',
                     },
                     scrollTo: {
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `While staying on the "Sensitivities" topic, navigate to the "Analysis" dropdown and select "Second Order".
-                    Second Order sensitivities are sensitivities that depend on a specific design decision. You can select a design decision in the "Orbit" and "Inst" dropdown and see what
-                    design decisions are most sensitive to being paired with your selected orbit and instrument. You can still select bars on the graph to toggle that bar's design decision in the Design Builder.
-                    This functionality is meant for more advanced users, so don't spend too much time here unless you are sure about what you are doing!`
+                    text: `The last message type Daphne Teacher can send is about the objective space of the task. The Objective Space is nothing more than the total area spanned on the
+                    design plot. Lets learn more about this message`,
                 },
                 {
                     attachTo: {
-                        element: '#teacher-window',
-                        on: 'right'
+                        element: '#objective-space-teacher-message',
                     },
                     scrollTo: {
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `Moving on, navigate to the Topic dropdown and click on "Design Decisions". This will display a plot showing the least seen design decisions in the current set of plotted designs.
-                    The plot functionality is exactly the same as the sensitivity plot, you can click on a bar to add a design decision to your current design. You can choose either a "Level One" or "Level Two"
-                    analysis in the "Analysis" dropdown. The level two analysis shows the least common design decisions paired with the orbit and instrument of your choice.`
+                    text: `This message shows a plot containing the objective space and all the designs in the Pareto Front. It also shows an area in the Pareto Front that is unexplored.
+                    It is beneficial to create designs that land in this region, as this increases your score on the design task! You can hit the Load Suggestion button
+                    to load the closest design to this region into the Design Builder window. This loaded design will be replaced with a red cross in the plot. From here you can
+                    try to add or remove instruments then evaluate to try to get a design in the unexplored region! Try hitting Load Suggestion`,
                 },
                 {
                     attachTo: {
-                        element: '#teacher-window',
-                        on: 'right'
+                        element: '#objective-space-teacher-message',
                     },
                     scrollTo: {
                         behavior: 'smooth',
                         block: 'center'
                     },
-                    text: `Now go back to the Topic dropdown and select "Objective Space". This shows a plot of designs that are in the Pareto Front (the pareto front contains the current best designs).
-                    It is useful in trade-space exploration to create designs that fall in unexplored areas of the Pareto Front, so this plot highlights to most unexplored area. You can click on the
-                    "Load Suggestion" button to load the closest design to the unexplored area in the Design Builder. A red cross will appear on the point that has been loaded into the Design Builder.
-                    From here, you can start adding or removing instruments in the design builder and evaluate them to try to create a point in the highlighted region. Designs you create and evaluate will show up
-                    in this plot in blue!`
+                    text: `Finally, any architectures you evaluate will appear in this plot as a blue dot. Try to get these blue dots as close to the unexplored region as possible!`,
                 },
                 {
                     attachTo: {
-                        element: '.chat-container'
+                        element: '.chat-container',
                     },
-                    text: '<b>IMPORTANT</b> One last thing! The "Teacher" is also proactive, so every so often it will send you a notification here in the chat display. These notifications will be on one of the 4 topics (Sensitivities, Design Space, Objective Space, or Features). Each message will contain a plot/feature or a question. You can interact with these plots just as you can with the plots in the "Teacher" window, so make use of them! If you get a question, make sure you answer it to the best of your ability!'
+                    text: `Remember, the Daphne Teacher is proactive and will only send messages every so often. When it does send messages, try to make use of them!`,
                 },
+
 
                 {
                     text: `Now you know every tool available to you! Remember, the experiment will have two stages (aka tasks).
@@ -369,8 +452,13 @@ instrument-orbit pairings appear most often in the best architectures you can fi
   You are also highly encouraged to take notes during each task, as this will definitely be helpful to do well on the test.
   The first stage will be to design the <b>surface water processes</b> focused mission and the second one will be for the <b>societal benefits / applications</b>
   focused mission. And once again, <b>trying to reuse good designs from the first task for the second task will likely
-  not work!</b>. With all this being said, click on done to start the experiment!`
-                }
+  not work!</b>. With all this being said, click on done to start the experiment!`,
+                    when: {
+                        show: function() {
+                            store.dispatch('clearHistory');
+                        }
+                    }
+                },
             ],
         },
         // no_daphne: {
@@ -399,12 +487,11 @@ instrument-orbit pairings appear most often in the best architectures you can fi
                 'AvailableCommands',
                 'CommandsInformation',
                 'Details',
-                'ProactiveTeacher',
                 'BackgroundSearch',
+                'ProactiveTeacher',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'Teacher',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',

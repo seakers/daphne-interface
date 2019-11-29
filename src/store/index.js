@@ -194,6 +194,10 @@ export default new Vuex.Store({
             if (received_info['type'] === 'teacher.features') {
                 console.log('Success !!!!!');
 
+                if(received_info['name'] === 'shutOFF'){
+                    store.dispatch('turnProactiveTeacherOff');
+                }
+
                 if(received_info['name'] === 'displayFeatureInformation'){
                     store.commit('set_features', received_info['data']);
                     store.commit('addDialoguePiece', {

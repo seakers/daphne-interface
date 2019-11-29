@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="features-teacher-message">
         <div style="">
             <ul>
                 <li>

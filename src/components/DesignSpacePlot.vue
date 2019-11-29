@@ -1,9 +1,9 @@
 <template>
-    <div>
+    <div id="design-space-teacher-message">
         <div style="">
             <ul>
                 <li>Creating designs with uncommon design decisions fosters diversity.
-                    Click on one of the design decisions in the plot to add it to your current design</li>
+                    Click on one of the design decisions in the bar plot below to add it to the Design Builder window</li>
             </ul>
         </div>
         <vue-plotly :data="computeDesignSpacePlotData" :layout="computeDesignSpacePlotLayout" :options="{displayModeBar: false, responsive: true}" v-on:click="addDesignDecision" v-on:hover="highlightData" v-on:unhover="unhighlightData"/>

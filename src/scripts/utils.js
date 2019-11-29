@@ -45,8 +45,8 @@ export async function getInstrumentList(problemName) {
 }
 
 export async function getDesignIndex(orbit, instrument, problemName){
-    let orbits = store.state.teacherAgent.orbitList;
-    let instruments = store.state.teacherAgent.instrumentList;
+    let orbits = store.state.problem.extra.orbitList;
+    let instruments = store.state.problem.extra.instrumentList;
     if(orbits === []){orbits = await getOrbitList(problemName);}
     if(instruments === []){instruments = await getInstrumentList(problemName);}
     let prevOrb = orbits.indexOf(orbit) * orbits.length;

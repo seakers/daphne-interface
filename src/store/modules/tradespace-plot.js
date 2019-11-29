@@ -160,6 +160,8 @@ const mutations = {
         state.hoveredArch = hoveredArch;
     },
     updateClickedArchInputs(state, inputs) {
+        console.log("Updating arch");
+        console.log(inputs);
         state.clickedArchInputs = inputs;
     },
     updateSelectionMode(state, selectionMode) {
