@@ -6,6 +6,7 @@ functionalityTypes.set('DesignBuilder', { title: 'Design Builder', component: 'D
 functionalityTypes.set('DataMining', { title: 'Data Mining', component: 'DataMining', class: 'data-mining', minSize: 'half', maxRepeat: 1});
 functionalityTypes.set('EOSSFilter', { title: 'Filter', component: 'EOSSFilter', class: 'filter', minSize: 'half', maxRepeat: 1});
 functionalityTypes.set('FeatureApplication', { title: 'Feature Application', component: 'FeatureApplication', class: 'feature-application', minSize: 'half', maxRepeat: 1});
+functionalityTypes.set('Mycroft', { title: 'Mycroft', component: 'Mycroft', class: 'Mycroft', minSize: 'half', maxRepeat: 1});
 functionalityTypes.set('OrbitInstrInfo', {
     title: 'Orbits and Instruments Information',
     component: 'Cheatsheet',
@@ -73,7 +74,8 @@ const state = {
         { name: 'FeatureApplication', title: 'Feature Application', icon: 'fa-sitemap' },
         { name: 'OrbitInstrInfo', title: 'Orbits and Instruments Information', icon: 'fa-book' },
         { name: 'AvailableCommands', title: 'Available Commands', icon: 'fa-book' },
-        { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' }
+        { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' },
+        { name: 'Mycroft', title: 'Mycroft', icon: 'fa-bluetooth' }
     ],
     functionalities: [],
     functionalityCount: {
@@ -85,7 +87,8 @@ const state = {
         'OrbitInstrInfo': 0,
         'AvailableCommands': 0,
         'CommandsInformation': 0,
-        'TimelinePlot': 0
+        'TimelinePlot': 0,
+        'Mycroft': 0,
     }
 };
 

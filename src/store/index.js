@@ -11,6 +11,7 @@ import filter from './modules/filter';
 import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
 import modal from './modules/modal';
+import mycroft from './modules/mycroft'
 
 import ClimateCentric from '../scripts/climate-centric';
 import SMAP from '../scripts/smap';
@@ -76,6 +77,7 @@ export default new Vuex.Store({
             commit('resetFilter');
             commit('resetFeatureApplication');
             commit('resetActive');
+            commit('resetMycroft');
             if (!state.experiment.inExperiment) {
                 for (let functionality of problem.shownFunctionalities) {
                     commit('addFunctionality', { functionality: functionality, funcData: null });
@@ -199,7 +201,8 @@ export default new Vuex.Store({
         filter,
         featureApplication,
         experiment,
-        modal
+        modal,
+        mycroft
     },
     strict: debug
 });

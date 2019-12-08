@@ -22,6 +22,7 @@
     import EOSSFilter from './EOSSFilter';
     import FeatureApplication from './FeatureApplication';
     import TimelinePlot from "./TimelinePlot";
+    import Mycroft from "./Mycroft";
 
     let sizeScale = [
         'half',
@@ -44,7 +45,8 @@
             DataMining,
             EOSSFilter,
             FeatureApplication,
-            TimelinePlot
+            TimelinePlot,
+            Mycroft
         },
         computed: {
             sizeClass: function () {
