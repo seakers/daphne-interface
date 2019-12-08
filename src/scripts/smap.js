@@ -33,6 +33,8 @@ export default {
     shownFunctionalities: [
         'DesignBuilder',
         'Teacher',
+        'AvailableCommands',
+        'CommandsInformation',
     ],
     async initFunction(problemName) {
         let extra = {};
