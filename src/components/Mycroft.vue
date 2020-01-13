@@ -19,7 +19,7 @@
 
         <!--Mycroft connected-->
         <template v-if="mycroft_connection === true">
-
+            You are connected!
         </template>
 
     </div>

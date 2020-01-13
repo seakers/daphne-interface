@@ -136,6 +136,21 @@ export default new Vuex.Store({
             if (received_info['type'] === 'active.message') {
                 commit('addDialoguePiece', received_info['message']);
             }
+            if (received_info['type'] === 'mycroft.message') {
+                //--> Connection Information
+                if (received_info['subject'] === 'connection') {
+                    if (received_info['status'] === 'true') {
+                        console.log("connection established");
+                        commit('set_mycroft_connection', true);
+                    }
+                    else if (received_info['status'] === 'false') {
+                        console.log("connection broken");
+                        commit('set_mycroft_connection', false);
+                    }
+                }
+
+
+            }
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");
             }

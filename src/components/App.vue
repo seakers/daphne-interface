@@ -130,7 +130,7 @@
                 // Initialize user-only features
                 if (this.$store.state.auth.isLoggedIn) {
                     await this.$store.dispatch("retrieveActiveSettings");
-                    this.$store.dispatch("startBackgroundSearch");
+                    // this.$store.dispatch("startBackgroundSearch"); // Don't start the background search immediately when a user is logged in
                 }
 
                 this.$store.dispatch('setProblemParameters');
