@@ -1,5 +1,6 @@
 <template>
     <div class="panel-block functionality">
+
         <!--Mycorft disconnected-->
         <template v-if="mycroft_connection === false">
             <div>
@@ -19,7 +20,10 @@
 
         <!--Mycroft connected-->
         <template v-if="mycroft_connection === true">
-            You are connected!
+            <div style="font-size: larger; padding-bottom: 12px;">You are connected!</div>
+            <div>
+                A list Mycroft commands can be found in the <b>Avaliable Commands</b> window
+            </div>
         </template>
 
     </div>
@@ -51,8 +55,6 @@
         mounted() {
             this.$store.dispatch('check_mycroft_connection');
         },
-
-
     }
 </script>
 

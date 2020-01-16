@@ -75,7 +75,7 @@ const state = {
         { name: 'OrbitInstrInfo', title: 'Orbits and Instruments Information', icon: 'fa-book' },
         { name: 'AvailableCommands', title: 'Available Commands', icon: 'fa-book' },
         { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' },
-        { name: 'Mycroft', title: 'Mycroft', icon: 'fa-bluetooth' }
+        { name: 'Mycroft', title: 'Mycroft', icon: 'fa-robot' }
     ],
     functionalities: [],
     functionalityCount: {
