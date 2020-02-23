@@ -15,6 +15,7 @@
             <div class="field">
                 <div class="control">
                     <button class="button is-link" v-on:click.prevent="sendEmail">Send Email</button>
+                    <button class="button is-link" v-on:click.prevent="openLoginForm">Back</button>
                 </div>
             </div>
         </form>
@@ -37,6 +38,9 @@
                 let form = document.getElementById('reset-password-email-form');
                 this.$store.dispatch('resetPasswordEmail', form);
                 this.$emit('close-modal');
+            },
+            openLoginForm() {
+                this.$store.commit('activateModal', 'LoginModal');
             }
         }
     }
