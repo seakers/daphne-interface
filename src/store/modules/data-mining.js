@@ -16,12 +16,6 @@ const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
-    getFeatures(state) {
-        return state.features;
-    },
-    getScores(state) {
-        return state.scores;
-    }
 };
 
 // actions
@@ -31,14 +25,15 @@ const actions = {
         try {
             let reqData = new FormData();
             // Generate list of selected and not selected point ids
+            let selectedArchsSet = new Set(rootState.tradespacePlot.selectedArchs);
             let selectedIds = [];
             let nonSelectedIds = [];
-            rootState.tradespacePlot.selectedArchs.forEach((point, index) => {
-                if (point) {
-                    selectedIds.push(index);
+            rootState.tradespacePlot.plotData.forEach(point => {
+                if (selectedArchsSet.has(point.id)) {
+                    selectedIds.push(point.id);
                 }
                 else {
-                    nonSelectedIds.push(index);
+                    nonSelectedIds.push(point.id);
                 }
             });
             reqData.append('selected', JSON.stringify(selectedIds));
@@ -72,14 +67,15 @@ const actions = {
         try {
             let reqData = new FormData();
             // Generate list of selected and not selected point ids
+            let selectedArchsSet = new Set(rootState.tradespacePlot.selectedArchs);
             let selectedIds = [];
             let nonSelectedIds = [];
-            rootState.tradespacePlot.selectedArchs.forEach((point, index) => {
-                if (point) {
-                    selectedIds.push(index);
+            rootState.tradespacePlot.plotData.forEach(point => {
+                if (selectedArchsSet.has(point.id)) {
+                    selectedIds.push(point.id);
                 }
                 else {
-                    nonSelectedIds.push(index);
+                    nonSelectedIds.push(point.id);
                 }
             });
             reqData.append('selected', JSON.stringify(selectedIds));
@@ -113,14 +109,16 @@ const actions = {
         try {
             let reqData = new FormData();
             // Generate list of selected and not selected point ids
+            let selectedArchsSet = new Set(rootState.tradespacePlot.selectedArchs);
             let selectedIds = [];
             let nonSelectedIds = [];
-            rootState.tradespacePlot.selectedArchs.forEach((point, index) => {
-                if (point) {
-                    selectedIds.push(index);
+            console.log(selectedArchsSet);
+            rootState.tradespacePlot.plotData.forEach(point => {
+                if (selectedArchsSet.has(point.id)) {
+                    selectedIds.push(point.id);
                 }
                 else {
-                    nonSelectedIds.push(index);
+                    nonSelectedIds.push(point.id);
                 }
             });
             reqData.append('selected', JSON.stringify(selectedIds));

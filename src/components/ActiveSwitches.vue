@@ -1,18 +1,18 @@
 <template>
     <div class="active-menu" v-if="logged_in">
-        <label class="checkbox">
+        <label class="checkbox" v-if="backgroundSearchExperimentCondition">
             <input type="checkbox" v-model="runBackgroundSearch">
             Run Background Search
         </label>
-        <label class="checkbox">
+        <label class="checkbox" v-if="backgroundSearchExperimentCondition">
             <input type="checkbox" v-model="showFoundArchitectures">
             Show New Architectures
         </label>
-        <label class="checkbox">
+        <label class="checkbox" v-if="diversifierExperimentCondition">
             <input type="checkbox" v-model="runDiversifier">
             Enable Diversifier
         </label>
-        <label class="checkbox">
+        <label class="checkbox" v-if="liveSuggestionsExperimentCondition">
             <input type="checkbox" v-model="showSuggestions">
             Enable Suggestions
         </label>
@@ -20,9 +20,16 @@
 </template>
 
 <script>
+    import {mapState} from "vuex";
+
     export default {
         name: "ActiveSwitches",
         computed: {
+            ...mapState({
+                inExperiment: state => state.experiment.inExperiment,
+                experimentStage: state => state.experiment.experimentStage,
+                stageInformation: state => state.experiment.stageInformation,
+            }),
             runBackgroundSearch: {
                 get () {
                     return this.$store.state.active.runBackgroundSearch;
@@ -60,7 +67,31 @@
             },
             logged_in() {
                 return this.$store.state.auth.isLoggedIn;
-            }
+            },
+            backgroundSearchExperimentCondition() {
+                if (!this.inExperiment) {
+                    return true;
+                }
+                else {
+                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch');
+                }
+            },
+            diversifierExperimentCondition() {
+                if (!this.inExperiment) {
+                    return true;
+                }
+                else {
+                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier');
+                }
+            },
+            liveSuggestionsExperimentCondition() {
+                if (!this.inExperiment) {
+                    return true;
+                }
+                else {
+                    return this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions');
+                }
+            },
         }
     }
 </script>

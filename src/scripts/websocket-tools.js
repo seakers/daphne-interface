@@ -3,6 +3,7 @@ import ReconnectingWebSocket from "reconnecting-websocket";
 class WebsocketTools {
     constructor() {
         this.websocket = null;
+        this.experimentWebsocket = null;
     }
 
     async wsConnect(store) {
@@ -32,8 +33,20 @@ class WebsocketTools {
         });
     }
 
+    async experimentWsConnect() {
+        this.experimentWebsocket = new WebSocket(WS_URL + 'experiment');
+        this.experimentWebsocket.onopen = function() {
+            console.log('Experiment Web Socket Connection Made');
+        };
+        this.experimentWebsocket.onmessage = function (data) {};
+    }
+
     async wsRefresh() {
         this.websocket.refresh();
+    }
+
+    async experimentWsRefresh() {
+        this.experimentWebsocket.refresh();
     }
 }
 
