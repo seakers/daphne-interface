@@ -136,15 +136,8 @@ export default new Vuex.Store({
             if (received_info['type'] === 'active.message') {
                 commit('addDialoguePiece', received_info['message']);
             }
-
-
-
-
-
-
-
-
-
+            
+            
             if (received_info['type'] === 'mycroft.message') {
                 //--> Connection Information
                 if (received_info['subject'] === 'connection') {
