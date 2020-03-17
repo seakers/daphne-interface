@@ -16,7 +16,7 @@
                     </div>
                     <div class="field">
                         <div class="control">
-                            <button class="button is-link" v-on:click.prevent="changeProblem">New</button>
+                            <a class="button is-link" target="_blank" href="vassar.html">New</a>
                             <button class="button is-link" v-on:click.prevent="changeProblem">Edit</button>
                         </div>
                     </div>

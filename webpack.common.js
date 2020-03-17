@@ -12,7 +12,7 @@ module.exports = {
     entry: {
         index: './src/index.js',
         details: './src/details.js',
-        vassar: './scr/vassar.js'
+        vassar: './src/vassar.js'
     },
 
     output: {
