@@ -1,6 +1,15 @@
 <template>
     <div class="wrapper">
-            hello
+        <div class="columns">
+            <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
+                <div class="aside-container">
+                    <vassar-menu></vassar-menu>
+                </div>
+            </aside>
+
+            <div class="column is-10">
+            </div>
+        </div>
 
     </div>
 </template>
@@ -10,6 +19,8 @@
 <script>
     import { mapState } from 'vuex';
     import {fetchGet} from '../scripts/fetch-helpers';
+    import AggregationRules from './AggregationRules';
+    import VassarMenu from './VassarMenu';
 
     // function getParameterByName(name, url) {
     //     if (!url) url = window.location.href;
@@ -38,6 +49,7 @@
         },
         components: {
             // ScoreTree, CostColumn, DetailsTable
+            VassarMenu
         },
         mounted() {
 
@@ -56,5 +68,15 @@
         padding: 10px;
         width: 100vw;
         height: 100vh;
+    }
+</style>
+
+
+
+<style lang="scss">
+.aside-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 </style>
