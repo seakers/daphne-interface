@@ -11,6 +11,8 @@ import filter from './modules/filter';
 import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
 import modal from './modules/modal';
+import vassarPages from './modules/vassar-pages';
+import stakeholders from './modules/stakeholders';
 
 import ClimateCentric from '../scripts/climate-centric';
 import SMAP from '../scripts/smap';
@@ -199,7 +201,9 @@ export default new Vuex.Store({
         filter,
         featureApplication,
         experiment,
-        modal
+        modal,
+        vassarPages,
+        stakeholders
     },
     strict: debug
 });

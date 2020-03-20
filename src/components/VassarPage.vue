@@ -7,7 +7,8 @@
                 </div>
             </aside>
 
-            <div class="column is-10">
+            <div class="column is-10 hero">
+                <stakeholders></stakeholders>
             </div>
         </div>
 
@@ -19,8 +20,8 @@
 <script>
     import { mapState } from 'vuex';
     import {fetchGet} from '../scripts/fetch-helpers';
-    import AggregationRules from './AggregationRules';
     import VassarMenu from './VassarMenu';
+    import Stakeholders from './Stakeholders';
 
     // function getParameterByName(name, url) {
     //     if (!url) url = window.location.href;
@@ -41,7 +42,7 @@
         },
         computed: {
             ...mapState({
-                // subobjectiveDetails: state => state.score.subobjectiveDetails
+                page_selected: state => state.vassarPages.page_selected,
 
             }),
         },
@@ -49,7 +50,8 @@
         },
         components: {
             // ScoreTree, CostColumn, DetailsTable
-            VassarMenu
+            VassarMenu,
+            Stakeholders
         },
         mounted() {
 
