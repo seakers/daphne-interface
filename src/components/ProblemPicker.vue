@@ -3,28 +3,25 @@
         <form>
 
             <div class="problem">
-                <div  id="locate" class="card top-card">
-                    <div class="field">
-                        <label class="label">Problem:</label>
-                        <div class="control">
-                            <div class="select">
-                                <select v-model="problemName">
-                                    <option v-for="problem in problemList" v-bind:value="problem">{{ problem }}</option>
-                                </select>
-                            </div>
+                <div class="field">
+                    <label class="label">Problem:</label>
+                    <div class="control">
+                        <div class="select">
+                            <select v-model="problemName">
+                                <option v-for="problem in problemList" v-bind:value="problem">{{ problem }}</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="field">
-                        <div class="control">
-                            <a class="button is-link" target="_blank" href="vassar.html">New</a>
-                            <button class="button is-link" v-on:click.prevent="changeProblem">Edit</button>
-                        </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <a class="button is-link" target="_blank" href="vassar.html">New</a>
+                        <button class="button is-link" v-on:click.prevent="changeProblem">Edit</button>
                     </div>
                 </div>
             </div>
 
             <div class="dataset">
-                <div class="card" >
                     <div class="field">
                         <label class="label">Dataset:</label>
                         <div class="control">
@@ -50,7 +47,6 @@
                             <a class="button is-link" v-bind:href="downloadUrl">Download</a>
                         </div>
                     </div>
-                </div>
             </div>
 
 
@@ -136,14 +132,13 @@
     }
 
     .problem-picker .label {
-        color: black;
+        color: whitesmoke;
         font-size: 16px;
         font-weight: bold;
         width: 100%;
     }
 
     .problem-picker .card {
-        background-color: whitesmoke;
         border-radius: 4px;
         margin-top: 5px;
         margin-bottom: 5px;
