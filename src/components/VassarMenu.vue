@@ -3,22 +3,23 @@
         <div class="main-elements">
             <h1 class="title is-size-4">Problem Builder</h1>
 
-            <div class="group-selector"  v-bind:class="{ 'group-selector-selected': group.label_selected === true }" v-on:click="get_group_page()">
+            <div class="group-selector"  v-bind:class="{ 'group-selector-selected': group_label.label_selected === true }" v-on:click="get_group_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Group</p>
-                <p class="menu-label vassar-sublabel">{{ group.group_selected }}</p>
+                <p class="menu-label vassar-sublabel">{{ group }}</p>
             </div>
 
-            <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': problem.label_selected === true }" v-on:click="get_problem_page()">
+            <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': problem_label.label_selected === true }" v-on:click="get_problem_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Problem</p>
-                <p class="menu-label vassar-sublabel">SMAP</p>
+                <p class="menu-label vassar-sublabel">{{ problem }}</p>
             </div>
 
 
             <div class="editor-title">
                 <p class="menu-label vassar-label">Editor</p>
             </div>
+
             <div class="editor-menu">
-                <p class="menu-label editor-label" v-for="service in services" :key="service.title" v-on:click="get_service_page(service.id)" v-bind:class="{ 'editor-label-selected': service.selected === true }">{{ service.title }}</p>
+                <p class="menu-label editor-label" v-for="service in editor_pages" :key="service.title" v-on:click="get_service_page(service.id)" v-bind:class="{ 'editor-label-selected': service.selected === true }">{{ service.title }}</p>
             </div>
 
 
@@ -39,64 +40,78 @@
         name: 'vassar-menu',
         data: function () {
             return {
-                services: [
+                editor_pages: [
                     { title: 'stakeholders', id: 'stakeholders', selected: false },
                     { title: 'instruments', id: 'instruments', selected: false },
-                    { title: 'requirement rules', id: 'requirement rules', selected: false },
+                    { title: 'requirements', id: 'requirements', selected: false },
                     { title: 'mission analysis', id: 'mission analysis', selected: false },
                     { title: 'attributes', id: 'attributes', selected: false },
                 ],
-                group: { 
-                        label_selected: false, 
-                        id: 'group', 
-                        group_selected: 'seakers', 
-                        memberships: ['seakers', 'jpl', 'goddard']
-                },
-                problem: { 
-                        label_selected: false, 
-                        id: 'problem', 
-                        problem_selected: 'SMAP', 
-                        memberships: ['SMAP', 'Climate Centric', 'Landsat']
-                }
-
             }
         },
         computed: {
                 ...mapState({
                         page_selected: state => state.vassarPages.page_selected,
+                        group: state => state.groups.group,
+                        problem: state => state.groups.problem,
                 }),
+                group_label() {
+                        let g_label = { 
+                                label_selected: false, 
+                                id: 'group', 
+                                memberships: ['seakers', 'jpl', 'goddard']
+                        }
+                        if(this.page_selected === 'groups'){
+                                g_label.label_selected = true;
+                        }
+                        return g_label;
+                },
+                problem_label() {
+                        let p_label = { 
+                                label_selected: false, 
+                                id: 'problem', 
+                                memberships: ['SMAP', 'Climate Centric', 'Landsat']
+                        }
+                        if(this.page_selected === 'problems'){
+                                p_label.label_selected = true;
+                        }
+                        return p_label;
+                }
         },
         methods: {
                 get_group_page(){
-                        this.problem.label_selected = false;
+                        this.problem_label.label_selected = false;
                         // Unhighlight editors
-                        if (this.services.find(service => service.selected === true) !== undefined){
-                                this.services.find(service => service.selected === true).selected = false;
+                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
+                                this.editor_pages.find(service => service.selected === true).selected = false;
                         } 
                         // Highlight group
-                        this.group.label_selected = true;
+                        this.group_label.label_selected = true;
+                        this.$store.commit('set_page_selected', 'groups');
                 },
                 get_problem_page(){
                         // Unhighlight group
-                        this.group.label_selected = false;
+                        this.group_label.label_selected = false;
                         // Unhighlight editors
-                        if (this.services.find(service => service.selected === true) !== undefined){
-                                this.services.find(service => service.selected === true).selected = false;
+                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
+                                this.editor_pages.find(service => service.selected === true).selected = false;
                         } 
 
-                        this.problem.label_selected = true;
+                        this.problem_label.label_selected = true;
+                        this.$store.commit('set_page_selected', 'problems');
                 },
                 get_service_page(id){
                         console.log(id);
                         // Unhighlight problems and groups
-                        this.problem.label_selected = false;
-                        this.group.label_selected = false;
+                        this.problem_label.label_selected = false;
+                        this.group_label.label_selected = false;
                         // Unhighlight any editor labels
-                        if (this.services.find(service => service.selected === true) !== undefined){
-                                this.services.find(service => service.selected === true).selected = false; 
+                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
+                                this.editor_pages.find(service => service.selected === true).selected = false; 
                         }
                         // Highlight the selected label
-                        this.services.find(service => service.id === id).selected = true;
+                        this.editor_pages.find(service => service.id === id).selected = true;
+                        this.$store.commit('set_page_selected', id);
                 }
 
 
@@ -114,8 +129,6 @@
 
 
 
-
-
 <style lang="scss">
 p.vassar-label {
         color: whitesmoke;
@@ -127,6 +140,7 @@ p.vassar-sublabel {
         font-size: .8em;
         padding-left: 15px;
         margin-top: 0px !important;
+        word-wrap: break-word;
 }
 
 a.vassar-link {
@@ -150,19 +164,20 @@ a.vassar-link:hover {
         padding: 0.5em 0.75em;
         border-radius: 2px;
         background-color: #28313e !important;
-        transition: .35s linear all;
-        -webkit-box-shadow: inset 0px 0px 7px #14191f;
-        -moz-box-shadow: inset 0px 0px 7px #14191f;
-        box-shadow: inset 0px 0px 7px #14191f;
+        transition: .2s linear all;
+        -webkit-box-shadow: inset 0px 0px 3px #14191f;
+        -moz-box-shadow: inset 0px 0px 3px #14191f;
+        box-shadow: inset 0px 0px 3px #14191f;
 }
 
 .group-selector-selected {
         background-color: #28313e !important;
         padding: 0.5em .75em;
         border-radius: 2px;
-        -webkit-box-shadow: inset 0px 0px 7px #14191f;
-        -moz-box-shadow: inset 0px 0px 7px #14191f;
-        box-shadow: inset 0px 0px 7px #14191f;
+        transition: .08s linear all;
+        -webkit-box-shadow: inset 0px 0px 14px #14191f !important;
+        -moz-box-shadow: inset 0px 0px 14px #14191f !important;
+        box-shadow: inset 0px 0px 14px #14191f !important;
 }
 
 

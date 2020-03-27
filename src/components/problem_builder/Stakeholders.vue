@@ -21,7 +21,7 @@
 
 <script>
     import { mapState } from 'vuex';
-    import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
+    import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
     import DatabaseTable from './DatabaseTable';
     
     export default {
@@ -33,7 +33,7 @@
         },
         computed: {
             ...mapState({
-                headers: state => state.stakeholders.headers,
+                 headers: state => state.stakeholders.headers,
 
             }),
         },
@@ -45,16 +45,6 @@
         },
         async mounted() {
             // console.log("Mounting stakeholders page")
-
-            // // QUERY GRAPHQL CODE
-            // let query = { 
-            //     "query": "{ Problem { id name } }"
-            // };
-            // let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
-            // let table_data = await dataResponse.json();
-            // console.log(dataResponse);
-            // console.log(table_data.errors);
-            // console.log(table_data.data);
         },
         watch: {
         }

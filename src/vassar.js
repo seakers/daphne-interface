@@ -2,7 +2,7 @@
 
 import Vue from 'vue';
 import VassarPage from './components/VassarPage';
-import store from './store';
+import store from './vassar_store';
 
 // Styles
 import './styles/app.scss';

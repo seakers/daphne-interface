@@ -13,10 +13,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="field">
+                <div class="field" v-if="isLoggedIn">
                     <div class="control">
                         <a class="button is-link" target="_blank" href="vassar.html">New</a>
-                        <button class="button is-link" v-on:click.prevent="changeProblem">Edit</button>
                     </div>
                 </div>
             </div>
@@ -64,7 +63,8 @@
             ...mapState({
                 problemList: state => state.problem.problemList,
                 datasetList: state => state.problem.datasetList,
-                isLoggedIn: state => state.auth.isLoggedIn
+                isLoggedIn: state => state.auth.isLoggedIn,
+                username: state => state.auth.username
             }),
             problemName: {
                 get() {

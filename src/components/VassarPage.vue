@@ -1,14 +1,27 @@
 <template>
     <div class="wrapper">
         <div class="columns">
+
             <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
                 <div class="aside-container">
                     <vassar-menu></vassar-menu>
                 </div>
             </aside>
 
-            <div class="column is-10 hero">
-                <stakeholders></stakeholders>
+
+            <div class="column is-10 editor-background hero">
+
+                <template v-if="page_selected === 'groups'">
+                    <groups></groups>
+                </template>
+
+                <template v-if="page_selected === 'problems'">
+                    <problems></problems>
+                </template>
+                
+
+
+
             </div>
         </div>
 
@@ -19,19 +32,12 @@
 
 <script>
     import { mapState } from 'vuex';
-    import {fetchGet} from '../scripts/fetch-helpers';
+    import { fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import VassarMenu from './VassarMenu';
-    import Stakeholders from './Stakeholders';
 
-    // function getParameterByName(name, url) {
-    //     if (!url) url = window.location.href;
-    //     name = name.replace(/[\[\]]/g, '\\$&');
-    //     let regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-    //         results = regex.exec(url);
-    //     if (!results) return null;
-    //     if (!results[2]) return '';
-    //     return decodeURIComponent(results[2].replace(/\+/g, ' '));
-    // }
+    import Groups from './problem_builder/Groups';
+    import Problems from './problem_builder/Problems';
+    import Stakeholders from './problem_builder/Stakeholders';
 
     export default {
         name: 'vassar-page',
@@ -51,9 +57,27 @@
         components: {
             // ScoreTree, CostColumn, DetailsTable
             VassarMenu,
+
+            Groups,
+            Problems,
             Stakeholders
         },
-        mounted() {
+        async mounted() {
+            // Check if the user is logged in
+            let dataResponse = await fetchGet(API_URL + 'auth/check-status');
+            let auth_information = await dataResponse.json();
+            console.log("Login Status:", auth_information.is_logged_in);
+            
+            // Get the user's private key
+            if(auth_information.is_logged_in){
+                dataResponse = await fetchPost(API_URL + 'auth/get-user-pk');
+                let user_information = await dataResponse.json();
+                this.$store.commit('set_user_id', user_information['user_id']);
+                console.log("USER ID", user_information['user_id']);
+                this.$store.dispatch('init_page');
+            }
+
+
 
         },
         watch: {
@@ -81,4 +105,12 @@
         flex-direction: column;
         height: 100%;
     }
+
+.editor-background {
+    display: flex;
+    background-color: #28313e;
+    -webkit-box-shadow: inset 0px 0px 3px #14191f;
+    -moz-box-shadow: inset 0px 0px 3px #14191f;
+    box-shadow: inset 0px 0px 14px #14191f;
+}
 </style>
