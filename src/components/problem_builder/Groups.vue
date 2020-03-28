@@ -1,50 +1,12 @@
 <template>
     <div class="groups-container">
-        <!-- <database-table :table_name=table_name :table_columns=table_columns></database-table> -->
-
-
-        <div class="groups-top">
-        </div>
-
-        <div class="groups-panel-row">
-            <div class="groups-panel-row-left"></div>
-            <div class="groups-panel">
-                <div class="groups-title">
-                    Groups
-                </div>
-
-                <div class="groups-table-container">
-                    <table class="table is-hoverable is-fullwidth is-striped" style="table-background-color: black;">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Group</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="group in groups" :key="group.id">
-                                <td style="vertical-align: middle;">{{ group.id }}</td>
-                                <td style="vertical-align: middle;">{{ group.name }}</td>
-                                <td style="text-align: right;"><a class="button is-link is-small" v-on:click="set_group(group.name, group.id)">select</a></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td><input class="input" type="text" placeholder="Group Name"></td>
-                                <td style="text-align: right;"><a class="button is-primary" v-on:click="new_group()">New Group</a></td>
-                            </tr>
-                        </tbody>
-                    </table> 
-                </div>
-
-
-            </div>
-            <div class="groups-panel-row-right"></div>
-        </div>
-
-        <div class="groups-bottom">
-        </div>
-
+        <table-view :table_name="groups_table_name" 
+                    :table_headers="groups_table_headers"
+                    :row_keys="groups_row_keys"
+                    :row_objects="groups_row_objects"
+                    selectable
+        >
+        </table-view>
         
     </div>
 </template>
@@ -53,36 +15,28 @@
 <script>
     import { mapState } from 'vuex';
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
-    import DatabaseTable from './DatabaseTable';
+    import TableView from './TableView';
     
     export default {
         name: 'groups',
         data: function () {
             return {
-                table_name: 'Group',
-                table_columns: 'id name'
             }
         },
         computed: {
             ...mapState({
-                username: state => state.groups.username,
-                groups: state => state.groups.groups,
+                groups_table_name: state => state.groups.table_name,
+                groups_table_headers: state => state.groups.table_headers,
+                groups_row_keys: state => state.groups.row_keys,
+                groups_row_objects: state => state.groups.row_objects,
+
 
             }),
         },
         methods: {
-            async set_group(name, id) {
-                console.log(id);
-                this.$store.commit('set_group', name, id);
-            },
-
-            async new_group() {
-                console.log("new group");
-                // this.$store.commit('new_group', name, id);
-            }
         },
         components: {
-            DatabaseTable
+            TableView
         },
         async mounted() {
 

@@ -11,9 +11,11 @@
 
             <div class="column is-10 editor-background hero">
 
+
                 <template v-if="page_selected === 'groups'">
                     <groups></groups>
                 </template>
+
 
                 <template v-if="page_selected === 'problems'">
                     <problems></problems>
@@ -72,9 +74,12 @@
             if(auth_information.is_logged_in){
                 dataResponse = await fetchPost(API_URL + 'auth/get-user-pk');
                 let user_information = await dataResponse.json();
+
+                // Set user id
                 this.$store.commit('set_user_id', user_information['user_id']);
                 console.log("USER ID", user_information['user_id']);
-                this.$store.dispatch('init_page');
+                await this.$store.dispatch('query_groups');
+                await this.$store.dispatch('query_problems');
             }
 
 
@@ -113,4 +118,30 @@
     -moz-box-shadow: inset 0px 0px 3px #14191f;
     box-shadow: inset 0px 0px 14px #14191f;
 }
+
+
+
+// Transitions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </style>

@@ -52,8 +52,8 @@
         computed: {
                 ...mapState({
                         page_selected: state => state.vassarPages.page_selected,
-                        group: state => state.groups.group,
-                        problem: state => state.groups.problem,
+                        group: state => state.groups.selected_group_name,
+                        problem: state => state.problems.selected_problem_name,
                 }),
                 group_label() {
                         let g_label = { 

@@ -10,7 +10,7 @@
             </table>
         </div>
         <div class="column is-4 hero">
-                <database-table table_name="Stakeholder_Needs_Objective"></database-table>
+                <table-view table_name="Stakeholder_Needs_Objective"></table-view>
         </div>
         <div class="column is-4 hero">
                 1
@@ -22,7 +22,7 @@
 <script>
     import { mapState } from 'vuex';
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
-    import DatabaseTable from './DatabaseTable';
+    import TableView from './TableView';
     
     export default {
         name: 'stakeholders',
@@ -41,7 +41,7 @@
         },
         components: {
             // ScoreTree, CostColumn, DetailsTable
-            DatabaseTable
+            TableView
         },
         async mounted() {
             // console.log("Mounting stakeholders page")
