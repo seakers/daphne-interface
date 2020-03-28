@@ -20,6 +20,10 @@
                 <template v-if="page_selected === 'problems'">
                     <problems></problems>
                 </template>
+
+                <template v-if="page_selected === 'stakeholders'">
+                    <stakeholders></stakeholders>
+                </template>
                 
 
 

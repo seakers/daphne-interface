@@ -68,7 +68,6 @@ const actions = {
             dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
             problem_names = await dataResponse.json();
             let probs = problem_names.data.Group[0].Join__Problem_Groups;
-            console.log("Problems", probs);
             params = []
             params.push(current_group.id);
             params.push(probs);

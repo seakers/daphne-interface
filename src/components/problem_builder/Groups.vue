@@ -61,12 +61,14 @@
 }
 
 .groups-container {
-    display: flex; 
+    display: flex;
     width: 100%;
     height: 100%;
-
     align-items: stretch;
     flex-direction: column !important;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
 }
 
 .groups-table-container{

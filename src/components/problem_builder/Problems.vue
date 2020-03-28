@@ -6,6 +6,7 @@
                     :row_keys="problems_row_keys"
                     :row_objects="problems_row_objects"
                     selectable
+                    insertable_row
         >
         </table-view>
 
@@ -52,27 +53,6 @@
 
 
 <style lang="scss">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
