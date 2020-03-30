@@ -4,9 +4,10 @@
         <table-view :table_name="problems_table_name" 
                     :table_headers="problems_table_headers"
                     :row_keys="problems_row_keys"
-                    :row_objects="problems_row_objects"
+                    :table_view_rows_data="problems_table_view_rows_data"
                     selectable
                     insertable_row
+                    editable_row
         >
         </table-view>
 
@@ -33,7 +34,7 @@
                 problems_row_keys: state => state.problems.row_keys,
             }),
             ...mapGetters({
-                problems_row_objects: 'get_problem_rows'
+                problems_table_view_rows_data: 'problems__get_rows'
             }),
         },
         methods: {
@@ -42,7 +43,6 @@
             TableView
         },
         async mounted() {
-
         },
         watch: {
         }

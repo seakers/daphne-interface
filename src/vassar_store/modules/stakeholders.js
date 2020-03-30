@@ -5,16 +5,21 @@ const state = {
     panel_table_headers: ['ID', 'Name', 'Description', 'weight'],
     panel_row_keys: ['id', 'name', 'description', 'weight'],
     panel_row_objects: [],
+    panel_rows: [],
 
     objective_table_name: 'Objectives',
     objective_table_headers: ['ID', 'Name', 'Description', 'weight'],
     objective_row_keys: ['id', 'name', 'description', 'weight'],
     objective_row_objects: {},
+    objective_rows: [],
+    objective_rows_mapper: {},
 
     subobjective_table_name: 'Subobjectives' ,
     subobjective_table_headers: ['ID', 'Name', 'Description', 'weight'],
     subobjective_row_keys: ['id', 'name', 'description', 'weight'],
     subobjective_row_objects: {},
+    subobjective_rows: [],
+    subobjective_rows_mapper: {},
 
     stakeholder_info: {}, // Object containing all of the stakeholder information
                           //   to be parsed by the row getters

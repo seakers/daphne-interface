@@ -49,7 +49,6 @@
         name: 'vassar-page',
         data: function () {
             return {
-                // tutorial: {},
             }
         },
         computed: {
@@ -82,8 +81,8 @@
                 // Set user id
                 this.$store.commit('set_user_id', user_information['user_id']);
                 console.log("USER ID", user_information['user_id']);
-                await this.$store.dispatch('query_groups');
-                await this.$store.dispatch('query_problems');
+                await this.$store.dispatch('groups__query');
+                await this.$store.dispatch('problems__query');
             }
 
 

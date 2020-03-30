@@ -3,8 +3,9 @@
         <table-view :table_name="groups_table_name" 
                     :table_headers="groups_table_headers"
                     :row_keys="groups_row_keys"
-                    :row_objects="groups_row_objects"
+                    :table_view_rows_data="groups_table_view_rows_data"
                     selectable
+                    insertable_row
         >
         </table-view>
         
@@ -28,7 +29,7 @@
                 groups_table_name: state => state.groups.table_name,
                 groups_table_headers: state => state.groups.table_headers,
                 groups_row_keys: state => state.groups.row_keys,
-                groups_row_objects: state => state.groups.row_objects,
+                groups_table_view_rows_data: state => state.groups.table_view_rows_data,
 
 
             }),

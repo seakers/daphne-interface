@@ -32,7 +32,7 @@
 
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapGetters } from 'vuex';
     import MainMenuItem from './MainMenuItem';
     import * as _ from 'lodash-es';
 
@@ -53,7 +53,10 @@
                 ...mapState({
                         page_selected: state => state.vassarPages.page_selected,
                         group: state => state.groups.selected_group_name,
-                        problem: state => state.problems.selected_problem_name,
+                        // problem: state => state.problems.selected_problem_name,
+                }),
+                ...mapGetters({
+                        problem: 'problems__get_selected_problem_name',
                 }),
                 group_label() {
                         let g_label = { 

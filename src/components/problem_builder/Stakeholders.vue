@@ -6,6 +6,8 @@
                     :row_keys="panel_row_keys"
                     :row_objects="panel_row_objects"
                     selectable
+                    editable_row
+                    insertable_row
         >
         </table-view>
 
@@ -17,6 +19,8 @@
                         :row_objects="objective_row_objects"
                         selectable
                         closeable
+                        editable_row
+                        insertable_row
             >
             </table-view>
         </template>
@@ -30,6 +34,8 @@
                         :row_objects="subobjective_row_objects"
                         selectable
                         closeable
+                        editable_row
+                        insertable_row
             >
             </table-view>
         </template>
