@@ -24,6 +24,22 @@
                 <template v-if="page_selected === 'stakeholders'">
                     <stakeholders></stakeholders>
                 </template>
+
+                <template v-if="page_selected === 'requirements'">
+                    <requirements></requirements>
+                </template>
+
+                <template v-if="page_selected === 'mission analysis'">
+                    <mission-analysis></mission-analysis>
+                </template>
+
+                <template v-if="page_selected === 'instruments'">
+                    <instruments></instruments>
+                </template>
+
+                <template v-if="page_selected === 'attributes'">
+                    <attributes></attributes>
+                </template>
                 
 
 
@@ -45,6 +61,12 @@
     import Problems from './problem_builder/Problems';
     import Stakeholders from './problem_builder/Stakeholders';
 
+    import Requirements from './problem_builder/Requirements';
+    import Instruments from './problem_builder/Instruments';
+    import MissionAnalysis from './problem_builder/MissionAnalysis';
+    import Attributes from './problem_builder/Attributes';
+
+
     export default {
         name: 'vassar-page',
         data: function () {
@@ -65,7 +87,11 @@
 
             Groups,
             Problems,
-            Stakeholders
+            Stakeholders,
+            Requirements,
+            Instruments,
+            MissionAnalysis,
+            Attributes
         },
         async mounted() {
             // Check if the user is logged in

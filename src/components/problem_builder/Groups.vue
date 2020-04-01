@@ -4,8 +4,8 @@
                     :table_headers="groups_table_headers"
                     :row_keys="groups_row_keys"
                     :table_view_rows_data="groups_table_view_rows_data"
+                    :display_name="groups_display_name"
                     selectable
-                    insertable_row
         >
         </table-view>
         
@@ -26,10 +26,11 @@
         },
         computed: {
             ...mapState({
+                groups_display_name: state => state.groups.display_name,
                 groups_table_name: state => state.groups.table_name,
                 groups_table_headers: state => state.groups.table_headers,
                 groups_row_keys: state => state.groups.row_keys,
-                groups_table_view_rows_data: state => state.groups.table_view_rows_data,
+                groups_table_view_rows_data: state => state.groups.groups__rows,
 
 
             }),

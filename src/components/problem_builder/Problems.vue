@@ -5,6 +5,7 @@
                     :table_headers="problems_table_headers"
                     :row_keys="problems_row_keys"
                     :table_view_rows_data="problems_table_view_rows_data"
+                    :display_name="problems_display_name"
                     selectable
                     insertable_row
                     editable_row
@@ -29,6 +30,7 @@
         },
         computed: {
             ...mapState({
+                problems_display_name: state => state.problems.display_name,
                 problems_table_name: state => state.problems.table_name,
                 problems_table_headers: state => state.problems.table_headers,
                 problems_row_keys: state => state.problems.row_keys,

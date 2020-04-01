@@ -1,4 +1,7 @@
 import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
+import { query__many_to_many } from "../../scripts/query-helpers";
+import { insert__many_to_many } from "../../scripts/insert-helpers";
+import { update__table_row } from "../../scripts/update-helpers";
 import * as _ from 'lodash-es';
 import Vue from 'vue'
 
@@ -8,9 +11,11 @@ const state = {
     //--------------\\
     //  Table Info  \\
     //--------------\\
-    table_name: 'Problems',             // Panel Title
+    display_name: 'Problems',
+    table_name: 'Problem',             // Panel Title
     table_headers: ['ID', 'Problem'],   // Column Headers
     row_keys: ['id', 'name'],           // Column Keys
+    row_types: ['int', 'string'],
 
     //--------\\
     //  Rows  \\
@@ -60,33 +65,15 @@ const actions = {
     //--------------\\
     //  Query Rows  \\
     //--------------\\
-    async problems__query({ state, commit, rootState }){
-        let num_goups = rootState.groups.table_view_rows_data.length;
-        let query = {};
-        let dataResponse = {};
-        let problem_names = [];
-        let params = [];
+    async problems__query({ state, commit, getters }){
+        let num_goups = getters.groups__get_rows.length;
         for(let i = 0; i < num_goups; i++){
-            let current_group = rootState.groups.table_view_rows_data[i].objects;
-            query = {};
-            query.query = `{
-                Group(where: {id: {_eq: ${current_group.id}}}) {
-                  Join__Problem_Groups {
-                    Problem {
-                      id
-                      name
-                    }
-                  }
-                }
-            }`
-            dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
-            problem_names = await dataResponse.json();
-            let probs = problem_names.data.Group[0].Join__Problem_Groups;
-            params = []
+            let current_group = getters.groups__get_rows[i].objects;
+            let row_objects = await query__many_to_many(current_group.id, 'Group', 'Join__Problem_Groups', state.table_name, state.row_keys, state.row_types);
+            let params = [];
             params.push(current_group.id);
-            params.push(probs);
-            commit('append_group_problems', params);
-            console.log("PROBLEMS", probs)
+            params.push(row_objects);
+            commit('problems__append_query', params);
         }
     },
 
@@ -122,20 +109,35 @@ const actions = {
         commit('problems__set_edit_state', params);
     },
     async problems__commit_edit({state, commit, rootState}, row_object){
-        // 1. Find the equivalent unchanged row
+        // row_object (deep_copy) contains the user's changes
+
+        // 1. Compare the unchanged row with the deep copy
         let unchanged_row = state.problems__rows_mapper[rootState.groups.selected_group_id][row_object.index];
-        console.log("ORIGINAL ROW", unchanged_row);
         let new_name = row_object.items[1];
         let old_name = unchanged_row.items[1];
+
+        // 2. If there are changes, commit those changes
         if(old_name !== new_name){
-            //  TODO: Commit new row to database
+            update__table_row(row_object, row_object.table_name, state.row_keys, state.row_types);
             let params = [];
             params.push(row_object);
             params.push(rootState);
             commit('problems__update_row', params);
-            // TODO: Turn edit state off after commit
             commit('problems__reset_edit_all', rootState);
         }
+    },
+
+    //--------------\\
+    //  Insert Row  \\
+    //--------------\\
+    async problems__insert_row({state, commit, getters, rootState}, row_object){        
+        // row_object.items[0].value = `"${row_object.items[0].value}"`;
+        let insert_object = await insert__many_to_many(row_object, state.table_name, 'Join__Problem_Groups', 'group_id', getters.groups__get_selected_group_id, state.row_keys, state.row_types);
+
+        let params = {};
+        params['insert_object'] = insert_object;
+        params['group_id'] = getters.groups__get_selected_group_id;
+        commit('problems__insert_row_local', params);
     },
 };
 
@@ -149,33 +151,8 @@ const mutations = {
     //--------------\\
     //  Query Rows  \\
     //--------------\\
-    append_group_problems(state, params){
-        let problems__rows = []
-        let group_id = params[0];
-        let problems = params[1];
-        console.log("PROBLEMS", problems)
-        let num_problems = problems.length;
-        for(let x=0;x<num_problems;x++){
-            let problem = problems[x];
-            let items = [];
-            for(let y=0;y<state.row_keys.length;y++){
-                let key = state.row_keys[y];
-                items.push(problem.Problem[key]);
-            }
-
-            // Row creation --->
-            let table_view_row_data = {};
-            table_view_row_data['objects'] = problem.Problem;
-            table_view_row_data['index'] = x;
-            table_view_row_data['selected_state'] = false;
-            table_view_row_data['editing_state'] = false
-            table_view_row_data['items'] = items
-
-            let problem_details = {'name': problem.Problem.name, 'id': problem.Problem.id};
-            problems__rows.push(table_view_row_data);
-        }
-        console.log("Mapping problem rows", group_id, problems__rows);
-        Vue.set(state.problems__rows_mapper, group_id, problems__rows);
+    problems__append_query(state, params){
+        Vue.set(state.problems__rows_mapper, params[0], params[1]);
     },
 
     //--------------\\
@@ -227,7 +204,6 @@ const mutations = {
                 state.problems__rows_mapper[rootState.groups.selected_group_id][x]['editing_state'] = false;
             }
         }
-        console.log("Edit state setter", state.problems__rows_mapper);
     },
 
     //---------------------\\
@@ -239,6 +215,16 @@ const mutations = {
     problems__set_id(state, selected_problem_id){
         state.selected_problem_id = selected_problem_id;
     },
+
+
+    //--------------\\
+    //  Insert Row  \\
+    //--------------\\
+    problems__insert_row_local(state, params){
+        state.problems__rows_mapper[params.group_id].push(params.insert_object);
+    }
+
+
 };
 
 

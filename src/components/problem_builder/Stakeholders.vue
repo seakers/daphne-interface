@@ -2,9 +2,10 @@
     <div class="stakeholders-container">
 
         <table-view :table_name="panel_table_name" 
-                    :table_headers="panel_table_headers"
-                    :row_keys="panel_row_keys"
-                    :row_objects="panel_row_objects"
+                    :table_headers="table_headers"
+                    :row_keys="row_keys"
+                    :table_view_rows_data="panel_row_objects"
+                    :display_name="panel_display_name"
                     selectable
                     editable_row
                     insertable_row
@@ -12,11 +13,12 @@
         </table-view>
 
 
-        <template v-if="objective_row_objects !== false">
+        <template v-if="selected_panel_id !== null">
             <table-view :table_name="objective_table_name" 
-                        :table_headers="objective_table_headers"
-                        :row_keys="objective_row_keys"
-                        :row_objects="objective_row_objects"
+                        :table_headers="table_headers"
+                        :row_keys="row_keys"
+                        :table_view_rows_data="objective_row_objects"
+                        :display_name="objective_display_name"
                         selectable
                         closeable
                         editable_row
@@ -26,12 +28,12 @@
         </template>
 
 
-
-        <template v-if="subobjective_row_objects !== false">
+        <template v-if="selected_objective_id !== null">
             <table-view :table_name="subobjective_table_name" 
-                        :table_headers="subobjective_table_headers"
-                        :row_keys="subobjective_row_keys"
-                        :row_objects="subobjective_row_objects"
+                        :table_headers="table_headers"
+                        :row_keys="row_keys"
+                        :table_view_rows_data="subobjective_row_objects"
+                        :display_name="subobjective_display_name"
                         selectable
                         closeable
                         editable_row
@@ -62,22 +64,26 @@
         },
         computed: {
             ...mapState({
-                panel_table_name: state => state.stakeholders.panel_table_name,
-                panel_table_headers: state => state.stakeholders.panel_table_headers,
-                panel_row_keys: state => state.stakeholders.panel_row_keys,
+                panel_display_name: state => state.stakeholders.panels__display_name,
+                panel_table_name: state => state.stakeholders.panels__table_name,
+                
+                objective_display_name: state => state.stakeholders.objectives__display_name,
+                objective_table_name: state => state.stakeholders.objectives__table_name,
+                
+                subobjective_display_name: state => state.stakeholders.subobjectives__display_name,
+                subobjective_table_name: state => state.stakeholders.subobjectives__table_name,
+                
+                table_headers: state => state.stakeholders.table_headers,
+                row_keys: state => state.stakeholders.row_keys,
 
-                objective_table_name: state => state.stakeholders.objective_table_name,
-                objective_table_headers: state => state.stakeholders.objective_table_headers,
-                objective_row_keys: state => state.stakeholders.objective_row_keys,
-
-                subobjective_table_name: state => state.stakeholders.subobjective_table_name,
-                subobjective_table_headers: state => state.stakeholders.subobjective_table_headers,
-                subobjective_row_keys: state => state.stakeholders.subobjective_row_keys,
+                selected_panel_id: state => state.stakeholders.selected_panel_id,
+                selected_objective_id: state => state.stakeholders.selected_objective_id,
+                selected_subobjective_id: state => state.stakeholders.selected_subobjective_id,
             }),
             ...mapGetters({
-                panel_row_objects: 'get_panel_rows',
-                objective_row_objects: 'get_objective_rows',
-                subobjective_row_objects: 'get_subobjective_rows',
+                panel_row_objects: 'panels__get_rows',
+                objective_row_objects: 'objectives__get_rows',
+                subobjective_row_objects: 'subobjectives__get_rows',
             }),
         },
         methods: {
@@ -103,6 +109,4 @@
     align-content: center;
     justify-content: center;
 }
-
-
 </style>

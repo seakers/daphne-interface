@@ -1,7 +1,6 @@
 import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 
 const state = {
-    pages: ['stakeholders', 'instruments', 'requirement rules', 'mission analysis', 'attributes', 'groups', 'problems'],
     page_selected: 'groups',
 };
 

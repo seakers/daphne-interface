@@ -6,11 +6,11 @@ import vassarPages from './modules/vassar-pages';
 import stakeholders from './modules/stakeholders';
 import groups from './modules/groups';
 import problems from './modules/problems';
+import requirements from './modules/requirements';
 
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
-
 
 export default new Vuex.Store({
     state: {
@@ -25,7 +25,8 @@ export default new Vuex.Store({
         vassarPages,
         stakeholders,
         groups,
-        problems
+        problems,
+        requirements
     },
     strict: debug
 });

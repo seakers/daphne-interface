@@ -3,7 +3,7 @@
 
 
         <div class="table-view-header">
-            <div class="table-view-header-title">{{ table_name }}</div>
+            <div class="table-view-header-title">{{ display_name }}</div>
 
             <div class="table-view-header-search">
                 
@@ -35,15 +35,12 @@
                     <tr v-for="(row, row_index) in table_view_rows_data" :key="row.id">
 
                         <template v-if="!row.editing_state">
-                            <td v-for="entry in row.items" :key="entry" class="table-cell-text">{{ entry }}</td>
+                            <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">{{ entry }}</td>
                         </template>
-                        
                         <template v-if="row.editing_state">
-                            <td v-for="(entry, col_index) in row.items" :key="entry" class="table-cell-text">
-
+                            <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">
                                 <input class="input" type="text" v-model="table_view_rows_data_copy[row_index].items[col_index]" v-if="entry !== row.objects.id">
-
-                                <button class="button is-small table-view-close-edit" v-if="entry === row.objects.id" v-on:click="cancel_edit(row)">
+                                <button class="button is-small table-view-close-edit" v-if="entry === row.objects.id" v-on:click="edit_row(row)">
                                     <span class="icon is-small">
                                         <i class="fas fa-times" style="color: #354052;"></i>
                                     </span>
@@ -51,9 +48,8 @@
                             </td>
                         </template>
 
-
                         <td class="table-cell-button" v-if="selectable"><a class="button is-small" v-bind:class="[ row.selected_state ? 'is-success' : 'is-link' ]" v-on:click="!row.editing_state && select_row(row)" :disabled="row.editing_state">select</a></td>
-                        
+    
                         <td class="table-cell-button" v-if="editable_row && !row.editing_state"><a class="button is-warning is-small" v-on:click="!row.selected_state && edit_row(row)" :disabled="row.selected_state">edit</a></td>
                         <td class="table-cell-button" v-if="editable_row && row.editing_state"><a class="button is-danger is-small" v-on:click="commit_row(table_view_rows_data_copy[row_index])">commit</a></td>
                     </tr>
@@ -66,8 +62,10 @@
                                     <span class="icon is-small"><i class="fas fa-times" style="color: #354052;"></i></span>
                                 </button>    
                             </td>  <!-- this will always be the row ID -->
-                            <td v-for="row_item in insert_new_row_items" :key="row_item"><input class="input table-input" type="text" :placeholder="row_item"></td>
-                            <td class="table-cell-button"><a class="button is-danger is-small" v-on:click="new_row()">insert</a></td>
+
+                            <td v-for="row_item in new_row_object.items" :key="row_item.key"><input class="input table-input" type="text" v-model="row_item.value" :placeholder="row_item.key"></td>
+
+                            <td class="table-cell-button"><a class="button is-danger is-small" v-on:click="insert_row()">insert</a></td>
                         </template> 
                     </tr>
                 </tbody>
@@ -90,6 +88,7 @@
         name: 'table-view',
         props: {
             table_view_rows_data: Array,
+            display_name: String,
             table_name: String,   // 'Groups'
             table_headers: Array, // ['ID', 'Group']
             row_keys: Array,      // ['id', 'name']
@@ -113,83 +112,129 @@
                 groups: state => state.groups.groups,
                 problems: state => state.groups.problems
             }),
-            insert_new_row_items() {
-                let to_return = [];
+            new_row_object() {
+                let to_return = {};
+                to_return['index'] = this.table_view_rows_data.length;
+                to_return['items'] = [];
+                to_return['table_name'] = this.table_name;
+
                 let num_keys = this.row_keys.length;
                 for(let x=1;x<num_keys;x++){
-                    to_return.push(this.row_keys[x]);
+                    let item_object = {};
+                    item_object['key'] = this.row_keys[x];
+                    item_object['value'] = '';
+                    to_return['items'].push(item_object);
                 }
                 return to_return;
             },
         },
         methods: {
-            select_row(row_object){
-                console.log("Select Row:", row_object);
+            async select_row(row_object){
+                console.log("SELECT", row_object);
                 let row = row_object.items;
 
-                if(this.table_name === 'Groups'){
+                if(this.table_name === 'Group'){
                     this.$store.dispatch('groups__toggle_select', row_object);
                 }
 
-                // When a problem is selected, all the tables for that problem are loaded!!!
-                if(this.table_name === 'Problems'){
+                if(this.table_name === 'Problem'){
                     this.$store.dispatch('problems__toggle_select', row_object);
 
-                    // Load the rest of the problem's tables in the editor
-                    this.$store.dispatch('query_stakeholder_info');
-                    this.$store.commit('reset_panel_selection');
-                    this.$store.commit('reset_objective_selection');
-                    this.$store.commit('reset_subobjective_selection');
+                    // Load Data
+                    await this.$store.dispatch('panels__get_rows');
+                    await this.$store.dispatch('objectives__get_rows');
+                    await this.$store.dispatch('subobjectives__get_rows');
+                    await this.$store.dispatch('attr_requirements__get_rows');
+                    await this.$store.dispatch('case_requirements__get_rows');
+
+                    // Reset Selections
+                    this.$store.commit('stakeholders__reset_selections');
+                    
                     
                 }
 
-                if(this.table_name === 'Panels'){
-                    this.$store.commit('set_selected_panel_id', row[0]);
-                    this.$store.commit('set_selected_panel_name', row[1]);
-                    this.$store.commit('reset_objective_selection');
-                    this.$store.commit('reset_subobjective_selection');
+                if(this.table_name === 'Stakeholder_Needs_Panel'){
+                    this.$store.dispatch('panels__toggle_select', row_object);
+                }
+                if(this.table_name === 'Stakeholder_Needs_Objective'){
+                    this.$store.dispatch('objectives__toggle_select', row_object);
+                }
+                if(this.table_name === 'Stakeholder_Needs_Subobjective'){
+                    this.$store.dispatch('subobjectives__toggle_select', row_object);
                 }
 
-                if(this.table_name === 'Objectives'){
-                    this.$store.commit('set_selected_objective_id', row[0]);
-                    this.$store.commit('set_selected_objective_name', row[1]);
+                if(['Requirement_Rule_Attribute', 'Requirement_Rule_Case'].indexOf(this.table_name) >= 0){
+                    this.$store.dispatch('requirements__toggle_select', row_object);
                 }
+
+
             },
+
             edit_row(row_object){
-                console.log("Edit Row:", row_object);
-                if(this.table_name === 'Groups'){
+                console.log("EDIT", row_object);
+                if(this.table_name === 'Group'){
                     this.$store.dispatch('groups__toggle_edit', row_object);
                 }
-
-                if(this.table_name === 'Problems'){
+                if(this.table_name === 'Problem'){
                     this.$store.dispatch('problems__toggle_edit', row_object);
                 }
+                if(['Stakeholder_Needs_Panel', 'Stakeholder_Needs_Objective', 'Stakeholder_Needs_Subobjective'].indexOf(this.table_name) >= 0){
+                    this.$store.commit('stakeholders__set_edit_state', row_object);
+                }
+                if(['Requirement_Rule_Attribute', 'Requirement_Rule_Case'].indexOf(this.table_name) >= 0){
+                    this.$store.commit('requirements__set_edit_state', row_object);
+                }
             },
+
             commit_row(row_object){
                 console.log("COMMIT", row_object);
-                if(this.table_name === 'Problems'){
+                if(this.table_name === 'Problem'){
                     this.$store.dispatch('problems__commit_edit', row_object);
                 }
-            },
-            cancel_edit(row){
-                if(this.table_name === 'Groups'){
-                    this.$store.dispatch('groups__toggle_edit', row);
+                if(this.table_name === 'Stakeholder_Needs_Panel'){
+                    this.$store.dispatch('stakeholders__commit_edit', row_object);
+                }
+                if(this.table_name === 'Stakeholder_Needs_Objective'){
+                    this.$store.dispatch('stakeholders__commit_edit', row_object);
+                }
+                if(this.table_name === 'Stakeholder_Needs_Subobjective'){
+                    this.$store.dispatch('stakeholders__commit_edit', row_object);
+                }
+                if(['Requirement_Rule_Attribute', 'Requirement_Rule_Case'].indexOf(this.table_name) >= 0){
+                    this.$store.dispatch('requirements__commit_edit', row_object);
                 }
 
-                if(this.table_name === 'Problems'){
-                    this.$store.dispatch('problems__toggle_edit', row);
+            },
+
+            insert_row(){
+                console.log("INSERT", this.new_row_object);
+                if(this.table_name === 'Problem'){
+                    this.$store.dispatch('problems__insert_row', this.new_row_object);
+                }
+                if(['Stakeholder_Needs_Panel', 'Stakeholder_Needs_Objective', 'Stakeholder_Needs_Subobjective'].indexOf(this.table_name) >= 0){
+                    this.$store.dispatch('stakeholders__insert_row', this.new_row_object);
+                }
+                if(['Requirement_Rule_Attribute', 'Requirement_Rule_Case'].indexOf(this.table_name) >= 0){
+                    this.$store.dispatch('requirements__insert_row', this.new_row_object);
                 }
             },
+
             close_view(){
                 console.log("Closing View");
-                if(this.table_name === 'Objectives'){
-                    this.$store.commit('reset_panel_selection');
-                    this.$store.commit('reset_objective_selection');
+                if(this.table_name === 'Stakeholder_Needs_Objective'){
+                    this.$store.commit('panels__reset_selections');
+                    this.$store.commit('objectives__reset_selections');
+                    this.$store.commit('subobjectives__reset_selections');
                 }
-                if(this.table_name === 'Subobjectives'){
-                    this.$store.commit('reset_objective_selection');
+                if(this.table_name === 'Stakeholder_Needs_Subobjective'){
+                    this.$store.commit('objectives__reset_selections');
+                    this.$store.commit('subobjectives__reset_selections');
                 }
+
+
+
             },
+
             toggle_insert_state(val) {
                 this.insert_state = val;
             },
@@ -291,6 +336,8 @@ div.table-view-hidden{
 
 .table-container{
     padding: 0em .8em .8em .8em;
+    max-height: 500px;
+    overflow-y: auto !important;
 }
 
 
