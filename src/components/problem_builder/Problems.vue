@@ -1,16 +1,12 @@
 <template>
     <div class="problems-container">
 
-        <table-view :table_name="problems_table_name" 
-                    :table_headers="problems_table_headers"
-                    :row_keys="problems_row_keys"
-                    :table_view_rows_data="problems_table_view_rows_data"
-                    :display_name="problems_display_name"
-                    selectable
-                    insertable_row
-                    editable_row
-        >
-        </table-view>
+        <template v-if="groups__selected_id !== null">
+            <table-view :table_object="problems_table" 
+                        :foreign_key="groups__selected_id"
+            >
+            </table-view>
+        </template>
 
     </div>
 </template>
@@ -36,7 +32,8 @@
                 problems_row_keys: state => state.problems.row_keys,
             }),
             ...mapGetters({
-                problems_table_view_rows_data: 'problems__get_rows'
+                problems_table: 'problems__problem_table',
+                groups__selected_id: 'groups__group_selection',
             }),
         },
         methods: {

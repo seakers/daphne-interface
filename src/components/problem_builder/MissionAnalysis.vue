@@ -1,16 +1,17 @@
 <template>
     <div class="mission-analysis-container">
 
-        <table-view :table_name="panel_table_name" 
-                    :table_headers="table_headers"
-                    :row_keys="row_keys"
-                    :table_view_rows_data="panel_row_objects"
-                    :display_name="panel_display_name"
-                    selectable
-                    editable_row
-                    insertable_row
-        >
-        </table-view>
+        <template v-if="problem_id !== null">
+            <table-view :table_object="walker_table" :foreign_key="problem_id"></table-view>
+        </template>
+
+        <template v-if="problem_id !== null">
+            <table-view :table_object="power_table" :foreign_key="problem_id"></table-view>
+        </template>
+
+        <template v-if="problem_id !== null">
+            <table-view :table_object="launch_vehicle_table" :foreign_key="problem_id"></table-view>
+        </template>
 
 
     </div>
@@ -22,18 +23,19 @@
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
     import TableView from './TableView';
     export default {
-        name: 'mission-analysis',
+        name: 'MissionAnalysis',
         data: function () {
             return {
                 example: ''
             }
         },
         computed: {
-            ...mapState({
-
-            }),
             ...mapGetters({
+                problem_id: 'problems__problem_selection',
 
+                walker_table: 'analysis__walker_table',
+                power_table: 'analysis__power_table',
+                launch_vehicle_table: 'analysis__launch_vehicle_table',
             }),
         },
         methods: {

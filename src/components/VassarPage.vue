@@ -1,8 +1,8 @@
 <template>
     <div class="wrapper">
-        <div class="columns">
+        <div class="columns" style="max-width: 100vw;">
 
-            <aside class="column is-2 aside hero is-fullheight is-hidden-mobile">
+            <aside class="column is-2 aside hero is-fullheight is-hidden-mobile" style="margin-right: 0px !important;">
                 <div class="aside-container">
                     <vassar-menu></vassar-menu>
                 </div>
@@ -16,29 +16,30 @@
                     <groups></groups>
                 </template>
 
-
                 <template v-if="page_selected === 'problems'">
                     <problems></problems>
                 </template>
 
-                <template v-if="page_selected === 'stakeholders'">
-                    <stakeholders></stakeholders>
-                </template>
+                <template v-if="problems__selected_id !== null">
+                    <template v-if="page_selected === 'stakeholders'">
+                        <stakeholders></stakeholders>
+                    </template>
 
-                <template v-if="page_selected === 'requirements'">
-                    <requirements></requirements>
-                </template>
+                    <template v-if="page_selected === 'requirements'">
+                        <requirements></requirements>
+                    </template>
 
-                <template v-if="page_selected === 'mission analysis'">
-                    <mission-analysis></mission-analysis>
-                </template>
+                    <template v-if="page_selected === 'mission analysis'">
+                        <mission-analysis></mission-analysis>
+                    </template>
 
-                <template v-if="page_selected === 'instruments'">
-                    <instruments></instruments>
-                </template>
+                    <template v-if="page_selected === 'instruments'">
+                        <instruments></instruments>
+                    </template>
 
-                <template v-if="page_selected === 'attributes'">
-                    <attributes></attributes>
+                    <template v-if="page_selected === 'attributes'">
+                        <attributes></attributes>
+                    </template>
                 </template>
                 
 
@@ -53,7 +54,7 @@
 
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapGetters } from 'vuex';
     import { fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import VassarMenu from './VassarMenu';
 
@@ -76,7 +77,9 @@
         computed: {
             ...mapState({
                 page_selected: state => state.vassarPages.page_selected,
-
+            }),
+            ...mapGetters({
+                problems__selected_id: 'problems__problem_selection',
             }),
         },
         methods: {
@@ -105,10 +108,9 @@
                 let user_information = await dataResponse.json();
 
                 // Set user id
-                this.$store.commit('set_user_id', user_information['user_id']);
+                this.$store.commit('user__set_id', user_information['user_id']);
                 console.log("USER ID", user_information['user_id']);
-                await this.$store.dispatch('groups__query');
-                await this.$store.dispatch('problems__query');
+                await this.$store.dispatch('query_groups');
             }
 
 

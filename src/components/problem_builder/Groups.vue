@@ -1,20 +1,20 @@
 <template>
     <div class="groups-container">
-        <table-view :table_name="groups_table_name" 
-                    :table_headers="groups_table_headers"
-                    :row_keys="groups_row_keys"
-                    :table_view_rows_data="groups_table_view_rows_data"
-                    :display_name="groups_display_name"
-                    selectable
-        >
-        </table-view>
+
+        <template v-if="user_id !== null">
+            <table-view :table_object="group_table" 
+                        :foreign_key="user_id"
+            >
+            </table-view>
+        </template>
+        
         
     </div>
 </template>
 
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapGetters } from 'vuex';
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
     import TableView from './TableView';
     
@@ -26,13 +26,10 @@
         },
         computed: {
             ...mapState({
-                groups_display_name: state => state.groups.display_name,
-                groups_table_name: state => state.groups.table_name,
-                groups_table_headers: state => state.groups.table_headers,
-                groups_row_keys: state => state.groups.row_keys,
-                groups_table_view_rows_data: state => state.groups.groups__rows,
-
-
+                user_id: state => state.table.user_id,
+            }),
+            ...mapGetters({
+                group_table: 'groups__group_table',
             }),
         },
         methods: {

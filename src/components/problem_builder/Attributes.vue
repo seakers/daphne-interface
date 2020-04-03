@@ -1,16 +1,29 @@
 <template>
     <div class="attributes-container">
 
-        <table-view :table_name="panel_table_name" 
-                    :table_headers="table_headers"
-                    :row_keys="row_keys"
-                    :table_view_rows_data="panel_row_objects"
-                    :display_name="panel_display_name"
-                    selectable
-                    editable_row
-                    insertable_row
-        >
-        </table-view>
+        <template v-if="problem_id !== null">
+            <table-view :table_object="measurement_table" :foreign_key="problem_id"></table-view>
+        </template>
+
+
+        <template v-if="problem_id !== null">
+            <table-view :table_object="instrument_table" :foreign_key="problem_id"></table-view>
+        </template>
+
+
+        <template v-if="problem_id !== null">
+            <table-view :table_object="orbit_table" :foreign_key="problem_id"></table-view>
+        </template>
+
+
+        <template v-if="problem_id !== null">
+            <table-view :table_object="mission_table" :foreign_key="problem_id"></table-view>
+        </template>
+
+
+        <template v-if="problem_id !== null">
+            <table-view :table_object="launch_vehicle_table" :foreign_key="problem_id"></table-view>
+        </template>
 
 
     </div>
@@ -29,11 +42,14 @@
             }
         },
         computed: {
-            ...mapState({
-
-            }),
             ...mapGetters({
+                problem_id: 'problems__problem_selection',
 
+                measurement_table: 'attributes__measurement_table',
+                instrument_table: 'attributes__instrument_table',
+                orbit_table: 'attributes__mission_table',
+                mission_table: 'attributes__orbit_table',
+                launch_vehicle_table: 'attributes__launch_vehicle_table',
             }),
         },
         methods: {

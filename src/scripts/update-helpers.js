@@ -1,4 +1,4 @@
-import {fetchGet, fetchPost} from "./fetch-helpers";
+import {fetchPost} from "./fetch-helpers";
 
 
 export async function update__table_row(data, update_table, return_cols, row_types) {
@@ -7,7 +7,7 @@ export async function update__table_row(data, update_table, return_cols, row_typ
         let row_key = return_cols[x];
         let row_type = row_types[x];
         let field_entry = '';
-        if(data.items[x] === null){
+        if(data.items[x] === null || data.items[x] === "NaN"){
             continue;
         }
 
@@ -48,8 +48,6 @@ export async function update__table_row(data, update_table, return_cols, row_typ
     console.log("UPDATE QUERY", query.query, json_data);
     return 0
 }
-
-
 
 
 

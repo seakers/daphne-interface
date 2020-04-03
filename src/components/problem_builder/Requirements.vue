@@ -2,28 +2,14 @@
     <div class="requirements-container">
 
         <!-- By Attribute -->
-        <table-view :table_name="attr_requirements__table_name" 
-                    :table_headers="table_headers"
-                    :row_keys="row_keys"
-                    :table_view_rows_data="attr_requirements__rows"
-                    :display_name="attr_requirements__display_name"
-                    selectable
-                    editable_row
-                    insertable_row
-        >
-        </table-view>
+        <template v-if="problem_id !== null">
+            <table-view :table_object="requirements__attr_table" :foreign_key="problem_id"></table-view>
+        </template>
 
         <!-- By Case -->
-        <table-view :table_name="case_requirements__table_name" 
-                    :table_headers="table_headers"
-                    :row_keys="row_keys"
-                    :table_view_rows_data="case_requirements__rows"
-                    :display_name="case_requirements__display_name"
-                    selectable
-                    editable_row
-                    insertable_row
-        >
-        </table-view>
+        <template v-if="problem_id !== null">
+            <table-view :table_object="requirements__case_table" :foreign_key="problem_id"></table-view>
+        </template>
         
     </div>
 </template>
@@ -42,22 +28,12 @@
         },
         computed: {
             ...mapState({
-                case_requirements__display_name: state => state.requirements.case_requirements__display_name,
-                case_requirements__table_name: state => state.requirements.case_requirements__table_name,
-
-                attr_requirements__display_name: state => state.requirements.attr_requirements__display_name,
-                attr_requirements__table_name: state => state.requirements.attr_requirements__table_name,
-
-                table_headers: state => state.requirements.table_headers,
-                row_keys: state => state.requirements.row_keys,
-
-                case_requirements__display_name: state => state.requirements.case_requirements__display_name,
-                case_requirements__display_name: state => state.requirements.case_requirements__display_name,
-
             }),
             ...mapGetters({
-                case_requirements__rows: 'case_requirements__get_rows',
-                attr_requirements__rows: 'attr_requirements__get_rows',
+                problem_id: 'problems__problem_selection',
+
+                requirements__case_table: 'requirements__case_table',
+                requirements__attr_table: 'requirements__attribute_table',
             }),
         },
         methods: {

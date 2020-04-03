@@ -5,12 +5,12 @@
 
             <div class="group-selector"  v-bind:class="{ 'group-selector-selected': group_label.label_selected === true }" v-on:click="get_group_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Group</p>
-                <p class="menu-label vassar-sublabel">{{ group }}</p>
+                <p class="menu-label vassar-sublabel">{{ groups_table.selected_name }}</p>
             </div>
 
             <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': problem_label.label_selected === true }" v-on:click="get_problem_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Problem</p>
-                <p class="menu-label vassar-sublabel">{{ problem }}</p>
+                <p class="menu-label vassar-sublabel">{{ problems_table.selected_name }}</p>
             </div>
 
 
@@ -52,11 +52,11 @@
         computed: {
                 ...mapState({
                         page_selected: state => state.vassarPages.page_selected,
-                        group: state => state.groups.selected_group_name,
-                        // problem: state => state.problems.selected_problem_name,
                 }),
                 ...mapGetters({
                         problem: 'problems__get_selected_problem_name',
+                        groups_table: 'groups__group_table',
+                        problems_table: 'problems__problem_table',
                 }),
                 group_label() {
                         let g_label = { 
