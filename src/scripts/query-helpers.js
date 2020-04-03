@@ -1,43 +1,110 @@
 import {fetchPost} from "./fetch-helpers";
 
 
-export async function query__many_to_many(pk, pk_table, join_relationship, fk_table, return_cols, row_types) {
+
+export async function vassar_update(data, update_table, return_cols, row_types) {
+    let field_entries = [];
+    for(let x=0;x<return_cols.length;x++){
+        let row_key = return_cols[x];
+        let row_type = row_types[x];
+        let field_entry = '';
+        if(data.items[x] === null || data.items[x] === "NaN"){
+            continue;
+        }
+
+        // Do type operations here
+        if(row_type === 'string'){
+            if(data.items[x].charAt(0) === '"'){
+                field_entry = `${row_key}: ${data.items[x]}`;
+            }
+            else{
+                field_entry = `${row_key}: "${data.items[x]}"`;
+            }
+        }
+        else if(row_type === 'list'){
+            field_entry = `${row_key}: "{${data.items[x]}}"`;
+        }
+        else{
+            field_entry = `${row_key}: ${data.items[x]}`;
+        }
+
+        // Skip if const ID field
+        if(row_key !== 'id'){
+            field_entries.push(field_entry);
+        }
+    }
+    let field_entry_string = field_entries.join(', ')
+
+    let update_statement = `update_${update_table}`
     let query = {};
-    query.query = `{
-        ${pk_table}(where: {id: {_eq: ${pk}}}) {
-            ${join_relationship} {
-            ${fk_table} {
-                ${return_cols.join(' ')}
-            }
-            }
+    query.query = `mutation {
+        ${update_statement}(where: {id: {_eq: ${data.objects.id}}}, _set: {${field_entry_string}}) {
+          returning {
+            ${return_cols.join(' ')}
+          }
         }
     }`
     let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
     let json_data = await dataResponse.json();
-    let rows = json_data.data[pk_table][0][join_relationship];
-    return await format_query(rows, fk_table, return_cols, pk, 'many-to-many', row_types);
+    console.log("UPDATE QUERY", query.query, json_data);
+    return 0
 }
 
+export async function vassar_insert(table, data, fk) {
+    console.log("ASDFASDF", fk);
 
-export async function query__one_to_many(pk, pk_table, fk_table, return_cols, row_types) {
-    let query = {};
-    query.query = `{
-        ${fk_table}(where: {${pk_table}: {id: {_eq: ${pk}}}}) {
-          ${return_cols.join(' ')}
+
+    for(let x=1;x<table.col_types.length;x++){
+        if(table.col_types[x] === 'string'){
+            if(data.items[x-1].value.charAt(0) !== '"'){
+                data.items[x-1].value = `"${data.items[x-1].value}"`;
+            }
         }
-    }`
+        if(table.col_types[x] === 'list'){
+            data.items[x-1].value = `"{${data.items[x-1].value}}"`;
+        }
+    }
+
+    let field_entries = [];
+    for(let x=0;x<data.items.length;x++){
+        let field_entry = `${data.items[x].key}: ${data.items[x].value}`; // --> data[x].value will have to be enclosed in quotes if it is a string
+        field_entries.push(field_entry);
+    }
+
+    let field_entry_string = field_entries.join(', ');
+    let insert_statement = `insert_${table.table_name}`;
+
+    let query = {};
+
+
+    if(table.relationship.type === 'many-to-many'){
+        query.query = `mutation {
+            ${insert_statement}(objects: {${field_entry_string}, ${table.relationship.join}: {data: {${table.relationship.foreign_key_field}: ${fk}}}}) {
+                returning {
+                ${table.col_keys.join(' ')}
+                }
+            }
+        }`
+    }
+    else if(table.relationship.type === 'one-to-many'){
+        query.query = `mutation {
+            ${insert_statement}(objects: {${field_entry_string}, ${table.relationship.foreign_key_field}: ${fk}}) {
+              returning {
+                ${table.col_keys.join(' ')}
+              }
+            }
+        }`
+    }
+    
+
     let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
     let json_data = await dataResponse.json();
-    let rows = json_data.data[fk_table];
-    return await format_query(rows, fk_table, return_cols, pk, 'one-to-many', row_types);
+    console.log("insert response", json_data, query.query);
+
+    return await format_insert(json_data, data.index, table.col_keys, insert_statement, table.table_name, fk);
 }
 
-
-
-
-
-// pk, pk_table, fk_table, return_cols, row_types
-export async function query__table(table, pk) {
+export async function vassar_query(table, pk) {
     let query = {};
     if(table.relationship.type === 'one-to-many'){
         query.query = `{
@@ -61,7 +128,7 @@ export async function query__table(table, pk) {
     let json_data = await dataResponse.json();
 
     let rows = null;
-    console.log("QUERY", json_data, query.query);
+    // console.log("QUERY", json_data, query.query);
     if(table.relationship.type === 'one-to-many'){
         rows = json_data.data[table.table_name];
     }
@@ -73,6 +140,25 @@ export async function query__table(table, pk) {
 }
 
 
+
+export async function format_insert(json_data, index, return_cols, insert_statement, table_name, fk){
+    let insert_object = {};
+    insert_object['index'] = index;
+    insert_object['selected_state'] = false;
+    insert_object['editing_state'] = false;
+    insert_object['table_name'] = table_name;
+    insert_object['objects'] = {};
+    insert_object['foreign_key'] = fk;
+    let items = [];
+    for(let x=0;x<return_cols.length;x++){
+        let field_name = return_cols[x];
+        let field_value = json_data.data[insert_statement].returning[0][field_name];
+        insert_object['objects'][field_name] = field_value;
+        items.push(field_value);
+    }
+    insert_object['items'] = items; 
+    return insert_object;
+}
 
 export async function format_query(rows, table, pk){
     let return_object = {};

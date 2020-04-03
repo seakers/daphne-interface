@@ -59,14 +59,14 @@ const Stakeholder_Needs_Subobjective = {
         "join": null,
         "foreign_key_field": "problem_id",
     },
-    "display_name": "Subobjective",
+    "display_name": "Subobjectives",
     "table_name": "Stakeholder_Needs_Subobjective",
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
     }
 };
 

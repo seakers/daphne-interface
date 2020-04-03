@@ -6,7 +6,7 @@
             <div class="table-view-header-title">{{ this.table_object.display_name }}</div>
 
             <div class="table-view-header-search">
-                <input class="input is-small is-rounded" type="text" placeholder="search..." style="max-width: 190px;" v-model="this.search_term">
+                <!-- <input class="input is-small is-rounded" type="text" placeholder="search..." style="max-width: 190px;" v-model="this.search_term"> -->
             </div>
 
             <template v-if="table_closeable">
@@ -142,15 +142,6 @@
                 }
                 return to_return;
             },
-
-            // SEARCH
-            search_result(row_object){
-                if(this.search_term === ''){return true;}
-                for(let x=0;x<row_object.items.length;x++){
-                    if(row_object.items[x].toString().includes(this.search_term)){return true;}
-                }
-                return false;
-            },
         },
         methods: {
             async select_row(row_object){
@@ -159,19 +150,19 @@
                     this.$store.dispatch('query__problem_info');                    
                 }
             },
-            edit_row(row_object){
+            async edit_row(row_object){
                 console.log("EDIT", row_object);
                 this.$store.commit('tables__set_edit_state', row_object);
             },
-            commit_row(row_object){
+            async commit_row(row_object){
                 console.log("COMMIT", row_object);
                 this.$store.dispatch('tables__commit_edit', row_object);
             },
-            insert_row(){
+            async insert_row(){
                 console.log("INSERT", this.new_row_object);
                 this.$store.dispatch('tables__insert_row', this.new_row_object);
             },
-            close_view(){
+            async close_view(){
                 console.log("CLOSE VIEW");
             },
             toggle_insert_state(val) {
@@ -293,7 +284,7 @@ div.table-view-hidden{
 .table-cell-button{
     text-align: right;
     vertical-align: middle !important;
-    padding: .5em .25em !important;
+    padding: .5em .6em .5em 0em !important;
 }
 
 .custom-table{

@@ -58,7 +58,7 @@ const Walker_Mission_Analysis = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -115,7 +115,7 @@ const Power_Mission_Analysis = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -178,7 +178,7 @@ const Launch_Vehicle_Mission_Analysis = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }

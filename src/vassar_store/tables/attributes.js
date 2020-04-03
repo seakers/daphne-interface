@@ -31,7 +31,7 @@ const Measurement_Attribute = {
     "state": {
         "mutable": false,
         "appendable": false,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -69,7 +69,7 @@ const Instrument_Attribute = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -107,7 +107,7 @@ const Mission_Attribute = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -145,7 +145,7 @@ const Orbit_Attribute = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -183,7 +183,7 @@ const Launch_Vehicle_Attribute = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }

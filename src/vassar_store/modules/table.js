@@ -1,6 +1,4 @@
-import { query__table } from "../../scripts/query-helpers";
-import { insert__one_to_many_obj } from "../../scripts/insert-helpers";
-import { update__table_row } from "../../scripts/update-helpers";
+import { vassar_query, vassar_insert, vassar_update } from "../../scripts/query-helpers";
 import { Measurement_Attribute, Instrument_Attribute, Mission_Attribute, Orbit_Attribute, Launch_Vehicle_Attribute} from "../tables/attributes";
 import { Walker_Mission_Analysis, Power_Mission_Analysis, Launch_Vehicle_Mission_Analysis } from "../tables/mission-analysis";
 import { Group, Problem, auth_user } from "../tables/problems";
@@ -9,7 +7,6 @@ import { Stakeholder_Needs_Panel, Stakeholder_Needs_Objective, Stakeholder_Needs
 import { migrations } from "../tables/migrations";
 import * as _ from 'lodash-es';
 import Vue from 'vue';
-
 
 const state = {
     user_id: null,
@@ -156,14 +153,14 @@ const actions = {
     async query_groups({state, commit}){
         let pk = state.tables.auth_user.selected_id;
         let table = state.tables.Group;
-        let query_return = await query__table(table, pk);
+        let query_return = await vassar_query(table, pk);
         commit('table__set_rows', query_return);
 
         // Iterate over all of the groups
         let group__row_objects = state.tables.Group.row_object_mapper[state.user_id];
         for(let x=0;x<group__row_objects.length;x++){
             let group__row_object_id = group__row_objects[x].objects.id;
-            let query_return = await query__table(state.tables.Problem, group__row_object_id);
+            let query_return = await vassar_query(state.tables.Problem, group__row_object_id);
             commit('table__set_rows', query_return);
         }
     },
@@ -174,24 +171,24 @@ const actions = {
         let problem_id = state.tables.Problem.selected_id;
         for(let x=0;x<state.migrations.analysis.length;x++){
             let migration = state.migrations.analysis[x];
-            let query_return = await query__table(state.tables[migration], problem_id);
+            let query_return = await vassar_query(state.tables[migration], problem_id);
             commit('table__set_rows', query_return);
         }
         // Requirement Rules
         for(let x=0;x<state.migrations.requirements.length;x++){
             let migration = state.migrations.requirements[x];
-            let query_return = await query__table(state.tables[migration], problem_id);
+            let query_return = await vassar_query(state.tables[migration], problem_id);
             commit('table__set_rows', query_return);
         }
         // Attributes
         for(let x=0;x<state.migrations.attributes.length;x++){
             let migration = state.migrations.attributes[x];
-            let query_return = await query__table(state.tables[migration], problem_id);
+            let query_return = await vassar_query(state.tables[migration], problem_id);
             commit('table__set_rows', query_return);
         }
         // --- Stakeholders 
         // Panels
-        let query_return = await query__table(state.tables.Stakeholder_Needs_Panel, problem_id);
+        let query_return = await vassar_query(state.tables.Stakeholder_Needs_Panel, problem_id);
         commit('table__set_rows', query_return);
 
         // Objectives
@@ -202,7 +199,7 @@ const actions = {
             for(let y=0;y<panel_rows.length;y++){
                 let panel_row = panel_rows[y];
                 let panel_row_id = panel_row.objects.id;
-                let query_return = await query__table(state.tables.Stakeholder_Needs_Objective, panel_row_id);
+                let query_return = await vassar_query(state.tables.Stakeholder_Needs_Objective, panel_row_id);
                 commit('table__set_rows', query_return);
             }
         }
@@ -215,7 +212,7 @@ const actions = {
             for(let y=0;y<objective_rows.length;y++){
                 let objective_row = objective_rows[y];
                 let objective_row_id = objective_row.objects.id;
-                let query_return = await query__table(state.tables.Stakeholder_Needs_Subobjective, objective_row_id);
+                let query_return = await vassar_query(state.tables.Stakeholder_Needs_Subobjective, objective_row_id);
                 commit('table__set_rows', query_return);
             }
         }
@@ -230,7 +227,7 @@ const actions = {
 
         // Check for row changes
         if(JSON.stringify(row_object.items) != JSON.stringify(rows[row_object.index].items)){
-            await update__table_row(row_object, row_object.table_name, table_selected.col_keys, table_selected.col_types);
+            await vassar_update(row_object, row_object.table_name, table_selected.col_keys, table_selected.col_types);
             commit('tables__update_row', row_object);
             commit('tables__reset_edit_all', row_object);
         }
@@ -243,18 +240,10 @@ const actions = {
     async tables__insert_row({state, commit}, row_object){
         console.log("INSERT ROW", row_object);
         let table = state.tables[row_object.table_name];
-        let insert_object = await insert__one_to_many_obj(table, row_object, row_object.foreign_key);
+        let insert_object = await vassar_insert(table, row_object, row_object.foreign_key);
         commit('tables__insert_row_local', insert_object);
     },  
 };
-
-
-
-
-
-
-
-
 
 
 

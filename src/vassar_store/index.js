@@ -3,12 +3,6 @@ import Vuex from 'vuex';
 import {fetchPost} from "../scripts/fetch-helpers";
 
 import vassarPages from './modules/vassar-pages';
-import stakeholders from './modules/stakeholders';
-import groups from './modules/groups';
-import problems from './modules/problems';
-import requirements from './modules/requirements';
-import missionAnalysis from './modules/mission-analysis';
-import attributes from './modules/attributes';
 import table from './modules/table';
 
 Vue.use(Vuex);
@@ -26,12 +20,6 @@ export default new Vuex.Store({
     },
     modules: {
         vassarPages,
-        stakeholders,
-        groups,
-        problems,
-        requirements,
-        missionAnalysis,
-        attributes,
         table
     },
     strict: debug

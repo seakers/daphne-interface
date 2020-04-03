@@ -49,7 +49,7 @@ const Requirement_Rule_Attribute = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -106,7 +106,7 @@ const Requirement_Rule_Case = {
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
