@@ -9,7 +9,7 @@
             </aside>
 
 
-            <div class="column is-10 editor-background hero">
+            <div class="column is-10 editor-background hero" v-bind:class="[ light_theme ? 'editor-background-light' : 'editor-background-dark' ]">
 
 
                 <template v-if="page_selected === 'groups'">
@@ -18,6 +18,10 @@
 
                 <template v-if="page_selected === 'problems'">
                     <problems></problems>
+                </template>
+
+                <template v-if="page_selected === 'instruments'">
+                    <instruments></instruments>
                 </template>
 
                 <template v-if="problems__selected_id !== null">
@@ -32,11 +36,7 @@
                     <template v-if="page_selected === 'mission analysis'">
                         <mission-analysis></mission-analysis>
                     </template>
-
-                    <template v-if="page_selected === 'instruments'">
-                        <instruments></instruments>
-                    </template>
-
+                    
                     <template v-if="page_selected === 'attributes'">
                         <attributes></attributes>
                     </template>
@@ -77,6 +77,7 @@
         computed: {
             ...mapState({
                 page_selected: state => state.vassarPages.page_selected,
+                light_theme: state => state.vassarPages.light_theme,
             }),
             ...mapGetters({
                 problems__selected_id: 'problems__problem_selection',
@@ -144,10 +145,24 @@
 
 .editor-background {
     display: flex;
+}
+.editor-background-dark {
     background-color: #28313e;
     -webkit-box-shadow: inset 0px 0px 3px #14191f;
     -moz-box-shadow: inset 0px 0px 3px #14191f;
     box-shadow: inset 0px 0px 14px #14191f;
+    transition: background-color ease-out;
+    -webkit-transition: background-color 700ms linear;
+    -ms-transition: background-color 700ms linear;
+    transition: background-color 700ms linear;    
+}
+.editor-background-light {
+
+    background-color: #f2f2f2;
+    transition: background-color ease-out;
+    -webkit-transition: background-color 700ms linear;
+    -ms-transition: background-color 700ms linear;
+    transition: background-color 700ms linear;
 }
 
 

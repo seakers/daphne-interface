@@ -1,5 +1,5 @@
 <template>
-    <div class="problems-container">
+    <div class="problems-container" v-bind:class="{ 'problems-container-light': light_theme}">
 
         <template v-if="groups__selected_id !== null">
             <table-view :table_object="problems_table" 
@@ -26,10 +26,7 @@
         },
         computed: {
             ...mapState({
-                problems_display_name: state => state.problems.display_name,
-                problems_table_name: state => state.problems.table_name,
-                problems_table_headers: state => state.problems.table_headers,
-                problems_row_keys: state => state.problems.row_keys,
+                light_theme : state => state.vassarPages.light_theme,
             }),
             ...mapGetters({
                 problems_table: 'problems__problem_table',
@@ -69,6 +66,9 @@
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
+}
+.problems-container-light {
+    background-color: #f2f2f2;
 }
 
 .problems-panel{

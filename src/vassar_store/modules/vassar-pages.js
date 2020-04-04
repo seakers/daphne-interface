@@ -2,6 +2,7 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 
 const state = {
     page_selected: 'groups',
+    light_theme: true,
 };
 
 // const initialState = _.cloneDeep(state);
@@ -13,6 +14,10 @@ const actions = {};
 const mutations = {
     set_page_selected(state, page_selected) {
         state.page_selected = page_selected;
+    },
+    set_theme(state){
+        state.light_theme = !state.light_theme;
+        console.log(state.light_theme, "SDFSDF");
     }
 };
 

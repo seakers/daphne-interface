@@ -51,8 +51,6 @@ export async function vassar_update(data, update_table, return_cols, row_types) 
 }
 
 export async function vassar_insert(table, data, fk) {
-    console.log("ASDFASDF", fk);
-
 
     for(let x=1;x<table.col_types.length;x++){
         if(table.col_types[x] === 'string'){

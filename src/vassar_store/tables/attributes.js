@@ -18,7 +18,7 @@ const Measurement_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -26,7 +26,7 @@ const Measurement_Attribute = {
         "join": null,
         "foreign_key_field": "problem_id",
     },
-    "display_name": "Measurement Attributes",
+    "display_name": "Measurement",
     "table_name": "Measurement_Attribute",
     "state": {
         "mutable": false,
@@ -56,7 +56,7 @@ const Instrument_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -64,7 +64,7 @@ const Instrument_Attribute = {
         "join": null,
         "foreign_key_field": "problem_id",
     },
-    "display_name": "Instrument Attributes",
+    "display_name": "Instrument",
     "table_name": "Instrument_Attribute",
     "state": {
         "mutable": true,
@@ -94,7 +94,7 @@ const Mission_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -102,7 +102,7 @@ const Mission_Attribute = {
         "join": null,
         "foreign_key_field": "problem_id",
     },
-    "display_name": "Mission Attributes",
+    "display_name": "Mission",
     "table_name": "Mission_Attribute",
     "state": {
         "mutable": true,
@@ -132,7 +132,7 @@ const Orbit_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -140,7 +140,7 @@ const Orbit_Attribute = {
         "join": null,
         "foreign_key_field": "problem_id",
     },
-    "display_name": "Orbit Attributes",
+    "display_name": "Orbit",
     "table_name": "Orbit_Attribute",
     "state": {
         "mutable": true,
@@ -170,7 +170,7 @@ const Launch_Vehicle_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -178,7 +178,7 @@ const Launch_Vehicle_Attribute = {
         "join": null,
         "foreign_key_field": "problem_id",
     },
-    "display_name": "Launch Vehicle Attributes",
+    "display_name": "Launch Vehicle",
     "table_name": "Launch_Vehicle_Attribute",
     "state": {
         "mutable": true,

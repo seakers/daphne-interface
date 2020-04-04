@@ -1,9 +1,9 @@
 <template>
-    <div class="table-view-container" v-bind:class="{ 'table-view-hidden': table_hidden === true }">
+    <div class="table-view-container" v-bind:class="[ light_theme ? 'table-view-container-light' : 'table-view-container-dark' ]">
 
 
         <div class="table-view-header">
-            <div class="table-view-header-title">{{ this.table_object.display_name }}</div>
+            <div class="table-view-header-title"  v-bind:class="[ light_theme ? 'table-view-header-title-light' : 'table-view-header-title-dark' ]"    >{{ this.table_object.display_name }}</div>
 
             <div class="table-view-header-search">
                 <!-- <input class="input is-small is-rounded" type="text" placeholder="search..." style="max-width: 190px;" v-model="this.search_term"> -->
@@ -104,6 +104,9 @@
             }
         },
         computed: {
+            ...mapState({
+                light_theme: state => state.vassarPages.light_theme,
+            }),
             // TABLE ROWS
             table_rows() {
                 return this.table_object.row_object_mapper[this.foreign_key];
@@ -209,12 +212,17 @@ div.table-view-hidden{
     max-width: 100%;
     display: flex;
     flex-direction: column;
-    box-shadow: 0px 0px 19px 4px #14191f;
     align-self: center;
-    background-color: #354052;
     transition: box-shadow .35s;
     transition-timing-function: cubic-bezier(.6,.04,.98,.34);
     margin: 8px;
+}
+.table-view-container-light{
+    background-color: #fff;
+}
+.table-view-container-dark{
+    box-shadow: 0px 0px 19px 4px #14191f;
+    background-color: #354052;
 }
 
 
@@ -235,8 +243,24 @@ div.table-view-hidden{
     padding-top: 0.6em;
     padding-right:1.8em;
     text-align: center;
+    font-weight: bold;
+}
+
+.table-view-header-title-light{
+    color: #363636;
+}
+.table-view-header-title-dark{
     color: whitesmoke;
 }
+
+
+
+
+
+
+
+
+
 .table-view-header-search{
     flex-grow: 1;
     display: flex;
@@ -272,7 +296,7 @@ div.table-view-hidden{
 
 .table-container{
     padding: 0em .8em .8em .8em;
-    max-height: 500px;
+    max-height: 60vh;
     overflow-y: auto !important;
 }
 
@@ -294,5 +318,7 @@ div.table-view-hidden{
 
 .table-input{
 }
+
+
 
 </style>

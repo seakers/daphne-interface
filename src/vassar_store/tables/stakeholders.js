@@ -3,7 +3,7 @@ const Stakeholder_Needs_Panel = {
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -27,7 +27,7 @@ const Stakeholder_Needs_Objective = {
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -51,7 +51,7 @@ const Stakeholder_Needs_Subobjective = {
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",

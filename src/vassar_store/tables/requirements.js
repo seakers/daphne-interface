@@ -36,7 +36,7 @@ const Requirement_Rule_Attribute = {
         "notes"
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -93,7 +93,7 @@ const Requirement_Rule_Case = {
         "notes"
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",

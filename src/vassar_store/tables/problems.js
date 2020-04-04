@@ -12,7 +12,7 @@ const Group = {
         "name",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "many-to-many",
@@ -45,7 +45,7 @@ const Problem = {
         "name",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "many-to-many",
@@ -69,7 +69,7 @@ const auth_user = {
     "col_titles": ["ID"],
     "col_keys": ["id"],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "many-to-many",

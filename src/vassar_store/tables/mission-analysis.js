@@ -45,7 +45,7 @@ const Walker_Mission_Analysis = {
         "mission_architecture"
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -102,7 +102,7 @@ const Power_Mission_Analysis = {
         "max_eclipse_time"
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",
@@ -165,7 +165,7 @@ const Launch_Vehicle_Mission_Analysis = {
         "cost"
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": null, "selected_index": null,
     "selected_name": null,
     "relationship": {
         "type": "one-to-many",

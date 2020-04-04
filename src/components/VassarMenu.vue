@@ -3,6 +3,13 @@
         <div class="main-elements">
             <h1 class="title is-size-4">Problem Builder</h1>
 
+
+
+            <button class="button is-small theme-button" v-bind:class="[ light_theme ? 'theme-button-light' : 'theme-button-dark' ]" v-on:click="change_theme()">
+                <i class="fas fa-moon"></i>
+            </button>
+        
+
             <div class="group-selector"  v-bind:class="{ 'group-selector-selected': group_label.label_selected === true }" v-on:click="get_group_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Group</p>
                 <p class="menu-label vassar-sublabel">{{ groups_table.selected_name }}</p>
@@ -11,6 +18,11 @@
             <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': problem_label.label_selected === true }" v-on:click="get_problem_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Problem</p>
                 <p class="menu-label vassar-sublabel">{{ problems_table.selected_name }}</p>
+            </div>
+
+            <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': instrument_label.label_selected === true }" v-on:click="get_instrument_page()">
+                <p class="menu-label vassar-label" style="margin-bottom: 5px;">Instruments</p>
+                <p class="menu-label vassar-sublabel"></p>
             </div>
 
 
@@ -42,7 +54,6 @@
             return {
                 editor_pages: [
                     { title: 'stakeholders', id: 'stakeholders', selected: false },
-                    { title: 'instruments', id: 'instruments', selected: false },
                     { title: 'requirements', id: 'requirements', selected: false },
                     { title: 'mission analysis', id: 'mission analysis', selected: false },
                     { title: 'attributes', id: 'attributes', selected: false },
@@ -52,6 +63,7 @@
         computed: {
                 ...mapState({
                         page_selected: state => state.vassarPages.page_selected,
+                        light_theme: state => state.vassarPages.light_theme,
                 }),
                 ...mapGetters({
                         problem: 'problems__get_selected_problem_name',
@@ -59,23 +71,22 @@
                         problems_table: 'problems__problem_table',
                 }),
                 group_label() {
-                        let g_label = { 
-                                label_selected: false, 
-                                id: 'group', 
-                                memberships: ['seakers', 'jpl', 'goddard']
-                        }
+                        let g_label = {label_selected: false, id: 'group', memberships: ['seakers', 'jpl', 'goddard']}
                         if(this.page_selected === 'groups'){
                                 g_label.label_selected = true;
                         }
                         return g_label;
                 },
                 problem_label() {
-                        let p_label = { 
-                                label_selected: false, 
-                                id: 'problem', 
-                                memberships: ['SMAP', 'Climate Centric', 'Landsat']
-                        }
+                        let p_label = {label_selected: false, id: 'problem', memberships: ['SMAP', 'Climate Centric', 'Landsat']}
                         if(this.page_selected === 'problems'){
+                                p_label.label_selected = true;
+                        }
+                        return p_label;
+                },
+                instrument_label() {
+                        let p_label = { label_selected: false, id: 'instrument' }
+                        if(this.page_selected === 'instruments'){
                                 p_label.label_selected = true;
                         }
                         return p_label;
@@ -83,6 +94,8 @@
         },
         methods: {
                 get_group_page(){
+                        this.instrument_label.label_selected = false;
+                        // Unhighlight Problem
                         this.problem_label.label_selected = false;
                         // Unhighlight editors
                         if (this.editor_pages.find(service => service.selected === true) !== undefined){
@@ -93,6 +106,7 @@
                         this.$store.commit('set_page_selected', 'groups');
                 },
                 get_problem_page(){
+                        this.instrument_label.label_selected = false;
                         // Unhighlight group
                         this.group_label.label_selected = false;
                         // Unhighlight editors
@@ -103,11 +117,26 @@
                         this.problem_label.label_selected = true;
                         this.$store.commit('set_page_selected', 'problems');
                 },
+                get_instrument_page(){
+                        // Unhighlight Problem
+                        this.problem_label.label_selected = false;
+                        // Unhighlight group
+                        this.group_label.label_selected = false;
+                        // Unhighlight editors
+                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
+                                this.editor_pages.find(service => service.selected === true).selected = false;
+                        } 
+
+                        this.instrument_label.label_selected = true;
+                        this.$store.commit('set_page_selected', 'instruments');
+                        console.log("ASDFASDF", this.instrument_label.label_selected);
+                },
                 get_service_page(id){
                         console.log(id);
                         // Unhighlight problems and groups
                         this.problem_label.label_selected = false;
                         this.group_label.label_selected = false;
+                        this.instrument_label.label_selected = false;
                         // Unhighlight any editor labels
                         if (this.editor_pages.find(service => service.selected === true) !== undefined){
                                 this.editor_pages.find(service => service.selected === true).selected = false; 
@@ -115,6 +144,9 @@
                         // Highlight the selected label
                         this.editor_pages.find(service => service.id === id).selected = true;
                         this.$store.commit('set_page_selected', id);
+                },
+                change_theme(){
+                    this.$store.commit('set_theme');
                 }
 
 
@@ -133,6 +165,48 @@
 
 
 <style lang="scss">
+
+
+
+.theme-button{
+    background-color: #28313e;
+    margin-bottom: 10px;
+}
+
+.theme-button:hover{
+    background-color: #28313e !important;
+    transition: .2s linear all;
+    -webkit-box-shadow: inset 0px 0px 3px #14191f;
+    -moz-box-shadow: inset 0px 0px 3px #14191f;
+    box-shadow: inset 0px 0px 3px #14191f;
+}
+
+button:focus {outline:0;}
+
+.theme-button-light{
+    background-color: #354052 !important;
+    border: none !important;
+    color: whitesmoke !important;
+    font-size: .9em !important;
+    font-weight: 400;
+    line-height: 1.5 !important;
+    letter-spacing: .1em;
+    
+}
+
+.theme-button-dark{
+    background-color: #354052 !important;
+    border: none !important;
+    color: whitesmoke !important;
+    font-size: .9em !important;
+    font-weight: 400;
+    line-height: 1.5 !important;
+    letter-spacing: .1em;
+    box-shadow: inset 0px 0px 14px #14191f !important;
+    
+}
+
+
 p.vassar-label {
         color: whitesmoke;
         font-size: 1em;

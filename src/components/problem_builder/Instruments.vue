@@ -1,7 +1,7 @@
 <template>
     <div class="instruments-container">
 
-        <table-view :table_name="panel_table_name" 
+        <!-- <table-view :table_name="panel_table_name" 
                     :table_headers="table_headers"
                     :row_keys="row_keys"
                     :table_view_rows_data="panel_row_objects"
@@ -10,7 +10,7 @@
                     editable_row
                     insertable_row
         >
-        </table-view>
+        </table-view> -->
 
 
     </div>

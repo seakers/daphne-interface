@@ -262,18 +262,28 @@ const mutations = {
     //  Select Row  \\
     //--------------\\
     tables__set_selected_row(state, row_object){
+        console.log("ROW OBJ", row_object)
         let table_selected = state.tables[row_object.table_name];
         let rows = table_selected.row_object_mapper[row_object.foreign_key];
 
-        // If you selected a row that is already selected
+        //                                                         // If you selected a row that is already selected
         if(table_selected.selected_id === row_object.objects.id){  // Deselect row
+            if(table_selected.table_name === 'Stakeholder_Needs_Panel'){
+                if(state.tables.Stakeholder_Needs_Objective.selected_id !== null){
+                    state.tables.Stakeholder_Needs_Objective.row_object_mapper[state.tables.Stakeholder_Needs_Panel.selected_id][state.tables.Stakeholder_Needs_Objective.selected_index].selected_state = false;
+                    state.tables.Stakeholder_Needs_Objective.selected_id = null;
+                    state.tables.Stakeholder_Needs_Objective.selected_index = null; 
+                }
+            }
             table_selected.selected_id = null;    
-            table_selected.selected_name = null;                 
+            table_selected.selected_name = null; 
+            table_selected.selected_index = null;  
         }
         else{
             table_selected.selected_id = row_object.objects.id;    // Selected row
+            table_selected.selected_index = row_object.index;    // Selected index
             if(table_selected.table_name === 'Group' || table_selected.table_name === 'Problem'){
-                table_selected.selected_name = row_object.objects.name;
+                table_selected.selected_name = row_object.items[1];
             }
         }
         // Only one row can be selected at a time
@@ -305,7 +315,13 @@ const mutations = {
     tables__update_row(state, row_object){
         let table_selected = state.tables[row_object.table_name];
         let rows = table_selected.row_object_mapper[row_object.foreign_key];
+
+        // TODO: we clone the ITEMS but we don't clone the OBJECTS
         rows[row_object.index].items = _.cloneDeep(row_object.items);
+        if(table_selected.selected_id === row_object.objects.id){
+            table_selected.selected_id = row_object.objects.id;
+            table_selected.selected_name = row_object.items[1];
+        }
     },
     tables__reset_edit_all(state, row_object){
         let table_selected = state.tables[row_object.table_name];
