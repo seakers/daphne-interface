@@ -219,10 +219,18 @@ div.table-view-hidden{
 }
 .table-view-container-light{
     background-color: #fff;
+    transition: background-color ease-out;
+    -webkit-transition: background-color 700ms linear;
+    -ms-transition: background-color 700ms linear;
+    transition: background-color 700ms linear;
 }
 .table-view-container-dark{
     box-shadow: 0px 0px 19px 4px #14191f;
     background-color: #354052;
+    transition: background-color ease-out;
+    -webkit-transition: background-color 700ms linear;
+    -ms-transition: background-color 700ms linear;
+    transition: background-color 700ms linear;
 }
 
 
