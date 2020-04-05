@@ -163,77 +163,77 @@
                 exitOnEsc: false
             });
 
-            // Generate the session ----------------------------------------------------------------------------- Normal
-            await fetchPost(API_URL + 'auth/generate-session', new FormData());
+            // // Generate the session ----------------------------------------------------------------------------- Normal
+            // await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
-            // Start the Websocket
-            await wsTools.wsConnect(this.$store);
+            // // Start the Websocket
+            // await wsTools.wsConnect(this.$store);
 
-            // Check if user is logged in before putting prompt
-            try {
-                fetchGet(API_URL + 'auth/check-status').then(async (response) => {
-                    if (response.ok) {
-                        let data = await response.json();
-                        // Start by setting problem name and current dataset
-                        let problemName = data['problem'];
-                        let datasetFilename = data['dataset_filename'];
-                        let datasetUser = data['dataset_user'];
-                        if (problemName === '') {
-                            problemName = 'SMAP';
-                        }
-                        if (datasetFilename === '') {
-                            datasetFilename = 'test_smap.csv';
-                        }
+            // // Check if user is logged in before putting prompt
+            // try {
+            //     fetchGet(API_URL + 'auth/check-status').then(async (response) => {
+            //         if (response.ok) {
+            //             let data = await response.json();
+            //             // Start by setting problem name and current dataset
+            //             let problemName = data['problem'];
+            //             let datasetFilename = data['dataset_filename'];
+            //             let datasetUser = data['dataset_user'];
+            //             if (problemName === '') {
+            //                 problemName = 'SMAP';
+            //             }
+            //             if (datasetFilename === '') {
+            //                 datasetFilename = 'test_smap.csv';
+            //             }
 
-                        // Put the name and dataset back into the store
-                        await this.$store.dispatch('setProblemName', problemName);
-                        this.$store.commit('setDatasetInformation', {
-                            filename: datasetFilename,
-                            user: datasetUser
-                        });
+            //             // Put the name and dataset back into the store
+            //             await this.$store.dispatch('setProblemName', problemName);
+            //             this.$store.commit('setDatasetInformation', {
+            //                 filename: datasetFilename,
+            //                 user: datasetUser
+            //             });
 
-                        // If the user is already logged in, just proceed with loading as usual; if not, show login screen
-                        if (data['is_logged_in'] === true) {
-                            this.$store.commit('logUserIn', data);
-                            this.init(data);
-                        }
-                        else {
-                            this.$store.commit('activateModal', 'LoginModal');
-                        }
-                    }
-                });
-            }
-            catch (e) {
-                console.error('Networking error:', e);
-            } //------------------------------------------------------------------------------------------------- Normal
+            //             // If the user is already logged in, just proceed with loading as usual; if not, show login screen
+            //             if (data['is_logged_in'] === true) {
+            //                 this.$store.commit('logUserIn', data);
+            //                 this.init(data);
+            //             }
+            //             else {
+            //                 this.$store.commit('activateModal', 'LoginModal');
+            //             }
+            //         }
+            //     });
+            // }
+            // catch (e) {
+            //     console.error('Networking error:', e);
+            // } //------------------------------------------------------------------------------------------------- Normal
 
             // ------------------------------------------------------------------------------------------- Experiment
-            // // Generate the session
-            // await fetchPost(API_URL + 'auth/generate-session', new FormData());
-            //
-            // // Experiment Stuff
-            // this.$store.dispatch('recoverExperiment').then(async () => {
-            //     this.$store.commit('setIsRecovering', false);
-            //
-            //     // Only start experiment if it wasn't already running
-            //     if (!this.inExperiment) {
-            //         // First of all login
-            //         await this.$store.dispatch('loginUser', {
-            //             username: "tamu-experiment",
-            //             password: "tamu2019"
-            //         });
-            //
-            //         this.$store.dispatch('startExperiment').then(async () => {
-            //             // Restart WS after login
-            //             await wsTools.wsConnect(this.$store);
-            //             await wsTools.experimentWsConnect();
-            //
-            //             // Set the tutorial
-            //             this.$store.commit('setExperimentStage', 'tutorial');
-            //             this.$store.commit('setInExperiment', true);
-            //         });
-            //     }
-            // });
+            // Generate the session
+            await fetchPost(API_URL + 'auth/generate-session', new FormData());
+            
+            // Experiment Stuff
+            this.$store.dispatch('recoverExperiment').then(async () => {
+                this.$store.commit('setIsRecovering', false);
+            
+                // Only start experiment if it wasn't already running
+                if (!this.inExperiment) {
+                    // First of all login
+                    await this.$store.dispatch('loginUser', {
+                        username: "tamu-experiment",
+                        password: "tamu2019"
+                    });
+            
+                    this.$store.dispatch('startExperiment').then(async () => {
+                        // Restart WS after login
+                        await wsTools.wsConnect(this.$store);
+                        await wsTools.experimentWsConnect();
+            
+                        // Set the tutorial
+                        this.$store.commit('setExperimentStage', 'tutorial');
+                        this.$store.commit('setInExperiment', true);
+                    });
+                }
+            });
             // ------------------------------------------------------------------------------------------- Experiment
 
         },

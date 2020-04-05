@@ -8,8 +8,8 @@ module.exports = merge(common, {
     mode: 'production',
     plugins: [
         new webpack.DefinePlugin({
-            'API_URL': JSON.stringify('http://3.134.113.173/api/'),
-            'WS_URL': JSON.stringify('ws://3.134.113.173/api/')
+            'API_URL': JSON.stringify('https://dev.selva-research.com/api/'),
+            'WS_URL': JSON.stringify('wss://dev.selva-research.com/api/')
         })
     ],
 });
