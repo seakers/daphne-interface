@@ -151,18 +151,19 @@
     -webkit-box-shadow: inset 0px 0px 3px #14191f;
     -moz-box-shadow: inset 0px 0px 3px #14191f;
     box-shadow: inset 0px 0px 14px #14191f;
-    transition: background-color ease-out;
-    -webkit-transition: background-color 700ms linear;
-    -ms-transition: background-color 700ms linear;
-    transition: background-color 700ms linear;    
+
+    transition: background-color ease-out, box-shadow ease-out;
+    -webkit-transition: background-color 700ms linear, box-shadow 700ms linear;
+    -ms-transition: background-color 700ms linear, box-shadow 700ms linear;
+    transition: background-color 700ms linear, box-shadow 700ms linear;  
 }
 .editor-background-light {
-
     background-color: #f2f2f2;
-    transition: background-color ease-out;
-    -webkit-transition: background-color 700ms linear;
-    -ms-transition: background-color 700ms linear;
-    transition: background-color 700ms linear;
+
+    transition: background-color ease-out, box-shadow ease-out;
+    -webkit-transition: background-color 700ms linear, box-shadow 700ms linear;
+    -ms-transition: background-color 700ms linear, box-shadow 700ms linear;
+    transition: background-color 700ms linear, box-shadow 700ms linear;
 }
 
 

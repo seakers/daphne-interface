@@ -213,24 +213,24 @@ div.table-view-hidden{
     display: flex;
     flex-direction: column;
     align-self: center;
-    transition: box-shadow .35s;
-    transition-timing-function: cubic-bezier(.6,.04,.98,.34);
     margin: 8px;
 }
 .table-view-container-light{
     background-color: #fff;
-    transition: background-color ease-out;
-    -webkit-transition: background-color 700ms linear;
-    -ms-transition: background-color 700ms linear;
-    transition: background-color 700ms linear;
+
+    transition: background-color ease-out, box-shadow ease-out;
+    -webkit-transition: background-color 700ms linear, box-shadow 700ms linear;
+    -ms-transition: background-color 700ms linear, box-shadow 700ms linear;
+    transition: background-color 700ms linear, box-shadow 700ms linear;
 }
 .table-view-container-dark{
     box-shadow: 0px 0px 19px 4px #14191f;
     background-color: #354052;
-    transition: background-color ease-out;
-    -webkit-transition: background-color 700ms linear;
-    -ms-transition: background-color 700ms linear;
-    transition: background-color 700ms linear;
+
+    transition: background-color ease-out, box-shadow ease-out;
+    -webkit-transition: background-color 700ms linear, box-shadow 700ms linear;
+    -ms-transition: background-color 700ms linear, box-shadow 700ms linear;
+    transition: background-color 700ms linear, box-shadow 700ms linear;
 }
 
 

@@ -17,7 +17,6 @@ const mutations = {
     },
     set_theme(state){
         state.light_theme = !state.light_theme;
-        console.log(state.light_theme, "SDFSDF");
     }
 };
 
