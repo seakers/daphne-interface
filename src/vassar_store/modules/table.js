@@ -274,6 +274,10 @@ const actions = {
         // Unselect self
         commit('tables__unselect_table', table_name);
     },
+    async tables__select_tables({state, dispatch, commit}, row_object){
+        await dispatch('tables__unselect_tables', row_object.table_name);
+        commit('tables__select_table', row_object);
+    },
 
 
     //------------\\
@@ -343,7 +347,7 @@ const mutations = {
         }
         table.row_object_mapper[row_object.foreign_key][row_object.index].selected_state = true;
     },
-    
+
 
     //------------\\
     //  Edit Row  \\

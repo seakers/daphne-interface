@@ -157,7 +157,7 @@
         },
         methods: {
             async select_row(row_object){
-                this.$store.commit('tables__select_table', row_object);
+                await this.$store.dispatch('tables__select_tables', row_object);
                 if(this.table_object.table_name === 'Group' && row_object.selected_state === true){
                     this.$store.dispatch('query_instruments');                 
                 }
