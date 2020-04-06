@@ -17,7 +17,8 @@
 
             <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': problem_label.label_selected === true }" v-on:click="get_problem_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Problem</p>
-                <p class="menu-label vassar-sublabel">{{ problems_table.selected_name }}</p>
+                <p v-if="selected_group_id !== null" class="menu-label vassar-sublabel">{{ problems_table.selected_name }}</p>
+                <p v-if="selected_group_id === null" class="menu-label vassar-sublabel">no group selected</p>
             </div>
 
             <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': instrument_label.label_selected === true }" v-on:click="get_instrument_page()">
