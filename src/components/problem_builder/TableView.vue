@@ -39,16 +39,16 @@
                             <template v-if="!row.editing_state">
                                 <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">{{ entry }}</td>
                             </template>
+
+                            <!-- EDIT -->
                             <template v-if="row.editing_state">
                                 <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">
 
-                                    <input class="input" type="text" v-model="table_rows_copy[row_index].items[col_index]" v-if="col_index !== 0">
+                                    <!-- TEXT FIELD -->
+                                    <input v-if="col_index !== 0" class="input" type="text" v-model="table_rows_copy[row_index].items[col_index]">
 
-                                    <button class="button is-small table-view-close-edit" v-if="col_index === 0" v-on:click="edit_row(row)">
-                                        <span class="icon is-small">
-                                            <i class="fas fa-times" style="color: #354052;"></i>
-                                        </span>
-                                    </button>
+                                    <!-- UNDO -->
+                                    <a v-if="col_index === 0" class="button is-small is-primary" v-on:click="edit_row(row)">undo</a>
 
                                 </td>
                             </template>

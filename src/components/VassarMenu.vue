@@ -131,7 +131,6 @@
 
                         this.instrument_label.label_selected = true;
                         this.$store.commit('set_page_selected', 'instruments');
-                        console.log("ASDFASDF", this.instrument_label.label_selected);
                 },
                 get_service_page(id){
                         console.log(id);
