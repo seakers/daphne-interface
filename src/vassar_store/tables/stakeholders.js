@@ -3,9 +3,11 @@ const Stakeholder_Needs_Panel = {
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": ['Stakeholder_Needs_Objective'],
         "type": "one-to-many",
         "parent": "Problem",
         "join": null,
@@ -27,9 +29,11 @@ const Stakeholder_Needs_Objective = {
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": ['Stakeholder_Needs_Subobjective'],
         "type": "one-to-many",
         "parent": "Stakeholder_Needs_Panel",
         "join": null,
@@ -51,9 +55,11 @@ const Stakeholder_Needs_Subobjective = {
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": null,
         "type": "one-to-many",
         "parent": "Stakeholder_Needs_Objective",
         "join": null,

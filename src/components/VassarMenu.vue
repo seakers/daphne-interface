@@ -22,7 +22,7 @@
 
             <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': instrument_label.label_selected === true }" v-on:click="get_instrument_page()">
                 <p class="menu-label vassar-label" style="margin-bottom: 5px;">Instruments</p>
-                <p class="menu-label vassar-sublabel"></p>
+                <p v-if="selected_group_id === null" class="menu-label vassar-sublabel">no group selected</p>
             </div>
 
 
@@ -69,6 +69,7 @@
                         problem: 'problems__get_selected_problem_name',
                         groups_table: 'groups__group_table',
                         problems_table: 'problems__problem_table',
+                        selected_group_id: 'groups__group_selection'
                 }),
                 group_label() {
                         let g_label = {label_selected: false, id: 'group', memberships: ['seakers', 'jpl', 'goddard']}

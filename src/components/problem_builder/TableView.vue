@@ -34,8 +34,8 @@
 
                 <tbody>
 
+                    <!----- TABLE ROW ----->
                     <tr v-for="(row, row_index) in table_rows" :key="row.id">
-
                             <template v-if="!row.editing_state">
                                 <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">{{ entry }}</td>
                             </template>
@@ -52,15 +52,22 @@
 
                                 </td>
                             </template>
-
-                            <td class="table-cell-button" v-if="table_selectable"><a class="button is-small" v-bind:class="[ row.selected_state ? 'is-success' : 'is-link' ]" v-on:click="!row.editing_state && select_row(row)" :disabled="row.editing_state">select</a></td>
+                            
+                            <!-- SELECT | DESELECT -->
+                            <td class="table-cell-button" v-if="table_selectable">
+                                <a class="button is-small is-link" v-if="!row.selected_state" v-on:click="!row.editing_state && select_row(row)" :disabled="row.editing_state">select</a>
+                                <a class="button is-small is-danger" v-if="row.selected_state" v-on:click="!row.editing_state && deselect_row(row)" :disabled="row.editing_state">deselect</a>
+                            </td>
         
-                            <td class="table-cell-button" v-if="table_mutable && !row.editing_state"><a class="button is-warning is-small" v-on:click="!row.selected_state && edit_row(row)" :disabled="row.selected_state">edit</a></td>
-                            <td class="table-cell-button" v-if="table_mutable && row.editing_state"><a class="button is-danger is-small" v-on:click="commit_row(table_rows_copy[row_index])">commit</a></td>
-
+                            <!-- EDIT | COMMIT -->
+                            <td class="table-cell-button" v-if="table_mutable">
+                                <a class="button is-warning is-small" v-if="!row.editing_state" v-on:click="!row.selected_state && edit_row(row)" :disabled="row.selected_state">edit</a>
+                                <a class="button is-danger is-small" v-if="row.editing_state" v-on:click="commit_row(table_rows_copy[row_index])">commit</a>
+                            </td>
                     </tr>
 
-                     <!-- INSERT ROW -->
+
+                    <!----- INSERT ROW ----->
                     <tr v-if="table_appendable">
                         <template v-if="insert_state === true">
                             <td class="table-cell-button">
@@ -74,6 +81,8 @@
                             <td class="table-cell-button"><a class="button is-danger is-small" v-on:click="insert_row()">insert</a></td>
                         </template> 
                     </tr>
+
+
                 </tbody>
             </table>
             <a v-if="insert_state === false && table_appendable" class="button is-primary is-fullwidth" v-on:click="toggle_insert_state(true)" style="border-radius: 0;">new row</a>
@@ -148,10 +157,17 @@
         },
         methods: {
             async select_row(row_object){
-                this.$store.commit('tables__set_selected_row', row_object);
-                if(this.table_object.table_name === 'Problem' && row_object.selected_state === true){
-                    this.$store.dispatch('query__problem_info');                    
+                this.$store.commit('tables__select_table', row_object);
+                if(this.table_object.table_name === 'Group' && row_object.selected_state === true){
+                    this.$store.dispatch('query_instruments');                 
                 }
+                if(this.table_object.table_name === 'Problem' && row_object.selected_state === true){
+                    this.$store.dispatch('query__problem_info');
+                }
+            },
+            async deselect_row(row_object){
+                console.log("DESELECT", row_object);
+                this.$store.dispatch('tables__unselect_tables', row_object.table_name);
             },
             async edit_row(row_object){
                 console.log("EDIT", row_object);

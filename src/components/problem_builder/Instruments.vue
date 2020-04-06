@@ -1,16 +1,16 @@
 <template>
     <div class="instruments-container">
+        <template v-if="groups__selected_id !== null">
+            <table-view :table_object="instrument_table" :foreign_key="groups__selected_id"></table-view>
+        </template>
 
-        <!-- <table-view :table_name="panel_table_name" 
-                    :table_headers="table_headers"
-                    :row_keys="row_keys"
-                    :table_view_rows_data="panel_row_objects"
-                    :display_name="panel_display_name"
-                    selectable
-                    editable_row
-                    insertable_row
-        >
-        </table-view> -->
+        <template v-if="instruments__selected_id !== null">
+            <div class="instruments-details">
+                <table-view :table_object="instrument_capability_table" :foreign_key="instruments__selected_id"></table-view>
+                <table-view :table_object="instrument_characteristic_table" :foreign_key="instruments__selected_id"></table-view>
+            </div>
+        </template>
+
 
 
     </div>
@@ -30,10 +30,14 @@
         },
         computed: {
             ...mapState({
-
             }),
             ...mapGetters({
+                instrument_table: 'instruments__instrument_table',
+                instrument_capability_table: 'instruments__capability_table',
+                instrument_characteristic_table: 'instruments__characteristic_table',
 
+                groups__selected_id: 'groups__group_selection',
+                instruments__selected_id: 'instruments__instrument_selection',
             }),
         },
         methods: {
@@ -60,7 +64,10 @@
     height: 100%;
     align-items: stretch;
     flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
+    flex-direction: row;
+}
+
+.instruments-details{
+    display: flex;
 }
 </style>

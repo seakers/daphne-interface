@@ -18,9 +18,11 @@ const Measurement_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": null,
         "type": "one-to-many",
         "parent": "Problem",
         "join": null,
@@ -56,9 +58,11 @@ const Instrument_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": null,
         "type": "one-to-many",
         "parent": "Problem",
         "join": null,
@@ -94,9 +98,11 @@ const Mission_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": null,
         "type": "one-to-many",
         "parent": "Problem",
         "join": null,
@@ -132,13 +138,15 @@ const Orbit_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { "child": null,
         "type": "one-to-many",
         "parent": "Problem",
         "join": null,
-        "foreign_key_field": "problem_id",
+        "foreign_key_field": 
+        "problem_id",
     },
     "display_name": "Orbit",
     "table_name": "Orbit_Attribute",
@@ -170,9 +178,11 @@ const Launch_Vehicle_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": null,
         "type": "one-to-many",
         "parent": "Problem",
         "join": null,

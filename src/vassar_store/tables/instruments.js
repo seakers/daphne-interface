@@ -14,7 +14,8 @@ const Instrument = {
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": ['Instrument_Capability', 'Instrument_Characteristic'],
         "type": "many-to-many",
         "parent": "Group",
         "join": "Join__Group_Instruments",
@@ -34,36 +35,83 @@ const Instrument = {
 const Instrument_Capability = {
     "col_types": [
         "int",
+        "int",
+        "int",
         "string",
+        "string"
     ],
     "col_titles": [
         "ID",
         "Instrument ID",
-        "Measurement",
+        "Measurement Attribute ID",
+        "Measurement Name",
         "Value"
 
     ],
     "col_keys": [
         "id",
         "instrument_id",
+        "measurement_attribute_id",
         "measurement_name",
         "value"
     ],
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
     "selected_name": null,
-    "relationship": {
-        "type": "many-to-many",
-        "parent": "Group",
-        "join": "Join__Group_Instruments",
-        "foreign_key_field": 'group_id',
+    "relationship": { 
+        "child": null,
+        "type": "one-to-many",
+        "parent": "Instrument",
+        "join": null,
+        "foreign_key_field": 'instrument_id',
     },
-    "display_name": "Instruments",
-    "table_name": "Instrument",
+    "display_name": "Capabilities",
+    "table_name": "Instrument_Capability",
     "state": {
         "mutable": true,
         "appendable": true,
-        "selectable": true,
+        "selectable": false,
+        "hidden": false,
+        "closeable": false
+    }
+};
+
+const Instrument_Characteristic = {
+    "col_types": [
+        "int",
+        "int",
+        "int",
+        "string",
+    ],
+    "col_titles": [
+        "ID",
+        "Instrument ID",
+        "Characteristic ID",
+        "Value"
+
+    ],
+    "col_keys": [
+        "id",
+        "instrument_id",
+        "instrument_attribute_id",
+        "value"
+    ],
+    "row_object_mapper": {},
+    "selected_id": null, "selected_index": null,
+    "selected_name": null,
+    "relationship": { 
+        "child": null,
+        "type": "one-to-many",
+        "parent": "Instrument",
+        "join": null,
+        "foreign_key_field": 'instrument_id',
+    },
+    "display_name": "Characteristics",
+    "table_name": "Instrument_Characteristic",
+    "state": {
+        "mutable": true,
+        "appendable": true,
+        "selectable": false,
         "hidden": false,
         "closeable": false
     }
@@ -76,5 +124,6 @@ const Instrument_Capability = {
 
 export {
     Instrument,
-    Instrument_Capability
+    Instrument_Capability,
+    Instrument_Characteristic
 }

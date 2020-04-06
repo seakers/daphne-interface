@@ -12,9 +12,11 @@ const Group = {
         "name",
     ],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": ['Problem', 'Instrument'],
         "type": "many-to-many",
         "parent": "auth_user",
         "join": "Join__AuthUser_Groups",
@@ -45,9 +47,23 @@ const Problem = {
         "name",
     ],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": [
+            'Stakeholder_Needs_Panel', 
+            'Requirement_Rule_Attribute', 
+            'Requirement_Rule_Case', 
+            'Walker_Mission_Analysis', 
+            'Power_Mission_Analysis', 
+            'Launch_Vehicle_Mission_Analysis',
+            'Measurement_Attribute',
+            'Instrument_Attribute',
+            'Mission_Attribute',
+            'Orbit_Attribute',
+            'Launch_Vehicle_Attribute'
+        ],
         "type": "many-to-many",
         "parent": "Group",
         "join": "Join__Problem_Groups",
@@ -69,9 +85,11 @@ const auth_user = {
     "col_titles": ["ID"],
     "col_keys": ["id"],
     "row_object_mapper": {},
-    "selected_id": null, "selected_index": null,
+    "selected_id": null, 
+    "selected_index": null,
     "selected_name": null,
-    "relationship": {
+    "relationship": { 
+        "child": null,
         "type": "many-to-many",
         "parent": null,
         "join": "Join__AuthUser_Groups",

@@ -4,6 +4,7 @@ import { Walker_Mission_Analysis, Power_Mission_Analysis, Launch_Vehicle_Mission
 import { Group, Problem, auth_user } from "../tables/problems";
 import { Requirement_Rule_Attribute, Requirement_Rule_Case } from "../tables/requirements";
 import { Stakeholder_Needs_Panel, Stakeholder_Needs_Objective, Stakeholder_Needs_Subobjective } from "../tables/stakeholders";
+import { Instrument, Instrument_Capability, Instrument_Characteristic } from "../tables/instruments"
 import { migrations } from "../tables/migrations";
 import * as _ from 'lodash-es';
 import Vue from 'vue';
@@ -15,6 +16,10 @@ const state = {
         'auth_user': auth_user,
         'Group': Group,
         'Problem': Problem,
+
+        'Instrument': Instrument,
+        'Instrument_Capability': Instrument_Capability,
+        'Instrument_Characteristic': Instrument_Characteristic,
 
         'Stakeholder_Needs_Panel': Stakeholder_Needs_Panel,
         'Stakeholder_Needs_Objective': Stakeholder_Needs_Objective,
@@ -45,6 +50,16 @@ const getters = {
     },
     problems__problem_table(state){
         return state.tables.Problem;
+    },
+
+    instruments__instrument_table(state){
+        return state.tables.Instrument;
+    },
+    instruments__capability_table(state){
+        return state.tables.Instrument_Capability;
+    },
+    instruments__characteristic_table(state){
+        return state.tables.Instrument_Characteristic;
     },
 
     stakeholders__panel_table(state){
@@ -99,6 +114,16 @@ const getters = {
     },
     problems__problem_selection(state){
         return state.tables.Problem.selected_id;
+    },
+
+    instruments__instrument_selection(state){
+        return state.tables.Instrument.selected_id;
+    },
+    instruments__capability_selection(state){
+        return state.tables.Instrument_Capability.selected_id;
+    },
+    instruments__characteristic_selection(state){
+        return state.tables.Instrument_Characteristic.selected_id;
     },
 
     stakeholders__panel_selection(state){
@@ -160,8 +185,23 @@ const actions = {
         let group__row_objects = state.tables.Group.row_object_mapper[state.user_id];
         for(let x=0;x<group__row_objects.length;x++){
             let group__row_object_id = group__row_objects[x].objects.id;
-            let query_return = await vassar_query(state.tables.Problem, group__row_object_id);
-            commit('table__set_rows', query_return);
+            let query_problems = await vassar_query(state.tables.Problem, group__row_object_id);
+            commit('table__set_rows', query_problems);
+
+            let query_instruments = await vassar_query(state.tables.Instrument, group__row_object_id);
+            commit('table__set_rows', query_instruments);
+        }
+    },
+
+    async query_instruments({state, commit}){
+        let instrument__row_objects = state.tables.Instrument.row_object_mapper[state.tables.Group.selected_id];
+        for(let x=0;x<instrument__row_objects.length;x++){
+            let instrument__row_object_id = instrument__row_objects[x].objects.id;
+            let query_capabilities = await vassar_query(state.tables.Instrument_Capability, instrument__row_object_id);
+            commit('table__set_rows', query_capabilities);
+
+            let query_characteristics = await vassar_query(state.tables.Instrument_Characteristic, instrument__row_object_id);
+            commit('table__set_rows', query_characteristics);
         }
     },
 
@@ -218,6 +258,24 @@ const actions = {
         }
     },
 
+
+    //--------------\\
+    //  Select Row  \\
+    //--------------\\
+    async tables__unselect_tables({state, dispatch, commit}, table_name){
+
+        // Recursively unselect all child tables
+        let children = state.tables[table_name].relationship.child;
+        if(children !== null){
+            for(let x=0;x<children.length;x++){
+                await dispatch('tables__unselect_tables', children[x]);
+            }
+        }
+        // Unselect self
+        commit('tables__unselect_table', table_name);
+    },
+
+
     //------------\\
     //  Edit Row  \\
     //------------\\
@@ -261,41 +319,31 @@ const mutations = {
     //--------------\\
     //  Select Row  \\
     //--------------\\
-    tables__set_selected_row(state, row_object){
-        console.log("ROW OBJ", row_object)
-        let table_selected = state.tables[row_object.table_name];
-        let rows = table_selected.row_object_mapper[row_object.foreign_key];
-
-        //                                                         // If you selected a row that is already selected
-        if(table_selected.selected_id === row_object.objects.id){  // Deselect row
-            if(table_selected.table_name === 'Stakeholder_Needs_Panel'){
-                if(state.tables.Stakeholder_Needs_Objective.selected_id !== null){
-                    state.tables.Stakeholder_Needs_Objective.row_object_mapper[state.tables.Stakeholder_Needs_Panel.selected_id][state.tables.Stakeholder_Needs_Objective.selected_index].selected_state = false;
-                    state.tables.Stakeholder_Needs_Objective.selected_id = null;
-                    state.tables.Stakeholder_Needs_Objective.selected_index = null; 
-                }
-            }
-            table_selected.selected_id = null;    
-            table_selected.selected_name = null; 
-            table_selected.selected_index = null;  
-        }
-        else{
-            table_selected.selected_id = row_object.objects.id;    // Selected row
-            table_selected.selected_index = row_object.index;    // Selected index
-            if(table_selected.table_name === 'Group' || table_selected.table_name === 'Problem'){
-                table_selected.selected_name = row_object.items[1];
+    tables__unselect_table(state, table_name){ // SUPER NEW
+        let table = state.tables[table_name];
+        table.selected_id = null;
+        table.selected_name = null;
+        table.selected_index = null;
+        let keys = Object.keys(table.row_object_mapper);
+        for(let x=0;x<keys.length;x++){
+            let key = keys[x];
+            let rows = table.row_object_mapper[key];
+            for(let y=0;y<rows.length;y++){
+                let row = rows[y];
+                row.selected_state = false;
             }
         }
-        // Only one row can be selected at a time
-        for(let x=0;x<rows.length;x++){
-            if(row_object.index === rows[x].index){
-                rows[x]['selected_state'] = !(rows[x]['selected_state']);
-            }
-            else{
-                rows[x]['selected_state'] = false;
-            }
-        }        
     },
+    tables__select_table(state, row_object){ // SUPER NEW
+        let table = state.tables[row_object.table_name];
+        table.selected_id = row_object.objects.id;
+        table.selected_index = row_object.index;
+        if(row_object.table_name === 'Group' || row_object.table_name === 'Problem'){
+            table.selected_name = row_object.objects.name;
+        }
+        table.row_object_mapper[row_object.foreign_key][row_object.index].selected_state = true;
+    },
+    
 
     //------------\\
     //  Edit Row  \\
