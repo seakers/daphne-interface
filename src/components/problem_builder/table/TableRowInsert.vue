@@ -46,8 +46,7 @@
 
 <script>
     import { mapState } from 'vuex';
-    import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
-    import { validate_row } from '../../scripts/query-helpers';
+    import {fetchGet, fetchPost} from '../../../scripts/fetch-helpers';
     import * as _ from 'lodash-es';
 
     export default {

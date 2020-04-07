@@ -18,7 +18,7 @@
 <script>
     import { mapState, mapGetters } from 'vuex';
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
-    import TableView from './TableView';
+    import TableView from './table/TableView';
     export default {
         name: 'requirements',
         data: function () {
