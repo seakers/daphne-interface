@@ -1,6 +1,6 @@
 const Measurement_Attribute = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "string",
@@ -20,7 +20,8 @@ const Measurement_Attribute = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, 
+    "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
@@ -40,7 +41,7 @@ const Measurement_Attribute = {
 };
 const Instrument_Attribute = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "string",
@@ -60,7 +61,8 @@ const Instrument_Attribute = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, 
+    "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
@@ -80,7 +82,7 @@ const Instrument_Attribute = {
 };
 const Mission_Attribute = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "string",
@@ -100,7 +102,8 @@ const Mission_Attribute = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, 
+    "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
@@ -120,7 +123,7 @@ const Mission_Attribute = {
 };
 const Orbit_Attribute = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "string",
@@ -140,7 +143,8 @@ const Orbit_Attribute = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, 
+    "insert_state": false,
     "relationship": { "child": null,
         "type": "one-to-many",
         "parent": "Problem",
@@ -160,7 +164,7 @@ const Orbit_Attribute = {
 };
 const Launch_Vehicle_Attribute = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "string",
@@ -180,7 +184,8 @@ const Launch_Vehicle_Attribute = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, 
+    "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",

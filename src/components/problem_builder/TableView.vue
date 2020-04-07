@@ -27,28 +27,55 @@
         <div class="table-container">
             <table class="table custom-table is-hoverable is-fullwidth">
                 <thead>
+
+                    <!-- TABLE HEADER -->
                     <tr>
                         <th v-for="title in table_object.col_titles" :key="title">{{ title }}</th>
                     </tr>
+
+                    
                 </thead>
 
                 <tbody>
 
                     <!----- TABLE ROW ----->
                     <tr v-for="(row, row_index) in table_rows" :key="row.id">
+
+                            <!-- DISPLAY ITEM -->
                             <template v-if="!row.editing_state">
-                                <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">{{ entry }}</td>
+                                <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">
+
+                                    <!-- INPUT TYPES -->
+                                    <div v-if="row.col_types[col_index] === 'pk'" v-html="entry">    </div>
+                                    <div v-if="row.col_types[col_index] === 'string'" v-html="format_string(entry)">    </div>
+                                    <div v-if="row.col_types[col_index] === 'int'"    v-html="format_int(entry)"   >    </div>
+                                    <div v-if="row.col_types[col_index] === 'double'" v-html="format_double(entry)">    </div>
+                                    <div v-if="row.col_types[col_index] === 'list'"   v-html="format_list(entry)"  >    </div>
+                                </td>
                             </template>
 
-                            <!-- EDIT -->
+                            <!-- EDIT ITEM -->
                             <template v-if="row.editing_state">
                                 <td v-for="(entry, col_index) in row.items" :key="col_index" class="table-cell-text">
 
-                                    <!-- TEXT FIELD -->
-                                    <input v-if="col_index !== 0" class="input" type="text" v-model="table_rows_copy[row_index].items[col_index]">
+                                    <!-- INPUT TYPES -->
+                                    <div      v-if="row.col_types[col_index] === 'pk'"><a class="button is-small is-primary" v-on:click="edit_row(row)">undo</a>           </div>
+                                    <template v-if="row.col_types[col_index] === 'string'"><input class="input" type="text" v-model="table_rows_copy[row_index].items[col_index]">        </template>
+                                    <template v-if="row.col_types[col_index] === 'int'"   ><input class="input" type="text" v-model="table_rows_copy[row_index].items[col_index]">        </template>
+                                    <template v-if="row.col_types[col_index] === 'double'"><input class="input" type="text" v-model="table_rows_copy[row_index].items[col_index]">        </template>
 
-                                    <!-- UNDO -->
-                                    <a v-if="col_index === 0" class="button is-small is-primary" v-on:click="edit_row(row)">undo</a>
+                                    <!-- LIST TYPE -->
+                                    <template v-if="row.col_types[col_index] === 'list'"  >
+                                        <!-- LIST ITEM -->
+                                        <div v-for="(array_entry, array_index) in table_rows_copy[row_index].items[col_index]" :key="array_index">
+                                            <input class="input" type="text" v-model="table_rows_copy[row_index].items[col_index][array_index]">
+                                        </div>
+                                        <!-- ADD | DELETE LIST ITEM -->
+                                        <div class="add-remove-list-item-buttons">
+                                            <a class="button is-small is-success"  v-on:click="add_list_item(table_rows_copy[row_index].items[col_index])"  ><i class="fas fa-plus"></i></a>
+                                            <a class="button is-small is-danger"   v-on:click="remove_list_item(table_rows_copy[row_index].items[col_index])"  ><i class="fas fa-minus"></i></a>
+                                        </div>
+                                    </template>
 
                                 </td>
                             </template>
@@ -62,30 +89,26 @@
                             <!-- EDIT | COMMIT -->
                             <td class="table-cell-button" v-if="table_mutable">
                                 <a class="button is-warning is-small" v-if="!row.editing_state" v-on:click="!row.selected_state && edit_row(row)" :disabled="row.selected_state">edit</a>
-                                <a class="button is-danger is-small" v-if="row.editing_state" v-on:click="commit_row(table_rows_copy[row_index])">commit</a>
+                                <a class="button is-danger is-small" v-if="row.editing_state" v-on:click="commit_row(table_rows_copy[row_index])" >commit</a>
                             </td>
                     </tr>
 
 
                     <!----- INSERT ROW ----->
-                    <tr v-if="table_appendable">
-                        <template v-if="insert_state === true">
-                            <td class="table-cell-button">
-                                <button class="button is-small table-insert-close-button" v-on:click="toggle_insert_state(false)">
-                                    <span class="icon is-small"><i class="fas fa-times" style="color: #354052;"></i></span>
-                                </button>    
-                            </td> 
+                    <table-row-insert v-if="insert_state === true" 
+                            :table_object="table_object"
+                            :table_rows="table_rows"
+                            :foreign_key="foreign_key"
+                    >
 
-                            <td v-for="row_item in new_row_object.items" :key="row_item.key"><input class="input table-input" type="text" v-model="row_item.value" :placeholder="row_item.key"></td>
-
-                            <td class="table-cell-button"><a class="button is-danger is-small" v-on:click="insert_row()">insert</a></td>
-                        </template> 
-                    </tr>
-
+                    </table-row-insert>
 
                 </tbody>
             </table>
+
             <a v-if="insert_state === false && table_appendable" class="button is-primary is-fullwidth" v-on:click="toggle_insert_state(true)" style="border-radius: 0;">new row</a>
+            <a v-if="insert_state === true && table_appendable" class="button is-warning is-fullwidth" v-on:click="toggle_insert_state(false)" style="border-radius: 0;">cancel insert</a>
+
         </div>
         
 
@@ -97,6 +120,7 @@
 <script>
     import { mapState } from 'vuex';
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
+    import TableRowInsert from './TableRowInsert';
     import * as _ from 'lodash-es';
     
     export default {
@@ -140,22 +164,55 @@
 
             // NEW ROW
             new_row_object() {
-                let to_return = {};
-                to_return['index'] = this.table_rows.length;
-                to_return['items'] = [];
-                to_return['table_name'] = this.table_object.table_name;
-                to_return['foreign_key'] = this.foreign_key;
-                let num_keys = this.table_object.col_keys.length;
-                for(let x=1;x<num_keys;x++){
-                    let item_object = {};
-                    item_object['key'] = this.table_object.col_keys[x];
-                    item_object['value'] = '';
-                    to_return['items'].push(item_object);
+                let row_object = {};
+                row_object['index'] = this.table_rows.length;
+                row_object['col_types'] = this.table_object.col_types;
+                row_object['table_name'] = this.table_object.table_name;
+                row_object['foreign_key'] = this.foreign_key;
+
+                let items = [];
+                for(let x=0;x<row_object['col_types'].length;x++){
+                    let col_type = row_object['col_types'][x];
+                    if(col_type === 'list'){
+                        items.push([]);
+                    }
+                    else{
+                        items.push('');
+                    }
                 }
-                return to_return;
+                row_object['items'] = items;
+                return row_object;
             },
         },
         methods: {
+            // LIST ITEM OPERATIONS
+            async add_list_item(list){
+                console.log("ADDING LIST ITEM", list);
+                list.push('');
+            },
+            async remove_list_item(list){
+                console.log("REMOVING LIST ITEM", list);
+                list.pop();
+            },
+
+
+            // FORMATTERS
+            format_string(col_string){
+                return col_string;
+            },
+            format_int(col_int){
+                return col_int;
+            },
+            format_double(col_double){
+                return col_double;
+            },
+            format_list(col_list){
+                if(col_list === null){return 'null';}
+                return col_list.join(" <br> ");
+            },
+
+
+            // ROW OPERATIONS
             async select_row(row_object){
                 await this.$store.dispatch('tables__select_tables', row_object);
                 if(this.table_object.table_name === 'Group' && row_object.selected_state === true){
@@ -190,6 +247,7 @@
         },
         components: {
             // ScoreTree, CostColumn, DetailsTable
+            TableRowInsert,
         },
 
 
@@ -341,6 +399,10 @@ div.table-view-hidden{
 
 
 .table-input{
+}
+
+.add-remove-list-item-buttons{
+    padding-top: 3px;
 }
 
 

@@ -1,6 +1,6 @@
 const Group = {
     "col_types": [
-        "int",
+        "pk",
         "string",
     ],
     "col_titles": [
@@ -14,7 +14,7 @@ const Group = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": ['Problem', 'Instrument'],
         "type": "many-to-many",
@@ -35,7 +35,7 @@ const Group = {
 
 const Problem = {
     "col_types": [
-        "int",
+        "pk",
         "string",
     ],
     "col_titles": [
@@ -49,7 +49,7 @@ const Problem = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": [
             'Stakeholder_Needs_Panel', 
@@ -87,7 +87,7 @@ const auth_user = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "many-to-many",

@@ -1,6 +1,6 @@
 const Requirement_Rule_Attribute = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "string",
@@ -17,7 +17,7 @@ const Requirement_Rule_Attribute = {
         "Measurement",
         "Attribute",
         "AttributeType",
-        "Threshold",
+        "Thresholds",
         "Scores",
         "Justification",
         "Units",
@@ -38,7 +38,7 @@ const Requirement_Rule_Attribute = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
@@ -59,7 +59,7 @@ const Requirement_Rule_Attribute = {
 
 const Requirement_Rule_Case = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "string",
@@ -76,7 +76,7 @@ const Requirement_Rule_Case = {
         "Measurement",
         "Attribute",
         "AttributeType",
-        "Threshold",
+        "Thresholds",
         "Scores",
         "Justification",
         "Units",
@@ -97,7 +97,7 @@ const Requirement_Rule_Case = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",

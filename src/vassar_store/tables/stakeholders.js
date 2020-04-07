@@ -1,11 +1,11 @@
 const Stakeholder_Needs_Panel = {
-    "col_types": ['int', 'string', 'string', 'double'],
+    "col_types": ['pk', 'string', 'string', 'double'],
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": ['Stakeholder_Needs_Objective'],
         "type": "one-to-many",
@@ -25,13 +25,13 @@ const Stakeholder_Needs_Panel = {
 };
 
 const Stakeholder_Needs_Objective = {
-    "col_types": ['int', 'string', 'string', 'double'],
+    "col_types": ['pk', 'string', 'string', 'double'],
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": ['Stakeholder_Needs_Subobjective'],
         "type": "one-to-many",
@@ -51,13 +51,13 @@ const Stakeholder_Needs_Objective = {
 };
 
 const Stakeholder_Needs_Subobjective = {
-    "col_types": ['int', 'string', 'string', 'double'],
+    "col_types": ['pk', 'string', 'string', 'double'],
     "col_titles": ['ID', 'Name', 'Description', 'weight'],
     "col_keys": ['id', 'name', 'description', 'weight'],
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",

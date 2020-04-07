@@ -11,7 +11,14 @@
 
             <div class="column is-10 editor-background hero" v-bind:class="[ light_theme ? 'editor-background-light' : 'editor-background-dark' ]">
 
+                <!-- NOTIFICATION -->
+                <div v-if="message_display" class="notification is-primary" v-bind:class="[ success_message ? 'is-success' : 'is-warning' ]">
+                    <button class="delete" v-on:click="hide_notification()"></button>
+                    {{ message_content }}
+                </div>
 
+
+                <!-- PAGES -->
                 <template v-if="page_selected === 'groups'">
                     <groups></groups>
                 </template>
@@ -78,12 +85,18 @@
             ...mapState({
                 page_selected: state => state.vassarPages.page_selected,
                 light_theme: state => state.vassarPages.light_theme,
+                message_display: state => state.vassarPages.message_display,
+                message_content: state => state.vassarPages.message_content,
+                success_message: state => state.vassarPages.success_message,
             }),
             ...mapGetters({
                 problems__selected_id: 'problems__problem_selection',
             }),
         },
         methods: {
+            async hide_notification() {
+                this.$store.commit('set_hide_message');
+            },
         },
         components: {
             // ScoreTree, CostColumn, DetailsTable

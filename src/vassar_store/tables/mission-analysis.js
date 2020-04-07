@@ -1,6 +1,6 @@
 const Walker_Mission_Analysis = {
     "col_types": [
-        "int",
+        "pk",
         "double",
         "double",
         "double",
@@ -47,7 +47,7 @@ const Walker_Mission_Analysis = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
@@ -68,7 +68,7 @@ const Walker_Mission_Analysis = {
 
 const Power_Mission_Analysis = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "string",
         "double",
@@ -106,7 +106,7 @@ const Power_Mission_Analysis = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
@@ -127,7 +127,7 @@ const Power_Mission_Analysis = {
 
 const Launch_Vehicle_Mission_Analysis = {
     "col_types": [
-        "int",
+        "pk",
         "string",
         "double",
         "double",
@@ -171,7 +171,7 @@ const Launch_Vehicle_Mission_Analysis = {
     "row_object_mapper": {},
     "selected_id": null, 
     "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",

@@ -1,4 +1,5 @@
 import { vassar_query, vassar_insert, vassar_update } from "../../scripts/query-helpers";
+import { validate_row } from "../../scripts/validation-helpers";
 import { Measurement_Attribute, Instrument_Attribute, Mission_Attribute, Orbit_Attribute, Launch_Vehicle_Attribute} from "../tables/attributes";
 import { Walker_Mission_Analysis, Power_Mission_Analysis, Launch_Vehicle_Mission_Analysis } from "../tables/mission-analysis";
 import { Group, Problem, auth_user } from "../tables/problems";
@@ -170,6 +171,37 @@ const getters = {
     },
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const actions = {
 
     //--------------\\
@@ -280,32 +312,88 @@ const actions = {
     },
 
 
+
+
+
+
     //------------\\
     //  Edit Row  \\
     //------------\\
     async tables__commit_edit({state, commit}, row_object){
-        let table_selected = state.tables[row_object.table_name];
-        let rows = table_selected.row_object_mapper[row_object.foreign_key];
+        let table = state.tables[row_object.table_name];
+        let rows = table.row_object_mapper[row_object.foreign_key];
 
-        // Check for row changes
-        if(JSON.stringify(row_object.items) != JSON.stringify(rows[row_object.index].items)){
-            await vassar_update(row_object, row_object.table_name, table_selected.col_keys, table_selected.col_types);
-            commit('tables__update_row', row_object);
-            commit('tables__reset_edit_all', row_object);
+        //VALIDATION
+        let validation_response = await validate_row(row_object);
+
+        if(validation_response === true){
+            if(JSON.stringify(row_object.items) != JSON.stringify(rows[row_object.index].items)){
+                await vassar_update(table, row_object);
+                commit('tables__update_row', row_object);
+                commit('tables__reset_edit_all', row_object);
+            }
+            else{
+                commit('push_error_message', "Failed to commit. No row changes have been detected.");
+            }
+        }
+        else{
+            commit('push_error_message', validation_response);
         }
     },
+
+
+
+
+
 
 
     //--------------\\
     //  Insert Row  \\
     //--------------\\
     async tables__insert_row({state, commit}, row_object){
-        console.log("INSERT ROW", row_object);
+        console.log("INSERT", row_object);
         let table = state.tables[row_object.table_name];
-        let insert_object = await vassar_insert(table, row_object, row_object.foreign_key);
-        commit('tables__insert_row_local', insert_object);
+
+        // VALIDATION
+        let validation_response = await validate_row(row_object);
+
+        if(validation_response === true){
+            let table = state.tables[row_object.table_name];
+            let insert_object = await vassar_insert(table, row_object, row_object.foreign_key);
+            commit('tables__insert_row_local', insert_object);
+        }
+        else{
+            commit('push_error_message', validation_response);
+        }
     },  
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -368,7 +456,6 @@ const mutations = {
         let table_selected = state.tables[row_object.table_name];
         let rows = table_selected.row_object_mapper[row_object.foreign_key];
 
-        // TODO: we clone the ITEMS but we don't clone the OBJECTS
         rows[row_object.index].items = _.cloneDeep(row_object.items);
         if(table_selected.selected_id === row_object.objects.id){
             table_selected.selected_id = row_object.objects.id;

@@ -1,6 +1,6 @@
 const Instrument = {
     "col_types": [
-        "int",
+        "pk",
         "string",
     ],
     "col_titles": [
@@ -13,7 +13,7 @@ const Instrument = {
     ],
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": ['Instrument_Capability', 'Instrument_Characteristic'],
         "type": "many-to-many",
@@ -34,7 +34,7 @@ const Instrument = {
 
 const Instrument_Capability = {
     "col_types": [
-        "int",
+        "pk",
         "int",
         "int",
         "string",
@@ -42,7 +42,7 @@ const Instrument_Capability = {
     ],
     "col_titles": [
         "ID",
-        "Instrument ID",
+        "Instrument Attribute ID",
         "Measurement Attribute ID",
         "Measurement Name",
         "Value"
@@ -57,7 +57,7 @@ const Instrument_Capability = {
     ],
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
@@ -78,7 +78,7 @@ const Instrument_Capability = {
 
 const Instrument_Characteristic = {
     "col_types": [
-        "int",
+        "pk",
         "int",
         "int",
         "string",
@@ -98,7 +98,7 @@ const Instrument_Characteristic = {
     ],
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
-    "selected_name": null,
+    "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": null,
         "type": "one-to-many",
