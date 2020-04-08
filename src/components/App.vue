@@ -195,12 +195,7 @@
                             this.init(data);
                         }
                         else {
-                            if (data['is_guest'] === true) {
-                                this.init(data);
-                            }
-                            else {
-                                this.$store.commit('activateModal', 'LoginModal');
-                            }
+                            this.$store.commit('activateModal', 'LoginModal');
                         }
                     }
                 });

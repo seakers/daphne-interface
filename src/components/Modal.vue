@@ -6,7 +6,7 @@
                 <component v-bind:is="modalContent" v-on:close-modal="onCloseModal"></component>
             </article>
         </div>
-        <button class="modal-close is-large" aria-label="close"  v-on:click.prevent="guestLogin"></button>
+        <button class="modal-close is-large" aria-label="close"  v-on:click.prevent="$emit('close-modal')"></button>
     </div>
 </template>
 
@@ -17,7 +17,6 @@
     import RegisterModal from './RegisterModal';
     import SaveDatasetModal from './SaveDatasetModal';
     import ResetPasswordModal from './ResetPasswordModal';
-    import {fetchPost} from "../scripts/fetch-helpers";
 
     export default {
         name: 'modal',
@@ -37,11 +36,7 @@
         methods: {
             onCloseModal() {
                 this.$emit('close-modal');
-            },
-            guestLogin() {
-                fetchPost(API_URL + 'auth/confirm-guest', new FormData());
-                this.$emit('close-modal');
-            },
+            }
         }
     }
 </script>

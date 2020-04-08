@@ -9,7 +9,8 @@ const state = {
         'SMAP',
         'SMAP_JPL1',
         'SMAP_JPL2',
-        'Decadal2017Aerosols'
+        'Decadal2017Aerosols',
+        'Aerosols_Clouds'
     ],
     problemName: '',
     vassarPort: 9090,

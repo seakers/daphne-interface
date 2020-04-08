@@ -15,6 +15,7 @@ import modal from './modules/modal';
 import ClimateCentric from '../scripts/climate-centric';
 import SMAP from '../scripts/smap';
 import Decadal2017Aerosols from '../scripts/decadal';
+import Aerosols_Clouds from '../scripts/aerosols_clouds';
 import DecadalFilter from '../scripts/decadal-filter';
 import EOSSFilter from '../scripts/eoss-filter';
 import {fetchPost} from "../scripts/fetch-helpers";
@@ -53,6 +54,11 @@ export default new Vuex.Store({
             case 'SMAP_JPL2':
                 problem = SMAP;
                 problem.problemName = 'SMAP_JPL2';
+                filter = EOSSFilter;
+                break;
+            case 'Aerosols_Clouds':
+                problem = Aerosols_Clouds;
+                problem.problemName = 'Aerosols_Clouds';
                 filter = EOSSFilter;
                 break;
             case 'Decadal2017Aerosols':
