@@ -42,7 +42,7 @@ const Instrument_Capability = {
     ],
     "col_titles": [
         "ID",
-        "Instrument Attribute ID",
+        "Instrument ID",
         "Measurement Attribute ID",
         "Measurement Name",
         "Value"

@@ -179,7 +179,7 @@ export async function vassar_query(table, pk) {
     }
     let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
     let json_data = await dataResponse.json();
-    console.log("--> QUERY", json_data);
+    // console.log("--> QUERY", json_data);
 
     let rows = null;
     // console.log("QUERY", json_data, query.query);

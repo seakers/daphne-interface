@@ -27,13 +27,28 @@
             </div>
 
 
+
+
+            <!-- PROBLEM EDITOR -->
             <div class="editor-title">
-                <p class="menu-label vassar-label">Editor</p>
+                <div v-if="problems_table.selected_name === null" class="unselected-problem-label">
+                    <i class="fas fa-caret-right" style="height: min-content; padding-right: 18px;"></i>
+                    <p class="">No problem selected</p>
+                </div>
+
+                <div v-if="problems_table.selected_name !== null" class="selected-problem-label" v-on:click="toggle_editor()">
+                    <i v-if="editor_expanded === true" class="fas fa-caret-down" style="height: min-content; padding-right: 13px;"></i>
+                    <i v-if="editor_expanded !== true" class="fas fa-caret-right" style="height: min-content; padding-right: 18px;"></i>
+                    <p class="">{{ problems_table.selected_name }}</p>
+                </div>
             </div>
 
-            <div class="editor-menu">
+            <div v-if="problems_table.selected_name !== null && editor_expanded === true" class="editor-menu">
                 <p class="menu-label editor-label" v-for="service in editor_pages" :key="service.title" v-on:click="get_service_page(service.id)" v-bind:class="{ 'editor-label-selected': service.selected === true }">{{ service.title }}</p>
             </div>
+            <!-- PROBLEM EDITOR -->
+
+            
 
 
         </div>
@@ -59,6 +74,7 @@
                     { title: 'mission analysis', id: 'mission analysis', selected: false },
                     { title: 'attributes', id: 'attributes', selected: false },
                 ],
+                editor_expanded: true,
             }
         },
         computed: {
@@ -148,6 +164,9 @@
                 },
                 change_theme(){
                     this.$store.commit('set_theme');
+                },
+                toggle_editor(){
+                    this.editor_expanded = !this.editor_expanded;
                 }
 
 
@@ -166,6 +185,8 @@
 
 
 <style lang="scss">
+
+
 
 
 
@@ -206,6 +227,42 @@ button:focus {outline:0;}
     box-shadow: inset 0px 0px 14px #14191f !important;
     
 }
+
+
+
+
+
+// TODO
+
+.unselected-problem-label{
+    color: #7a7a7a;
+    font-size: 1em;
+    letter-spacing: 0.1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.selected-problem-label{
+    color: whitesmoke;
+    font-size: 1em;
+    letter-spacing: 0.1em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+
+
+}
+
+
+
+
+
+
+
+
 
 
 p.vassar-label {

@@ -189,13 +189,6 @@ div.table-view-hidden{
 }
 
 
-
-
-
-
-
-
-
 .table-view-header-search{
     flex-grow: 1;
     display: flex;
@@ -248,10 +241,6 @@ div.table-view-hidden{
 
 .custom-table{
     margin-bottom: 0% !important;
-}
-
-
-.table-input{
 }
 
 .add-remove-list-item-buttons{
