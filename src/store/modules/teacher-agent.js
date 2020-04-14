@@ -300,6 +300,7 @@ const actions = {
             reqData.append('input_type', rootState.problem.inputType);
 
             //--> Receive Response
+            console.log("DATA", reqData);
             let dataResponse = await fetchPost(API_URL + 'eoss/teacher/set-proactive-mode', reqData);
             console.log(dataResponse);
 
