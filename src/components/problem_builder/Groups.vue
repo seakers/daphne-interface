@@ -7,6 +7,8 @@
             >
             </table-view>
         </template>
+
+        <!-- <switch-button v-model="switch2" color="#F5BF21"></switch-button> -->
         
         
     </div>
@@ -16,12 +18,14 @@
 <script>
     import { mapState, mapGetters } from 'vuex';
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
+    import SwitchButton from './SwitchButton';
     import TableView from './table/TableView';
     
     export default {
         name: 'groups',
         data: function () {
             return {
+                switch2: false,
             }
         },
         computed: {
@@ -35,7 +39,8 @@
         methods: {
         },
         components: {
-            TableView
+            TableView,
+            SwitchButton
         },
         async mounted() {
 

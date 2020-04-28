@@ -15,10 +15,15 @@
   "license": "MIT",
   "dependencies": {
     "annyang": "^2.6.1",
+    "apollo-cache-inmemory": "^1.6.5",
+    "apollo-client": "^2.6.8",
+    "apollo-link-http": "^1.5.17",
     "bulma": "^0.7.5",
     "d3": "^5.11.0",
     "d3-selection-multi": "^1.0.1",
     "eslint": "^6.3.0",
+    "graphql": "^15.0.0",
+    "graphql-tag": "^2.10.3",
     "intro.js": "^2.9.3",
     "js-cookie": "^2.2.1",
     "lodash-es": "^4.17.15",
@@ -26,6 +31,7 @@
     "shepherd.js": "^6.0.2",
     "speechkitt": "^1.0.0",
     "vue": "^2.6.10",
+    "vue-apollo": "^3.0.3",
     "vuedraggable": "^2.23.1",
     "vuex": "^3.1.1"
   },

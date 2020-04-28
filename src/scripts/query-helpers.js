@@ -140,23 +140,6 @@ export async function format_insert(json_data, index, return_cols, insert_statem
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export async function vassar_query(table, pk) {
     let query = {};
     if(table.relationship.type === 'one-to-many'){

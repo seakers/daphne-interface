@@ -4,28 +4,18 @@
             <h1 class="title is-size-4">Problem Builder</h1>
 
 
-
+            <!-- THEME -->
             <button class="button is-small theme-button" v-bind:class="[ light_theme ? 'theme-button-light' : 'theme-button-dark' ]" v-on:click="change_theme()">
                 <i class="fas fa-moon"></i>
             </button>
-        
 
-            <div class="group-selector"  v-bind:class="{ 'group-selector-selected': group_label.label_selected === true }" v-on:click="get_group_page()">
-                <p class="menu-label vassar-label" style="margin-bottom: 5px;">Group</p>
-                <p class="menu-label vassar-sublabel">{{ groups_table.selected_name }}</p>
+
+            <div v-for="(menu_item_obj, key, index) in global_menu_items" :key="index" style="padding: 0.25em 0em;">
+                <div class="group-selector"  v-bind:class="{ 'group-selector-selected': menu_item_obj.selected === true }" v-on:click="select_page(menu_item_obj)">
+                    <p class="menu-label vassar-label" style="margin-bottom: 5px;">{{ menu_item_obj.label }}</p>
+                    <p class="menu-label vassar-sublabel">{{ menu_item_obj.sublabel }}</p>
+                </div>
             </div>
-
-            <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': problem_label.label_selected === true }" v-on:click="get_problem_page()">
-                <p class="menu-label vassar-label" style="margin-bottom: 5px;">Problem</p>
-                <p v-if="selected_group_id !== null" class="menu-label vassar-sublabel">{{ problems_table.selected_name }}</p>
-                <p v-if="selected_group_id === null" class="menu-label vassar-sublabel">no group selected</p>
-            </div>
-
-            <div class="group-selector" style="margin-top: .8em;"  v-bind:class="{ 'group-selector-selected': instrument_label.label_selected === true }" v-on:click="get_instrument_page()">
-                <p class="menu-label vassar-label" style="margin-bottom: 5px;">Instruments</p>
-                <p v-if="selected_group_id === null" class="menu-label vassar-sublabel">no group selected</p>
-            </div>
-
 
 
 
@@ -44,7 +34,9 @@
             </div>
 
             <div v-if="problems_table.selected_name !== null && editor_expanded === true" class="editor-menu">
-                <p class="menu-label editor-label" v-for="service in editor_pages" :key="service.title" v-on:click="get_service_page(service.id)" v-bind:class="{ 'editor-label-selected': service.selected === true }">{{ service.title }}</p>
+                <div v-for="(menu_item_obj, key, index) in problem_menu_items" :key="index">
+                    <p class="menu-label editor-label" v-bind:class="{ 'editor-label-selected': menu_item_obj.selected === true }" v-on:click="select_page(menu_item_obj)">{{ menu_item_obj.label }}</p>
+                </div>
             </div>
             <!-- PROBLEM EDITOR -->
 
@@ -68,12 +60,19 @@
         name: 'vassar-menu',
         data: function () {
             return {
-                editor_pages: [
-                    { title: 'stakeholders', id: 'stakeholders', selected: false },
-                    { title: 'requirements', id: 'requirements', selected: false },
-                    { title: 'mission analysis', id: 'mission analysis', selected: false },
-                    { title: 'attributes', id: 'attributes', selected: false },
-                ],
+                global_menu_items: {
+                    group:       { selected: false, label: 'groups', sublabel: ''},
+                    problem:     { selected: false, label: 'problems', sublabel: '' },
+                    instruments: { selected: false, label: 'instruments', sublabel: '' },
+                    orbits:      { selected: true, label: 'orbits', sublabel: '' },
+                    launch_vehicles:      { selected: false, label: 'launch vehicles', sublabel: '' },
+                },
+                problem_menu_items: {
+                    stakeholders: { selected: false, label: 'stakeholders' },
+                    requirements: { selected: false, label: 'requirements' },
+                    mission:      { selected: false, label: 'mission' },
+                },
+            
                 editor_expanded: true,
             }
         },
@@ -88,79 +87,22 @@
                         problems_table: 'problems__problem_table',
                         selected_group_id: 'groups__group_selection'
                 }),
-                group_label() {
-                        let g_label = {label_selected: false, id: 'group', memberships: ['seakers', 'jpl', 'goddard']}
-                        if(this.page_selected === 'groups'){
-                                g_label.label_selected = true;
-                        }
-                        return g_label;
-                },
-                problem_label() {
-                        let p_label = {label_selected: false, id: 'problem', memberships: ['SMAP', 'Climate Centric', 'Landsat']}
-                        if(this.page_selected === 'problems'){
-                                p_label.label_selected = true;
-                        }
-                        return p_label;
-                },
-                instrument_label() {
-                        let p_label = { label_selected: false, id: 'instrument' }
-                        if(this.page_selected === 'instruments'){
-                                p_label.label_selected = true;
-                        }
-                        return p_label;
-                }
         },
         methods: {
-                get_group_page(){
-                        this.instrument_label.label_selected = false;
-                        // Unhighlight Problem
-                        this.problem_label.label_selected = false;
-                        // Unhighlight editors
-                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
-                                this.editor_pages.find(service => service.selected === true).selected = false;
-                        } 
-                        // Highlight group
-                        this.group_label.label_selected = true;
-                        this.$store.commit('set_page_selected', 'groups');
+                unselect_all(){
+                    let global_keys = Object.keys(this.global_menu_items);
+                    for(let x=0;x<global_keys.length;x++){
+                        this.global_menu_items[global_keys[x]].selected = false;
+                    }
+                    let problem_keys = Object.keys(this.problem_menu_items);
+                    for(let x=0;x<problem_keys.length;x++){
+                        this.problem_menu_items[problem_keys[x]].selected = false;
+                    }
                 },
-                get_problem_page(){
-                        this.instrument_label.label_selected = false;
-                        // Unhighlight group
-                        this.group_label.label_selected = false;
-                        // Unhighlight editors
-                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
-                                this.editor_pages.find(service => service.selected === true).selected = false;
-                        } 
-
-                        this.problem_label.label_selected = true;
-                        this.$store.commit('set_page_selected', 'problems');
-                },
-                get_instrument_page(){
-                        // Unhighlight Problem
-                        this.problem_label.label_selected = false;
-                        // Unhighlight group
-                        this.group_label.label_selected = false;
-                        // Unhighlight editors
-                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
-                                this.editor_pages.find(service => service.selected === true).selected = false;
-                        } 
-
-                        this.instrument_label.label_selected = true;
-                        this.$store.commit('set_page_selected', 'instruments');
-                },
-                get_service_page(id){
-                        console.log(id);
-                        // Unhighlight problems and groups
-                        this.problem_label.label_selected = false;
-                        this.group_label.label_selected = false;
-                        this.instrument_label.label_selected = false;
-                        // Unhighlight any editor labels
-                        if (this.editor_pages.find(service => service.selected === true) !== undefined){
-                                this.editor_pages.find(service => service.selected === true).selected = false; 
-                        }
-                        // Highlight the selected label
-                        this.editor_pages.find(service => service.id === id).selected = true;
-                        this.$store.commit('set_page_selected', id);
+                select_page(menu_item_obj) {
+                    this.unselect_all();
+                    menu_item_obj.selected = true;
+                    this.$store.commit('set_page_selected', menu_item_obj.label);
                 },
                 change_theme(){
                     this.$store.commit('set_theme');
@@ -168,8 +110,6 @@
                 toggle_editor(){
                     this.editor_expanded = !this.editor_expanded;
                 }
-
-
         },
 
 

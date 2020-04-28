@@ -123,7 +123,7 @@
                 }
                 return bitString;
             },
-
+            //                event.to, event.item
             getBoolArrayIndex(list, element) {
                 let tableInstrumentRows = document.getElementsByClassName('instruments-list');
                 for (let i = 0; i < tableInstrumentRows.length; ++i) {

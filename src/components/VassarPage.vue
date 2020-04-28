@@ -31,6 +31,14 @@
                     <instruments></instruments>
                 </template>
 
+                <template v-if="page_selected === 'orbits'">
+                    <orbits></orbits>
+                </template>
+
+                <template v-if="page_selected === 'launch vehicles'">
+                    <launch-vehicles></launch-vehicles>
+                </template>
+
                 <template v-if="problems__selected_id !== null">
                     <template v-if="page_selected === 'stakeholders'">
                         <stakeholders></stakeholders>
@@ -73,6 +81,8 @@
     import Instruments from './problem_builder/Instruments';
     import MissionAnalysis from './problem_builder/MissionAnalysis';
     import Attributes from './problem_builder/Attributes';
+    import Orbits from './problem_builder/Orbits';
+    import LaunchVehicles from './problem_builder/LaunchVehicles';
 
 
     export default {
@@ -108,7 +118,9 @@
             Requirements,
             Instruments,
             MissionAnalysis,
-            Attributes
+            Attributes,
+            Orbits,
+            LaunchVehicles,
         },
         async mounted() {
             // Check if the user is logged in
