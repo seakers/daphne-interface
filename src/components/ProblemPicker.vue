@@ -2,6 +2,39 @@
     <div class="problem-picker">
         <form>
 
+
+            <!-- GROUP -->
+            <div class="problem">
+                <div class="field">
+                    <label class="label">Group:</label>
+                    <div class="control">
+                        <div class="select">
+                            <select v-model="group_id">
+                                <option v-for="(group, idx) in user_groups" v-bind:value="group.id" v-bind:key="idx">{{ group.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="problem">
+                <div class="field">
+                    <label class="label">Problem:</label>
+                    <div class="control">
+                        <div class="select">
+                            <select v-model="problem_id">
+                                <option v-for="(problem, idx) in user_problems" v-bind:value="problem.id" v-bind:key="idx">{{ problem.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
             <div class="problem">
                 <div class="field">
                     <label class="label">Problem:</label>
@@ -56,16 +89,43 @@
 <script>
     import { mapState } from 'vuex';
     import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
+    import { DaphneGroupQuery, DaphneProblemQuery } from '../scripts/apollo-queries';
+
 
     export default {
         name: 'ProblemPicker',
+        data: function () {
+            return {
+                user_groups: [],
+                user_problems: [],
+            }
+        },
         computed: {
             ...mapState({
                 problemList: state => state.problem.problemList,
                 datasetList: state => state.problem.datasetList,
                 isLoggedIn: state => state.auth.isLoggedIn,
-                username: state => state.auth.username
+                username: state => state.auth.username,
+
+                user_pk: state => state.auth.user_pk,
+                group_id: state => state.auth.group_id,
             }),
+            group_id: {
+                get() {
+                    return this.$store.state.auth.group_id;
+                },
+                set(new_id) {
+                    this.$store.dispatch('setGroupId', new_id);
+                }
+            },
+            problem_id: {
+                get() {
+                    return this.$store.state.auth.problem_id;
+                },
+                set(new_id) {
+                    this.$store.dispatch('setProblemId', new_id);
+                }
+            },
             problemName: {
                 get() {
                     return this.$store.state.problem.problemName;
@@ -122,7 +182,32 @@
             openSaveModal() {
                 this.$store.commit('activateModal', 'SaveDatasetModal');
             }
-        }
+        },
+        apollo: {
+            // TODO: query groups
+            // TODO: query problems
+            user_groups: {
+                query: DaphneGroupQuery,
+                variables() {
+                    return {
+                        user_pk: this.user_pk,
+                    }
+                },
+            },
+            user_problems: {
+                query: DaphneProblemQuery,
+                variables() {
+                    return {
+                        group_id: this.group_id,
+                    }
+                }
+            }
+        },
+        watch: {
+            user_groups() {
+                console.log("USER GROUPS", this.user_groups);
+            }
+        },
     }
 </script>
 

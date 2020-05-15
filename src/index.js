@@ -6,6 +6,12 @@ import App from './components/App';
 import store from './store';
 import {wsTools} from "./scripts/websocket-tools";
 
+// Apollo
+import VueApollo from "vue-apollo";
+import ApolloClient from "apollo-client";
+import { HttpLink } from "apollo-link-http";
+import { InMemoryCache } from "apollo-cache-inmemory";
+
 // Non ES-modularized libraries
 let annyang = require('annyang');
 let SpeechKITT = window.SpeechKITT;
@@ -27,6 +33,33 @@ let updatesContextList = ['updateClickedArch', 'updateClickedArchInputs'];
 // Active timers
 let numberOfEngChanges = 0;
 let numberOfHistChanges = 0;
+
+// APOLLO
+Vue.use(VueApollo);
+const getHeaders = () => {
+    const headers = {};
+    const token = window.localStorage.getItem('apollo-token');
+    if (token) {
+    headers.authorization = `Bearer ${token}`;
+    }
+    return headers;
+};
+const link = new HttpLink({
+    uri: 'http://localhost:6001/v1/graphql',
+    fetch,
+    headers: getHeaders()
+});
+const client = new ApolloClient({
+    link: link,
+    cache: new InMemoryCache({
+        addTypename: true
+    })
+});
+const apolloProvider = new VueApollo({
+    defaultClient: client,
+})
+
+
 
 // Experiment Websocket connection
 store.subscribe(async (mutation, state) => {
@@ -116,9 +149,12 @@ store.subscribe(async (mutation, state) => {
     }
 });
 
+
+
 let app = new Vue({
     el: '#app',
     store,
+    apolloProvider,
     render: h => h(App)
 });
 

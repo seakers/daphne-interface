@@ -57,17 +57,6 @@ query MyQuery {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 const OrbitAttributeJoinQuery = gql`
 query MyQuery($selected_orbit_id: Int, $selected_group_id: Int) {
     Join__Orbit_Attribute(where: {orbit_id: {_eq: $selected_orbit_id}, group_id: {_eq: $selected_group_id}}) {
@@ -96,6 +85,32 @@ query MyQuery($selected_group_id: Int) {
 
 
 
+
+
+
+
+const DaphneGroupQuery = gql`
+query MyQuery($user_pk: Int) {
+    user_groups: Group(where: {Join__AuthUser_Groups: {auth_user: {id: {_eq: $user_pk}}}}) {
+      id
+      name
+    }
+}`;
+
+const DaphneProblemQuery = gql`
+query MyQuery($group_id: Int) {
+    user_problems: Problem(where: {Group: {id: {_eq: $group_id}}}) {
+      id
+      name
+    }
+}`;
+
+
+
+  
+
+
+
 export {
     OrbitQuery,
     LaunchVehicleQuery,
@@ -103,4 +118,6 @@ export {
     OrbitAttributeJoinQuery,
     ProblemQuery,
     OrbitAttributeAcceptedValuesQuery,
+    DaphneGroupQuery,
+    DaphneProblemQuery,
 }

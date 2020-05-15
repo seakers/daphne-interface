@@ -12,6 +12,7 @@ const state = {
         'Decadal2017Aerosols'
     ],
     problemName: '',
+    problem_id: null,
     vassarPort: 9090,
     problemData: [],
     dataUpdateFrom: '',
@@ -59,6 +60,7 @@ const actions = {
         try {
             let reqData = new FormData();
             reqData.append('problem', state.problemName);
+            reqData.append('problem_id', state.problem_id);
             reqData.append('filename', datasetInformation.filename);
             reqData.append('load_user_files', datasetInformation.user);
             reqData.append('input_num', state.inputNum);
@@ -170,7 +172,10 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
-    }
+    },
+    async setProblemId({ state, commit }, new_id) {
+        commit('commitProblemId', new_id);
+    },
 };
 
 // mutations
@@ -233,7 +238,10 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    }
+    },
+    commitProblemId(state, new_id) {
+        state.problem_id = new_id;
+    },
 };
 
 export default {

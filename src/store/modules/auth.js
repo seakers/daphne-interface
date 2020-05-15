@@ -10,7 +10,11 @@ const state = {
     loginError: '',
     hasRegistrationError: false,
     registrationError: '',
-    resetPasswordSent: false
+    resetPasswordSent: false,
+
+    user_pk: null,
+    group_id: null,
+    problem_id: null,
 };
 
 const initialState = _.cloneDeep(state);
@@ -106,7 +110,11 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
-    }
+    },
+
+    async setGroupId({ state, commit }, new_id) {
+        commit('commitGroupId', new_id);
+    },
 };
 
 // mutations
@@ -116,6 +124,9 @@ const mutations = {
         state.hasLoginError = false;
         state.username = userInfo['username'];
         state.permissions = userInfo['permissions'];
+        state.user_pk = userInfo['pk'];
+        console.log("PK", state.pk);
+        console.log("-----", userInfo);
     },
     logUserOut(state) {
         state.isLoggedIn = false;
@@ -140,7 +151,14 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    }
+    },
+
+
+
+    commitGroupId(state, new_id) {
+        console.log("New Group ID:", new_id);
+        state.group_id = new_id;
+    },
 };
 
 export default {
