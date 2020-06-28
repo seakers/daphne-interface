@@ -30,7 +30,7 @@ const getHeaders = () => {
 
 // HASURA URL
 const link = new HttpLink({
-    uri: 'http://localhost:6001/v1/graphql',
+    uri: 'http://localhost:6002/v1/graphql',
     fetch,
     headers: getHeaders()
 });

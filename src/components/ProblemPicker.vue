@@ -17,6 +17,7 @@
                 </div>
             </div>
 
+            <!-- PROBLEM -->
             <div class="problem">
                 <div class="field">
                     <label class="label">Problem:</label>
@@ -28,13 +29,25 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
+                    </div>
+                </div>
+
+                <div class="field" v-if="isLoggedIn">
+                    <div class="control">
+                        <a class="button is-link" target="_blank" href="vassar.html">Problem Editor</a>
+                    </div>
+                </div>
             </div>
 
 
 
 
 
-
+<!-- 
             <div class="problem">
                 <div class="field">
                     <label class="label">Problem:</label>
@@ -79,7 +92,7 @@
                             <a class="button is-link" v-bind:href="downloadUrl">Download</a>
                         </div>
                     </div>
-            </div>
+            </div> -->
 
 
         </form>
@@ -107,8 +120,8 @@
                 isLoggedIn: state => state.auth.isLoggedIn,
                 username: state => state.auth.username,
 
-                user_pk: state => state.auth.user_pk,
-                group_id: state => state.auth.group_id,
+                // user_pk: state => state.auth.user_pk,
+                // group_id: state => state.auth.group_id,
             }),
             group_id: {
                 get() {

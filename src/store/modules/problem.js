@@ -4,6 +4,9 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 
 // initial state
 const state = {
+    problem_id: null,
+
+
     problemList: [
         'ClimateCentric',
         'SMAP',
@@ -12,7 +15,6 @@ const state = {
         'Decadal2017Aerosols'
     ],
     problemName: '',
-    problem_id: null,
     vassarPort: 9090,
     problemData: [],
     dataUpdateFrom: '',
@@ -54,23 +56,36 @@ const getters = {
 
 // actions
 const actions = {
-    async loadNewData({ state, commit }, datasetInformation) {
+
+
+    async loadNewData({ state, commit }, datasetInformation) { 
         console.log('Importing data...');
 
         try {
             let reqData = new FormData();
-            reqData.append('problem', state.problemName);
-            reqData.append('problem_id', state.problem_id);
-            reqData.append('filename', datasetInformation.filename);
+            // reqData.append('problem', state.problemName);
+            // reqData.append('problem_id', state.problem_id);
+            // reqData.append('filename', datasetInformation.filename);
+            // reqData.append('load_user_files', datasetInformation.user);
+            // reqData.append('input_num', state.inputNum);
+            // reqData.append('input_type', state.inputType);
+            // reqData.append('output_num', state.outputNum);
+
+            reqData.append('problem_id', '5');
+            reqData.append('group_id', '1');
             reqData.append('load_user_files', datasetInformation.user);
-            reqData.append('input_num', state.inputNum);
-            reqData.append('input_type', state.inputType);
-            reqData.append('output_num', state.outputNum);
+
+            // GET PROBLEM DATA
             let dataResponse = await fetchPost(API_URL + 'eoss/data/import-data', reqData);
+
+            console.log("---> Importing new data");
+            console.log(dataResponse);
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
                 let problemData = state.importCallback(data, state.extra);
+                console.log("---> Problem data");
+                console.log(problemData);
                 calculateParetoRanking(problemData);
                 commit('updateProblemData', problemData);
                 commit('setDataUpdateFrom', 'loadNewData');
@@ -135,45 +150,55 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
+
+    // setting the problem name gets the different datasets for that problem
     async setProblemName({ state, commit, rootState }, problemName) {
         try {
             commit('setProblemName', problemName);
-            let reqData = new FormData();
-            reqData.append('problem', problemName);
-            let dataResponse = await fetchPost(API_URL + 'eoss/data/dataset-list', reqData);
 
-            if (dataResponse.ok) {
-                let data = await dataResponse.json();
-                let datasetList = [];
-                data['default'].forEach((dataset) => {
-                    datasetList.push({
-                        name: dataset,
-                        value: dataset,
-                        user: false
-                    });
-                });
-                datasetList.push({
-                    name: '---',
-                    value: ''
-                });
-                data['user'].forEach((dataset) => {
-                    datasetList.push({
-                        name: dataset,
-                        value: dataset,
-                        user: true
-                    });
-                });
-                commit('setDatasetList', datasetList);
-            }
-            else {
-                console.error('Error loading the new datasets.');
-            }
+            // let reqData = new FormData();
+            // reqData.append('problem', problemName);
+            // let dataResponse = await fetchPost(API_URL + 'eoss/data/dataset-list', reqData);
+
+            // if (dataResponse.ok) {
+            //     let data = await dataResponse.json();
+            //     let datasetList = [];
+            //     data['default'].forEach((dataset) => {
+            //         datasetList.push({
+            //             name: dataset,
+            //             value: dataset,
+            //             user: false
+            //         });
+            //     });
+            //     datasetList.push({
+            //         name: '---',
+            //         value: ''
+            //     });
+            //     data['user'].forEach((dataset) => {
+            //         datasetList.push({
+            //             name: dataset,
+            //             value: dataset,
+            //             user: true
+            //         });
+            //     });
+
+            //     // let datasetList = [];
+            //     commit('setDatasetList', datasetList);
+            // }
+
+            let datasetList = [];
+            commit('setDatasetList', datasetList);
         }
         catch(e) {
             console.error('Networking error:', e);
         }
     },
+
+
+    // LOADS NEW PROBLEM
     async setProblemId({ state, commit }, new_id) {
+        console.log("---> Loading new problem: " + new_id);
+
         commit('commitProblemId', new_id);
     },
 };
@@ -239,6 +264,8 @@ const mutations = {
             state[key] = recoveredState[key];
         });
     },
+
+
     commitProblemId(state, new_id) {
         state.problem_id = new_id;
     },

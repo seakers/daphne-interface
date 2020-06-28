@@ -9,8 +9,7 @@ module.exports = merge(common, {
     plugins: [
         new webpack.DefinePlugin({
             'API_URL': JSON.stringify('http://localhost:8080/api/'),
-            'WS_URL': JSON.stringify('ws://localhost:8080/api/'),
-            'GRAPH_QL_URL': JSON.stringify('http://localhost:6001/v1/graphql')
+            'WS_URL': JSON.stringify('ws://localhost:8080/api/')
         })
     ],
     devtool: 'eval-source-map',

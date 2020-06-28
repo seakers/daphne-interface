@@ -2,6 +2,7 @@
     <div class="wrapper">
         <div class="columns" style="max-width: 100vw;">
 
+            <!-- MENU -->
             <aside class="column is-2 aside hero is-fullheight is-hidden-mobile" style="margin-right: 0px !important;">
                 <div class="aside-container">
                     <vassar-menu></vassar-menu>

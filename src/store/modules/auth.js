@@ -125,7 +125,12 @@ const mutations = {
         state.username = userInfo['username'];
         state.permissions = userInfo['permissions'];
         state.user_pk = userInfo['pk'];
-        console.log("PK", state.pk);
+
+        // HARDCODE: default group with SMAP problem
+        state.group_id = 1;
+        state.problem_id = 5;
+
+        console.log("PK", state.user_pk);
         console.log("-----", userInfo);
     },
     logUserOut(state) {

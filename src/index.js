@@ -34,7 +34,7 @@ let updatesContextList = ['updateClickedArch', 'updateClickedArchInputs'];
 let numberOfEngChanges = 0;
 let numberOfHistChanges = 0;
 
-// APOLLO
+// APOLLO HEADERS
 Vue.use(VueApollo);
 const getHeaders = () => {
     const headers = {};
@@ -44,11 +44,15 @@ const getHeaders = () => {
     }
     return headers;
 };
+
+// HASURS URL
 const link = new HttpLink({
-    uri: 'http://localhost:6001/v1/graphql',
+    uri: 'http://localhost:6002/v1/graphql',
     fetch,
     headers: getHeaders()
 });
+
+// APOLLO
 const client = new ApolloClient({
     link: link,
     cache: new InMemoryCache({

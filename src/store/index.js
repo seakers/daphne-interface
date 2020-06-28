@@ -35,37 +35,44 @@ export default new Vuex.Store({
             // Load correct problem module based on problem
             let problem = null;
             let filter = null;
-            switch (state.problem.problemName) {
-            case 'ClimateCentric':
-                problem = ClimateCentric;
-                filter = EOSSFilter;
-                break;
-            case 'SMAP':
-                problem = SMAP;
-                problem.problemName = 'SMAP';
-                filter = EOSSFilter;
-                break;
-            case 'SMAP_JPL1':
-                problem = SMAP;
-                problem.problemName = 'SMAP_JPL1';
-                filter = EOSSFilter;
-                break;
-            case 'SMAP_JPL2':
-                problem = SMAP;
-                problem.problemName = 'SMAP_JPL2';
-                filter = EOSSFilter;
-                break;
-            case 'Decadal2017Aerosols':
-                problem = Decadal2017Aerosols;
-                filter = DecadalFilter;
-            }
+
+            problem = SMAP;
+            problem.problemName = 'SMAP';
+            filter = EOSSFilter;
+
+            // remove problem hardcoding
+            // switch (state.problem.problemName) {
+            // case 'ClimateCentric':
+            //     problem = ClimateCentric;
+            //     filter = EOSSFilter;
+            //     break;
+            // case 'SMAP':
+            //     problem = SMAP;
+            //     problem.problemName = 'SMAP';
+            //     filter = EOSSFilter;
+            //     break;
+            // case 'SMAP_JPL1':
+            //     problem = SMAP;
+            //     problem.problemName = 'SMAP_JPL1';
+            //     filter = EOSSFilter;
+            //     break;
+            // case 'SMAP_JPL2':
+            //     problem = SMAP;
+            //     problem.problemName = 'SMAP_JPL2';
+            //     filter = EOSSFilter;
+            //     break;
+            // case 'Decadal2017Aerosols':
+            //     problem = Decadal2017Aerosols;
+            //     filter = DecadalFilter;
+            // }
+
             commit('setProblem', problem);
             if (filter !== null) {
                 commit('setFilter', filter);
             }
             let reqData = new FormData();
             reqData.append('port', problem.vassarPort);
-            await fetchPost(API_URL + 'eoss/settings/change-port', reqData);
+            // await fetchPost(API_URL + 'eoss/settings/change-port', reqData);
             commit('updateExtra', await problem.initFunction(state.problem.problemName));
 
             // Load all the initial functionalities
@@ -86,6 +93,8 @@ export default new Vuex.Store({
             let received_info = JSON.parse(message.data);
             console.log(received_info);
             if (received_info['type'] === 'ga.new_archs') {
+                console.log("---> new architecture");
+                console.log(received_info['archs']);
                 received_info['archs'].forEach((arch) => {
                     dispatch('addNewDataFromGA', arch);
                 });

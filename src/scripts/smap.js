@@ -41,12 +41,32 @@ export default {
         extra.orbitNum = extra.orbitList.length;
         extra.instrumentNum = extra.instrumentList.length;
 
+        console.log("---> Getting orbit / inst lists");
+        console.log(extra.orbitList);
+        console.log(extra.instrumentList);
+
         // Add alias for instruments and orbits
         extra.labelingEnabled = true;
         //let orbitAliasArray = [['LEO-600-polar-NA', '1'], ['SSO-600-SSO-AM', '2'], ['SSO-600-SSO-DD', '3'], ['SSO-800-SSO-DD', '4'], ['SSO-800-SSO-PM', '5']];
-        let orbitAliasArray = [['LEO-600-polar-NA', 'LEO-600-polar-NA'], ['SSO-600-SSO-AM', 'SSO-600-SSO-AM'],
-            ['SSO-600-SSO-DD', 'SSO-600-SSO-DD'], ['SSO-800-SSO-AM', 'SSO-800-SSO-AM'],
-            ['SSO-800-SSO-DD', 'SSO-800-SSO-DD']];
+        
+        // let orbitAliasArray = [['LEO-600-polar-NA', 'LEO-600-polar-NA'], ['SSO-600-SSO-AM', 'SSO-600-SSO-AM'],
+        //     ['SSO-600-SSO-DD', 'SSO-600-SSO-DD'], ['SSO-800-SSO-AM', 'SSO-800-SSO-AM'],
+        //     ['SSO-800-SSO-DD', 'SSO-800-SSO-DD']];
+
+        let orbitAliasArray = [];
+
+        for (var i = 0; i < extra.orbitList.length; i++){
+            orbitAliasArray.push([extra.orbitList[i], extra.orbitList[i]]);
+        }
+        console.log("---> orbit alias array");
+        console.log(orbitAliasArray);
+
+        
+
+
+
+
+
         extra.orbitAlias = {};
         extra.orbitInvAlias = {};
         orbitAliasArray.forEach((element) => {
@@ -55,8 +75,17 @@ export default {
         });
 
         //let instrumentAliasArray = [['ACE_ORCA', 'A'], ['ACE_POL', 'B'], ['ACE_LID', 'C'], ['CLAR_ERB', 'D'], ['ACE_CPR', 'E'], ['DESD_SAR', 'F'], ['DESD_LID', 'G'], ['GACM_VIS', 'H'], ['GACM_SWIR', 'I'], ['HYSP_TIR', 'J'], ['POSTEPS_IRS', 'K'],['CNES_KaRIN', 'L']];
-        let instrumentAliasArray = [['BIOMASS', 'BIOMASS'], ['SMAP_RAD', 'SMAP_RAD'], ['SMAP_MWR', 'SMAP_MWR'],
-            ['CMIS', 'CMIS'], ['VIIRS', 'VIIRS']];
+        
+        
+        let instrumentAliasArray = [];
+        for (var i = 0; i < extra.instrumentList.length; i++){
+            instrumentAliasArray.push([extra.instrumentList[i], extra.instrumentList[i]]);
+        }
+        
+        // let instrumentAliasArray = [['BIOMASS', 'BIOMASS'], ['SMAP_RAD', 'SMAP_RAD'], ['SMAP_MWR', 'SMAP_MWR'],
+        //     ['CMIS', 'CMIS'], ['VIIRS', 'VIIRS']];
+
+
         extra.instrumentAlias = {};
         extra.instrumentInvAlias = {};
         instrumentAliasArray.forEach((element) => {

@@ -176,7 +176,8 @@
                         let datasetFilename = data['dataset_filename'];
                         let datasetUser = data['dataset_user'];
                         if (problemName === '') {
-                            problemName = 'SMAP';
+                            problemName = 'SMAP'; // CHANGED
+                            // problemName = '1'
                         }
                         if (datasetFilename === '') {
                             datasetFilename = 'test_smap.csv';
