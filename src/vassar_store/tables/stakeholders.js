@@ -38,6 +38,7 @@ const Stakeholder_Needs_Objective = {
         "parent": "Stakeholder_Needs_Panel",
         "join": null,
         "foreign_key_field": "panel_id",
+        "foreign_key_field_2": "problem_id"
     },
     "display_name": "Objectives",
     "table_name": "Stakeholder_Needs_Objective",
@@ -63,7 +64,9 @@ const Stakeholder_Needs_Subobjective = {
         "type": "one-to-many",
         "parent": "Stakeholder_Needs_Objective",
         "join": null,
-        "foreign_key_field": "problem_id",
+        "foreign_key_field": "objective_id",
+        "foreign_key_field_2": "problem_id"
+
     },
     "display_name": "Subobjectives",
     "table_name": "Stakeholder_Needs_Subobjective",

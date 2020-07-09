@@ -16,10 +16,10 @@ const Group = {
     "selected_index": null,
     "selected_name": null, "insert_state": false,
     "relationship": { 
-        "child": ['Problem', 'Instrument'],
         "type": "many-to-many",
+        "child": ['Problem', 'Instrument'],
         "parent": "auth_user",
-        "join": "Join__AuthUser_Groups",
+        "join": "Join__AuthUser_Group",
         "foreign_key_field": 'user_id',
     },
     "display_name": "Groups",
@@ -64,7 +64,7 @@ const Problem = {
             'Orbit_Attribute',
             'Launch_Vehicle_Attribute'
         ],
-        "type": "many-to-many",
+        "type": "one-to-many",
         "parent": "Group",
         "join": "Join__Problem_Groups",
         "foreign_key_field": 'group_id',

@@ -19,11 +19,11 @@ const migrations = {
     ],
 
     'attributes': [
-        'Measurement_Attribute',
-        'Instrument_Attribute',
+        // 'Measurement_Attribute',
+        // 'Instrument_Attribute',
         'Mission_Attribute',
-        'Orbit_Attribute',
-        'Launch_Vehicle_Attribute'
+        // 'Orbit_Attribute',
+        // 'Launch_Vehicle_Attribute'
     ]
 };
 

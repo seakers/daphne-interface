@@ -2,7 +2,7 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 import Vue from 'vue';
 
 const state = {
-    page_selected: 'orbits',
+    page_selected: 'groups',
     light_theme: true,
 
     message_display: false,

@@ -38,7 +38,7 @@
 
                 <div class="field" v-if="isLoggedIn">
                     <div class="control">
-                        <a class="button is-link" target="_blank" href="vassar.html">Problem Editor</a>
+                        <a class="button is-link" target="_blank" href="vassar.html">Problem Builder</a>
                     </div>
                 </div>
             </div>

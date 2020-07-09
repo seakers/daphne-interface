@@ -10,10 +10,33 @@
             </button>
 
 
+            <!-- GLOBAL MENU ITEMS -->
             <div v-for="(menu_item_obj, key, index) in global_menu_items" :key="index" style="padding: 0.25em 0em;">
                 <div class="group-selector"  v-bind:class="{ 'group-selector-selected': menu_item_obj.selected === true }" v-on:click="select_page(menu_item_obj)">
                     <p class="menu-label vassar-label" style="margin-bottom: 5px;">{{ menu_item_obj.label }}</p>
                     <p class="menu-label vassar-sublabel">{{ menu_item_obj.sublabel }}</p>
+                </div>
+            </div>
+
+
+
+            <!-- LIBRARY MENU ITEMS -->
+            <div class="editor-title">
+                <div v-if="groups_table.selected_id === null" class="unselected-problem-label">
+                    <i class="fas fa-caret-right" style="height: min-content; padding-right: 18px;"></i>
+                    <p class="">No group selected</p>
+                </div>
+
+                <div v-if="groups_table.selected_id !== null" class="selected-problem-label" v-on:click="toggle_library()">
+                    <i v-if="library_expanded === true" class="fas fa-caret-down" style="height: min-content; padding-right: 13px;"></i>
+                    <i v-if="library_expanded !== true" class="fas fa-caret-right" style="height: min-content; padding-right: 18px;"></i>
+                    <p class="" >Libraries</p>
+                </div>
+            </div>
+
+            <div v-if="groups_table.selected_id !== null && library_expanded === true" class="editor-menu">
+                <div v-for="(menu_item_obj, key, index) in library_menu_items" :key="index">
+                    <p class="menu-label editor-label" v-bind:class="{ 'editor-label-selected': menu_item_obj.selected === true }" v-on:click="select_page(menu_item_obj)">{{ menu_item_obj.label }}</p>
                 </div>
             </div>
 
@@ -61,19 +84,24 @@
         data: function () {
             return {
                 global_menu_items: {
-                    group:       { selected: false, label: 'groups', sublabel: ''},
-                    problem:     { selected: false, label: 'problems', sublabel: '' },
-                    instruments: { selected: false, label: 'instruments', sublabel: '' },
-                    orbits:      { selected: true, label: 'orbits', sublabel: '' },
+                    group:       { selected: true, label: 'groups', sublabel: ''},
+                    problem:     { selected: false, label: 'problems', sublabel: '' }
+                },
+                library_menu_items: {
+                    instruments:          { selected: false, label: 'instruments', sublabel: '' },
+                    measurements:         { selected: false, label: 'measurements', sublabel: '' },
+                    orbits:               { selected: false, label: 'orbits', sublabel: '' },
                     launch_vehicles:      { selected: false, label: 'launch vehicles', sublabel: '' },
                 },
                 problem_menu_items: {
+                    decisions: { selected: false, label: 'decisions' },
                     stakeholders: { selected: false, label: 'stakeholders' },
                     requirements: { selected: false, label: 'requirements' },
-                    mission:      { selected: false, label: 'mission' },
+                    // mission:      { selected: false, label: 'mission' },
                 },
             
                 editor_expanded: true,
+                library_expanded: true,
             }
         },
         computed: {
@@ -85,7 +113,10 @@
                         problem: 'problems__get_selected_problem_name',
                         groups_table: 'groups__group_table',
                         problems_table: 'problems__problem_table',
-                        selected_group_id: 'groups__group_selection'
+                        selected_problem_name: 'problems__problem_selection_name',
+
+                        selected_group_id: 'groups__group_selection',
+                        selected_group_name: 'groups__group_selection_name',
                 }),
         },
         methods: {
@@ -98,6 +129,10 @@
                     for(let x=0;x<problem_keys.length;x++){
                         this.problem_menu_items[problem_keys[x]].selected = false;
                     }
+                    let library_keys = Object.keys(this.library_menu_items);
+                    for(let x=0;x<library_keys.length;x++){
+                        this.library_menu_items[library_keys[x]].selected = false;
+                    }
                 },
                 select_page(menu_item_obj) {
                     this.unselect_all();
@@ -109,7 +144,18 @@
                 },
                 toggle_editor(){
                     this.editor_expanded = !this.editor_expanded;
+                },
+                toggle_library(){
+                    this.library_expanded = !this.library_expanded;
                 }
+        },
+        watch: {
+                selected_group_name: function(val, oldVal) {
+                    this.global_menu_items.group.sublabel = this.selected_group_name;
+                },
+                selected_problem_name: function(val, oldVal) {
+                    this.global_menu_items.problem.sublabel = this.selected_problem_name;
+                },
         },
 
 

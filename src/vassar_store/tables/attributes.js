@@ -97,7 +97,7 @@ const Mission_Attribute = {
         "id",
         "name",
         "slot_type",
-        "attribute_type",
+        "type",
     ],
     "row_object_mapper": {},
     "selected_id": null, 

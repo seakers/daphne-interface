@@ -109,7 +109,7 @@
             async select_row(row_object){
                 await this.$store.dispatch('tables__select_tables', row_object);
                 if(this.row_object.table_name === 'Group' && row_object.selected_state === true){
-                    this.$store.dispatch('query_instruments');                 
+                    // this.$store.dispatch('query_instruments');                 
                 }
                 if(this.row_object.table_name === 'Problem' && row_object.selected_state === true){
                     this.$store.dispatch('query__problem_info');

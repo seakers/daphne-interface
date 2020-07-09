@@ -10,7 +10,7 @@
             </aside>
 
 
-            <div class="column is-10 editor-background hero" v-bind:class="[ light_theme ? 'editor-background-light' : 'editor-background-dark' ]">
+            <div class="column is-10 editor-background hero" v-bind:class="[ light_theme ? 'editor-background-light' : 'editor-background-dark' ]" style="justify-content: center;">
 
                 <!-- NOTIFICATION -->
                 <div v-if="message_display" class="notification is-primary" v-bind:class="[ success_message ? 'is-success' : 'is-warning' ]">
@@ -33,7 +33,9 @@
                 </template>
 
                 <template v-if="page_selected === 'orbits'">
-                    <orbits></orbits>
+                    <orbits attribute_header="Orbit Attribute Library" 
+                            dashboard_name="Orbit Dashboard"
+                    ></orbits>
                 </template>
 
                 <template v-if="page_selected === 'launch vehicles'">
@@ -73,6 +75,8 @@
     import { mapState, mapGetters } from 'vuex';
     import { fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import VassarMenu from './VassarMenu';
+
+    import { OrbitQuery, OrbitAttributeQuery, OrbitAttributeJoinQuery, ProblemQuery } from '../scripts/apollo-queries';
 
     import Groups from './problem_builder/Groups';
     import Problems from './problem_builder/Problems';
@@ -138,13 +142,32 @@
                 this.$store.commit('user__set_id', user_information['user_id']);
                 console.log("USER ID", user_information['user_id']);
                 await this.$store.dispatch('query_groups');
+
             }
 
 
 
         },
         watch: {
-        }
+        },
+        apollo: {
+            Orbit: {
+                query: OrbitQuery,
+                variables() {
+                    return {
+                        selected_group_id: this.selected_group_id,
+                    }
+                }
+            },
+            Orbit_Attribute: {
+                query: OrbitAttributeQuery,
+                variables() {
+                    return {
+                        selected_group_id: this.selected_group_id,
+                    }
+                }
+            },
+        },
     }
 </script>
 

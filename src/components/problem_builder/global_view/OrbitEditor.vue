@@ -4,93 +4,75 @@
         <!-- JOIN SELECTION -->
         <div class="global-editor" v-if="selected_orbit_id !== null">
 
-            <table class="table">
-                <col>
-                <colgroup span="2"></colgroup>
-                <colgroup span="2"></colgroup>
 
-                <thead>
-                    <!-- MAIN HEADER -->
-                    <tr>
-                        <td rowspan="3"></td>
-                        <th></th>
-                        <th :colspan="problem_names.length" scope="colgroup" style="text-align: center">Problem Value</th>
-                    </tr>
+            <div class="orbit-title">
+                {{ selected_orbit_name }} Attributes
+            </div>
 
-                    <!-- PROBLEM NAME -->
-                    <tr>
-                        <th></th>
-                        <th scope="col" v-for="(problem, index) in problem_names" :key="index">{{ problem }}</th>
-                    </tr>
+            <div class="orbit-attribute-editor">
+                <table class="table">
+                    <thead>
 
-                    <!-- SWITCHES -->
-                    <tr>
-                        <th scope="row">Attribute</th>
-                        <td v-for="(problem, index) in problem_names" :key="index">
-                            <switch-button v-model="problem_applied[index]" color="#409CFF" v-on:click="apply_to_problem(problem)"></switch-button>
-                        </td>
-                    </tr>
-                </thead>
-                
-                <draggable 
+
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Slot Type</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                        </tr>
+
+                    </thead>
+
+                    <draggable 
                     class='attribute-list'
                     :list="editor_rows" 
                     :group="orbit_group"
                     tag="tbody"
                     @add="addAttribute"   
-                >
+                    >
                 
-                    <!-- ROW -->
-                    <tr v-for="(row, index_row) in editor_rows" :key="index_row">
-                        <td>
-                            <button class="button is-small remove-attribute-button" v-on:click="remove_attribute(index_row)">
-                                <span class="icon is-small">
-                                    <i class="fas fa-times" style=""></i>
-                                </span>
-                            </button>
-                        </td>
-                        <td scope="row">{{ row.name }}</td>
+                        <tr v-for="(row, index_row) in editor_rows" :key="index_row">
 
-                        
+                            <td>
+                                <button class="button is-small remove-attribute-button" v-on:click="remove_attribute(index_row)">
+                                    <span class="icon is-small">
+                                        <i class="fas fa-times" style=""></i>
+                                    </span>
+                                </button>
+                            </td>
+                            <td scope="row">{{ row.name }}</td>
 
-                        
-                        <td v-for="(value, index) in row.values" :key="index">
 
-                            <div v-if="row.type === 'NL' || row.type === 'OL'">
-                                <!-- <input v-model="editor_rows[index_row].values[index]" class="input" type="text" style="max-width: 125px"> -->
-                                <!-- {{ value }} -->
-                                <div class="control" style="max-width: 125px;">
-                                    <div class="select">
-                                        <select v-model="editor_rows[index_row].values[index]">
-                                            <option v-for="val in accepted_values[row.name]" :key="val">{{ val }}</option>
-                                        </select>
+                            <td v-for="(value, index) in row.values" :key="index">
+                                <div v-if="row.type === 'NL' || row.type === 'OL'">
+                                    <div class="control" style="max-width: 125px;">
+                                        <div class="select">
+                                            <select v-model="editor_rows[index_row].values[index]">
+                                                <option v-for="val in accepted_values[row.name]" :key="val">{{ val }}</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <div v-if="row.type === 'FR'">
+                                    <input v-model="editor_rows[index_row].values[index]" class="input" type="text" style="max-width: 125px">
+                                </div>
+                            </td>
+                        </tr>
 
 
-                            </div>
-
-                            <div v-if="row.type === 'FR'">
-                                <input v-model="editor_rows[index_row].values[index]" class="input" type="text" style="max-width: 125px">
-                            </div>
-                        </td>
-                        
+                    </draggable>
 
 
-
-                        <!-- <td v-for="(value, index) in row.values" :key="index">
-                            <input v-model="editor_rows[index_row].values[index]" class="input" type="text" style="max-width: 125px">
-                        </td> -->
-
-
-
-                    </tr>
-
-                </draggable>
-            </table>
-
+                </table>
+            </div>
         </div>
+
+
+
+
+
 
         <!-- ATTRIBUTES -->
         <div class="attribute-selection">
@@ -118,6 +100,8 @@
                 </div>
             </div>
         </div>
+
+
     </div>
 </template>
 
@@ -359,12 +343,23 @@
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     border-width: 0px 8px 0px 0px;
     border-color: #f2f2f2;
     border-style: solid;
     max-height: 90vh;
     overflow-y: auto;
+}
+
+.orbit-title{
+    display: flex;
+    padding-top: 15%;
+    padding-left: 5%;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 17px;
 }
 
 

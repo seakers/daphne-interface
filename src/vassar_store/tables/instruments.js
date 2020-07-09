@@ -16,7 +16,7 @@ const Instrument = {
     "selected_name": null, "insert_state": false,
     "relationship": { 
         "child": ['Instrument_Capability', 'Instrument_Characteristic'],
-        "type": "many-to-many",
+        "type": "one-to-many",
         "parent": "Group",
         "join": "Join__Group_Instruments",
         "foreign_key_field": 'group_id',

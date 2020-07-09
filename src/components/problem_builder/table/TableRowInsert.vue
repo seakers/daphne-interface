@@ -55,6 +55,7 @@
             table_object: Object,
             table_rows: Array,
             foreign_key: Number,
+            foreign_key_2: Number,
         },
         data: function() {
             return {
@@ -83,10 +84,12 @@
 
         // INITIALIZE
         async created() {
+
             this.$set(this.new_row_object, 'index', this.table_rows.length);
             this.$set(this.new_row_object, 'col_types', this.table_object.col_types);
             this.$set(this.new_row_object, 'table_name', this.table_object.table_name);
             this.$set(this.new_row_object, 'foreign_key', this.foreign_key);
+            this.$set(this.new_row_object, 'foreign_key_2', this.foreign_key_2);
 
             let items = [];
             for(let x=0;x<this.new_row_object['col_types'].length;x++){
@@ -99,6 +102,7 @@
                 }
             }
             this.$set(this.new_row_object, 'items', items);
+
         },
     }
 </script>

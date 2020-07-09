@@ -51,7 +51,10 @@ const getters = {
     },
     getExtraInfo(state) {
         return state.extra;
-    }
+    },
+    getProblemModuleId(state) {
+        return state.problem_id;
+    },
 };
 
 // actions
@@ -123,6 +126,7 @@ const actions = {
             commit('updateClickedArch', newIndex);
         }
     },
+    // GENETIC
     async addNewDataFromGA({ state, commit }, newData) {
         // We can assume it's a new point as the server makes sure of that!
         let problemData = state.importCallback([newData], state.extra);

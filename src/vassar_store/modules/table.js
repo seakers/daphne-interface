@@ -113,8 +113,15 @@ const getters = {
     groups__group_selection(state){
         return state.tables.Group.selected_id;
     },
+    groups__group_selection_name(state){
+        return state.tables.Group.selected_name;
+    },
+
     problems__problem_selection(state){
         return state.tables.Problem.selected_id;
+    },
+    problems__problem_selection_name(state){
+        return state.tables.Problem.selected_name;
     },
 
     instruments__instrument_selection(state){
@@ -208,9 +215,11 @@ const actions = {
     //  Query Rows  \\
     //--------------\\
     async query_groups({state, commit}){
+        console.log("---------- QUERY GROUPS ----------");
         let pk = state.tables.auth_user.selected_id;
         let table = state.tables.Group;
         let query_return = await vassar_query(table, pk);
+        console.log("---> GROUP RETURN:", query_return);
         commit('table__set_rows', query_return);
 
         // Iterate over all of the groups
@@ -218,46 +227,54 @@ const actions = {
         for(let x=0;x<group__row_objects.length;x++){
             let group__row_object_id = group__row_objects[x].objects.id;
             let query_problems = await vassar_query(state.tables.Problem, group__row_object_id);
+            console.log("---> PROBLEM RETURN:", query_problems);
             commit('table__set_rows', query_problems);
 
             let query_instruments = await vassar_query(state.tables.Instrument, group__row_object_id);
+            console.log("---> INSTRUMENT RETURN:", query_instruments);
             commit('table__set_rows', query_instruments);
         }
     },
 
     async query_instruments({state, commit}){
+        console.log("---------- QUERY INSTRUMENTS ----------");
         let instrument__row_objects = state.tables.Instrument.row_object_mapper[state.tables.Group.selected_id];
         for(let x=0;x<instrument__row_objects.length;x++){
             let instrument__row_object_id = instrument__row_objects[x].objects.id;
             let query_capabilities = await vassar_query(state.tables.Instrument_Capability, instrument__row_object_id);
+            console.log("---> CAPABILITY RETURN:", query_instruments);
             commit('table__set_rows', query_capabilities);
 
             let query_characteristics = await vassar_query(state.tables.Instrument_Characteristic, instrument__row_object_id);
+            console.log("---> CHARACTERISTIC RETURN:", query_instruments);
             commit('table__set_rows', query_characteristics);
         }
     },
 
     async query__problem_info({state, commit}){
+        let problem_id = state.tables.Problem.selected_id;
 
         // Mission Analysis
-        let problem_id = state.tables.Problem.selected_id;
-        for(let x=0;x<state.migrations.analysis.length;x++){
-            let migration = state.migrations.analysis[x];
-            let query_return = await vassar_query(state.tables[migration], problem_id);
-            commit('table__set_rows', query_return);
-        }
+        // for(let x=0;x<state.migrations.analysis.length;x++){
+        //     let migration = state.migrations.analysis[x];
+        //     let query_return = await vassar_query(state.tables[migration], problem_id);
+        //     commit('table__set_rows', query_return);
+        // }
+
         // Requirement Rules
         for(let x=0;x<state.migrations.requirements.length;x++){
             let migration = state.migrations.requirements[x];
             let query_return = await vassar_query(state.tables[migration], problem_id);
             commit('table__set_rows', query_return);
         }
+
         // Attributes
         for(let x=0;x<state.migrations.attributes.length;x++){
             let migration = state.migrations.attributes[x];
             let query_return = await vassar_query(state.tables[migration], problem_id);
             commit('table__set_rows', query_return);
         }
+
         // --- Stakeholders 
         // Panels
         let query_return = await vassar_query(state.tables.Stakeholder_Needs_Panel, problem_id);
@@ -271,7 +288,7 @@ const actions = {
             for(let y=0;y<panel_rows.length;y++){
                 let panel_row = panel_rows[y];
                 let panel_row_id = panel_row.objects.id;
-                let query_return = await vassar_query(state.tables.Stakeholder_Needs_Objective, panel_row_id);
+                let query_return = await vassar_query(state.tables.Stakeholder_Needs_Objective, panel_row_id, problem_id);
                 commit('table__set_rows', query_return);
             }
         }
@@ -284,7 +301,7 @@ const actions = {
             for(let y=0;y<objective_rows.length;y++){
                 let objective_row = objective_rows[y];
                 let objective_row_id = objective_row.objects.id;
-                let query_return = await vassar_query(state.tables.Stakeholder_Needs_Subobjective, objective_row_id);
+                let query_return = await vassar_query(state.tables.Stakeholder_Needs_Subobjective, objective_row_id, problem_id);
                 commit('table__set_rows', query_return);
             }
         }
@@ -412,6 +429,7 @@ const mutations = {
     //  Select Row  \\
     //--------------\\
     tables__unselect_table(state, table_name){ // SUPER NEW
+        console.log("--> MUTATION: tables__unselect_table", table_name);
         let table = state.tables[table_name];
         table.selected_id = null;
         table.selected_name = null;
@@ -427,6 +445,7 @@ const mutations = {
         }
     },
     tables__select_table(state, row_object){ // SUPER NEW
+        console.log("--> MUTATION: tables__select_table", row_object);
         let table = state.tables[row_object.table_name];
         table.selected_id = row_object.objects.id;
         table.selected_index = row_object.index;

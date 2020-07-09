@@ -43,6 +43,7 @@
                             :table_object="table_object"
                             :table_rows="table_rows"
                             :foreign_key="foreign_key"
+                            :foreign_key_2="foreign_key_2"
                     >
                     </table-row-insert>
                 </tbody>
@@ -69,6 +70,7 @@
         props: {
             table_object: Object,
             foreign_key: Number,
+            foreign_key_2: Number,
         },
         data: function () {
             return {

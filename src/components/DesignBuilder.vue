@@ -21,17 +21,29 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapState, mapGetters } from 'vuex';
     import EOSSBuilder from './EOSSBuilder';
     import PartitionBuilder from './PartitionBuilder';
     import {fetchPost} from "../scripts/fetch-helpers";
+    import { GlobalInstrumentQuery, LocalInstrumentQuery, LocalOrbitQuery } from '../scripts/apollo-queries';
+
 
 
     export default {
         name: 'design-builder',
         data() {
             return {
-                isComputing: false
+                isComputing: false,
+                Join__Instrument_Characteristic: [],
+                Join__Problem_Instrument: [],
+                Join__Problem_Orbit: [],
+
+
+                problem_id: 5,
+                local_instruments: [],
+                global_instruments: [],
+                local_orbits: [],
+
             }
         },
         computed: {
@@ -46,6 +58,9 @@
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
             }),
+            // ...mapGetters({
+            //     problem_id: 'getProblemModuleId'
+            // }),
             isPointSelected() {
                 return this.hoveredArch !== -1 || this.clickedArch !== -1;
             },
@@ -64,6 +79,32 @@
         components: {
             EOSSBuilder, PartitionBuilder
         },
+        apollo: {
+            Join__Instrument_Characteristic: {
+                query: GlobalInstrumentQuery,
+                variables() {
+                    return {
+                        problem_id: this.problem_id,
+                    }
+                }
+            },
+            Join__Problem_Instrument: {
+                query: LocalInstrumentQuery,
+                variables() {
+                    return {
+                        problem_id: this.problem_id,
+                    }
+                }
+            },
+            Join__Problem_Orbit: {
+                query: LocalOrbitQuery,
+                variables() {
+                    return {
+                        problem_id: this.problem_id,
+                    }
+                }
+            }
+        },
         methods: {
             outputVal(index) {
                 let rawValue = this.problemData.find((point) => point.id === this.pointID).outputs[index];
@@ -80,10 +121,18 @@
                 this.isComputing = true;
                 let newInputs = this.$store.state.tradespacePlot.clickedArchInputs;
                 let oldInputs = this.problemData.find((point) => point.id === this.pointID).inputs;
+
+                // ARCHITECTURE ALREADY EVALUATED
                 let arraysAreEq = (newInputs.length === oldInputs.length) && newInputs.every((element, index) => {
                     return element === oldInputs[index];
                 });
+
                 if (!arraysAreEq) {
+                    
+
+                    // INSERT 0s FOR GLOBAL INSTRUMENTS NOT USED (CLOUD_MASK / SMAP_ANT)
+
+
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
                     try {
@@ -101,6 +150,37 @@
                     }
                 }
                 this.isComputing = false;
+            }
+        },
+        watch: {
+            Join__Instrument_Characteristic() {
+                let global_instruments = [];
+                for (let i = 0; i < this.Join__Instrument_Characteristic.length; i++) {
+                    global_instruments.push(this.Join__Instrument_Characteristic[i].Instrument.name);
+                }
+                this.global_instruments = global_instruments;
+                console.log("-----> Global Instruments", global_instruments);
+            },
+            Join__Problem_Instrument() {
+                let local_instruments = [];
+                for (let i = 0; i < this.Join__Problem_Instrument.length; i++) {
+                    local_instruments.push(this.Join__Problem_Instrument[i].Instrument.name);
+                }
+                this.local_instruments = local_instruments;
+                console.log("-----> Local Instruments", local_instruments);
+            },
+
+            // DDDD
+            Join__Problem_Orbit() {
+                let local_orbits = [];
+                for (let i = 0; i < this.Join__Problem_Orbit.length; i++) {
+                    local_orbits.push(this.Join__Problem_Orbit[i].Orbit.name);
+                }
+                this.local_orbits = local_orbits;
+                console.log("-----> Local Orbits", local_orbits);
+            },
+            problem_id(){
+                console.log("-----> CURRENT PROBLEM ID", this.problem_id);
             }
         }
     }
