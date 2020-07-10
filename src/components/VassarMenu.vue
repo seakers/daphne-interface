@@ -94,7 +94,7 @@
                     launch_vehicles:      { selected: false, label: 'launch vehicles', sublabel: '' },
                 },
                 problem_menu_items: {
-                    decisions: { selected: false, label: 'decisions' },
+                    decisions:    { selected: false, label: 'decisions' },
                     stakeholders: { selected: false, label: 'stakeholders' },
                     requirements: { selected: false, label: 'requirements' },
                     // mission:      { selected: false, label: 'mission' },

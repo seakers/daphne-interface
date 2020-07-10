@@ -33,13 +33,17 @@
                 </template>
 
                 <template v-if="page_selected === 'orbits'">
-                    <orbits attribute_header="Orbit Attribute Library" 
+                    <orbits attribute_header="Orbit Attribute Library"
                             dashboard_name="Orbit Dashboard"
                     ></orbits>
                 </template>
 
                 <template v-if="page_selected === 'launch vehicles'">
                     <launch-vehicles></launch-vehicles>
+                </template>
+
+                <template v-if="page_selected === 'measurements'">
+                    <measurements></measurements>
                 </template>
 
                 <template v-if="problems__selected_id !== null">
@@ -87,6 +91,7 @@
     import MissionAnalysis from './problem_builder/MissionAnalysis';
     import Attributes from './problem_builder/Attributes';
     import Orbits from './problem_builder/Orbits';
+    import Measurements from './problem_builder/Measurements';
     import LaunchVehicles from './problem_builder/LaunchVehicles';
 
 
@@ -126,6 +131,7 @@
             Attributes,
             Orbits,
             LaunchVehicles,
+            Measurements,
         },
         async mounted() {
             // Check if the user is logged in

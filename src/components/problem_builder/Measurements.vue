@@ -1,24 +1,24 @@
 <template>
-    <div class="instruments-container">
+    <div class="measurements-container">
 
 
-        <instrument-library
-                :instrument_rows="instrument_rows"
-                v-on:instrument-selected="set_selected_instrument"
+        <measurement-library
+                :measurement_rows="measurement_rows"
+                v-on:measurement-selected="set_selected_measurement"
                 v-on:display-attribute-library="display_attribute_library"
-                v-on:refresh-instrument-query="refresh_instrument_query"
+                v-on:refresh-measurement-query="refresh_measurement_query"
                 v-if="!display_attribute_lib"
         >
-        </instrument-library>
+        </measurement-library>
 
-        <instrument-attribute-library
-                :instrument_object="selected_instrument"
-                :all_instrument_attributes="instrument_attribute_rows"
-                v-on:display-instrument-library="display_instrument_library"
+        <measurement-attribute-library
+                :measurement_object="selected_measurement"
+                :all_measurement_attributes="measurement_attribute_rows"
+                v-on:display-measurement-library="display_measurement_library"
                 v-on:refresh-attribute-query="refresh_attribute_query"
                 v-if="display_attribute_lib"
         >
-        </instrument-attribute-library>
+        </measurement-attribute-library>
 
 
     </div>
@@ -27,24 +27,24 @@
 
 <script>
     import { mapState, mapGetters } from 'vuex';
-    import { InstrumentQuery, InstrumentAttributeQuery} from '../../scripts/instrument-queries';
+    import { MeasurementQuery, MeasurementAttributeQuery} from '../../scripts/measurement-queries';
     import * as _ from 'lodash-es';
 
 
-    import InstrumentLibrary from './library/InstrumentLibrary';
-    import InstrumentAttributeLibrary from './library/InstrumentAttributeLibrary';
+    import MeasurementLibrary from './library/MeasurementLibrary';
+    import MeasurementAttributeLibrary from './library/MeasurementAttributeLibrary';
 
     export default {
-        name: 'instruments',
+        name: 'measurements',
         data: function () {
             return {
-                Instrument: [],
-                Instrument_Attribute: [],
+                Measurement: [],
+                Measurement_Attribute: [],
 
-                instrument_rows: [],
-                instrument_attribute_rows: [],
+                measurement_rows: [],
+                measurement_attribute_rows: [],
 
-                selected_instrument: {},
+                selected_measurement: {},
                 has_selection: false,
 
                 display_attribute_lib: false,
@@ -58,52 +58,52 @@
             }),
         },
         methods: {
-            set_selected_instrument(instrument_selection){
-                console.log("---> ORBIT SELECT PARENT!!!!", instrument_selection);
-                if(_.isEmpty(instrument_selection)){
+            set_selected_measurement(measurement_selection){
+                console.log("---> ORBIT SELECT PARENT!!!!", measurement_selection);
+                if(_.isEmpty(measurement_selection)){
                     this.has_selection = false;
                 }
                 else{
                     this.has_selection = true;
                 }
-                this.selected_instrument = instrument_selection;
+                this.selected_measurement = measurement_selection;
             },
             display_attribute_library(){
                 this.display_attribute_lib = true;
             },
-            display_instrument_library(){
+            display_measurement_library(){
                 this.display_attribute_lib = false;
             },
 
-            refresh_instrument_query(){
+            refresh_measurement_query(){
                 console.log("---> ORBIT REFETCH QUERIES");
-                this.$apollo.queries.Instrument.refetch();
-                this.$apollo.queries.Instrument_Attribute.refetch();
+                this.$apollo.queries.Measurement.refetch();
+                this.$apollo.queries.Measurement_Attribute.refetch();
             },
 
             refresh_attribute_query(){
                 console.log("---> ORBIT ATTRIBUTE REFETCH QUERIES");
-                this.$apollo.queries.Instrument_Attribute.refetch();
-                this.$apollo.queries.Instrument.refetch();
+                this.$apollo.queries.Measurement_Attribute.refetch();
+                this.$apollo.queries.Measurement.refetch();
             }
 
 
         },
         components: {
-            InstrumentLibrary,
-            InstrumentAttributeLibrary
+            MeasurementLibrary,
+            MeasurementAttributeLibrary
         },
         apollo: {
-            Instrument: {
-                query: InstrumentQuery,
+            Measurement: {
+                query: MeasurementQuery,
                 variables() {
                     return {
                         selected_group_id: this.selected_group_id,
                     }
                 }
             },
-            Instrument_Attribute: {
-                query: InstrumentAttributeQuery,
+            Measurement_Attribute: {
+                query: MeasurementAttributeQuery,
                 variables() {
                     return {
                         selected_group_id: this.selected_group_id,
@@ -112,29 +112,29 @@
             },
         },
         async mounted() {
-            this.$apollo.queries.Instrument.refetch();
+            this.$apollo.queries.Measurement.refetch();
         },
         watch: {
-            Instrument() {
-                this.instrument_rows = [];
-                console.log("---> Instrument Query", this.Instrument);
-                for(let x=0;x<this.Instrument.length;x++){
-                    let row = _.cloneDeep(this.Instrument[x]);
+            Measurement() {
+                this.measurement_rows = [];
+                console.log("---> Measurement Query", this.Measurement);
+                for(let x=0;x<this.Measurement.length;x++){
+                    let row = _.cloneDeep(this.Measurement[x]);
                     row['selected'] = false;
                     row['hidden'] = false;
                     row['index'] = x;
-                    this.instrument_rows.push(row);
+                    this.measurement_rows.push(row);
                 }
             },
-            Instrument_Attribute() {
-                this.instrument_attribute_rows = [];
-                for(let x=0;x<this.Instrument_Attribute.length;x++){
-                    let row = _.cloneDeep(this.Instrument_Attribute[x]);
+            Measurement_Attribute() {
+                this.measurement_attribute_rows = [];
+                for(let x=0;x<this.Measurement_Attribute.length;x++){
+                    let row = _.cloneDeep(this.Measurement_Attribute[x]);
                     row['selected'] = false;
                     row['hidden'] = false;
                     row['index'] = x;
-                    row['has_accepted'] = (this.Instrument_Attribute[x].Join__Instrument_Attribute_Values.length > 0);
-                    this.instrument_attribute_rows.push(row);
+                    row['has_accepted'] = (this.Measurement_Attribute[x].Join__Measurement_Attribute_Values.length > 0);
+                    this.measurement_attribute_rows.push(row);
                 }
             }
         }
@@ -156,7 +156,7 @@
 
 <style lang="scss">
 
-    .instruments-panel{
+    .measurements-panel{
         display: flex;
         flex-grow: 0.75;
         margin: 1em 3em;
@@ -168,7 +168,7 @@
     }
 
 
-    .instrument-library-title{
+    .measurement-library-title{
         display: flex;
         padding-top: 3vw;
         padding-left: 2vw;
@@ -178,7 +178,7 @@
         font-weight: bold;
     }
 
-    .instrument-library-select{
+    .measurement-library-select{
         display: flex;
         max-height: 43vh;
         overflow-y: auto;
@@ -186,13 +186,13 @@
         margin-left: 2vw;
     }
 
-    .instrument-edit-btns{
+    .measurement-edit-btns{
         display: flex;
         margin-left: 2vw;
         margin-top: 1vw;
     }
 
-    .instrument-operations{
+    .measurement-operations{
         display: flex;
         align-self: flex-end;
         align-items: flex-end;
@@ -201,12 +201,12 @@
         margin-bottom: 3vw;
     }
 
-    .instrument-library-item{
+    .measurement-library-item{
         padding: 0.3em 0.75em !important;
         cursor: pointer;
     }
 
-    .instrument-selected{
+    .measurement-selected{
         background-color: #606B7D;
         color: #fff;
     }
