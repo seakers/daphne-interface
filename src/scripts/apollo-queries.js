@@ -159,6 +159,34 @@ query MyQuery($group_id: Int) {
 
 
 
+const ArchitectureQuery = gql`
+subscription MyQuery($problem_id: Int, $input_list: [String!]) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, input: {_nin: $input_list}}) {
+    id
+    user_id
+    ga
+    eval_status
+    input
+    science
+    cost
+  }
+}`;
+
+
+const ArchitectureEvalCount = gql`
+subscription MyQuery($problem_id: Int) {
+    Architecture_aggregate(where: {problem_id: {_eq: $problem_id}, eval_status: {_eq: false}}) {
+    aggregate {
+      count
+    }
+  }
+}`;
+
+
+
+
+
+
 
 export {
     OrbitQuery,
@@ -171,4 +199,6 @@ export {
     GlobalInstrumentQuery,
     LocalInstrumentQuery,
     LocalOrbitQuery,
+    ArchitectureQuery,
+    ArchitectureEvalCount
 }

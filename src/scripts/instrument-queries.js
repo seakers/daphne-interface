@@ -83,51 +83,6 @@ mutation MyQuery($group_id: Int, $name: String) {
 }`;
 
 
-// ----- ASSIGN INSTRUMENT .VUE
-
-const InstrumentAssignation = gql`
-query MyQuery($group_id: Int!, $instrument_id: Int!) {
-  Problem(where: {Group: {id: {_eq: $group_id}}}) {
-    id
-    name
-    Join__Problem_Instruments_aggregate(where: {instrument_id: {_eq: $instrument_id}}) {
-      aggregate {
-        count
-      }
-    }
-  }
-}`;
-
-const AssignInstrument = gql`
-mutation MyQuery($problem_id: Int, $instrument_id: Int) {
-  insert_Join__Problem_Instrument(objects: {problem_id: $problem_id, instrument_id: $instrument_id}) {
-    returning {
-      Instrument {
-        name
-      }
-      Problem {
-        name
-      }
-    }
-  }
-}
-`;
-
-const DeassignInstrument = gql`
-mutation MyQuery($instrument_id: Int, $problem_id: Int) {
-  delete_Join__Problem_Instrument(where: {instrument_id: {_eq: $instrument_id}, problem_id: {_eq: $problem_id}}) {
-    returning {
-      Instrument {
-        name
-      }
-      Problem {
-        name
-      }
-    }
-  }
-}
-`;
-
 
 // ----- CLONE INSTRUMENT .VUE
 
@@ -315,6 +270,95 @@ mutation MyQuery($group_id: Int, $instrument_attribute_id: Int, $problem_id: Int
 
 
 
+
+
+// ----- ASSIGN INSTRUMENT .VUE
+const InstrumentAssignation = gql`
+query MyQuery($group_id: Int!, $instrument_id: Int!) {
+  Problem(where: {Group: {id: {_eq: $group_id}}}) {
+    id
+    name
+    Join__Problem_Instruments_aggregate(where: {instrument_id: {_eq: $instrument_id}}) {
+      aggregate {
+        count
+      }
+    }
+  }
+}`;
+const AssignInstrument = gql`
+mutation MyQuery($problem_id: Int, $instrument_id: Int) {
+  insert_Join__Problem_Instrument(objects: {problem_id: $problem_id, instrument_id: $instrument_id}) {
+    returning {
+      Instrument {
+        name
+      }
+      Problem {
+        name
+      }
+    }
+  }
+}
+`;
+const DeassignInstrument = gql`
+mutation MyQuery($instrument_id: Int, $problem_id: Int) {
+  delete_Join__Problem_Instrument(where: {instrument_id: {_eq: $instrument_id}, problem_id: {_eq: $problem_id}}) {
+    returning {
+      Instrument {
+        name
+      }
+      Problem {
+        name
+      }
+    }
+  }
+}
+`;
+
+
+const GetArchitectures = gql`
+query MyQuery($problem_id: Int) {
+  Architecture(where: {problem_id: {_eq: $problem_id}}) {
+    id
+    input
+    eval_status
+  }
+}`;
+
+const UpdateArchitecture = gql`
+mutation MyQuery($arch_id: Int, $new_input: String, $eval_status: Boolean) {
+  update_Architecture(where: {id: {_eq: $arch_id}}, _set: {input: $new_input, eval_status: $eval_status}) {
+    affected_rows
+  }
+}`;
+
+const GetNumInstruments = gql`
+query MyQuery($problem_id: Int!) {
+  Join__Problem_Instrument(where: {problem_id: {_eq: $problem_id}}) {
+    Instrument {
+      id
+      name
+    }
+    problem_id
+  }
+}`;
+
+const GetNumOrbits = gql`
+query MyQuery($problem_id: Int) {
+  Join__Problem_Orbit(where: {problem_id: {_eq: $problem_id}}) {
+    Orbit {
+      id
+      name
+    }
+  }
+}`;
+
+
+
+
+
+
+
+
 export {
     InstrumentQuery,
     InstrumentAttributeQuery,
@@ -340,5 +384,9 @@ export {
     DeleteGlobalInstrumentAttribute,
     DeleteGlobalInstrumentAttributeChildren,
     SetInstrumentAttributeValue,
-    InsertInstrumentAttributeValue
+    InsertInstrumentAttributeValue,
+    GetArchitectures,
+    UpdateArchitecture,
+    GetNumInstruments,
+    GetNumOrbits
 }

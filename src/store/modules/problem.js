@@ -61,22 +61,17 @@ const getters = {
 const actions = {
 
 
-    async loadNewData({ state, commit }, datasetInformation) { 
+    async loadNewData({ state, commit }, datasetInformation) {
         console.log('Importing data...');
 
         try {
             let reqData = new FormData();
-            // reqData.append('problem', state.problemName);
-            // reqData.append('problem_id', state.problem_id);
-            // reqData.append('filename', datasetInformation.filename);
-            // reqData.append('load_user_files', datasetInformation.user);
-            // reqData.append('input_num', state.inputNum);
-            // reqData.append('input_type', state.inputType);
-            // reqData.append('output_num', state.outputNum);
+
 
             reqData.append('problem_id', '5');
             reqData.append('group_id', '1');
             reqData.append('load_user_files', datasetInformation.user);
+
 
             // GET PROBLEM DATA
             let dataResponse = await fetchPost(API_URL + 'eoss/data/import-data', reqData);
@@ -86,9 +81,9 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
+                console.log("---> Problem data1", data);
                 let problemData = state.importCallback(data, state.extra);
-                console.log("---> Problem data");
-                console.log(problemData);
+                console.log("---> Problem data2", problemData);
                 calculateParetoRanking(problemData);
                 commit('updateProblemData', problemData);
                 commit('setDataUpdateFrom', 'loadNewData');
@@ -102,7 +97,9 @@ const actions = {
         }
     },
     async reloadOldData({ state, commit }, oldData) {
+        console.log("---> Old data", oldData);
         let problemData = state.importCallback(oldData, state.extra);
+        console.log("---> Reload problem data", problemData);
         calculateParetoRanking(problemData);
         commit('updateProblemData', problemData);
         commit('setDataUpdateFrom', 'reloadOldData');

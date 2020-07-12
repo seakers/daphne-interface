@@ -139,7 +139,8 @@
                         let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-architecture', reqData);
                         if (dataResponse.ok) {
                             let newArch = await dataResponse.json();
-                            this.$store.dispatch('addNewData', newArch);
+                            // EVALUATE ARCHITECTURE
+                            // this.$store.dispatch('addNewData', newArch);
                         }
                         else {
                             console.error('Error evaluating the architecture');

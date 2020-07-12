@@ -10,6 +10,7 @@ import {wsTools} from "./scripts/websocket-tools";
 import VueApollo from "vue-apollo";
 import ApolloClient from "apollo-client";
 import { HttpLink } from "apollo-link-http";
+import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 // Non ES-modularized libraries
@@ -40,16 +41,26 @@ const getHeaders = () => {
     const headers = {};
     const token = window.localStorage.getItem('apollo-token');
     if (token) {
-    headers.authorization = `Bearer ${token}`;
+        headers.authorization = `Bearer ${token}`;
     }
     return headers;
 };
 
 // HASURS URL
-const link = new HttpLink({
-    uri: 'http://localhost:6002/v1/graphql',
-    fetch,
-    headers: getHeaders()
+// const link = new HttpLink({
+//     uri: 'http://localhost:6002/v1/graphql',
+//     fetch,
+//     headers: getHeaders()
+// });
+const link = new WebSocketLink({
+    uri: 'ws://localhost:6002/v1/graphql',
+    options: {
+        reconnect: true,
+        timeout: 30000,
+        connectionParams: () => {
+            return { headers: getHeaders() };
+        },
+    }
 });
 
 // APOLLO

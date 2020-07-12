@@ -3,7 +3,11 @@
         <section class="panel">
             <p class="panel-heading">
                 Tradespace exploration |
-                Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}
+                Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }} <br>
+                Designs requiring re-evaluation: {{ arch_to_eval }}
+                <button class="button is-info is-small" v-on:click="eval_designs()">
+                    evaluate all
+                </button>
             </p>
             <div class="panel-block" id="main-plot-block">
                 <div id="main-plot"></div>
@@ -59,6 +63,16 @@
     import * as d3 from 'd3';
     import 'd3-selection-multi';
     import {fetchGet, fetchPost} from "../scripts/fetch-helpers";
+    import { ArchitectureQuery, ArchitectureEvalCount } from "../scripts/apollo-queries";
+
+    class Architecture {
+        constructor(id, inputs, outputs, db_id) {
+            this.id = id;
+            this.inputs = inputs;
+            this.outputs = outputs;
+            this.eb_id = db_id;
+        }
+    }
 
 
     export default {
@@ -76,12 +90,18 @@
                 xMap: {},
                 yMap: {},
                 context: {},
-                hiddenContext: {}
+                hiddenContext: {},
+                Architecture: [],
+                Architecture_aggregate: {},
+                arch_to_eval: 0,
+                inputs_list: [],
+                skip_sub: true,
             }
         },
         computed: {
             ...mapState({
                 problemData: state => state.problem.problemData,
+                extraData: state => state.problem.extra,
                 plotData: state => state.tradespacePlot.plotData,
                 colorMap: state => state.tradespacePlot.colorMap,
                 hoveredArch: state => state.tradespacePlot.hoveredArch,
@@ -123,13 +143,27 @@
                 'updateClickedArch',
                 'updateHoveredArch',
             ]),
+            async eval_designs(){
+                console.log("---> re-evaluating designs");
+                let reqData = new FormData();
+                reqData.append('problem_id', '5');
+                let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-false-architectures', reqData);
+
+                if (dataResponse.ok) {
+                    console.log('Target selection updated');
+                }
+                else {
+                    console.error('Error obtaining the driving features.');
+                }
+            },
+
+
             resetMainPlot() {
                 //Resets the main plot
                 d3.select('#main-plot').select('svg').remove();
                 d3.select('#main-plot').selectAll('canvas').remove();
                 d3.select('#main-plot').style('width', 0 + 'px');
             },
-            
             updatePlot(xIndex, yIndex) {
                 this.resetMainPlot();
 
@@ -394,9 +428,111 @@
             }
         },
 
+        apollo: {
+            $subscribe: {
+                Architecture: {
+                    deep: true,
+                    query: ArchitectureQuery,
+                    variables() {
+                        return {
+                            problem_id: 5,
+                            input_list: this.inputs_list
+                        }
+                    },
+                    skip() {
+                        return this.skip_sub;
+                    },
+                    result (data) {
+                        console.log("-------> SUBSCRIPTION UPDATE");
+                        console.log(data);
+                        let required_len = this.extraData.orbitNum * this.extraData.instrumentNum;
+                        console.log("-------> REQUIRED LEN", required_len);
+
+                        let arches = data.data.Architecture;
+                        for(let x=0;x<arches.length;x++){
+                            let arch = arches[x];
+                            if(arch.eval_status && (arch.input.length == required_len)){
+                                let bool_ary = [];
+                                for(let y=0;y<arch.input.length;y++){
+                                    if(arch.input[y] == '1') { bool_ary.push(true); }
+                                    else { bool_ary.push(false); }
+                                }
+                                let new_obj = {
+                                    id: this.plotData.length,
+                                    inputs: bool_ary,
+                                    outputs: [arch.science, arch.cost],
+                                };
+                                this.$store.dispatch('addNewData', new_obj);
+                                console.log("--> new data point", new_obj);
+                            }
+                        }
+
+                        //
+                        // let number_new = arches.length - this.plotData.length;
+                        // let start_index = this.plotData.length;
+                        //
+                        // if(start_index == 0 || start_index == 1){
+                        //     console.log("---> no data to update");
+                        //     return;
+                        // }
+                        //
+                        // let end_index = arches.length;
+                        //
+                        //
+                        // for(let x=start_index;x<end_index;x++) {
+                        //     let arch    = arches[x];
+                        //     let new_obj = {
+                        //         id: x,
+                        //         inputs: arch.input,
+                        //         outputs: [arch.science, arch.cost],
+                        //     };
+                        //     if(arch.eval_status){
+                        //         this.$store.dispatch('addNewData', new_obj);
+                        //         console.log("--> new data point");
+                        //     }
+                        // }
+                        // console.log(this.plotData);
+                        // this.$store.commit('addPlotData', newArch);
+                    },
+                },
+                Architecture_aggregate: {
+                    query: ArchitectureEvalCount,
+                    variables() {
+                        return {
+                            problem_id: 5,
+                        }
+                    },
+                    result (data) {
+                        console.log("-------> SUBSCRIPTION EVAL UPDATE", data);
+                        this.arch_to_eval = data.data.Architecture_aggregate.aggregate.count;
+                        this.$apollo.subscriptions.Architecture.refresh();
+                    },
+                },
+            },
+        },
+
         watch: {
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
+
+                if(this.plotData.length == 0){
+                    return;
+                }
+
+                this.inputs_list = [];
+                for(let x=0;x<this.plotData.length;x++){
+                    let bool_ary = this.plotData[x].inputs;
+                    let input_str = '';
+                    for(let y=0;y<bool_ary.length;y++){
+                        let single_bool = bool_ary[y];
+                        if(single_bool){ input_str = input_str + '1'; }
+                        else{ input_str = input_str + '0'; }
+                    }
+                    this.inputs_list.push(input_str);
+                }
+                console.log("---> inputs list", this.inputs_list);
+                this.skip_sub = false;
+                this.$apollo.subscriptions.Architecture.skip = false;
             },
 
             hoveredArch: function(val, oldVal) {

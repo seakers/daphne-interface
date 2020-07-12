@@ -89,6 +89,9 @@ export default new Vuex.Store({
                 }
             }
         },
+
+
+
         async onWebsocketsMessage({ commit, state, getters, dispatch }, message) {
             let received_info = JSON.parse(message.data);
             console.log(received_info);

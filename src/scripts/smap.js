@@ -3,10 +3,11 @@ import {fetchGet, fetchPost} from "./fetch-helpers";
 
 
 class Architecture {
-    constructor(id, inputs, outputs) {
+    constructor(id, inputs, outputs, db_id) {
         this.id = id;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.eb_id = db_id;
     }
 }
 
@@ -47,26 +48,13 @@ export default {
 
         // Add alias for instruments and orbits
         extra.labelingEnabled = true;
-        //let orbitAliasArray = [['LEO-600-polar-NA', '1'], ['SSO-600-SSO-AM', '2'], ['SSO-600-SSO-DD', '3'], ['SSO-800-SSO-DD', '4'], ['SSO-800-SSO-PM', '5']];
-        
-        // let orbitAliasArray = [['LEO-600-polar-NA', 'LEO-600-polar-NA'], ['SSO-600-SSO-AM', 'SSO-600-SSO-AM'],
-        //     ['SSO-600-SSO-DD', 'SSO-600-SSO-DD'], ['SSO-800-SSO-AM', 'SSO-800-SSO-AM'],
-        //     ['SSO-800-SSO-DD', 'SSO-800-SSO-DD']];
 
+
+        // --> ORBIT ALIAS
         let orbitAliasArray = [];
-
-        for (var i = 0; i < extra.orbitList.length; i++){
+        for (let i = 0; i < extra.orbitList.length; i++){
             orbitAliasArray.push([extra.orbitList[i], extra.orbitList[i]]);
         }
-        console.log("---> orbit alias array");
-        console.log(orbitAliasArray);
-
-        
-
-
-
-
-
         extra.orbitAlias = {};
         extra.orbitInvAlias = {};
         orbitAliasArray.forEach((element) => {
@@ -74,18 +62,11 @@ export default {
             extra.orbitInvAlias[element[1]] = element[0];
         });
 
-        //let instrumentAliasArray = [['ACE_ORCA', 'A'], ['ACE_POL', 'B'], ['ACE_LID', 'C'], ['CLAR_ERB', 'D'], ['ACE_CPR', 'E'], ['DESD_SAR', 'F'], ['DESD_LID', 'G'], ['GACM_VIS', 'H'], ['GACM_SWIR', 'I'], ['HYSP_TIR', 'J'], ['POSTEPS_IRS', 'K'],['CNES_KaRIN', 'L']];
-        
-        
+        // --> INSTRUMENT ALIAS
         let instrumentAliasArray = [];
-        for (var i = 0; i < extra.instrumentList.length; i++){
+        for (let i = 0; i < extra.instrumentList.length; i++){
             instrumentAliasArray.push([extra.instrumentList[i], extra.instrumentList[i]]);
         }
-        
-        // let instrumentAliasArray = [['BIOMASS', 'BIOMASS'], ['SMAP_RAD', 'SMAP_RAD'], ['SMAP_MWR', 'SMAP_MWR'],
-        //     ['CMIS', 'CMIS'], ['VIIRS', 'VIIRS']];
-
-
         extra.instrumentAlias = {};
         extra.instrumentInvAlias = {};
         instrumentAliasArray.forEach((element) => {
@@ -292,10 +273,18 @@ async function getInstrumentList(problemName) {
 
 function preprocessing(data, extra) {
     let output = [];
-    if (data.length === 0 || data[0].inputs.length !== extra.orbitNum*extra.instrumentNum) {
+    if (data.length === 0) {
         let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
         let arch = new Architecture(0, inputs, [0, 0]);
         output.push(arch);
+    }
+    else if (data[0].inputs.length !== extra.orbitNum*extra.instrumentNum){
+
+        //---> Change is num instruments or orbits??
+        let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
+        let arch = new Architecture(0, inputs, [0, 0]);
+        output.push(arch);
+
     }
     else {
         data.forEach(d => {

@@ -108,31 +108,36 @@
                 }
             },
             async init(startData) {
-                // Stop all running background tasks
+
+                // 1. Stop all running background tasks
                 await this.$store.dispatch('stopBackgroundTasks');
 
-                // Initialize the new problem
+                // 2. Initialize the new problem
                 await this.$store.dispatch('initProblem');
+
+                // 3. Load architectures from back-end
                 if (startData !== undefined && startData['modified_dataset']) {
-                    await this.$store.dispatch('reloadOldData', startData['data']);
+                    // await this.$store.dispatch('reloadOldData', startData['data']);
+                    await this.$store.dispatch('loadNewData', this.dataset);
                 }
                 else {
                     await this.$store.dispatch('loadNewData', this.dataset);
                 }
 
-                // Load past dialogue
+                // 4. Load past dialogue - scroll chat window down
                 await this.$store.dispatch("loadDialogue");
-                // Scroll chat window to bottom
                 this.$refs.chatWindow.scrollToBottom();
 
-                // Initialize user-only features
+                // 5. Initialize user-only features
                 if (this.$store.state.auth.isLoggedIn) {
                     await this.$store.dispatch("retrieveActiveSettings");
                     this.$store.dispatch("startBackgroundSearch");
                 }
 
+                // 6. Call backend to initialize data-mining
                 this.$store.dispatch('setProblemParameters');
 
+                // 7. Start-up has finished
                 this.isStartup = false;
             }
         },
