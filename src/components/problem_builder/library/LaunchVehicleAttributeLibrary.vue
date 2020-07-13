@@ -299,7 +299,7 @@
                 variables() {
                     return {
                         launch_vehicle_id: this.launch_vehicle_object.id,
-                        problem_id: 5,
+                        problem_id: 3,
                     }
                 }
             },
