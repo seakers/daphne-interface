@@ -1,4 +1,4 @@
-import { vassar_query, vassar_insert, vassar_update } from "../../scripts/query-helpers";
+import { vassar_query, vassar_insert, vassar_update, update_architectures } from "../../scripts/query-helpers";
 import { validate_row } from "../../scripts/validation-helpers";
 import { Measurement_Attribute, Instrument_Attribute, Mission_Attribute, Orbit_Attribute, Launch_Vehicle_Attribute} from "../tables/attributes";
 import { Walker_Mission_Analysis, Power_Mission_Analysis, Launch_Vehicle_Mission_Analysis } from "../tables/mission-analysis";
@@ -275,7 +275,7 @@ const actions = {
             commit('table__set_rows', query_return);
         }
 
-        // --- Stakeholders 
+        // --- Stakeholders
         // Panels
         let query_return = await vassar_query(state.tables.Stakeholder_Needs_Panel, problem_id);
         commit('table__set_rows', query_return);
@@ -336,7 +336,7 @@ const actions = {
     //------------\\
     //  Edit Row  \\
     //------------\\
-    async tables__commit_edit({state, commit}, row_object){
+    async tables__commit_edit({state, commit, getters}, row_object){
         let table = state.tables[row_object.table_name];
         let rows = table.row_object_mapper[row_object.foreign_key];
 
@@ -346,6 +346,10 @@ const actions = {
         if(validation_response === true){
             if(JSON.stringify(row_object.items) != JSON.stringify(rows[row_object.index].items)){
                 await vassar_update(table, row_object);
+
+                // UPDATE ARCHITECTURES HERE: row_object.Stakeholder_Needs_Objective
+                await update_architectures(row_object, getters.problems__problem_selection);
+
                 commit('tables__update_row', row_object);
                 commit('tables__reset_edit_all', row_object);
             }
@@ -357,7 +361,6 @@ const actions = {
             commit('push_error_message', validation_response);
         }
     },
-
 
 
 
@@ -382,7 +385,7 @@ const actions = {
         else{
             commit('push_error_message', validation_response);
         }
-    },  
+    },
 };
 
 
@@ -498,7 +501,7 @@ const mutations = {
         rows.push(insert_object);
     },
 
-    
+
 
 
 

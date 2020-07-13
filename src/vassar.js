@@ -36,7 +36,7 @@ const link = new HttpLink({
 });
 
 // APOLLO
-const client = new ApolloClient({
+export const client = new ApolloClient({
     link: link,
     cache: new InMemoryCache({
         addTypename: true

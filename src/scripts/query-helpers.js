@@ -1,4 +1,52 @@
 import {fetchPost} from "./fetch-helpers";
+import { client } from "../vassar";
+import { GetArchitectures, UpdateArchitectureStatus } from "./instrument-queries";
+
+
+
+
+export async function update_architectures(row_object, problem_id){
+    console.log("---> UPDATING ARCHITECTURES", problem_id);
+
+    let table_name = row_object.table_name;
+
+    if(table_name === "Stakeholder_Needs_Panel" || table_name === "Stakeholder_Needs_Objective" || table_name === "Stakeholder_Needs_Subobjective"){
+
+        let response = await client.query({
+            deep: true,
+            query: GetArchitectures,
+            variables: {
+                problem_id: problem_id,
+            }
+        });
+
+        console.log("--> response", response);
+
+        let archs = response['data']['Architecture'];
+        for(let x=0;x<archs.length;x++){
+            let arch = archs[x];
+            if(arch.eval_status === true){
+                let arch_mutate = await client.mutate({
+                    mutation: UpdateArchitectureStatus,
+                    variables: {
+                        eval_status: false,
+                        arch_id: arch.id,
+                    },
+                    update: (cache, { data: { update_arch_status } }) => {
+                        // Read the data from our cache for this query.
+                        // eslint-disable-next-line
+                        console.log(update_arch_status);
+                    },
+                });
+                console.log("---> setting arch status", x);
+            }
+        }
+    }
+}
+
+
+
+
 
 
 
@@ -51,7 +99,7 @@ export async function vassar_update(table, row_object) {
           }
         }
     }`
-    
+
     // let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
     let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
     console.log("--> Update", query.query, dataResponse);
@@ -100,7 +148,7 @@ export async function vassar_insert(table, data, fk) {
         field_entries.push(field_entry);
     }
 
-    
+
     // INSERT QUERY
     let query = {};
     let insert_statement = `insert_${table.table_name}`;
@@ -130,12 +178,12 @@ export async function vassar_insert(table, data, fk) {
             }
         }`
     }
-    
+
     // let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
     let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
     console.log("--> INSERT", query.query, dataResponse);
     let json_data = await dataResponse.json();
-    
+
 
     return await format_insert(json_data, data.index, table.col_keys, insert_statement, table.table_name, fk, table);
 }
@@ -158,7 +206,7 @@ export async function format_insert(json_data, index, return_cols, insert_statem
         insert_object['objects'][field_name] = field_value;
         items.push(field_value);
     }
-    insert_object['items'] = items; 
+    insert_object['items'] = items;
     return insert_object;
 }
 
@@ -258,7 +306,7 @@ export async function format_query(rows, table, pk, pk2=null){
         else if(table.relationship.type === 'one-to-many-nested'){
             row_data = row;
         }
-        
+
         // ROW OBJECT
         let row_object = {};
         let items = [];
@@ -268,7 +316,7 @@ export async function format_query(rows, table, pk, pk2=null){
             let column_type  = table.col_types[y];
             let column_key   = table.col_keys[y];
             let column_entry = row_data[column_key];
-            items.push(column_entry);          
+            items.push(column_entry);
         }
 
         // NESTED QUERY PARAMETERS
@@ -294,7 +342,7 @@ export async function format_query(rows, table, pk, pk2=null){
         row_object['table_name'] = table.table_name;
         row_object['col_types'] = table.col_types;
         row_object['foreign_key'] = pk;
-        row_object['foreign_key_2'] = pk2;               
+        row_object['foreign_key_2'] = pk2;
         row_object['relationship'] = table.relationship;
         row_objects.push(row_object);
     }
