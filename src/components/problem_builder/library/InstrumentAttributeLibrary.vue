@@ -131,7 +131,7 @@
         name: 'instrument-attribute-library',
         data: function () {
             return {
-                problem_id: 0,
+                problem_id: parseInt(PROBLEM__ID),
                 instrument_id: false,
                 instrument_name: '',
 

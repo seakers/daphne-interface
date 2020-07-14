@@ -299,7 +299,7 @@
                 variables() {
                     return {
                         orbit_id: this.orbit_object.id,
-                        problem_id: 5,
+                        problem_id: parseInt(PROBLEM__ID),
                     }
                 }
             },

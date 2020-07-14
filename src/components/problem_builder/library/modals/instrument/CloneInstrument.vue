@@ -53,7 +53,7 @@
 
                 Problem: [],
                 problem_choices: [],
-                problem_id: 0,
+                problem_id: parseInt(PROBLEM__ID),
 
                 Join__Instrument_Characteristic: [],
                 Join__Instrument_Capability: [],

@@ -435,7 +435,7 @@
                     query: ArchitectureQuery,
                     variables() {
                         return {
-                            problem_id: 5,
+                            problem_id: parseInt(PROBLEM__ID),
                             input_list: this.inputs_list
                         }
                     },
@@ -499,7 +499,7 @@
                     query: ArchitectureEvalCount,
                     variables() {
                         return {
-                            problem_id: 5,
+                            problem_id: parseInt(PROBLEM__ID),
                         }
                     },
                     result (data) {

@@ -49,7 +49,7 @@
             return {
                 Instrument: [],
                 Problem: [],
-                problem_id: 0,
+                problem_id: parseInt(PROBLEM__ID),
                 instrument_selections: [],
                 disable_cancel: false,
                 disable_commit: false,

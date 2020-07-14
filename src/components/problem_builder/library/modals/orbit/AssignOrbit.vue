@@ -49,7 +49,7 @@
         data() {
             return {
                 Problem: [],
-                problem_id: 5,
+                problem_id: parseInt(PROBLEM__ID),
                 problem_selections: [],
                 disable_cancel: false,
                 disable_commit: false,
@@ -119,12 +119,13 @@
                         this.problem_id = this.problem_selections[x].id;
                         console.log("---> fetching queries", this.problem_id);
 
-                        // this.$apollo.queries.Architecture.refetch();
-                        // this.$apollo.queries.Join__Problem_Instrument.refetch();
-                        // this.$apollo.queries.Join__Problem_Orbit.refetch();
+                        this.$apollo.queries.Architecture.refetch();
+                        this.$apollo.queries.Join__Problem_Instrument.refetch();
+                        this.$apollo.queries.Join__Problem_Orbit.refetch();
 
                         let sure1 = await this.$apollo.query({
                             deep: true,
+                            fetchPolicy: 'no-cache',
                             query: GetArchitectures,
                             variables: {
                                 problem_id: this.problem_selections[x].id,
@@ -132,6 +133,7 @@
                         });
                         let sure2 = await this.$apollo.query({
                             deep: true,
+                            fetchPolicy: 'no-cache',
                             query: GetNumInstruments,
                             variables: {
                                 problem_id: this.problem_selections[x].id,
@@ -139,11 +141,16 @@
                         });
                         let sure3 = await this.$apollo.query({
                             deep: true,
-                            query: GetNumInstruments,
+                            fetchPolicy: 'no-cache',
+                            query: GetNumOrbits,
                             variables: {
                                 problem_id: this.problem_selections[x].id,
                             }
                         });
+
+                        console.log(sure1);
+                        console.log(sure2);
+                        console.log(sure3);
 
                         let num_insts = this.Join__Problem_Instrument.length;
                         let num_orbs = this.Join__Problem_Orbit.length;
@@ -182,9 +189,7 @@
                                     orbit_id: this.selected_orbit.id,
                                 },
                                 update: (cache, { data: { insert_orbit_assignation } }) => {
-                                    // Read the data from our cache for this query.
-                                    // eslint-disable-next-line
-                                    console.log(insert_orbit_assignation);
+                                    console.log("--> cache", insert_orbit_assignation);
                                 },
                             });
                             console.log("---> ASSIGNING", add_assignation);
@@ -241,7 +246,7 @@
                                     update: (cache, { data: { insert_orbit_assignation } }) => {
                                         // Read the data from our cache for this query.
                                         // eslint-disable-next-line
-                                        console.log(insert_orbit_assignation);
+                                        console.log("---> cache", insert_orbit_assignation);
                                     },
                                 });
                                 console.log("---> ASSIGNING", remove_assignation);
@@ -266,6 +271,7 @@
         apollo: {
             Problem: {
                 query: OrbitAssignation,
+                fetchPolicy: 'no-cache',
                 variables() {
                     return {
                         orbit_id: this.selected_orbit.id,
@@ -275,6 +281,7 @@
             },
             Architecture: {
                 deep: true,
+                fetchPolicy: 'no-cache',
                 query: GetArchitectures,
                 variables() {
                     return {
@@ -284,6 +291,7 @@
             },
             Join__Problem_Instrument: {
                 deep: true,
+                fetchPolicy: 'no-cache',
                 query: GetNumInstruments,
                 variables() {
                     return {
@@ -293,6 +301,7 @@
             },
             Join__Problem_Orbit: {
                 deep: true,
+                fetchPolicy: 'no-cache',
                 query: GetNumOrbits,
                 variables() {
                     return {

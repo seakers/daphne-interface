@@ -48,7 +48,7 @@
         props: ['isActive'],
         data() {
             return {
-                problem_id: 1,
+                problem_id: parseInt(PROBLEM__ID),
                 instrument_id: 1,
 
                 new_name: '',

@@ -1,6 +1,6 @@
 import {fetchPost} from "./fetch-helpers";
 import { client } from "../vassar";
-import { GetArchitectures, UpdateArchitectureStatus } from "./instrument-queries";
+import { GetArchitectures, UpdateArchitectureStatusBatch } from "./instrument-queries";
 
 
 
@@ -14,6 +14,7 @@ export async function update_architectures(row_object, problem_id){
 
         let response = await client.query({
             deep: true,
+            fetchPolicy: 'no-cache',
             query: GetArchitectures,
             variables: {
                 problem_id: problem_id,
@@ -23,24 +24,25 @@ export async function update_architectures(row_object, problem_id){
         console.log("--> response", response);
 
         let archs = response['data']['Architecture'];
+        let arch_ids = [];
         for(let x=0;x<archs.length;x++){
+
             let arch = archs[x];
-            if(arch.eval_status === true){
-                let arch_mutate = await client.mutate({
-                    mutation: UpdateArchitectureStatus,
-                    variables: {
-                        eval_status: false,
-                        arch_id: arch.id,
-                    },
-                    update: (cache, { data: { update_arch_status } }) => {
-                        // Read the data from our cache for this query.
-                        // eslint-disable-next-line
-                        console.log(update_arch_status);
-                    },
-                });
-                console.log("---> setting arch status", x);
-            }
+            arch_ids.push(arch.id);
         }
+
+        let arch_mutate = await client.mutate({
+            mutation: UpdateArchitectureStatusBatch,
+            variables: {
+                eval_status: false,
+                arch_ids: arch_ids,
+            },
+            update: (cache, { data: { update_arch_status } }) => {
+                // Read the data from our cache for this query.
+                // eslint-disable-next-line
+                console.log(update_arch_status);
+            },
+        });
     }
 }
 
@@ -100,8 +102,8 @@ export async function vassar_update(table, row_object) {
         }
     }`
 
-    // let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
-    let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
+    let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
+    // let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
     console.log("--> Update", query.query, dataResponse);
     let json_data = await dataResponse.json();
     return 0
@@ -179,8 +181,8 @@ export async function vassar_insert(table, data, fk) {
         }`
     }
 
-    // let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
-    let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
+    let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
+    // let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
     console.log("--> INSERT", query.query, dataResponse);
     let json_data = await dataResponse.json();
 
@@ -263,8 +265,8 @@ export async function vassar_query(table, pk, pk2=null) {
         }`
     }
 
-    // let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
-    let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
+    let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
+    // let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
     console.log("---> QUERY - RESPONSE", query.query, dataResponse);
     let json_data = await dataResponse.json();
 

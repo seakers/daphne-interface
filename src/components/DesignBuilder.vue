@@ -39,7 +39,7 @@
                 Join__Problem_Orbit: [],
 
 
-                problem_id: 5,
+                problem_id: parseInt(PROBLEM__ID),
                 local_instruments: [],
                 global_instruments: [],
                 local_orbits: [],

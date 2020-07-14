@@ -338,6 +338,13 @@ mutation MyQuery($arch_id: Int, $eval_status: Boolean) {
   }
 }`;
 
+const UpdateArchitectureStatusBatch = gql`
+mutation MyQuery($arch_ids: [Int!]!, $eval_status: Boolean) {
+  update_Architecture(where: {id: {_in: $arch_ids}}, _set: {eval_status: $eval_status}) {
+    affected_rows
+  }
+}`;
+
 const GetNumInstruments = gql`
 query MyQuery($problem_id: Int!) {
   Join__Problem_Instrument(where: {problem_id: {_eq: $problem_id}}) {
@@ -396,5 +403,6 @@ export {
     UpdateArchitecture,
     GetNumInstruments,
     GetNumOrbits,
-    UpdateArchitectureStatus
+    UpdateArchitectureStatus,
+    UpdateArchitectureStatusBatch
 }

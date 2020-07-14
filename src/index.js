@@ -53,7 +53,7 @@ const getHeaders = () => {
 //     headers: getHeaders()
 // });
 const link = new WebSocketLink({
-    uri: 'ws://localhost:6002/v1/graphql',
+    uri: GRAPH_QL_WS_URL,
     options: {
         reconnect: true,
         timeout: 30000,
