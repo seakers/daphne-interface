@@ -161,7 +161,7 @@ query MyQuery($group_id: Int) {
 
 const ArchitectureQuery = gql`
 subscription MyQuery($problem_id: Int, $input_list: [String!]) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, input: {_nin: $input_list}}) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, input: {_nin: $input_list}, ga: {_eq: false}}) {
     id
     user_id
     ga

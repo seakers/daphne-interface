@@ -58,6 +58,7 @@
 </template>
 
 <script>
+
     import { mapGetters, mapMutations, mapState } from 'vuex';
     import * as _ from 'lodash-es';
     import * as d3 from 'd3';
@@ -467,32 +468,6 @@
                             }
                         }
 
-                        //
-                        // let number_new = arches.length - this.plotData.length;
-                        // let start_index = this.plotData.length;
-                        //
-                        // if(start_index == 0 || start_index == 1){
-                        //     console.log("---> no data to update");
-                        //     return;
-                        // }
-                        //
-                        // let end_index = arches.length;
-                        //
-                        //
-                        // for(let x=start_index;x<end_index;x++) {
-                        //     let arch    = arches[x];
-                        //     let new_obj = {
-                        //         id: x,
-                        //         inputs: arch.input,
-                        //         outputs: [arch.science, arch.cost],
-                        //     };
-                        //     if(arch.eval_status){
-                        //         this.$store.dispatch('addNewData', new_obj);
-                        //         console.log("--> new data point");
-                        //     }
-                        // }
-                        // console.log(this.plotData);
-                        // this.$store.commit('addPlotData', newArch);
                     },
                 },
                 Architecture_aggregate: {
