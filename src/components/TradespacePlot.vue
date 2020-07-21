@@ -64,7 +64,7 @@
     import * as d3 from 'd3';
     import 'd3-selection-multi';
     import {fetchGet, fetchPost} from "../scripts/fetch-helpers";
-    import { ArchitectureQuery, ArchitectureEvalCount } from "../scripts/apollo-queries";
+    import { ArchitectureQuery, ArchitectureEvalCount, UserArchitectureQuery, UserArchitectureSubscription, GaArchitectureQuery, GaArchitectureSubscription } from "../scripts/apollo-queries";
 
     class Architecture {
         constructor(id, inputs, outputs, db_id) {
@@ -93,10 +93,12 @@
                 context: {},
                 hiddenContext: {},
                 Architecture: [],
+                arch_placeholder: 0,
                 Architecture_aggregate: {},
                 arch_to_eval: 0,
                 inputs_list: [],
                 skip_sub: true,
+                arch_loaded: 0
             }
         },
         computed: {
@@ -448,8 +450,8 @@
                         console.log(data);
                         let required_len = this.extraData.orbitNum * this.extraData.instrumentNum;
                         console.log("-------> REQUIRED LEN", required_len);
-
                         let arches = data.data.Architecture;
+
                         for(let x=0;x<arches.length;x++){
                             let arch = arches[x];
                             if(arch.eval_status && (arch.input.length == required_len)){
@@ -489,10 +491,13 @@
         watch: {
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
+                this.arch_loaded = this.plotData.length;
 
                 if(this.plotData.length == 0){
                     return;
                 }
+
+
 
                 this.inputs_list = [];
                 for(let x=0;x<this.plotData.length;x++){

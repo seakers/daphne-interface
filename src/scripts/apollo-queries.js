@@ -172,7 +172,6 @@ subscription MyQuery($problem_id: Int, $input_list: [String!]) {
   }
 }`;
 
-
 const ArchitectureEvalCount = gql`
 subscription MyQuery($problem_id: Int) {
     Architecture_aggregate(where: {problem_id: {_eq: $problem_id}, eval_status: {_eq: false}}) {
@@ -182,6 +181,74 @@ subscription MyQuery($problem_id: Int) {
   }
 }`;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+const UserArchitectureQuery = gql`
+query MyQuery($problem_id: Int) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: false}}) {
+    id
+    user_id
+    ga
+    eval_status
+    input
+    science
+    cost
+  }
+}`;
+
+const UserArchitectureSubscription = gql`
+subscription MyQuery($problem_id: Int) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: false}}) {
+    id
+    user_id
+    ga
+    eval_status
+    input
+    science
+    cost
+  }
+}`;
+
+
+
+
+
+const GaArchitectureQuery = gql`
+query MyQuery($problem_id: Int) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: true}}) {
+    id
+    user_id
+    ga
+    eval_status
+    input
+    science
+    cost
+  }
+}`;
+
+const GaArchitectureSubscription = gql`
+subscription MyQuery($problem_id: Int) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: true}, improve_hv: {_eq: false}}) {
+    id
+    user_id
+    ga
+    eval_status
+    input
+    science
+    cost
+  }
+}`;
 
 
 
@@ -200,5 +267,9 @@ export {
     LocalInstrumentQuery,
     LocalOrbitQuery,
     ArchitectureQuery,
-    ArchitectureEvalCount
+    ArchitectureEvalCount,
+    UserArchitectureQuery,
+    UserArchitectureSubscription,
+    GaArchitectureQuery,
+    GaArchitectureSubscription
 }

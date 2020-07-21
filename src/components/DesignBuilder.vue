@@ -135,6 +135,7 @@
 
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
+                    console.log("---> EVAL INPUTS:", newInputs);
                     try {
                         let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-architecture', reqData);
                         if (dataResponse.ok) {

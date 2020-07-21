@@ -95,8 +95,9 @@ export default new Vuex.Store({
         async onWebsocketsMessage({ commit, state, getters, dispatch }, message) {
             let received_info = JSON.parse(message.data);
             console.log(received_info);
+
             if (received_info['type'] === 'ga.new_archs') {
-                console.log("---> new architecture");
+                console.log("---> new ga architecture");
                 console.log(received_info['archs']);
                 received_info['archs'].forEach((arch) => {
                     dispatch('addNewDataFromGA', arch);
