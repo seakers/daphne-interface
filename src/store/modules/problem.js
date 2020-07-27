@@ -130,6 +130,13 @@ const actions = {
         commit('addProblemData', problemData[0]);
         commit('addPlotDataFromGA', problemData[0]);
     },
+    async addNewArchitecture({ state, commit }, arch) {
+        // New architecture is pushed to front-end from graphql
+        console.log("--> Adding new design", JSON.stringify(arch));
+        let reqData = new FormData();
+        reqData.append('design', JSON.stringify(arch));
+        let dataResponse = await fetchPost(API_URL + 'eoss/data/add-design', reqData);
+    },
     async changeVassarPort({ state, commit }, port) {
         try {
             let reqData = new FormData();

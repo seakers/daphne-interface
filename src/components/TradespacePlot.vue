@@ -466,6 +466,8 @@
                                     outputs: [arch.science, arch.cost],
                                 };
                                 this.$store.dispatch('addNewData', new_obj);
+                                this.$store.dispatch('addNewArchitecture', new_obj);
+                                this.$store.commit("updateClickedArch", this.plotData.length - 1)
                                 console.log("--> new data point", new_obj);
                             }
                         }

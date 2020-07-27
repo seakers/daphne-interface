@@ -154,7 +154,7 @@ const mutations = {
     },
     updateClickedArch(state, clickedArch) {
         state.clickedArch = clickedArch;
-        // console.log("--->updateClickedArch pointID 3: ", state.clickedArch, state.plotData);
+        console.log("---> UPDATE CLICKED ARCH ");
         state.clickedArchInputs = state.plotData.find((point) => point.id === state.clickedArch).inputs;
     },
     updateHoveredArch(state, hoveredArch) {
