@@ -11,6 +11,7 @@ import filter from './modules/filter';
 import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
 import modal from './modules/modal';
+import mycroft from './modules/mycroft'
 
 import ClimateCentric from '../scripts/climate-centric';
 import SMAP from '../scripts/smap';
@@ -83,6 +84,7 @@ export default new Vuex.Store({
             commit('resetFilter');
             commit('resetFeatureApplication');
             commit('resetActive');
+            commit('resetMycroft');
             if (!state.experiment.inExperiment) {
                 for (let functionality of problem.shownFunctionalities) {
                     commit('addFunctionality', { functionality: functionality, funcData: null });
@@ -147,9 +149,45 @@ export default new Vuex.Store({
             if (received_info['type'] === 'active.message') {
                 commit('addDialoguePiece', received_info['message']);
             }
+            
+            
+            if (received_info['type'] === 'mycroft.message') {
+                //--> Connection Information
+                if (received_info['subject'] === 'connection') {
+                    if (received_info['status'] === 'true') {
+                        console.log("connection established");
+                        // commit('set_mycroft_connection', true);
+                        dispatch('check_mycroft_connection');
+                    }
+                    else if (received_info['status'] === 'false') {
+                        console.log("connection broken");
+                        // commit('set_mycroft_connection', false);
+                        dispatch('check_mycroft_connection');
+                    }
+                }
+                //--> Master command processing
+                if (received_info['subject'] === 'command') {
+                    commit('setCommand', received_info['command']);
+                    dispatch('executeCommand');
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");
             }
+
+
+
         },
         async stopBackgroundTasks({ dispatch }) {
             // Stop all background tasks
@@ -212,7 +250,8 @@ export default new Vuex.Store({
         filter,
         featureApplication,
         experiment,
-        modal
+        modal,
+        mycroft
     },
     strict: debug
 });

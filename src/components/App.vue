@@ -132,6 +132,7 @@
                 if (this.$store.state.auth.isLoggedIn) {
                     await this.$store.dispatch("retrieveActiveSettings");
                     // this.$store.dispatch("startBackgroundSearch");
+
                 }
 
                 // 6. Call backend to initialize data-mining

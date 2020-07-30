@@ -29,6 +29,7 @@ export default {
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',
+        'Mycroft',
     ],
     shownFunctionalities: [
         'DesignBuilder',
