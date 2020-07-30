@@ -18,7 +18,6 @@ module.exports = merge(common, {
     devtool: 'eval-source-map',
     devServer: {
         historyApiFallback: true,
-        host: '0.0.0.0',
         noInfo: false,
         host: '0.0.0.0',
         proxy: {
