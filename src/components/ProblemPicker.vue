@@ -221,6 +221,10 @@
                 console.log("USER GROUPS", this.user_groups);
             }
         },
+      async mounted() {
+        this.$apollo.queries.user_groups.refetch();
+        this.$apollo.queries.user_problems.refetch();
+      }
     }
 </script>
 

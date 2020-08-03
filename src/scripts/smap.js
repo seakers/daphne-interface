@@ -1,5 +1,7 @@
 import store from '../store';
 import {fetchGet, fetchPost} from "./fetch-helpers";
+import { client } from '../index';
+import { LocalOrbitQuery, LocalInstrumentQuery } from "./apollo-queries";
 
 
 class Architecture {
@@ -39,8 +41,13 @@ export default {
     ],
     async initFunction(problemName) {
         let extra = {};
-        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(problemName), getInstrumentList(problemName)]);
-        extra.orbitNum = extra.orbitList.length;
+
+        //
+        // [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(problemName), getInstrumentList(problemName)]);
+        extra.orbitList      = await getOrbitList(problemName);
+        extra.instrumentList = await getInstrumentList(problemName);
+
+        extra.orbitNum      = extra.orbitList.length;
         extra.instrumentNum = extra.instrumentList.length;
 
         console.log("---> Getting orbit / inst lists");
@@ -234,16 +241,24 @@ export default {
     */
 async function getOrbitList(problemName) {
     try {
-        let reqData = new FormData();
-        reqData.append('problem_name', problemName);
+        // 1. Get orbit list from direct query
 
-        let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-orbit-list', reqData);
-        if (dataResponse.ok) {
-            return dataResponse.json();
+        let response = await client.query({
+            deep: true,
+            fetchPolicy: 'no-cache',
+            query: LocalOrbitQuery,
+            variables: {
+                problem_id: problemName,
+            }
+        });
+
+        let orbits = response['data']['Join__Problem_Orbit'];
+
+        let orb_list = [];
+        for(let x=0;x<orbits.length;x++){
+            orb_list.push(orbits[x]['Orbit']['name'])
         }
-        else {
-            console.error('Error getting the orbit list');
-        }
+        return orb_list;
     }
     catch(e) {
         console.error('Networking error:', e);
@@ -256,16 +271,23 @@ async function getOrbitList(problemName) {
     */
 async function getInstrumentList(problemName) {
     try {
-        let reqData = new FormData();
-        reqData.append('problem_name', problemName);
 
-        let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-instrument-list', reqData);
-        if (dataResponse.ok) {
-            return dataResponse.json();
+
+        let response = await client.query({
+            deep: true,
+            fetchPolicy: 'no-cache',
+            query: LocalInstrumentQuery,
+            variables: {
+                problem_id: problemName,
+            }
+        });
+        let instruments = response['data']['Join__Problem_Instrument'];
+
+        let inst_list = [];
+        for(let x=0;x<instruments.length;x++){
+            inst_list.push(instruments[x]['Instrument']['name'])
         }
-        else {
-            console.error('Error getting the instrument list');
-        }
+        return inst_list;
     }
     catch(e) {
         console.error('Networking error:', e);

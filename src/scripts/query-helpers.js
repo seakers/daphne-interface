@@ -1,8 +1,7 @@
 import {fetchPost} from "./fetch-helpers";
 import { client } from "../vassar";
 import { GetArchitectures, UpdateArchitectureStatusBatch } from "./instrument-queries";
-
-
+import { SetProblemReload } from "./apollo-queries";
 
 
 export async function update_architectures(row_object, problem_id){
@@ -31,6 +30,8 @@ export async function update_architectures(row_object, problem_id){
             arch_ids.push(arch.id);
         }
 
+        let set_problem = await set_problem_state(problem_id, true);
+
         let arch_mutate = await client.mutate({
             mutation: UpdateArchitectureStatusBatch,
             variables: {
@@ -43,10 +44,30 @@ export async function update_architectures(row_object, problem_id){
                 console.log(update_arch_status);
             },
         });
+
+        setTimeout( function(){
+            set_problem_state(problem_id, false);
+        }, 2500);
+
+        // let unset_problem = await set_problem_state(problem_id, false);
     }
 }
 
 
+
+
+
+export async function set_problem_state(problem_id, state) {
+    let set_problem_status = await client.mutate({
+        mutation: SetProblemReload,
+        variables: {
+            problem_id: problem_id,
+            reload_status: state,
+        }
+    });
+    console.log("---> Setting problem state", problem_id, state, set_problem_status);
+    return set_problem_status;
+}
 
 
 

@@ -17,6 +17,7 @@
     import RegisterModal from './RegisterModal';
     import SaveDatasetModal from './SaveDatasetModal';
     import ResetPasswordModal from './ResetPasswordModal';
+    import ReloadModal from './ReloadModal';
 
     export default {
         name: 'modal',
@@ -31,7 +32,8 @@
             LoginModal,
             RegisterModal,
             SaveDatasetModal,
-            ResetPasswordModal
+            ResetPasswordModal,
+            ReloadModal
         },
         methods: {
             onCloseModal() {

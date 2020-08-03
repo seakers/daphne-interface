@@ -102,7 +102,7 @@ query MyQuery($selected_group_id: Int) {
         }
       }
     }
-}  
+}
 `;
 
 
@@ -121,7 +121,7 @@ query MyQuery($selected_orbit_id: Int, $selected_group_id: Int) {
         name
       }
     }
-  }  
+  }
 `;
 
 const ProblemQuery = gql`
@@ -160,7 +160,7 @@ query MyQuery($group_id: Int) {
 
 
 const ArchitectureQuery = gql`
-subscription MyQuery($problem_id: Int, $input_list: [String!]) {
+subscription ArchitectureQuery($problem_id: Int, $input_list: [String!]) {
     Architecture(where: {problem_id: {_eq: $problem_id}, input: {_nin: $input_list}, ga: {_eq: false}}) {
     id
     user_id
@@ -255,6 +255,25 @@ subscription MyQuery($problem_id: Int) {
 
 
 
+const ProblemReload = gql`
+subscription MyQuery($problem_id: Int!) {
+  problem_status: Problem_by_pk(id: $problem_id) {
+    reload_problem
+  }
+}`;
+
+
+const SetProblemReload = gql`
+mutation MyMutation($problem_id: Int!, $reload_status: Boolean!) {
+  update_Problem_by_pk(pk_columns: {id: $problem_id}, _set: {reload_problem: $reload_status}) {
+    name
+    reload_problem
+  }
+}`;
+
+
+
+
 export {
     OrbitQuery,
     OrbitAttributeQuery,
@@ -271,5 +290,7 @@ export {
     UserArchitectureQuery,
     UserArchitectureSubscription,
     GaArchitectureQuery,
-    GaArchitectureSubscription
+    GaArchitectureSubscription,
+    ProblemReload,
+    SetProblemReload
 }

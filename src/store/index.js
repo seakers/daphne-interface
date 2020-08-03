@@ -33,39 +33,18 @@ export default new Vuex.Store({
     },
     actions: {
         async initProblem({ commit, state }) {
+
             // Load correct problem module based on problem
             let problem = null;
-            let filter = null;
+            let filter  = null;
 
-            problem = SMAP;
-            problem.problemName = 'SMAP';
-            filter = EOSSFilter;
+            problem             = SMAP;
+            // problem.problemName = 'SMAP';
+            // eslint-disable-next-line no-undef
+            problem.problemName = parseInt(PROBLEM__ID);
+            filter              = EOSSFilter;
 
-            // remove problem hardcoding
-            // switch (state.problem.problemName) {
-            // case 'ClimateCentric':
-            //     problem = ClimateCentric;
-            //     filter = EOSSFilter;
-            //     break;
-            // case 'SMAP':
-            //     problem = SMAP;
-            //     problem.problemName = 'SMAP';
-            //     filter = EOSSFilter;
-            //     break;
-            // case 'SMAP_JPL1':
-            //     problem = SMAP;
-            //     problem.problemName = 'SMAP_JPL1';
-            //     filter = EOSSFilter;
-            //     break;
-            // case 'SMAP_JPL2':
-            //     problem = SMAP;
-            //     problem.problemName = 'SMAP_JPL2';
-            //     filter = EOSSFilter;
-            //     break;
-            // case 'Decadal2017Aerosols':
-            //     problem = Decadal2017Aerosols;
-            //     filter = DecadalFilter;
-            // }
+
 
             commit('setProblem', problem);
             if (filter !== null) {
@@ -149,8 +128,8 @@ export default new Vuex.Store({
             if (received_info['type'] === 'active.message') {
                 commit('addDialoguePiece', received_info['message']);
             }
-            
-            
+
+
             if (received_info['type'] === 'mycroft.message') {
                 //--> Connection Information
                 if (received_info['subject'] === 'connection') {

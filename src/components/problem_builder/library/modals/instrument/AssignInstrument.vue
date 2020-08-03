@@ -41,6 +41,7 @@
 <script>
     import { mapState, mapGetters } from 'vuex';
     import { InstrumentAssignation, AssignInstrument, DeassignInstrument, GetArchitectures, UpdateArchitecture, GetNumOrbits, GetNumInstruments } from '../../../../../scripts/instrument-queries';
+    import { set_problem_state } from '../../../../../scripts/query-helpers';
 
     export default {
         name: 'assign-instrument',
@@ -158,6 +159,8 @@
                         // A. add instrument to problem - no re-evaluation
                         if(this.problem_selections[x].assigned){
 
+                            await set_problem_state(this.problem_selections[x].id, true);
+
                             // 1. Iterate over problem architectures
                             this.arch_total = this.Architecture.length;
                             for(let y=0;y<this.Architecture.length;y++){
@@ -181,7 +184,7 @@
 
                                 // 1.2 Commit new architecture input
                                 if(this.modify_arch_inputs){
-                                    await this.update_architecture(new_input, true, arch_id);
+                                    await this.update_architecture(new_input, eval_status, arch_id);
                                 }
                             }
 
@@ -199,6 +202,8 @@
                             });
                             console.log("---> ASSIGNING", add_assignation);
 
+                            await set_problem_state(this.problem_selections[x].id, false);
+
                         } // B. remove instrument from problem
                         else{
 
@@ -209,6 +214,7 @@
                                 console.log(this.Join__Problem_Instrument, this.selected_instrument.id);
                             }
                             else{
+                                await set_problem_state(this.problem_selections[x].id, true);
                                 console.log("---> inst position", inst_pos);
 
                                 // 2. Iterate over problem architectures
@@ -219,7 +225,7 @@
                                     let arch = this.Architecture[y];
                                     let arch_input = arch.input;
                                     let arch_id = arch.id;
-                                    let eval_status = true;
+                                    let eval_status = arch.eval_status;
 
                                     // 2.1 Build new inputs
                                     for(let z=0;z<arch_input.length;z++){
@@ -255,6 +261,8 @@
                                     },
                                 });
                                 console.log("---> ASSIGNING", remove_assignation);
+
+                                await set_problem_state(this.problem_selections[x].id, false);
                             }
                         }
                     }

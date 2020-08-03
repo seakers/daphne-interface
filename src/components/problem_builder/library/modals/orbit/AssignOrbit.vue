@@ -42,6 +42,7 @@
     import { mapState, mapGetters } from 'vuex';
     import { OrbitAssignation, AssignOrbit, DeassignOrbit } from '../../../../../scripts/orbit-queries';
     import { GetArchitectures, UpdateArchitecture, GetNumOrbits, GetNumInstruments } from '../../../../../scripts/instrument-queries';
+    import { set_problem_state } from '../../../../../scripts/query-helpers';
 
     export default {
         name: 'assign-orbit',
@@ -161,6 +162,8 @@
                         // A. add orbit to problem - no re-evaluation
                         if(this.problem_selections[x].assigned){ // try to add it
 
+                            await set_problem_state(this.problem_selections[x].id, true);
+
                             // XXX
                             this.arch_total = this.Architecture.length;
                             for(let y=0;y<this.Architecture.length;y++){
@@ -179,7 +182,8 @@
                                 }
 
                                 if(this.modify_arch_inputs){
-                                    await this.update_architecture(new_input, true, arch_id);
+                                    // await this.update_architecture(new_input, true, arch_id);
+                                    await this.update_architecture(new_input, eval_status, arch_id);
                                 }
                             }
                             let add_assignation = await this.$apollo.mutate({
@@ -193,6 +197,8 @@
                                 },
                             });
                             console.log("---> ASSIGNING", add_assignation);
+
+                            await set_problem_state(this.problem_selections[x].id, false);
                         }
                         else{ // try to remove it
 
@@ -208,6 +214,8 @@
                                 console.log(this.Join__Problem_Orbit, this.selected_orbit.id);
                             }
                             else{
+                                await set_problem_state(this.problem_selections[x].id, true);
+
                                 console.log("---> orb position", orb_pos);
 
                                 // 2. Iterate over problem architectures
@@ -218,7 +226,7 @@
                                     let arch = this.Architecture[y];
                                     let arch_input = arch.input;
                                     let arch_id = arch.id;
-                                    let eval_status = true;
+                                    let eval_status = arch.eval_status;
 
                                     // 2.1 Build new inputs
                                     for(let z=0;z<arch_input.length;z++){
@@ -250,6 +258,8 @@
                                     },
                                 });
                                 console.log("---> ASSIGNING", remove_assignation);
+
+                                await set_problem_state(this.problem_selections[x].id, false);
                             }
                         }
                     }

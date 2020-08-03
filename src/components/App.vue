@@ -56,12 +56,16 @@
     import ActiveSwitches from "./ActiveSwitches";
     import ChatWindow from "./ChatWindow";
 
+    import { ProblemReload } from "../scripts/apollo-queries";
+
+
     export default {
         name: 'app',
         data: function () {
             return {
                 tutorial: {},
-                isStartup: true
+                isStartup: true,
+                problem_status: {},
             }
         },
         computed: {
@@ -106,6 +110,9 @@
                 if (this.modalContent === 'LoginModal' && this.isStartup) {
                     this.init();
                 }
+                else if (this.modalContent === 'ReloadModal') {
+                    this.init();
+                }
             },
             async init(startData) {
 
@@ -141,6 +148,40 @@
                 // 7. Start-up has finished
                 this.isStartup = false;
             }
+        },
+        apollo: {
+            $subscribe: {
+                problem_status: {
+                    deep: true,
+                    query: ProblemReload,
+                    variables() {
+                        return {
+                            problem_id: parseInt(PROBLEM__ID)
+                        }
+                    },
+                    result(data) {
+                        let status = data['data']['problem_status']['reload_problem'];
+                        console.log("---> Problem Reload", data, status);
+
+                        // 1. Check to see if reload_problem is TRUE
+                        if(status === true){
+                            console.log("--> reload required");
+                            // 2. Stop architecture subscription
+                            // this.$apollo.subscriptions.Architecture.stop();
+                            console.log(this.$apollo.subscriptions.toString());
+
+                            // 3. Open modal alerting the user that the problem needs a reload
+                            this.$store.commit('activateModal', 'ReloadModal');
+
+                            // 4. After user has re-loaded the problem, start arch subscription again
+                        }
+                        else {
+
+                        }
+
+                    },
+                },
+            },
         },
         components: {
             ChatWindow,

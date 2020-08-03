@@ -19,10 +19,12 @@ const state = {
     problemData: [],
     dataUpdateFrom: '',
     datasetList: [],
-    datasetInformation: {
-        filename: 'EOSS_data_recalculated.csv',
-        user: false
-    },
+    // datasetInformation: {
+    //     filename: 'EOSS_data_recalculated.csv',
+    //     user: false
+    // },
+    // eslint-disable-next-line no-undef
+    datasetInformation: parseInt(PROBLEM__ID),
     inputNum: 0,
     outputNum: 0,
     inputList: [],
@@ -61,29 +63,25 @@ const getters = {
 const actions = {
 
 
-    async loadNewData({ state, commit }, datasetInformation) {
+    async loadNewData({ state, commit }, problem_id) {
         console.log('Importing data...');
 
         try {
             let reqData = new FormData();
 
 
-            reqData.append('problem_id', '5');
+            // reqData.append('problem_id', PROBLEM__ID);
+            reqData.append('problem_id', problem_id);
             reqData.append('group_id', '1');
-            reqData.append('load_user_files', datasetInformation.user);
+            // reqData.append('load_user_files', datasetInformation.user);
 
 
             // GET PROBLEM DATA
             let dataResponse = await fetchPost(API_URL + 'eoss/data/import-data', reqData);
 
-            console.log("---> Importing new data");
-            console.log(dataResponse);
-
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                console.log("---> Problem data1", data);
                 let problemData = state.importCallback(data, state.extra);
-                console.log("---> Problem data2", problemData);
                 calculateParetoRanking(problemData);
                 commit('updateProblemData', problemData);
                 commit('setDataUpdateFrom', 'loadNewData');
