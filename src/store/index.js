@@ -81,6 +81,7 @@ export default new Vuex.Store({
                 console.log("---> new ga architecture");
                 console.log(received_info['archs']);
                 received_info['archs'].forEach((arch) => {
+
                     dispatch('addNewDataFromGA', arch);
                 });
             }
