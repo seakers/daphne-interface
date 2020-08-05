@@ -32,16 +32,15 @@ export default new Vuex.Store({
     mutations: {
     },
     actions: {
-        async initProblem({ commit, state }) {
+        async initProblem({ commit, state }, problem_id) {
+            console.log("--- INIT PROBLEM ---", problem_id);
 
             // Load correct problem module based on problem
             let problem = null;
             let filter  = null;
 
             problem             = SMAP;
-            // problem.problemName = 'SMAP';
-            // eslint-disable-next-line no-undef
-            problem.problemName = parseInt(PROBLEM__ID);
+            problem.problemName = parseInt(problem_id);
             filter              = EOSSFilter;
 
 

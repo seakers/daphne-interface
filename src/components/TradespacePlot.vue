@@ -474,6 +474,8 @@
 
                     },
                 },
+
+                //--> Number of designs requiring re-evaluation
                 Architecture_aggregate: {
                     query: ArchitectureEvalCount,
                     variables() {

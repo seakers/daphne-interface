@@ -30,6 +30,8 @@
                     </div>
                 </div>
 
+
+
                 <div class="field">
                     <div class="control">
                         <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
@@ -42,58 +44,6 @@
                     </div>
                 </div>
             </div>
-
-
-
-
-
-<!-- 
-            <div class="problem">
-                <div class="field">
-                    <label class="label">Problem:</label>
-                    <div class="control">
-                        <div class="select">
-                            <select v-model="problemName">
-                                <option v-for="problem in problemList" v-bind:value="problem">{{ problem }}</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="field" v-if="isLoggedIn">
-                    <div class="control">
-                        <a class="button is-link" target="_blank" href="vassar.html">New</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="dataset">
-                    <div class="field">
-                        <label class="label">Dataset:</label>
-                        <div class="control">
-                            <div class="select">
-                                <select v-model="datasetInformation">
-                                    <option v-for="dataset in datasetList" v-bind:value="{ filename: dataset.value, user: dataset.user }">{{ dataset.name }}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="control">
-                            <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
-                        </div>
-                    </div>
-                    <div class="field" v-if="isLoggedIn">
-                        <div class="control">
-                            <button class="button is-link" v-on:click.prevent="openSaveModal">Save</button>
-                        </div>
-                    </div>
-                    <div class="field" v-if="isLoggedIn">
-                        <div class="control">
-                            <a class="button is-link" v-bind:href="downloadUrl">Download</a>
-                        </div>
-                    </div>
-            </div> -->
-
 
         </form>
     </div>
@@ -111,6 +61,8 @@
             return {
                 user_groups: [],
                 user_problems: [],
+                group_id: 0,
+                problem_id: 0,
             }
         },
         computed: {
@@ -119,26 +71,19 @@
                 datasetList: state => state.problem.datasetList,
                 isLoggedIn: state => state.auth.isLoggedIn,
                 username: state => state.auth.username,
+                // problem_id: state => state.problem.problem_id,
 
                 // user_pk: state => state.auth.user_pk,
                 // group_id: state => state.auth.group_id,
             }),
-            group_id: {
-                get() {
-                    return this.$store.state.auth.group_id;
-                },
-                set(new_id) {
-                    this.$store.dispatch('setGroupId', new_id);
-                }
-            },
-            problem_id: {
-                get() {
-                    return this.$store.state.auth.problem_id;
-                },
-                set(new_id) {
-                    this.$store.dispatch('setProblemId', new_id);
-                }
-            },
+            // group_id: {
+            //     get() {
+            //         return this.$store.state.auth.group_id;
+            //     },
+            //     set(new_id) {
+            //         this.$store.dispatch('setGroupId', new_id);
+            //     }
+            // },
             problemName: {
                 get() {
                     return this.$store.state.problem.problemName;
@@ -174,12 +119,12 @@
                         // Stop all running background tasks
                         await this.$store.dispatch('stopBackgroundTasks');
                         // Init the new problem
-                        await this.$store.dispatch('initProblem');
+                        await this.$store.dispatch('initProblem', this.problem_id);
                         // Load the new dataset
                         await this.$store.dispatch('loadNewData', this.datasetInformation);
                         // Start the background search algorithm
                         if (this.$store.state.auth.isLoggedIn) {
-                            this.$store.dispatch("startBackgroundSearch");
+                            // this.$store.dispatch("startBackgroundSearch");
                         }
                         // Set data mining settings
                         this.$store.dispatch('setProblemParameters');
@@ -217,8 +162,27 @@
             }
         },
         watch: {
+
+            // --> User logs in
             user_groups() {
                 console.log("USER GROUPS", this.user_groups);
+                if(this.user_groups.length > 0){
+                    this.group_id = this.user_groups[0].id;
+                }
+                else{
+                    this.group_id = 0;
+                }
+            },
+
+            // new group is selected
+            user_problems() {
+                console.log("GROUP PROBLEMS", this.user_problems);
+                if(this.user_problems.length > 0){
+                    this.problem_id = this.user_problems[0].id;
+                }
+                else{
+                    this.problem_id = 0;
+                }
             }
         },
       async mounted() {

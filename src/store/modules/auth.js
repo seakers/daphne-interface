@@ -13,8 +13,6 @@ const state = {
     resetPasswordSent: false,
 
     user_pk: null,
-    group_id: null,
-    problem_id: null,
 };
 
 const initialState = _.cloneDeep(state);
@@ -126,12 +124,8 @@ const mutations = {
         state.permissions = userInfo['permissions'];
         state.user_pk = userInfo['pk'];
 
-        // HARDCODE: default group with SMAP problem
-        state.group_id = 1;
-        state.problem_id = 5;
 
-        console.log("PK", state.user_pk);
-        console.log("-----", userInfo);
+        console.log("---> User PK", state.user_pk);
     },
     logUserOut(state) {
         state.isLoggedIn = false;
@@ -156,13 +150,6 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    },
-
-
-
-    commitGroupId(state, new_id) {
-        console.log("New Group ID:", new_id);
-        state.group_id = new_id;
     },
 };
 

@@ -80,6 +80,7 @@
                 stageInformation: state => state.experiment.stageInformation,
                 isRecovering: state => state.experiment.isRecovering,
                 currentStageNum: state => state.experiment.currentStageNum,
+                user_pk: state => state.auth.user_pk,
             }),
             timerExperimentCondition() {
                 if (!this.inExperiment) {
@@ -115,12 +116,16 @@
                 }
             },
             async init(startData) {
+                console.log("--- APP INIT ---", this.user_pk, startData);
+
+                // 0.1 Get problem_id for loading
+                let problem_id = parseInt(PROBLEM__ID);
 
                 // 1. Stop all running background tasks
                 await this.$store.dispatch('stopBackgroundTasks');
 
                 // 2. Initialize the new problem
-                await this.$store.dispatch('initProblem');
+                await this.$store.dispatch('initProblem', problem_id);
 
                 // 3. Load architectures from back-end
                 if (startData !== undefined && startData['modified_dataset']) {
@@ -292,7 +297,7 @@
                     await this.$store.dispatch('stopBackgroundTasks');
 
                     // Initialize the new problem
-                    await this.$store.dispatch('initProblem');
+                    await this.$store.dispatch('initProblem', parseInt(PROBLEM__ID));
                     await this.$store.dispatch('loadNewData', this.dataset);
 
                     // Add functionalities
