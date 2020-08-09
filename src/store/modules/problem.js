@@ -5,6 +5,7 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 // initial state
 const state = {
     problem_id: null,
+    status: false,
 
 
     problemList: [
@@ -57,6 +58,9 @@ const getters = {
     getProblemModuleId(state) {
         return state.problem_id;
     },
+    getProblemStatus(state) {
+        return state.status;
+    }
 };
 
 // actions
@@ -215,6 +219,9 @@ const actions = {
 
 // mutations
 const mutations = {
+    setProblemStatus(state, status) {
+        state.status = status;
+    },
     setProblem(state, problemInfo) {
         // Set the problem instance
         state.problemName = problemInfo.problemName;

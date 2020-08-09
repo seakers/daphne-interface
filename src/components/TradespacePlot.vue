@@ -98,7 +98,8 @@
                 arch_to_eval: 0,
                 inputs_list: [],
                 skip_sub: true,
-                arch_loaded: 0
+                arch_loaded: 0,
+                sub_count: 0,
             }
         },
         computed: {
@@ -113,6 +114,7 @@
                 highlightedArchs: state => state.tradespacePlot.highlightedArchs,
                 gaArchs: state => state.tradespacePlot.gaArchs,
                 hiddenArchs: state => state.tradespacePlot.hiddenArchs,
+                status: state => state.problem.status,
             }),
             ...mapGetters({
                 numPoints: 'getNumPoints',
@@ -434,7 +436,6 @@
         apollo: {
             $subscribe: {
                 Architecture: {
-                    deep: true,
                     query: ArchitectureQuery,
                     variables() {
                         return {
@@ -446,20 +447,28 @@
                         return this.skip_sub;
                     },
                     result (data) {
-                        console.log("-------> SUBSCRIPTION UPDATE");
-                        console.log(data);
-                        let required_len = this.extraData.orbitNum * this.extraData.instrumentNum;
-                        console.log("-------> REQUIRED LEN", required_len);
                         let arches = data.data.Architecture;
+                        if(arches.length === 0){
+                            return;
+                        }
+                        let t0 = performance.now();
+
+                        let required_len  = this.extraData.orbitNum * this.extraData.instrumentNum;
+                        let blocked_archs = [];
+                        console.log("-------> SUBSCRIPTION UPDATE \nnum designs", arches.length, "\nobject ", data, "\nchromosome length", required_len);
+
 
                         for(let x=0;x<arches.length;x++){
                             let arch = arches[x];
                             if(arch.eval_status && (arch.input.length == required_len)){
                                 let bool_ary = [];
+
+                                blocked_archs.push(arch.input);
                                 for(let y=0;y<arch.input.length;y++){
                                     if(arch.input[y] == '1') { bool_ary.push(true); }
                                     else { bool_ary.push(false); }
                                 }
+                                console.log("\n----------- SUBSCRIPTION DESIGN --", "\n ------- id", this.plotData.length, "\n --- inputs", arch.input, "\n -- science", arch.science, "\n ----- cost", arch.cost)
                                 let new_obj = {
                                     id: this.plotData.length,
                                     inputs: bool_ary,
@@ -472,6 +481,13 @@
                             }
                         }
 
+                        console.log("---> SUBSCRIPTION END\n");
+                        console.log("--> BLOCKED ARCHS:", blocked_archs);
+                        this.inputs_list = this.inputs_list.concat(blocked_archs);
+
+                        let t1 = performance.now();
+                        console.log("SUBSCRIPTION NUM", this.sub_count, "took " + (t1 - t0) + " milliseconds for ", arches.length, "designs");
+                        this.sub_count = this.sub_count + 1;
                     },
                 },
 
@@ -484,15 +500,20 @@
                         }
                     },
                     result (data) {
-                        console.log("-------> SUBSCRIPTION EVAL UPDATE", data);
                         this.arch_to_eval = data.data.Architecture_aggregate.aggregate.count;
-                        this.$apollo.subscriptions.Architecture.refresh();
                     },
                 },
             },
         },
 
         watch: {
+            status: function(val, oldVal){
+                if(this.status === true){
+                    console.log("--> Resetting banned inputs");
+                    this.inputs_list = [];
+                }
+            },
+
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
                 this.arch_loaded = this.plotData.length;
@@ -502,21 +523,24 @@
                 }
 
 
-
-                this.inputs_list = [];
-                for(let x=0;x<this.plotData.length;x++){
-                    let bool_ary = this.plotData[x].inputs;
-                    let input_str = '';
-                    for(let y=0;y<bool_ary.length;y++){
-                        let single_bool = bool_ary[y];
-                        if(single_bool){ input_str = input_str + '1'; }
-                        else{ input_str = input_str + '0'; }
+                if(this.skip_sub === true) {
+                    this.inputs_list = [];
+                    for (let x = 0; x < this.plotData.length; x++) {
+                        let bool_ary = this.plotData[x].inputs;
+                        let input_str = '';
+                        for (let y = 0; y < bool_ary.length; y++) {
+                            let single_bool = bool_ary[y];
+                            if (single_bool) {
+                                input_str = input_str + '1';
+                            } else {
+                                input_str = input_str + '0';
+                            }
+                        }
+                        this.inputs_list.push(input_str);
                     }
-                    this.inputs_list.push(input_str);
                 }
                 console.log("---> inputs list", this.inputs_list);
                 this.skip_sub = false;
-                this.$apollo.subscriptions.Architecture.skip = false;
             },
 
             hoveredArch: function(val, oldVal) {

@@ -166,7 +166,8 @@
                     },
                     result(data) {
                         let status = data['data']['problem_status']['reload_problem'];
-                        console.log("---> Problem Reload", data, status);
+                        console.log("---> Problem Reload", status);
+                        this.$store.commit('setProblemStatus', status);
 
                         // 1. Check to see if reload_problem is TRUE
                         if(status === true){
