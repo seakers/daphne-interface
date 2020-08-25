@@ -12,7 +12,8 @@ module.exports = {
     entry: {
         index: './src/index.js',
         details: './src/details.js',
-        vassar: './src/vassar.js'
+        vassar: './src/vassar.js',
+        adds: './src/adds.js'
     },
 
     output: {
@@ -97,6 +98,11 @@ module.exports = {
             template: './src/vassar.html',
             chunks: ['vassar'],
             filename: 'vassar.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/adds.html',
+            chunks: ['adds'],
+            filename: 'adds.html'
         }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output

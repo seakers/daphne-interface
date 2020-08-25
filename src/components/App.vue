@@ -125,6 +125,7 @@
                 await this.$store.dispatch('stopBackgroundTasks');
 
                 // 2. Initialize the new problem
+                console.log("--> init problem id ", problem_id);
                 await this.$store.dispatch('initProblem', problem_id);
 
                 // 3. Load architectures from back-end

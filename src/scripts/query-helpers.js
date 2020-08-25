@@ -288,7 +288,7 @@ export async function vassar_query(table, pk, pk2=null) {
 
     let dataResponse = await fetchPost(GRAPH_QL_URL + '', JSON.stringify(query));
     // let dataResponse = await fetchPost('http://localhost:6002/v1/graphql', JSON.stringify(query));
-    console.log("---> QUERY - RESPONSE", query.query, dataResponse);
+    // console.log("---> QUERY - RESPONSE", query.query, dataResponse);
     let json_data = await dataResponse.json();
 
     let rows = null;

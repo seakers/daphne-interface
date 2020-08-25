@@ -1,6 +1,7 @@
 import { calculateParetoRanking } from '../../scripts/utils';
 import * as _ from 'lodash-es';
 import {fetchPost} from "../../scripts/fetch-helpers";
+import {parse} from "graphql";
 
 // initial state
 const state = {
@@ -73,7 +74,8 @@ const actions = {
         try {
             let reqData = new FormData();
 
-
+            problem_id = parseInt(PROBLEM__ID);
+            console.log("--> problem ider", problem_id);
             // reqData.append('problem_id', PROBLEM__ID);
             reqData.append('problem_id', problem_id);
             reqData.append('group_id', '1');

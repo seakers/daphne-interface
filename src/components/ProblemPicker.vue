@@ -43,6 +43,14 @@
                         <a class="button is-link" target="_blank" href="vassar.html">Problem Builder</a>
                     </div>
                 </div>
+
+                <hr>
+
+                <div class="field" v-if="isLoggedIn">
+                    <div class="control">
+                        <a class="button is-link" target="_blank" href="adds.html">Decision Graph</a>
+                    </div>
+                </div>
             </div>
 
         </form>

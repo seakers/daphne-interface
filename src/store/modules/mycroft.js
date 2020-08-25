@@ -54,6 +54,7 @@ const mutations = {
 
     set_mycroft_connection(state, mycroft_connection){
         state.mycroft_connection = mycroft_connection;
+        state.mycroft_connection = true;
     },
     set_access_token(state, access_token){
         state.access_token = access_token;
