@@ -33,26 +33,23 @@ export default new Vuex.Store({
     },
     actions: {
         async initProblem({ commit, state }, problem_id) {
-            console.log("--- INIT PROBLEM ---", problem_id);
 
             // Load correct problem module based on problem
             let problem = null;
             let filter  = null;
+
 
             problem             = SMAP;
             problem.problemName = parseInt(problem_id);
             filter              = EOSSFilter;
 
 
-
             commit('setProblem', problem);
             if (filter !== null) {
                 commit('setFilter', filter);
             }
-            let reqData = new FormData();
-            reqData.append('port', problem.vassarPort);
-            // await fetchPost(API_URL + 'eoss/settings/change-port', reqData);
-            commit('updateExtra', await problem.initFunction(state.problem.problemName));
+
+            commit('updateExtra', await problem.initFunction(parseInt(problem_id)));
 
             // Load all the initial functionalities
             commit('resetDaphne');

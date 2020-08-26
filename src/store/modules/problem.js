@@ -5,6 +5,7 @@ import {parse} from "graphql";
 
 // initial state
 const state = {
+    group_id: null,
     problem_id: null,
     status: false,
 
@@ -21,10 +22,8 @@ const state = {
     problemData: [],
     dataUpdateFrom: '',
     datasetList: [],
-    // datasetInformation: {
-    //     filename: 'EOSS_data_recalculated.csv',
-    //     user: false
-    // },
+
+
     // eslint-disable-next-line no-undef
     datasetInformation: parseInt(PROBLEM__ID),
     inputNum: 0,
@@ -68,18 +67,20 @@ const getters = {
 const actions = {
 
 
-    async loadNewData({ state, commit }, problem_id) {
+    async loadNewData({ state, commit }, parameters) {
         console.log('Importing data...');
 
         try {
             let reqData = new FormData();
 
-            problem_id = parseInt(PROBLEM__ID);
-            console.log("--> problem ider", problem_id);
-            // reqData.append('problem_id', PROBLEM__ID);
+            let problem_id = parameters['problem_id'];
+            let group_id   = parameters['group_id'];
+
             reqData.append('problem_id', problem_id);
-            reqData.append('group_id', '1');
-            // reqData.append('load_user_files', datasetInformation.user);
+            reqData.append('group_id', group_id);
+
+            commit('commitProblemId', problem_id);
+            commit('commitGroupId', group_id);
 
 
             // GET PROBLEM DATA
@@ -140,7 +141,6 @@ const actions = {
     },
     async addNewArchitecture({ state, commit }, arch) {
         // New architecture is pushed to front-end from graphql
-        console.log("--> Adding new design", JSON.stringify(arch));
         let reqData = new FormData();
         reqData.append('design', JSON.stringify(arch));
         let dataResponse = await fetchPost(API_URL + 'eoss/data/add-design', reqData);
@@ -172,35 +172,6 @@ const actions = {
         try {
             commit('setProblemName', problemName);
 
-            // let reqData = new FormData();
-            // reqData.append('problem', problemName);
-            // let dataResponse = await fetchPost(API_URL + 'eoss/data/dataset-list', reqData);
-
-            // if (dataResponse.ok) {
-            //     let data = await dataResponse.json();
-            //     let datasetList = [];
-            //     data['default'].forEach((dataset) => {
-            //         datasetList.push({
-            //             name: dataset,
-            //             value: dataset,
-            //             user: false
-            //         });
-            //     });
-            //     datasetList.push({
-            //         name: '---',
-            //         value: ''
-            //     });
-            //     data['user'].forEach((dataset) => {
-            //         datasetList.push({
-            //             name: dataset,
-            //             value: dataset,
-            //             user: true
-            //         });
-            //     });
-
-            //     // let datasetList = [];
-            //     commit('setDatasetList', datasetList);
-            // }
 
             let datasetList = [];
             commit('setDatasetList', datasetList);
@@ -208,14 +179,6 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
-    },
-
-
-    // LOADS NEW PROBLEM
-    async setProblemId({ state, commit }, new_id) {
-        console.log("---> Loading new problem: " + new_id);
-
-        commit('commitProblemId', new_id);
     },
 };
 
@@ -284,9 +247,11 @@ const mutations = {
         });
     },
 
-
-    commitProblemId(state, new_id) {
-        state.problem_id = new_id;
+    commitGroupId(state, group_id){
+        state.group_id = group_id;
+    },
+    commitProblemId(state, problem_id) {
+        state.problem_id = problem_id;
     },
 };
 

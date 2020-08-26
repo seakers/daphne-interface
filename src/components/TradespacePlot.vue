@@ -539,7 +539,6 @@
                         this.inputs_list.push(input_str);
                     }
                 }
-                console.log("---> inputs list", this.inputs_list);
                 this.skip_sub = false;
             },
 

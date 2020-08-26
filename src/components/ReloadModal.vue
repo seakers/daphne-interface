@@ -37,7 +37,6 @@
                     },
                     result(data) {
                         let status = data['data']['problem_status']['reload_problem'];
-                        console.log("---> Problem Reload", data, status);
                         this.problem_reload = status;
                     },
                 },

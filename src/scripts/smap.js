@@ -39,20 +39,15 @@ export default {
         'AvailableCommands',
         'CommandsInformation'
     ],
-    async initFunction(problemName) {
+
+    async initFunction(problem_id) {
         let extra = {};
 
-        //
-        // [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(problemName), getInstrumentList(problemName)]);
-        extra.orbitList      = await getOrbitList(problemName);
-        extra.instrumentList = await getInstrumentList(problemName);
-
-        extra.orbitNum      = extra.orbitList.length;
-        extra.instrumentNum = extra.instrumentList.length;
-
-        console.log("---> Getting orbit / inst lists");
-        console.log(extra.orbitList);
-        console.log(extra.instrumentList);
+        // Orbit / Instrument info
+        extra.orbitList      = await getOrbitList(problem_id);
+        extra.orbitNum       = extra.orbitList.length;
+        extra.instrumentList = await getInstrumentList(problem_id);
+        extra.instrumentNum  = extra.instrumentList.length;
 
         // Add alias for instruments and orbits
         extra.labelingEnabled = true;

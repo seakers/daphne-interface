@@ -124,8 +124,6 @@ const mutations = {
         state.permissions = userInfo['permissions'];
         state.user_pk = userInfo['pk'];
 
-
-        console.log("---> User PK", state.user_pk);
     },
     logUserOut(state) {
         state.isLoggedIn = false;

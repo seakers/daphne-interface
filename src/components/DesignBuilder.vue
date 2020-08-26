@@ -161,7 +161,6 @@
                     global_instruments.push(this.Join__Instrument_Characteristic[i].Instrument.name);
                 }
                 this.global_instruments = global_instruments;
-                console.log("-----> Global Instruments", global_instruments);
             },
             Join__Problem_Instrument() {
                 let local_instruments = [];
@@ -169,7 +168,6 @@
                     local_instruments.push(this.Join__Problem_Instrument[i].Instrument.name);
                 }
                 this.local_instruments = local_instruments;
-                console.log("-----> Local Instruments", local_instruments);
             },
 
             // DDDD
@@ -179,7 +177,6 @@
                     local_orbits.push(this.Join__Problem_Orbit[i].Orbit.name);
                 }
                 this.local_orbits = local_orbits;
-                console.log("-----> Local Orbits", local_orbits);
             },
             problem_id(){
                 console.log("-----> CURRENT PROBLEM ID", this.problem_id);

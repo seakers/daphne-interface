@@ -77,21 +77,12 @@
             ...mapState({
                 problemList: state => state.problem.problemList,
                 datasetList: state => state.problem.datasetList,
+                global_group_id: state => state.problem.group_id,
+                global_problem_id: state => state.problem.problem_id,
                 isLoggedIn: state => state.auth.isLoggedIn,
                 username: state => state.auth.username,
-                // problem_id: state => state.problem.problem_id,
-
-                // user_pk: state => state.auth.user_pk,
-                // group_id: state => state.auth.group_id,
+                user_pk: state => state.auth.user_pk,
             }),
-            // group_id: {
-            //     get() {
-            //         return this.$store.state.auth.group_id;
-            //     },
-            //     set(new_id) {
-            //         this.$store.dispatch('setGroupId', new_id);
-            //     }
-            // },
             problemName: {
                 get() {
                     return this.$store.state.problem.problemName;
@@ -124,13 +115,20 @@
                 try {
                     let dataResponse = await fetchPost(API_URL + 'eoss/settings/clear-session', new FormData());
                     if (dataResponse.ok) {
-                        // Stop all running background tasks
+                        // 1. Stop all running background tasks
                         await this.$store.dispatch('stopBackgroundTasks');
-                        // Init the new problem
+
+                        // 2. Init the new problem
                         await this.$store.dispatch('initProblem', this.problem_id);
-                        // Load the new dataset
-                        await this.$store.dispatch('loadNewData', this.datasetInformation);
-                        // Start the background search algorithm
+
+                        // 3. Load the new dataset
+                        let parameters = {
+                            'problem_id': this.problem_id,
+                            'group_id': this.group_id
+                        };
+                        await this.$store.dispatch('loadNewData', parameters);
+
+                        // 4. Start the background search algorithm
                         if (this.$store.state.auth.isLoggedIn) {
                             // this.$store.dispatch("startBackgroundSearch");
                         }
@@ -173,7 +171,6 @@
 
             // --> User logs in
             user_groups() {
-                console.log("USER GROUPS", this.user_groups);
                 if(this.user_groups.length > 0){
                     this.group_id = this.user_groups[0].id;
                 }
@@ -182,16 +179,22 @@
                 }
             },
 
-            // new group is selected
+            // --> New group selected
             user_problems() {
-                console.log("GROUP PROBLEMS", this.user_problems);
                 if(this.user_problems.length > 0){
                     this.problem_id = this.user_problems[0].id;
                 }
                 else{
                     this.problem_id = 0;
                 }
-            }
+            },
+
+            global_group_id() {
+                this.group_id = this.global_group_id;
+            },
+            global_problem_id(){
+                this.problem_id = this.global_problem_id;
+            },
         },
       async mounted() {
         this.$apollo.queries.user_groups.refetch();

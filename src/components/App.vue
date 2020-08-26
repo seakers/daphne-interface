@@ -109,32 +109,66 @@
             onCloseModal() {
                 this.$store.commit('closeModal');
                 if (this.modalContent === 'LoginModal' && this.isStartup) {
-                    this.init();
+                    fetchGet(API_URL + 'auth/check-status').then(async (response) => {
+                        if (response.ok) {
+                            let data = await response.json();
+
+                            // LOGIN DATA
+                            let problemName     = data['problem'];
+                            let datasetFilename = data['dataset_filename'];
+                            let datasetUser     = data['dataset_user'];
+                            let problem_id      = data['problem_id'];
+                            let group_id        = data['group_id'];
+
+                            if (problemName === '') {
+                                problemName = 'SMAP'; // CHANGED
+                                // problemName = '1'
+                            }
+                            if (datasetFilename === '') {
+                                datasetFilename = 'test_smap.csv';
+                            }
+
+                            // Put problem id / name in store
+                            await this.$store.dispatch('setProblemName', problemName);
+                            this.$store.commit('commitProblemId', problem_id);
+                            this.$store.commit('commitGroupId', group_id);
+                            this.$store.commit('setDatasetInformation', {
+                                filename: datasetFilename,
+                                user: datasetUser
+                            });
+                            await this.init(data);
+                        }
+                    });
                 }
                 else if (this.modalContent === 'ReloadModal') {
                     this.init();
                 }
             },
             async init(startData) {
-                console.log("--- APP INIT ---", this.user_pk, startData);
+                console.log("--> INIT DATA", startData);
 
                 // 0.1 Get problem_id for loading
-                let problem_id = parseInt(PROBLEM__ID);
+                // let problem_id = parseInt(PROBLEM__ID);
+                let problem_id = startData['problem_id'];
+                let group_id   = startData['group_id']
 
                 // 1. Stop all running background tasks
                 await this.$store.dispatch('stopBackgroundTasks');
 
                 // 2. Initialize the new problem
-                console.log("--> init problem id ", problem_id);
                 await this.$store.dispatch('initProblem', problem_id);
 
                 // 3. Load architectures from back-end
+                let parameters = {
+                    'problem_id': problem_id,
+                    'group_id': group_id
+                };
                 if (startData !== undefined && startData['modified_dataset']) {
                     // await this.$store.dispatch('reloadOldData', startData['data']);
-                    await this.$store.dispatch('loadNewData', this.dataset);
+                    await this.$store.dispatch('loadNewData', parameters);
                 }
                 else {
-                    await this.$store.dispatch('loadNewData', this.dataset);
+                    await this.$store.dispatch('loadNewData', parameters);
                 }
 
                 // 4. Load past dialogue - scroll chat window down
@@ -145,7 +179,6 @@
                 if (this.$store.state.auth.isLoggedIn) {
                     await this.$store.dispatch("retrieveActiveSettings");
                     // this.$store.dispatch("startBackgroundSearch");
-
                 }
 
                 // 6. Call backend to initialize data-mining
@@ -153,7 +186,7 @@
 
                 // 7. Start-up has finished
                 this.isStartup = false;
-            }
+            },
         },
         apollo: {
             $subscribe: {
@@ -167,7 +200,6 @@
                     },
                     result(data) {
                         let status = data['data']['problem_status']['reload_problem'];
-                        console.log("---> Problem Reload", status);
                         this.$store.commit('setProblemStatus', status);
 
                         // 1. Check to see if reload_problem is TRUE
@@ -225,10 +257,14 @@
                 fetchGet(API_URL + 'auth/check-status').then(async (response) => {
                     if (response.ok) {
                         let data = await response.json();
-                        // Start by setting problem name and current dataset
-                        let problemName = data['problem'];
+
+                        // LOGIN DATA
+                        let problemName     = data['problem'];
                         let datasetFilename = data['dataset_filename'];
-                        let datasetUser = data['dataset_user'];
+                        let datasetUser     = data['dataset_user'];
+                        let problem_id      = data['problem_id'];
+                        let group_id        = data['group_id'];
+
                         if (problemName === '') {
                             problemName = 'SMAP'; // CHANGED
                             // problemName = '1'
@@ -237,8 +273,10 @@
                             datasetFilename = 'test_smap.csv';
                         }
 
-                        // Put the name and dataset back into the store
+                        // Put problem id / name in store
                         await this.$store.dispatch('setProblemName', problemName);
+                        this.$store.commit('commitProblemId', problem_id);
+                        this.$store.commit('commitGroupId', group_id);
                         this.$store.commit('setDatasetInformation', {
                             filename: datasetFilename,
                             user: datasetUser
@@ -299,8 +337,12 @@
                     await this.$store.dispatch('stopBackgroundTasks');
 
                     // Initialize the new problem
+                    let parameters = {
+                        'problem_id': parseInt(PROBLEM__ID),
+                        'group_id': 1
+                    };
                     await this.$store.dispatch('initProblem', parseInt(PROBLEM__ID));
-                    await this.$store.dispatch('loadNewData', this.dataset);
+                    await this.$store.dispatch('loadNewData', parameters);
 
                     // Add functionalities
                     for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
