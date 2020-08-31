@@ -4,6 +4,7 @@
         <template v-if="groups__selected_id !== null">
             <table-view :table_object="problems_table" 
                         :foreign_key="groups__selected_id"
+                        new_row_text="new problem"
             >
             </table-view>
         </template>

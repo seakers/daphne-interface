@@ -134,21 +134,23 @@
             Measurements,
         },
         async mounted() {
-            // Check if the user is logged in
-            let dataResponse = await fetchGet(API_URL + 'auth/check-status');
+
+            // LOGIN STATUS
+            let dataResponse     = await fetchGet(API_URL + 'auth/check-status');
             let auth_information = await dataResponse.json();
-            console.log("Login Status:", auth_information.is_logged_in);
-            
-            // Get the user's private key
+
+            // IF LOGGED IN
             if(auth_information.is_logged_in){
-                dataResponse = await fetchPost(API_URL + 'auth/get-user-pk');
+
+                // GET USER PK FROM: auth_user
+                dataResponse         = await fetchPost(API_URL + 'auth/get-user-pk');
                 let user_information = await dataResponse.json();
 
-                // Set user id
+                // SET USER PK
                 this.$store.commit('user__set_id', user_information['user_id']);
-                console.log("USER ID", user_information['user_id']);
-                await this.$store.dispatch('query_groups');
 
+                // QUERY USER GROUPS
+                await this.$store.dispatch('query_groups');
             }
 
 

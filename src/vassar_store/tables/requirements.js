@@ -43,10 +43,10 @@ const Requirement_Rule_Attribute = {
         "Measurement_Attribute": ["name"]
     },
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many-nested",
         "parent": "Problem",
@@ -60,7 +60,8 @@ const Requirement_Rule_Attribute = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 
@@ -90,10 +91,10 @@ const Requirement_Rule_Case = {
         "value"
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many",
         "parent": "Problem",
@@ -107,7 +108,8 @@ const Requirement_Rule_Case = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 

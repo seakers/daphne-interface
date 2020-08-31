@@ -53,6 +53,23 @@
                 <a class="button is-danger is-small" v-if="row_object.editing_state" v-on:click="commit_row(row_object_copy)" >commit</a>
             </td>
 
+            <td class="table-cell-button" v-if="table_cloneable">
+                <a class="button is-info is-small" v-on:click="clone_row(row_object)" >clone</a>
+            </td>
+
+
+<!--            CLONE-->
+            <div v-if="clone_selected">
+                <clone-problem
+                    :isActive="clone_selected"
+                    :selected_problem="clone_item"
+                    v-on:close-modal="close_clone_modal()"
+                    v-on:close-modal-refresh="close_clone_modal_refresh()"
+                ></clone-problem>
+            </div>
+
+
+
     </tr>
 </template>
 
@@ -61,6 +78,8 @@
     import {fetchGet, fetchPost} from '../../../scripts/fetch-helpers';
     import * as _ from 'lodash-es';
 
+    import CloneProblem from '../modals/CloneProblem';
+
     export default {
         nane: 'table-row',
         props: {
@@ -68,10 +87,15 @@
             row_index: Number,
             table_selectable: Boolean,
             table_mutable: Boolean,
+            table_cloneable: Boolean,
         },
         data: function () {
             return {
-                row_object_copy: ''
+                row_object_copy: '',
+
+                // CLONE
+                clone_selected: false,
+                clone_item : null,
             }
         },
         computed: {
@@ -129,8 +153,24 @@
             },
 
 
+            // CLONING
+            async clone_row(row_object){
+                this.clone_item = row_object;
+                this.clone_selected = true;
+            },
+            async close_clone_modal(){
+                this.clone_selected = false;
+            },
+            async close_clone_modal_refresh(){
+                this.clone_selected = false;
+            }
 
 
+
+
+        },
+        components: {
+            CloneProblem
         },
         async created() {
             this.row_object_copy = _.cloneDeep(this.row_object);

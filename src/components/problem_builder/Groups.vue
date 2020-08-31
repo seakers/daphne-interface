@@ -4,13 +4,13 @@
         <template v-if="user_id !== null">
             <table-view :table_object="group_table" 
                         :foreign_key="user_id"
+                        new_row_text="new group"
             >
             </table-view>
         </template>
 
         <!-- <switch-button v-model="switch2" color="#F5BF21"></switch-button> -->
-        
-        
+
     </div>
 </template>
 

@@ -273,6 +273,23 @@ mutation MyMutation($problem_id: Int!, $reload_status: Boolean!) {
 
 
 
+const UserGroups = gql`
+query myQuery($user_id: Int!) {
+  auth_user: auth_user_by_pk(id: $user_id) {
+    join: Join__AuthUser_Groups {
+      Group {
+        id
+        name
+      }
+    }
+  }
+}`;
+
+
+
+
+
+
 
 export {
     OrbitQuery,
@@ -292,5 +309,6 @@ export {
     GaArchitectureQuery,
     GaArchitectureSubscription,
     ProblemReload,
-    SetProblemReload
+    SetProblemReload,
+    UserGroups
 }

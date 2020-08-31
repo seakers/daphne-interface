@@ -1,15 +1,22 @@
 <template>
     <div class="requirements-container">
 
-        <!-- By Attribute -->
+<!--        &lt;!&ndash; By Attribute &ndash;&gt;-->
+<!--        <template v-if="problem_id !== null">-->
+<!--            <table-view :table_object="requirements__attr_table" :foreign_key="problem_id"></table-view>-->
+<!--        </template>-->
+
+<!--        &lt;!&ndash; By Case &ndash;&gt;-->
+<!--        <template v-if="problem_id !== null">-->
+<!--            <table-view :table_object="requirements__case_table" :foreign_key="problem_id"></table-view>-->
+<!--        </template>-->
+
+
         <template v-if="problem_id !== null">
-            <table-view :table_object="requirements__attr_table" :foreign_key="problem_id"></table-view>
+            <requirement-rules></requirement-rules>
         </template>
 
-        <!-- By Case -->
-        <template v-if="problem_id !== null">
-            <table-view :table_object="requirements__case_table" :foreign_key="problem_id"></table-view>
-        </template>
+
         
     </div>
 </template>
@@ -19,6 +26,9 @@
     import { mapState, mapGetters } from 'vuex';
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
     import TableView from './table/TableView';
+
+    import RequirementRules from "./requirements/RequirementRules";
+
     export default {
         name: 'requirements',
         data: function () {
@@ -40,7 +50,8 @@
 
         },
         components: {
-            TableView
+            TableView,
+            RequirementRules
         },
         async mounted() {
 

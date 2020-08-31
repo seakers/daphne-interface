@@ -1,12 +1,17 @@
 import { vassar_query, vassar_insert, vassar_update, update_architectures } from "../../scripts/query-helpers";
 import { validate_row } from "../../scripts/validation-helpers";
+
 import { Measurement_Attribute, Instrument_Attribute, Mission_Attribute, Orbit_Attribute, Launch_Vehicle_Attribute} from "../tables/attributes";
-import { Walker_Mission_Analysis, Power_Mission_Analysis, Launch_Vehicle_Mission_Analysis } from "../tables/mission-analysis";
-import { Group, Problem, auth_user } from "../tables/problems";
-import { Requirement_Rule_Attribute, Requirement_Rule_Case } from "../tables/requirements";
-import { Stakeholder_Needs_Panel, Stakeholder_Needs_Objective, Stakeholder_Needs_Subobjective } from "../tables/stakeholders";
+import { Stakeholder_Needs_Panel, Stakeholder_Needs_Objective, Stakeholder_Needs_Subobjective }                     from "../tables/stakeholders";
+import { Walker_Mission_Analysis, Power_Mission_Analysis, Launch_Vehicle_Mission_Analysis }                         from "../tables/mission-analysis";
+
+
 import { Instrument, Instrument_Capability, Instrument_Characteristic } from "../tables/instruments"
-import { migrations } from "../tables/migrations";
+import { Requirement_Rule_Attribute, Requirement_Rule_Case }            from "../tables/requirements";
+import { Group, Problem, auth_user }                                    from "../tables/problems";
+import { migrations }                                                   from "../tables/migrations";
+
+
 import * as _ from 'lodash-es';
 import Vue from 'vue';
 
@@ -227,9 +232,6 @@ const actions = {
             let group__row_object_id = group__row_objects[x].objects.id;
             let query_problems = await vassar_query(state.tables.Problem, group__row_object_id);
             commit('table__set_rows', query_problems);
-
-            let query_instruments = await vassar_query(state.tables.Instrument, group__row_object_id);
-            commit('table__set_rows', query_instruments);
         }
     },
 

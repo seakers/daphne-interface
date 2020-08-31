@@ -12,10 +12,10 @@ const Group = {
         "name",
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "type": "many-to-many",
         "child": ['Problem', 'Instrument'],
         "parent": "auth_user",
@@ -26,10 +26,11 @@ const Group = {
     "table_name": "Group",
     "state": {
         "mutable": false,
-        "appendable": false,
+        "appendable": true,
         "selectable": true,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 
@@ -47,16 +48,16 @@ const Problem = {
         "name",
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": [
-            'Stakeholder_Needs_Panel', 
-            'Requirement_Rule_Attribute', 
-            'Requirement_Rule_Case', 
-            'Walker_Mission_Analysis', 
-            'Power_Mission_Analysis', 
+            'Stakeholder_Needs_Panel',
+            'Requirement_Rule_Attribute',
+            'Requirement_Rule_Case',
+            'Walker_Mission_Analysis',
+            'Power_Mission_Analysis',
             'Launch_Vehicle_Mission_Analysis',
             'Measurement_Attribute',
             'Instrument_Attribute',
@@ -76,7 +77,8 @@ const Problem = {
         "appendable": true,
         "selectable": true,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": true,
     }
 };
 
@@ -85,10 +87,10 @@ const auth_user = {
     "col_titles": ["ID"],
     "col_keys": ["id"],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "many-to-many",
         "parent": null,
@@ -102,7 +104,8 @@ const auth_user = {
         "appendable": false,
         "selectable": true,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 

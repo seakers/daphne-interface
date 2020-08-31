@@ -18,11 +18,11 @@ const Measurement_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
-    "selected_name": null, 
+    "selected_name": null,
     "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many",
         "parent": "Problem",
@@ -36,7 +36,8 @@ const Measurement_Attribute = {
         "appendable": false,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 const Instrument_Attribute = {
@@ -59,11 +60,11 @@ const Instrument_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
-    "selected_name": null, 
+    "selected_name": null,
     "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many",
         "parent": "Problem",
@@ -77,7 +78,8 @@ const Instrument_Attribute = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 const Mission_Attribute = {
@@ -100,11 +102,11 @@ const Mission_Attribute = {
         "type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
-    "selected_name": null, 
+    "selected_name": null,
     "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many",
         "parent": "Problem",
@@ -118,7 +120,8 @@ const Mission_Attribute = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 const Orbit_Attribute = {
@@ -141,15 +144,15 @@ const Orbit_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
-    "selected_name": null, 
+    "selected_name": null,
     "insert_state": false,
     "relationship": { "child": null,
         "type": "one-to-many",
         "parent": "Problem",
         "join": null,
-        "foreign_key_field": 
+        "foreign_key_field":
         "problem_id",
     },
     "display_name": "Orbit",
@@ -159,7 +162,8 @@ const Orbit_Attribute = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 const Launch_Vehicle_Attribute = {
@@ -182,11 +186,11 @@ const Launch_Vehicle_Attribute = {
         "attribute_type",
     ],
     "row_object_mapper": {},
-    "selected_id": null, 
+    "selected_id": null,
     "selected_index": null,
-    "selected_name": null, 
+    "selected_name": null,
     "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many",
         "parent": "Problem",
@@ -200,7 +204,8 @@ const Launch_Vehicle_Attribute = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 

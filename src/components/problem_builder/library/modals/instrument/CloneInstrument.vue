@@ -63,7 +63,7 @@
             }
         },
         computed: {
-            ...mapGetters({
+            ...mapState({
                 selected_group_id: 'get_group_id',
             }),
         },

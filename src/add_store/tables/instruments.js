@@ -14,7 +14,7 @@ const Instrument = {
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": ['Instrument_Capability', 'Instrument_Characteristic'],
         "type": "one-to-many",
         "parent": "Group",
@@ -28,7 +28,8 @@ const Instrument = {
         "appendable": true,
         "selectable": true,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 
@@ -58,7 +59,7 @@ const Instrument_Capability = {
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many",
         "parent": "Instrument",
@@ -72,7 +73,8 @@ const Instrument_Capability = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 
@@ -99,7 +101,7 @@ const Instrument_Characteristic = {
     "row_object_mapper": {},
     "selected_id": null, "selected_index": null,
     "selected_name": null, "insert_state": false,
-    "relationship": { 
+    "relationship": {
         "child": null,
         "type": "one-to-many",
         "parent": "Instrument",
@@ -113,7 +115,8 @@ const Instrument_Characteristic = {
         "appendable": true,
         "selectable": false,
         "hidden": false,
-        "closeable": false
+        "closeable": false,
+        "cloneable": false,
     }
 };
 

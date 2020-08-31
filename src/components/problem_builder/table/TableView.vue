@@ -35,6 +35,7 @@
                                :row_index="row_index"
                                :table_selectable="table_selectable"
                                :table_mutable="table_mutable"
+                               :table_cloneable="table_cloneable"
                     >
                     </table-row>
 
@@ -50,7 +51,7 @@
             </table>
 
             <!-- INSERT -->
-            <a v-if="insert_state === false && table_appendable" class="button is-primary is-fullwidth" v-on:click="toggle_insert_state(true)" style="border-radius: 0;">new row</a>
+            <a v-if="insert_state === false && table_appendable" class="button is-primary is-fullwidth" v-on:click="toggle_insert_state(true)" style="border-radius: 0;">{{ new_row_text }}</a>
             <a v-if="insert_state === true && table_appendable" class="button is-warning is-fullwidth" v-on:click="toggle_insert_state(false)" style="border-radius: 0;">cancel insert</a>
 
         </div>
@@ -71,6 +72,10 @@
             table_object: Object,
             foreign_key: Number,
             foreign_key_2: Number,
+            new_row_text: {
+                type: String,
+                default: 'new row'
+            }
         },
         data: function () {
             return {
@@ -99,11 +104,14 @@
                 return this.table_object.state.selectable;
             },
             table_appendable() {
-                return this.table_object.state.mutable;
+                return this.table_object.state.appendable;
             },
             table_hidden() {
                 return this.table_object.state.hidden;
             },
+            table_cloneable(){
+                return this.table_object.state.cloneable;
+            }
         },
         methods: {
             async close_view(){
