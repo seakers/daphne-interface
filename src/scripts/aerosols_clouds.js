@@ -45,7 +45,7 @@ export default {
         //let orbitAliasArray = [['LEO-600-polar-NA', '1'], ['SSO-600-SSO-AM', '2'], ['SSO-600-SSO-DD', '3'], ['SSO-800-SSO-DD', '4'], ['SSO-800-SSO-PM', '5']];
         let orbitAliasArray = [['LEO-600-polar-NA', 'LEO-600-polar-NA'], ['SSO-600-SSO-AM', 'SSO-600-SSO-AM'],
             ['SSO-600-SSO-DD', 'SSO-600-SSO-DD'], ['SSO-800-SSO-AM', 'SSO-800-SSO-AM'],
-            ['SSO-800-SSO-DD', 'SSO-800-SSO-DD']];
+            ['SSO-800-SSO-DD', 'SSO-800-SSO-DD'], ['SSO-800-SSO-PM', 'SSO-800-SSO-PM'], ['SSO-400-SSO-PM', 'SSO-400-SSO-PM'], ['SSO-705-SSO-PM', 'SSO-705-SSO-PM']];
         extra.orbitAlias = {};
         extra.orbitInvAlias = {};
         orbitAliasArray.forEach((element) => {
@@ -53,9 +53,7 @@ export default {
             extra.orbitInvAlias[element[1]] = element[0];
         });
 
-        let instrumentAliasArray = [['ACE_CPR', 'A'], ['ACE_OCI', 'B'], ['ACE_POL', 'C'], ['ACE_LID', 'D'], ['CALIPSO-CALIOP', 'E'], ['CALIPSO-WFC', 'F'], ['CALIPSO-IIR', 'G'], ['EARTHCARE-ATLID', 'H'], ['EARTHCARE-BBR', 'I'], ['EARTHCARE-CPR', 'J'], ['EARTHCARE-MSI', 'K'],['ICI', 'L']];
-        // let instrumentAliasArray = [['BIOMASS', 'BIOMASS'], ['SMAP_RAD', 'SMAP_RAD'], ['SMAP_MWR', 'SMAP_MWR'],
-        //     ['CMIS', 'CMIS'], ['VIIRS', 'VIIRS']];
+        let instrumentAliasArray = [['ACE-CPR', 'ACE-CPR'], ['ACE-OCI', 'ACE-OCI'], ['ACE-POL', 'ACE-POL'], ['ACE-LID', 'ACE-LID'], ['CALIPSO-CALIOP', 'CALIPSO-CALIOP'], ['CALIPSO-WFC', 'CALIPSO-WFC'], ['CALIPSO-IIR', 'CALIPSO-IIR'], ['EARTHCARE-ATLID', 'EARTHCARE-ATLID'], ['EARTHCARE-BBR', 'EARTHCARE-BBR'], ['EARTHCARE-CPR', 'EARTHCARE-CPR'], ['EARTHCARE-MSI', 'EARTHCARE-MSI'],['ICI', 'ICI'],['AQUARIUS','AQUARIUS'],['DIAL','DIAL'],['IR-Spectrometer','IR-Spectrometer']];
         extra.instrumentAlias = {};
         extra.instrumentInvAlias = {};
         instrumentAliasArray.forEach((element) => {
