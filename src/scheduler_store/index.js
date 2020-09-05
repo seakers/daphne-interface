@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import score from'./modules/score';
-import cost from './modules/cost';
+import measurements from './modules/measurements';
+import missions from './modules/missions';
 import {fetchPost} from "../scripts/fetch-helpers";
 
 Vue.use(Vuex);
@@ -10,14 +10,14 @@ const debug = process.env.NODE_ENV !== 'production';
 
 export default new Vuex.Store({
     state: {
-        archID: null,
+        archIDs: null,
         problem: null
     },
     getters: {
     },
     mutations: {
-        setArchID(state, archID) {
-            state.archID = archID;
+        setArchIDs(state, archIDs) {
+            state.archIDs = archIDs;
         },
         setProblem(state, problem) {
             state.problem = problem;
@@ -47,8 +47,8 @@ export default new Vuex.Store({
         },
     },
     modules: {
-        score,
-        cost
+        measurements,
+        missions
     },
     strict: debug
 });

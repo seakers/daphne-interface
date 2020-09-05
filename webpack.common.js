@@ -11,7 +11,8 @@ const { VueLoaderPlugin } = require('vue-loader');
 module.exports = {
     entry: {
         index: './src/index.js',
-        details: './src/details.js'
+        details: './src/details.js',
+        scheduler: './src/scheduler.js'
     },
 
     output: {
@@ -91,6 +92,11 @@ module.exports = {
             template: './src/details.html',
             chunks: ['details'],
             filename: 'details.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/scheduler.html',
+            chunks: ['scheduler'],
+            filename: 'scheduler.html'
         }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output

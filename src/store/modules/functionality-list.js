@@ -58,6 +58,13 @@ functionalityTypes.set('TimelinePlot', {
     minSize: 'half',
     maxRepeat: 10
 });
+functionalityTypes.set('Scheduler', {
+    title: 'Scheduler',
+    component: 'Scheduling',
+    class: 'scheduling',
+    minSize: 'half',
+    maxRepeat: 10
+});
 
 
 let newFunctionalityId = 0;
@@ -73,7 +80,8 @@ const state = {
         { name: 'FeatureApplication', title: 'Feature Application', icon: 'fa-sitemap' },
         { name: 'OrbitInstrInfo', title: 'Orbits and Instruments Information', icon: 'fa-book' },
         { name: 'AvailableCommands', title: 'Available Commands', icon: 'fa-book' },
-        { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' }
+        { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' },
+        { name: 'Scheduler', title: 'Scheduling Formulation', icon: 'fa-book' }
     ],
     functionalities: [],
     functionalityCount: {
@@ -85,7 +93,8 @@ const state = {
         'OrbitInstrInfo': 0,
         'AvailableCommands': 0,
         'CommandsInformation': 0,
-        'TimelinePlot': 0
+        'TimelinePlot': 0,
+        'Scheduler': 0
     }
 };
 

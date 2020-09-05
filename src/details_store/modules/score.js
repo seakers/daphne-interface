@@ -38,6 +38,7 @@ const actions = {
 // mutations
 const mutations = {
     setScoreInfo(state, scoreInfo) {
+        console.log('setting score');
         state.scoreInfo = scoreInfo;
     },
     setSubobjectiveDetails(state, subobjectiveDetails) {

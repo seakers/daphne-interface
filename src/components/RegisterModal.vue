@@ -1,6 +1,6 @@
 <template>
     <div class="message-body">
-        <p>Please enter your username, email and passowrd to register.</p>
+        <p>Please enter your username, email and password to register.</p>
         <form id="register-form">
             <p v-if="hasRegistrationError">{{ registrationError }}</p>
             <div class="field">

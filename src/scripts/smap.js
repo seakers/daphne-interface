@@ -28,12 +28,14 @@ export default {
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',
+        'Scheduler'
     ],
     shownFunctionalities: [
         'DesignBuilder',
         'OrbitInstrInfo',
         'AvailableCommands',
-        'CommandsInformation'
+        'CommandsInformation',
+        'Scheduler'
     ],
     async initFunction(problemName) {
         let extra = {};

@@ -17,6 +17,7 @@
 <script>
     import Cheatsheet from './Cheatsheet';
     import DesignBuilder from './DesignBuilder';
+    import Scheduling from './Scheduling';
     import DaphneAnswer from './DaphneAnswer';
     import DataMining from './DataMining';
     import EOSSFilter from './EOSSFilter';
@@ -40,6 +41,7 @@
         components: {
             Cheatsheet,
             DesignBuilder,
+            Scheduling,
             DaphneAnswer,
             DataMining,
             EOSSFilter,
