@@ -40,19 +40,38 @@
                     </table-row>
 
                     <!-- INSERT ROW -->
-                    <table-row-insert v-if="insert_state === true" 
-                            :table_object="table_object"
-                            :table_rows="table_rows"
-                            :foreign_key="foreign_key"
-                            :foreign_key_2="foreign_key_2"
-                    >
-                    </table-row-insert>
+                    <div v-if="table_object.table_name !== 'Group'">
+                        <table-row-insert v-if="insert_state === true"
+                                          :table_object="table_object"
+                                          :table_rows="table_rows"
+                                          :foreign_key="foreign_key"
+                                          :foreign_key_2="foreign_key_2"
+                        >
+                        </table-row-insert>
+                    </div>
+
                 </tbody>
             </table>
 
+            <!-- INSERT GROUP -->
+            <div v-if="table_object.table_name === 'Group'">
+                <a v-if="insert_state === false && table_appendable" class="button is-primary is-fullwidth" v-on:click="toggle_insert_state(true)" style="border-radius: 0;">{{ new_row_text }}</a>
+                <div v-if="insert_state">
+                    <new-group
+                        :is-active="insert_state"
+                        v-on:close-modal="close_new_group_modal()"
+                        v-on:close-modal-refresh="close_new_group_modal_refresh()"
+                    >
+                    </new-group>
+                </div>
+            </div>
+
             <!-- INSERT -->
-            <a v-if="insert_state === false && table_appendable" class="button is-primary is-fullwidth" v-on:click="toggle_insert_state(true)" style="border-radius: 0;">{{ new_row_text }}</a>
-            <a v-if="insert_state === true && table_appendable" class="button is-warning is-fullwidth" v-on:click="toggle_insert_state(false)" style="border-radius: 0;">cancel insert</a>
+            <div v-if="table_object.table_name !== 'Group'">
+                <a v-if="insert_state === false && table_appendable" class="button is-primary is-fullwidth" v-on:click="toggle_insert_state(true)" style="border-radius: 0;">{{ new_row_text }}</a>
+                <a v-if="insert_state === true && table_appendable" class="button is-warning is-fullwidth" v-on:click="toggle_insert_state(false)" style="border-radius: 0;">cancel insert</a>
+            </div>
+
 
         </div>
     </div>
@@ -64,6 +83,7 @@
     import {fetchGet, fetchPost} from '../../../scripts/fetch-helpers';
     import TableRowInsert from './TableRowInsert';
     import TableRow from './TableRow';
+    import NewGroup from "../modals/NewGroup";
     import * as _ from 'lodash-es';
     
     export default {
@@ -120,10 +140,17 @@
             toggle_insert_state(val) {
                 this.insert_state = val;
             },
+            async close_new_group_modal(){
+                this.insert_state = false;
+            },
+            async close_new_group_modal_refresh(){
+                this.insert_state = false;
+            }
         },
         components: {
             TableRowInsert,
             TableRow,
+            NewGroup
         },
     }
 </script>

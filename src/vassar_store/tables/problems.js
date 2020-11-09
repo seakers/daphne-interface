@@ -74,7 +74,7 @@ const Problem = {
     "table_name": "Problem",
     "state": {
         "mutable": true,
-        "appendable": true,
+        "appendable": false,
         "selectable": true,
         "hidden": false,
         "closeable": false,

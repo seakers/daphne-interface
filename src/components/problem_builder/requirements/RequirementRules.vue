@@ -37,7 +37,7 @@
             <!-- RULES-->
             <div class="rule-listings">
                 <template v-if="selected_tab === 'attribute'">
-                    <attribute-rule v-for="rule in rule_rows" :rule="rule"></attribute-rule>
+                    <attribute-rule v-for="(rule, idx) in rule_rows" :key="idx" :rule="rule"></attribute-rule>
                 </template>
                 <template v-if="selected_tab === 'case'">
 

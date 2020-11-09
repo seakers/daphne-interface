@@ -4,6 +4,9 @@ import {GetArchitectures, UpdateArchitectureStatusBatch} from "./instrument-quer
 
 
 
+
+
+
 const InsertProblem = gql`
 mutation myMutation($group_id: Int, $problem_name: String) {
     insert_Problem_one(object: {group_id: $group_id, name: $problem_name, reload_problem: false}) {
@@ -72,7 +75,6 @@ export async function clone_problem(old_problem_id, group_id, new_problem_name, 
     await clone_problem_stakeholder_panels(old_problem_id, new_problem_id);
 
 }
-
 
 
 export async function insert_new_group_problem(group_id, new_problem_name){
@@ -980,6 +982,64 @@ export async function clone_problem_requirement_rule_case(old_subobjective_id, n
 
 
 
+
+
+export async function new_group(creator_id, users_to_add, group_name){
+
+    // 1. INSERT NEW GROUP
+    const NewGroupQuery = gql`
+    mutation myMutation($group_name: String!) {
+        insert_Group_one(object: {name: $group_name}) {
+            id
+            name
+        }
+    }
+    `;
+    let group_insert = await client.mutate({
+        mutation: NewGroupQuery,
+        variables: {
+            group_name: group_name,
+        },
+        update: (cache, { data: { update_arch_status } }) => {console.log(update_arch_status);},
+    });
+    let new_group_id = group_insert.data.insert_Group_one.id;
+
+
+    // 2. Create new entries in group user join table
+    let items = [];
+    let creator_obj = {
+        'group_id': new_group_id,
+        'user_id': creator_id,
+        'admin': true
+    }
+    items.push(creator_obj);
+    for(let x=0;x<users_to_add.length;x++){
+        let user = users_to_add[x];
+        let member_obj = {
+            'group_id': new_group_id,
+            'user_id': user.id,
+            'admin': user.admin
+        }
+        items.push(member_obj);
+    }
+    console.log("---> GROUP MEMBERS", items);
+
+    // 3. INSERT GROUP MEMBERS
+    const BulkInsert = gql`
+        mutation myMutation($items: [Join__AuthUser_Group_insert_input!]!) {
+          insert_Join__AuthUser_Group(objects: $items) {
+            affected_rows
+          }
+        }
+    `;
+    let insert_clones = await client.mutate({
+        mutation: BulkInsert,
+        variables: {
+            items: items,
+        },
+        update: (cache, { data: { update_arch_status } }) => {console.log(update_arch_status);},
+    });
+}
 
 
 

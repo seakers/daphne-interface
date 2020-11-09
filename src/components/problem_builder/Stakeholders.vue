@@ -2,17 +2,31 @@
     <div class="stakeholders-container">
 
         <template v-if="problem_id !== null">
-            <table-view :table_object="panel_table" :foreign_key="problem_id"></table-view>
+            <table-view
+                :table_object="panel_table"
+                :foreign_key="problem_id"
+                new_row_text="new panel"
+            ></table-view>
         </template>
 
 
         <template v-if="panel_id !== null">
-            <table-view :table_object="objective_table" :foreign_key="panel_id" :foreign_key_2="problem_id"></table-view>
+            <table-view
+                :table_object="objective_table"
+                :foreign_key="panel_id"
+                :foreign_key_2="problem_id"
+                new_row_text="new objective"
+            ></table-view>
         </template>
 
 
         <template v-if="objective_id !== null && panel_id !== null">
-            <table-view :table_object="subobjective_table" :foreign_key="objective_id" :foreign_key_2="problem_id"></table-view>
+            <table-view
+                :table_object="subobjective_table"
+                :foreign_key="objective_id"
+                :foreign_key_2="problem_id"
+                new_row_text="new subobjective"
+            ></table-view>
         </template>
         
 

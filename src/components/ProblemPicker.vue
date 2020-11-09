@@ -69,8 +69,8 @@
             return {
                 user_groups: [],
                 user_problems: [],
-                group_id: 0,
-                problem_id: 0,
+                group_id: null,
+                problem_id: null,
             }
         },
         computed: {
@@ -150,44 +150,68 @@
         apollo: {
             // TODO: query groups
             // TODO: query problems
-            user_groups: {
-                query: DaphneGroupQuery,
-                variables() {
-                    return {
-                        user_pk: this.user_pk,
+            $subscribe: {
+                user_groups: {
+                    query: DaphneGroupQuery,
+                    variables() {
+                        return {
+                            user_pk: this.user_pk,
+                        }
+                    },
+                    result (data) {
+                        this.user_groups = data.data.user_groups;
+                        if(this.group_id === null){
+                            if(this.user_groups.length > 0){
+                                this.group_id = this.user_groups[0].id;
+                            }
+                            else{
+                                this.group_id = 0;
+                            }
+                        }
                     }
                 },
-            },
-            user_problems: {
-                query: DaphneProblemQuery,
-                variables() {
-                    return {
-                        group_id: this.group_id,
+                user_problems: {
+                    query: DaphneProblemQuery,
+                    variables() {
+                        return {
+                            group_id: this.group_id,
+                        }
+                    },
+                    result (data) {
+                        this.user_problems = data.data.user_problems;
+                        if(this.problem_id === null){
+                            if(this.user_problems.length > 0){
+                                this.problem_id = this.user_problems[0].id;
+                            }
+                            else{
+                                this.problem_id = 0;
+                            }
+                        }
                     }
                 }
             }
         },
         watch: {
 
-            // --> User logs in
-            user_groups() {
-                if(this.user_groups.length > 0){
-                    this.group_id = this.user_groups[0].id;
-                }
-                else{
-                    this.group_id = 0;
-                }
-            },
-
-            // --> New group selected
-            user_problems() {
-                if(this.user_problems.length > 0){
-                    this.problem_id = this.user_problems[0].id;
-                }
-                else{
-                    this.problem_id = 0;
-                }
-            },
+            // // --> User logs in
+            // user_groups() {
+            //     if(this.user_groups.length > 0){
+            //         this.group_id = this.user_groups[0].id;
+            //     }
+            //     else{
+            //         this.group_id = 0;
+            //     }
+            // },
+            //
+            // // --> New group selected
+            // user_problems() {
+            //     if(this.user_problems.length > 0){
+            //         this.problem_id = this.user_problems[0].id;
+            //     }
+            //     else{
+            //         this.problem_id = 0;
+            //     }
+            // },
 
             global_group_id() {
                 this.group_id = this.global_group_id;
@@ -197,8 +221,8 @@
             },
         },
       async mounted() {
-        this.$apollo.queries.user_groups.refetch();
-        this.$apollo.queries.user_problems.refetch();
+        // this.$apollo.subscriptions.user_groups.start();
+        // this.$apollo.subscriptions.user_problems.start();
       }
     }
 </script>

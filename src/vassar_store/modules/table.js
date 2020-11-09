@@ -115,6 +115,13 @@ const getters = {
     //------------------\\
     //  Get Selections  \\
     //------------------\\
+    get_group_id(state){
+        return state.tables.Group.selected_id;
+    },
+    get_group_name(state){
+        return state.tables.Group.selected_name;
+    },
+
     groups__group_selection(state){
         return state.tables.Group.selected_id;
     },

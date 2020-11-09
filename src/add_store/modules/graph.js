@@ -18,12 +18,18 @@ const state = {
 
     nodes: null,
 
+    selected_design_id: 0,
+
 
 };
 
 // const initialState = _.cloneDeep(state);
 
 const getters = {
+
+    get_selected_design_id(state){
+        return state.selected_design_id;
+    }
 
 };
 
@@ -76,6 +82,10 @@ const mutations = {
 
     set_nodes(state, nodes){
         state.nodes = nodes;
+    },
+
+    set_selected_design_id(state, selected_desing_id){
+        state.selected_design_id = selected_desing_id;
     },
 
 };

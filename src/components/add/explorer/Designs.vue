@@ -14,7 +14,7 @@
                 <vue-json-pretty
                     :path="'res'"
                     :data="element"
-                    :deep="1"
+                    :deep="3"
                 >
                 </vue-json-pretty>
             </div>
@@ -35,7 +35,7 @@ export default {
         return {
             // selected_tab: 'designs',
             designs: null,
-            selected_design_id: null,
+            // selected_design_id: null,
             elements: null,
         }
     },
@@ -45,6 +45,14 @@ export default {
             decision_nodes: state => state.graph.decision_nodes,
             design_node: state => state.graph.design_node,
         }),
+        selected_design_id: {
+            get() {
+                return this.$store.state.graph.selected_design_id;
+            },
+            set(selected_id) {
+                this.$store.commit('set_selected_design_id', selected_id);
+            }
+        },
     },
     methods: {
         initialize(){

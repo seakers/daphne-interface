@@ -1,6 +1,6 @@
 <template>
     <div class="explorer-container">
-        <div class="tabs">
+        <div class="tabs" style="min-height: 41px;">
             <ul>
                 <li :class="{ 'is-active': selected_tab === 'decisions'}" v-on:click="show_decisions"><a>Decisions</a></li>
                 <li :class="{ 'is-active': selected_tab === 'designs'}" v-on:click="show_designs"><a>Designs</a></li>

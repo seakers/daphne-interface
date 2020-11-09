@@ -5,7 +5,7 @@
             <article class="message">
                 <div class="modal-clone-title">Clone: {{ problem_name }}</div>
 
-<!--                PROBLEM NAME-->
+                <!-- PROBLEM NAME-->
                 <div class="modal-clone-body">
                     Create a new name for the problem
                 </div>
@@ -13,7 +13,7 @@
                     <input v-model="new_name" placeholder="new problem name...">
                 </div>
 
-<!--                CLONE DESIGNS-->
+                <!-- CLONE DESIGNS-->
                 <div class="modal-assign-body" style="margin-top: 5px;">
                     <div style="padding: 5px;">
                         <input type="checkbox" id="checkbox5" v-model="clone_designs">
@@ -21,7 +21,7 @@
                     </div>
                 </div>
 
-<!--                BUTTONS-->
+                <!-- BUTTONS-->
                 <div class="modal-clone-actions">
                     <button class="button is-danger" style="margin: 5px;" v-on:click="$emit('close-modal')" :disabled="disable_cancel">
                         Cancel

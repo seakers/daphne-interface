@@ -113,6 +113,7 @@
         },
         async mounted() {
             this.$apollo.queries.Instrument.refetch();
+            console.log("GROUP ID", this.selected_group_id);
         },
         watch: {
             Instrument() {

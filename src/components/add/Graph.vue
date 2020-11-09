@@ -1,54 +1,79 @@
 <template>
     <div class="graph-container">
 
+
+
         <div class="graph-display">
 
-            <div class="graph-heading">
-                <div class="title">
-                    <h1> Control Panel </h1>
-                    <!-- example control -->
-                    <ul class="menu">
-                        <li>
-                            <label> Node size  </label>
-                            <input type="range" min="1" max="100" v-model='nodeSize' /> {{ options.nodeSize }}
-                        </li>
-                        <li>
-                            <label> Edge Force  </label>
-                            <input type="range" min="100" max="12000" v-model='edgeForce' /> {{ options.force }}
-                        </li>
-                        <li>
-                            <label>Render as  </label>
-                            <input type="radio" :value='false' v-model='canvas' />
-                            <label>SVG</label>
-                            <input type="radio" :value='true' v-model='canvas' />
-                            <label>Canvas</label>
-                        </li>
-                        <li>
-                            <button v-on:click="buildGraph()">Build Graph</button>
-                        </li>
+
+
+
+
+            <div class="graph-display-pages">
+
+                <div class="tabs" style="min-height: 41px;">
+                    <ul>
+                        <li :class="{ 'is-active': selected_tab === 'graph'}" v-on:click="show_graph"><a>Graph</a></li>
+                        <li :class="{ 'is-active': selected_tab === 'plot'}" v-on:click="show_plot"><a>Design Plot</a></li>
+                        <li :class="{ 'is-active': selected_tab === 'reload'}" v-on:click="reload_designs"><a>Reload Designs</a></li>
                     </ul>
                 </div>
 
-                <svg style="height: 1px">
-                    <defs>
-                        <marker id="m-end" markerWidth="10" markerHeight="10" refX="12" refY="3" orient="auto" markerUnits="strokeWidth" >
-                            <path d="M0,0 L0,6 L9,3 z"></path>
-                        </marker>
-                    </defs>
-                </svg>
+
+                <div v-if="selected_tab === 'graph'">
+
+                    <div class="graph-heading">
+                        <div class="title">
+                            <h1> Control Panel </h1>
+                            <!-- example control -->
+                            <ul class="menu">
+                                <li>
+                                    <label> Node size  </label>
+                                    <input type="range" min="1" max="100" v-model='nodeSize' /> {{ options.nodeSize }}
+                                </li>
+                                <li>
+                                    <label> Edge Force  </label>
+                                    <input type="range" min="100" max="12000" v-model='edgeForce' /> {{ options.force }}
+                                </li>
+                                <li>
+                                    <label>Render as  </label>
+                                    <input type="radio" :value='false' v-model='canvas' />
+                                    <label>SVG</label>
+                                    <input type="radio" :value='true' v-model='canvas' />
+                                    <label>Canvas</label>
+                                </li>
+                                <li>
+                                    <button v-on:click="buildGraph()">Build Graph</button>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <svg style="height: 1px">
+                            <defs>
+                                <marker id="m-end" markerWidth="10" markerHeight="10" refX="12" refY="3" orient="auto" markerUnits="strokeWidth" >
+                                    <path d="M0,0 L0,6 L9,3 z"></path>
+                                </marker>
+                            </defs>
+                        </svg>
+                    </div>
+
+                    <div class="graph-frame">
+                        <d3-network ref='net'
+                                    :net-nodes="nodes"
+                                    :net-links="links"
+                                    :options="options"
+                                    :link-cb="lcb"
+                                    @node-click="select_node"
+                                    @link-click="select_edge"
+                        />
+                    </div>
+                </div>
+
+                <div v-if="selected_tab === 'plot'" style="height: 100%; display: flex;">
+                    <design-plot></design-plot>
+                </div>
             </div>
 
-
-            <div class="graph-frame">
-                <d3-network ref='net'
-                            :net-nodes="nodes"
-                            :net-links="links"
-                            :options="options"
-                            :link-cb="lcb"
-                            @node-click="select_node"
-                            @link-click="select_edge"
-                />
-            </div>
         </div>
 
 
@@ -66,6 +91,7 @@
 <script>
 import D3Network from 'vue-d3-network';
 import GraphExplorer from "./GraphExplorer";
+import DesignPlot from "./DesignPlot";
 import { parse_root_node, parse_decision_nodes, parse_design_node, parse_child_nodes } from '../../scripts/graph-helpers';
 import * as _ from 'lodash-es';
 import { mapState, mapGetters } from 'vuex';
@@ -109,6 +135,8 @@ export default {
             design_node: null,
 
             child_data: null,
+
+            selected_tab: "graph",
         }
     },
     computed: {
@@ -253,12 +281,24 @@ export default {
         write_nodes(){
             this.$store.commit('set_nodes', _.cloneDeep(this.nodes));
         },
+        show_graph(){
+            this.selected_tab = "graph";
+        },
+        show_plot(){
+            this.selected_tab = "plot";
+        },
+        reload_designs(){
+            this.rootQuery();
+            this.decisionQuery();
+            this.designQuery();
+        }
     },
     watch: {
     },
     components: {
         D3Network,
-        GraphExplorer
+        GraphExplorer,
+        DesignPlot
     },
     apollo:{
 
@@ -293,20 +333,27 @@ export default {
 
 .graph-display{
     display: flex;
-    flex-direction: column;
-    max-width: 65%;
+    flex-direction: row;
+    flex-grow: 1;
 }
 
 .graph-explorer{
     display: flex;
-    min-width: 20vw;
+    max-width: 25vw;
     flex-grow: 1;
     margin: 5px;
 }
 
-.graph-frame{
-    background-color: #c9c9c9;
+.graph-display-pages{
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
     margin: 5px;
+    border-radius: 5px;
+    flex-grow: 1;
+}
+
+.graph-frame{
     border-radius: 5px;
     overflow-y: auto;
     flex-grow: 1;

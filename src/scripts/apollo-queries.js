@@ -286,6 +286,14 @@ query myQuery($user_id: Int!) {
 }`;
 
 
+const DaphneUsers = gql`
+query myQuery{
+  users: auth_user {
+    id
+    email
+  }
+}`;
+
 
 
 
@@ -310,5 +318,6 @@ export {
     GaArchitectureSubscription,
     ProblemReload,
     SetProblemReload,
-    UserGroups
+    UserGroups,
+    DaphneUsers
 }

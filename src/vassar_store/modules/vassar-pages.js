@@ -31,12 +31,12 @@ const state = {
 // const initialState = _.cloneDeep(state);
 
 const getters = {
-    get_group_id(state){
-        return state.selections.Group.id;
-    },
-    get_group_name(state){
-        return state.selections.Group.name;
-    },
+    // get_group_id(state){
+    //     return state.selections.Group.id;
+    // },
+    // get_group_name(state){
+    //     return state.selections.Group.name;
+    // },
 
     get_orbit_id(state){
         return state.selections.Orbit.id;

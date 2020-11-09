@@ -71,14 +71,12 @@ const Requirement_Rule_Case = {
         "string",
         "string",
         "string",
-        "string",
         "string"
     ],
     "col_titles": [
         "ID",
         "Subobjective",
         "Measurement",
-        "Attribute",
         "Rule",
         "Value"
     ],
@@ -86,7 +84,6 @@ const Requirement_Rule_Case = {
         "id",
         "subobjective_id",
         "measurement_id",
-        "measurement_attribute_id",
         "rule",
         "value"
     ],

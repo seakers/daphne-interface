@@ -446,7 +446,7 @@
                     skip() {
                         return this.skip_sub;
                     },
-                    result (data) {
+                    result () {
                         let arches = data.data.Architecture;
                         if(arches.length === 0){
                             return;
