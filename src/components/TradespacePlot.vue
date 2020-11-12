@@ -115,6 +115,8 @@
                 gaArchs: state => state.tradespacePlot.gaArchs,
                 hiddenArchs: state => state.tradespacePlot.hiddenArchs,
                 status: state => state.problem.status,
+                problem_id: state => state.problem.problem_id,
+                group_id: state => state.problem.group_id,
             }),
             ...mapGetters({
                 numPoints: 'getNumPoints',
@@ -151,7 +153,7 @@
             async eval_designs(){
                 console.log("---> re-evaluating designs");
                 let reqData = new FormData();
-                reqData.append('problem_id', '5');
+                reqData.append('problem_id', this.problem_id);
                 let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-false-architectures', reqData);
 
                 if (dataResponse.ok) {
@@ -439,14 +441,15 @@
                     query: ArchitectureQuery,
                     variables() {
                         return {
-                            problem_id: parseInt(PROBLEM__ID),
+                            // problem_id: parseInt(PROBLEM__ID),
+                            problem_id: this.problem_id,
                             input_list: this.inputs_list
                         }
                     },
                     skip() {
                         return this.skip_sub;
                     },
-                    result () {
+                    result (data) {
                         let arches = data.data.Architecture;
                         if(arches.length === 0){
                             return;
@@ -496,7 +499,8 @@
                     query: ArchitectureEvalCount,
                     variables() {
                         return {
-                            problem_id: parseInt(PROBLEM__ID),
+                            // problem_id: parseInt(PROBLEM__ID),
+                            problem_id: this.problem_id,
                         }
                     },
                     result (data) {
