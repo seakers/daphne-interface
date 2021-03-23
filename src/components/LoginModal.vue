@@ -32,6 +32,7 @@
 
 <script>
     import { mapState } from 'vuex';
+    import {wsTools} from "../scripts/websocket-tools";
 
     export default {
         name: 'login-modal',

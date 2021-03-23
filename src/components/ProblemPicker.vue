@@ -165,7 +165,7 @@
                                 this.group_id = this.user_groups[0].id;
                             }
                             else{
-                                this.group_id = 0;
+                                this.group_id = 1;
                             }
                         }
                     }
