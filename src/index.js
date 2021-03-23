@@ -56,6 +56,7 @@ const link = new WebSocketLink({
     uri: GRAPH_QL_WS_URL,
     options: {
         reconnect: true,
+        lazy: true,
         timeout: 30000,
         connectionParams: () => {
             return { headers: getHeaders() };

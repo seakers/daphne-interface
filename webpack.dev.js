@@ -20,6 +20,10 @@ module.exports = merge(common, {
         historyApiFallback: true,
         noInfo: false,
         host: '0.0.0.0',
+        allowedHosts: [
+            'daphne',
+            'localhost'
+        ],
         proxy: {
             '/api': {
                 target: 'http://localhost:8000/',
