@@ -111,7 +111,7 @@ const actions = {
     },
 
     async setGroupId({ state, commit }, new_id) {
-        commit('commitGroupId', new_id);
+        commit('setGroupId', new_id);
     },
 };
 

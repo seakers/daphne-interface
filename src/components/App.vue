@@ -72,7 +72,6 @@
             ...mapState({
                 isModalActive: state => state.modal.isModalActive,
                 modalContent: state => state.modal.modalContent,
-                dataset: state => state.problem.datasetInformation,
                 datasetInformations: state => state.experiment.datasetInformations,
                 problems: state => state.experiment.problems,
                 inExperiment: state => state.experiment.inExperiment,
@@ -114,28 +113,14 @@
                             let data = await response.json();
 
                             // LOGIN DATA
-                            let problemName     = data['problem'];
-                            let datasetFilename = data['dataset_filename'];
-                            let datasetUser     = data['dataset_user'];
-                            let problem_id      = data['problem_id'];
-                            let group_id        = data['group_id'];
+                            let problemId = data['problem_id'];
+                            let groupId   = data['group_id'];
+                            let datasetId = data['dataset_id'];
 
-                            if (problemName === '') {
-                                problemName = 'SMAP'; // CHANGED
-                                // problemName = '1'
-                            }
-                            if (datasetFilename === '') {
-                                datasetFilename = 'test_smap.csv';
-                            }
-
-                            // Put problem id / name in store
-                            await this.$store.dispatch('setProblemName', problemName);
-                            this.$store.commit('commitProblemId', problem_id);
-                            this.$store.commit('commitGroupId', group_id);
-                            this.$store.commit('setDatasetInformation', {
-                                filename: datasetFilename,
-                                user: datasetUser
-                            });
+                            // Put problem id in store
+                            this.$store.commit('setProblemId', problemId);
+                            this.$store.commit('setGroupId', groupId);
+                            this.$store.commit('setDatasetId', datasetId);
                             await this.init(data);
                         }
                     });
@@ -149,42 +134,46 @@
 
                 // 0.1 Get problem_id for loading
                 // let problem_id = parseInt(PROBLEM__ID);
-                let problem_id = startData['problem_id'];
-                let group_id   = startData['group_id']
+                let groupId   = startData['group_id'];
+                let problemId = startData['problem_id'];
+                let datasetId = startData['dataset_id'];
 
                 // 1. Stop all running background tasks
                 await this.$store.dispatch('stopBackgroundTasks');
 
                 // 2. Initialize the new problem
-                await this.$store.dispatch('initProblem', problem_id);
+                await this.$store.dispatch('initProblem', problemId);
 
                 // 3. Load architectures from back-end
                 let parameters = {
-                    'problem_id': problem_id,
-                    'group_id': group_id
+                    'group_id'  : groupId,
+                    'problem_id': problemId,
+                    'dataset_id': datasetId
                 };
-                if (startData !== undefined && startData['modified_dataset']) {
-                    // await this.$store.dispatch('reloadOldData', startData['data']);
-                    await this.$store.dispatch('loadNewData', parameters);
-                }
-                else {
-                    await this.$store.dispatch('loadNewData', parameters);
-                }
+                this.$store.dispatch('loadData', parameters);
 
-                // 4. Load past dialogue - scroll chat window down
-                await this.$store.dispatch("loadDialogue");
-                this.$refs.chatWindow.scrollToBottom();
+                // 4. Connect to a VASSAR Evaluator/GA pair
+                fetchPost(API_URL +  'eoss/vassar/connect').then(async (response) => {
+                    if (response.ok) {
+                        console.log("Connection to VASSAR successful.");
+                    }
+                });
 
-                // 5. Initialize user-only features
+                // 5. Load past dialogue - scroll chat window down
+                this.$store.dispatch('loadDialogue').then(() => {
+                    this.$refs.chatWindow.scrollToBottom();
+                });
+                
+                // 6. Initialize user-only features
                 if (this.$store.state.auth.isLoggedIn) {
-                    await this.$store.dispatch("retrieveActiveSettings");
+                    this.$store.dispatch('retrieveActiveSettings');
                     // this.$store.dispatch("startBackgroundSearch");
                 }
 
-                // 6. Call backend to initialize data-mining
+                // 7. Call backend to initialize data-mining
                 this.$store.dispatch('setProblemParameters');
 
-                // 7. Start-up has finished
+                // 8. Start-up has finished
                 this.isStartup = false;
             },
         },
@@ -259,28 +248,14 @@
                         let data = await response.json();
 
                         // LOGIN DATA
-                        let problemName     = data['problem'];
-                        let datasetFilename = data['dataset_filename'];
-                        let datasetUser     = data['dataset_user'];
-                        let problem_id      = data['problem_id'];
-                        let group_id        = data['group_id'];
+                        let groupId   = data['group_id'];
+                        let problemId = data['problem_id'];
+                        let datasetId = data['dataset_id'];
 
-                        if (problemName === '') {
-                            problemName = 'SMAP'; // CHANGED
-                            // problemName = '1'
-                        }
-                        if (datasetFilename === '') {
-                            datasetFilename = 'test_smap.csv';
-                        }
-
-                        // Put problem id / name in store
-                        await this.$store.dispatch('setProblemName', problemName);
-                        this.$store.commit('commitProblemId', problem_id);
-                        this.$store.commit('commitGroupId', group_id);
-                        this.$store.commit('setDatasetInformation', {
-                            filename: datasetFilename,
-                            user: datasetUser
-                        });
+                        // Put problem id in store
+                        this.$store.commit('setGroupId', groupId);
+                        this.$store.commit('setProblemId', problemId);
+                        this.$store.commit('setDatasetId', datasetId);
 
                         // If the user is already logged in, just proceed with loading as usual; if not, show login screen
                         if (data['is_logged_in'] === true) {

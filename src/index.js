@@ -9,14 +9,12 @@ import {wsTools} from "./scripts/websocket-tools";
 // Apollo
 import VueApollo from "vue-apollo";
 import ApolloClient from "apollo-client";
-import { HttpLink } from "apollo-link-http";
 import { WebSocketLink } from 'apollo-link-ws';
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 // Non ES-modularized libraries
 let annyang = require('annyang');
 let SpeechKITT = window.SpeechKITT;
-let responsiveVoice = window.responsiveVoice;
 
 // Styles
 import './styles/app.scss';
@@ -46,12 +44,7 @@ const getHeaders = () => {
     return headers;
 };
 
-// HASURS URL
-// const link = new HttpLink({
-//     uri: 'http://localhost:6002/v1/graphql',
-//     fetch,
-//     headers: getHeaders()
-// });
+// HASURA URL
 const link = new WebSocketLink({
     uri: GRAPH_QL_WS_URL,
     options: {
@@ -177,7 +170,7 @@ let app = new Vue({
 // Voice recognition
 if (annyang) {
     annyang.addCallback('result', phrases => {
-        if (responsiveVoice.isPlaying()) {
+        if (SpeechSynthesis.speaking) {
             return;
         }
         app.$store.commit('setCommand', phrases[0]);
