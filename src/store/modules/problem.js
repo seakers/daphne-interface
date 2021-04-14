@@ -88,23 +88,9 @@ const actions = {
         }
     },
     async addNewData({ state, commit }, newData) {
-        let dataAlreadyThere = false;
-        let newIndex = -1;
-        state.problemData.forEach((d, i) => {
-            if (d.outputs[0] === newData.outputs[0] && d.outputs[1] === newData.outputs[1]) {
-                dataAlreadyThere = true;
-                newIndex = i;
-            }
-        });
-
-        if (!dataAlreadyThere) {
-            let problemData = state.importCallback([newData], state.extra);
-            commit('addProblemData', problemData[0]);
-            commit('addPlotData', problemData[0]);
-        }
-        else {
-            commit('updateClickedArch', newIndex);
-        }
+        let problemData = state.importCallback([newData], state.extra);
+        commit('addProblemData', problemData[0]);
+        commit('addPlotData', problemData[0]);
     },
     // GENETIC
     async addNewDataFromGA({ state, commit }, newData) {

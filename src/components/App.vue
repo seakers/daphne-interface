@@ -65,7 +65,7 @@
             return {
                 tutorial: {},
                 isStartup: true,
-                problem_status: {},
+                problemStatus: {},
             }
         },
         computed: {
@@ -79,6 +79,7 @@
                 stageInformation: state => state.experiment.stageInformation,
                 isRecovering: state => state.experiment.isRecovering,
                 currentStageNum: state => state.experiment.currentStageNum,
+                problemId: state => state.problem.problemId,
                 user_pk: state => state.auth.user_pk,
             }),
             timerExperimentCondition() {
@@ -179,34 +180,33 @@
         },
         apollo: {
             $subscribe: {
-                problem_status: {
+                problemStatus: {
                     deep: true,
                     query: ProblemReload,
                     variables() {
                         return {
-                            problem_id: parseInt(PROBLEM__ID)
+                            problem_id: this.problemId
                         }
                     },
-                    result(data) {
-                        let status = data['data']['problem_status']['reload_problem'];
-                        this.$store.commit('setProblemStatus', status);
+                    result({ data }) {
+                        console.log(data)
+                        if (data['problem_status'] !== null) {
+                            let status = data['problem_status']['reload_problem'];
+                            this.$store.commit('setProblemStatus', status);
 
-                        // 1. Check to see if reload_problem is TRUE
-                        if(status === true){
-                            console.log("--> reload required");
-                            // 2. Stop architecture subscription
-                            // this.$apollo.subscriptions.Architecture.stop();
-                            console.log(this.$apollo.subscriptions.toString());
+                            // 1. Check to see if reload_problem is TRUE
+                            if(status === true){
+                                console.log("--> reload required");
+                                // 2. Stop architecture subscription
+                                // this.$apollo.subscriptions.Architecture.stop();
+                                console.log(this.$apollo.subscriptions.toString());
 
-                            // 3. Open modal alerting the user that the problem needs a reload
-                            this.$store.commit('activateModal', 'ReloadModal');
+                                // 3. Open modal alerting the user that the problem needs a reload
+                                this.$store.commit('activateModal', 'ReloadModal');
 
-                            // 4. After user has re-loaded the problem, start arch subscription again
+                                // 4. After user has re-loaded the problem, start arch subscription again
+                            }
                         }
-                        else {
-
-                        }
-
                     },
                 },
             },

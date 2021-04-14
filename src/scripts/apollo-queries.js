@@ -163,8 +163,8 @@ query dataset_list($user_pk: Int, $group_id: Int, $problem_id: Int) {
 
 
 const ArchitectureQuery = gql`
-subscription ArchitectureQuery($problem_id: Int, $input_list: [String!]) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, input: {_nin: $input_list}, ga: {_eq: false}, eval_status: {_eq: true}}) {
+subscription ArchitectureQuery($problem_id: Int, $dataset_id: Int, $input_list: [String!]) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, dataset_id: {_eq: $dataset_id}, input: {_nin: $input_list}, ga: {_eq: false}, eval_status: {_eq: true}}) {
     id
     user_id
     ga
@@ -176,8 +176,8 @@ subscription ArchitectureQuery($problem_id: Int, $input_list: [String!]) {
 }`;
 
 const ArchitectureEvalCount = gql`
-subscription MyQuery($problem_id: Int) {
-    Architecture_aggregate(where: {problem_id: {_eq: $problem_id}, eval_status: {_eq: false}}) {
+subscription ArchitectureEvalCount($problem_id: Int, $dataset_id: Int) {
+    Architecture_aggregate(where: {problem_id: {_eq: $problem_id}, dataset_id: {_eq: $dataset_id}, eval_status: {_eq: false}}) {
     aggregate {
       count
     }

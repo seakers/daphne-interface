@@ -315,7 +315,7 @@ function preprocessing(data, extra) {
             let inputs = d.inputs;
             let id = +d.id;
 
-            let arch = new Architecture(id, inputs, outputs);
+            let arch = new Architecture(id, inputs, outputs, d.db_id);
 
             output.push(arch);
         });

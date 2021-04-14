@@ -64,7 +64,7 @@
     import * as d3 from 'd3';
     import 'd3-selection-multi';
     import {fetchGet, fetchPost} from "../scripts/fetch-helpers";
-    import { ArchitectureQuery, ArchitectureEvalCount, UserArchitectureQuery, UserArchitectureSubscription, GaArchitectureQuery, GaArchitectureSubscription } from "../scripts/apollo-queries";
+    import { ArchitectureEvalCount, UserArchitectureQuery, UserArchitectureSubscription, GaArchitectureQuery, GaArchitectureSubscription } from "../scripts/apollo-queries";
 
     class Architecture {
         constructor(id, inputs, outputs, db_id) {
@@ -96,10 +96,8 @@
                 arch_placeholder: 0,
                 Architecture_aggregate: {},
                 arch_to_eval: 0,
-                inputs_list: [],
                 skip_sub: true,
                 arch_loaded: 0,
-                sub_count: 0,
             }
         },
         computed: {
@@ -115,8 +113,9 @@
                 gaArchs: state => state.tradespacePlot.gaArchs,
                 hiddenArchs: state => state.tradespacePlot.hiddenArchs,
                 status: state => state.problem.status,
-                problem_id: state => state.problem.problem_id,
-                group_id: state => state.problem.group_id,
+                problemId: state => state.problem.problemId,
+                datasetId: state => state.problem.datasetId,
+                groupId: state => state.problem.groupId,
             }),
             ...mapGetters({
                 numPoints: 'getNumPoints',
@@ -437,74 +436,17 @@
 
         apollo: {
             $subscribe: {
-                Architecture: {
-                    query: ArchitectureQuery,
-                    variables() {
-                        return {
-                            // problem_id: parseInt(PROBLEM__ID),
-                            problem_id: this.problem_id,
-                            input_list: this.inputs_list
-                        }
-                    },
-                    skip() {
-                        return this.skip_sub;
-                    },
-                    result (data) {
-                        let arches = data.data.Architecture;
-                        if(arches.length === 0){
-                            return;
-                        }
-                        let t0 = performance.now();
-
-                        let required_len  = this.extraData.orbitNum * this.extraData.instrumentNum;
-                        let blocked_archs = [];
-                        console.log("-------> SUBSCRIPTION UPDATE \nnum designs", arches.length, "\nobject ", data, "\nchromosome length", required_len);
-
-
-                        for(let x=0;x<arches.length;x++){
-                            let arch = arches[x];
-                            if(arch.eval_status && (arch.input.length == required_len)){
-                                let bool_ary = [];
-
-                                blocked_archs.push(arch.input);
-                                for(let y=0;y<arch.input.length;y++){
-                                    if(arch.input[y] == '1') { bool_ary.push(true); }
-                                    else { bool_ary.push(false); }
-                                }
-                                console.log("\n----------- SUBSCRIPTION DESIGN --", "\n ------- id", this.plotData.length, "\n --- inputs", arch.input, "\n -- science", arch.science, "\n ----- cost", arch.cost)
-                                let new_obj = {
-                                    id: this.plotData.length,
-                                    inputs: bool_ary,
-                                    outputs: [arch.science, arch.cost],
-                                };
-                                this.$store.dispatch('addNewData', new_obj);
-                                this.$store.dispatch('addNewArchitecture', new_obj);
-                                this.$store.commit("updateClickedArch", this.plotData.length - 1)
-                                console.log("--> new data point", new_obj);
-                            }
-                        }
-
-                        console.log("---> SUBSCRIPTION END\n");
-                        console.log("--> BLOCKED ARCHS:", blocked_archs);
-                        this.inputs_list = this.inputs_list.concat(blocked_archs);
-
-                        let t1 = performance.now();
-                        console.log("SUBSCRIPTION NUM", this.sub_count, "took " + (t1 - t0) + " milliseconds for ", arches.length, "designs");
-                        this.sub_count = this.sub_count + 1;
-                    },
-                },
-
                 //--> Number of designs requiring re-evaluation
                 Architecture_aggregate: {
                     query: ArchitectureEvalCount,
                     variables() {
                         return {
-                            // problem_id: parseInt(PROBLEM__ID),
-                            problem_id: this.problem_id,
+                            problem_id: this.problemId,
+                            dataset_id: this.datasetId,
                         }
                     },
-                    result (data) {
-                        this.arch_to_eval = data.data.Architecture_aggregate.aggregate.count;
+                    result ({ data }) {
+                        this.arch_to_eval = data.Architecture_aggregate.aggregate.count;
                     },
                 },
             },

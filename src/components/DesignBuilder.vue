@@ -10,7 +10,7 @@
                     <img src="assets/img/loader.svg" style="margin-right: 5px;" height="20" width="20" v-if="isComputing">
                     Evaluate Architecture
                 </a>
-                <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problem=' + problemName" v-if="detailsExperimentCondition">
+                <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problemId=' + problemId" v-if="detailsExperimentCondition">
                     Details
                 </a>
             </p>
@@ -25,7 +25,7 @@
     import EOSSBuilder from './EOSSBuilder';
     import PartitionBuilder from './PartitionBuilder';
     import {fetchPost} from "../scripts/fetch-helpers";
-    import { GlobalInstrumentQuery, LocalInstrumentQuery, LocalOrbitQuery } from '../scripts/apollo-queries';
+    import { ArchitectureQuery, GlobalInstrumentQuery, LocalInstrumentQuery, LocalOrbitQuery } from '../scripts/apollo-queries';
 
 
 
@@ -44,15 +44,22 @@
                 global_instruments: [],
                 local_orbits: [],
 
+                subCount: 0,
+                inputsList: [],
+                skipSub: false,
             }
         },
         computed: {
             ...mapState({
                 hoveredArch: state => state.tradespacePlot.hoveredArch,
                 clickedArch: state => state.tradespacePlot.clickedArch,
+                clickedArchInputs: state => state.tradespacePlot.clickedArchInputs,
                 problemData: state => state.problem.problemData,
-                problemName: state => state.problem.problemName,
+                problemId: state => state.problem.problemId,
+                datasetId: state => state.problem.datasetId,
+                groupId: state => state.problem.groupId,
                 outputList: state => state.problem.outputList,
+                extraData: state => state.problem.extra,
                 displayComponent: state => state.problem.displayComponent,
                 inExperiment: state => state.experiment.inExperiment,
                 experimentStage: state => state.experiment.experimentStage,
@@ -84,7 +91,7 @@
                 query: GlobalInstrumentQuery,
                 variables() {
                     return {
-                        problem_id: this.problem_id,
+                        problem_id: this.problemId,
                     }
                 }
             },
@@ -92,7 +99,7 @@
                 query: LocalInstrumentQuery,
                 variables() {
                     return {
-                        problem_id: this.problem_id,
+                        problem_id: this.problemId,
                     }
                 }
             },
@@ -100,9 +107,69 @@
                 query: LocalOrbitQuery,
                 variables() {
                     return {
-                        problem_id: this.problem_id,
+                        problem_id: this.problemId,
                     }
                 }
+            },
+            $subscribe: {
+                Architecture: {
+                    query: ArchitectureQuery,
+                    variables() {
+                        return {
+                            problem_id: this.problemId,
+                            dataset_id: this.datasetId,
+                            input_list: this.inputsList
+                        }
+                    },
+                    skip() {
+                        return this.skipSub;
+                    },
+                    result ({ data }) {
+                        let arches = data.Architecture;
+                        if (arches.length === 0) {
+                            return;
+                        }
+                        let t0 = performance.now();
+
+                        let requiredLen  = this.extraData.orbitNum * this.extraData.instrumentNum;
+                        let blocked_archs = [];
+                        console.log("-------> SUBSCRIPTION UPDATE \nnum designs", arches.length, "\nobject ", data, "\nchromosome length", requiredLen);
+
+
+                        for (let x = 0; x < arches.length; x++) {
+                            let arch = arches[x];
+                            if (arch.eval_status && (arch.input.length == requiredLen)) {
+                                let bool_ary = [];
+
+                                blocked_archs.push(arch.input);
+                                for (let y = 0; y < arch.input.length; y++) {
+                                    if(arch.input[y] == '1') {
+                                        bool_ary.push(true);
+                                    }
+                                    else {
+                                        bool_ary.push(false);
+                                    }
+                                }
+                                console.log("\n----------- SUBSCRIPTION DESIGN --", "\n ------- id", this.problemData.length, "\n --- inputs", arch.input, "\n -- science", arch.science, "\n ----- cost", arch.cost)
+                                let new_obj = {
+                                    id: this.problemData.length,
+                                    inputs: bool_ary,
+                                    outputs: [arch.science, arch.cost],
+                                };
+                                this.$store.dispatch('addNewData', new_obj);
+                                console.log("--> new data point", new_obj);
+                            }
+                        }
+
+                        console.log("---> SUBSCRIPTION END\n");
+                        console.log("--> BLOCKED ARCHS:", blocked_archs);
+                        this.inputsList = this.inputsList.concat(blocked_archs);
+
+                        let t1 = performance.now();
+                        console.log("SUBSCRIPTION NUM", this.subCount, "took " + (t1 - t0) + " milliseconds for ", arches.length, "designs");
+                        this.subCount = this.subCount + 1;
+                    },
+                },
             }
         },
         methods: {
@@ -119,7 +186,7 @@
             },
             async evaluateArch(event) {
                 this.isComputing = true;
-                let newInputs = this.$store.state.tradespacePlot.clickedArchInputs;
+                let newInputs = this.clickedArchInputs;
                 let oldInputs = this.problemData.find((point) => point.id === this.pointID).inputs;
 
                 // ARCHITECTURE ALREADY EVALUATED
@@ -127,21 +194,24 @@
                     return element === oldInputs[index];
                 });
 
+                // EVALUATE ARCHITECTURE
                 if (!arraysAreEq) {
-                    
-
-                    // INSERT 0s FOR GLOBAL INSTRUMENTS NOT USED (CLOUD_MASK / SMAP_ANT)
-
-
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
                     console.log("---> EVAL INPUTS:", newInputs);
                     try {
                         let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-architecture', reqData);
                         if (dataResponse.ok) {
-                            let newArch = await dataResponse.json();
-                            // EVALUATE ARCHITECTURE
-                            // this.$store.dispatch('addNewData', newArch);
+                            let eval_status = await dataResponse.json();
+                            if (eval_status["code"] == "arch_repeated") {
+                                let newIndex = -1;
+                                this.problemData.forEach((d, i) => {
+                                    if (d.db_id == eval_status["arch_id"]) {
+                                        newIndex = i;
+                                    }
+                                });
+                                this.$store.commit('updateClickedArch', newIndex);
+                            }
                         }
                         else {
                             console.error('Error evaluating the architecture');
