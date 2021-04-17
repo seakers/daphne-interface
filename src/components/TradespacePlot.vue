@@ -96,14 +96,12 @@
                 arch_placeholder: 0,
                 Architecture_aggregate: {},
                 arch_to_eval: 0,
-                skip_sub: true,
                 arch_loaded: 0,
             }
         },
         computed: {
             ...mapState({
                 problemData: state => state.problem.problemData,
-                extraData: state => state.problem.extra,
                 plotData: state => state.tradespacePlot.plotData,
                 colorMap: state => state.tradespacePlot.colorMap,
                 hoveredArch: state => state.tradespacePlot.hoveredArch,
