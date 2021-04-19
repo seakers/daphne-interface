@@ -38,15 +38,14 @@
                 Join__Problem_Instrument: [],
                 Join__Problem_Orbit: [],
 
-
-                problem_id: parseInt(PROBLEM__ID),
                 local_instruments: [],
                 global_instruments: [],
                 local_orbits: [],
 
                 subCount: 0,
-                inputsList: [],
+                idList: [],
                 skipSub: false,
+                ignoreQuery: true,
             }
         },
         computed: {
@@ -118,14 +117,23 @@
                         return {
                             problem_id: this.problemId,
                             dataset_id: this.datasetId,
-                            input_list: this.inputsList
+                            id_list: this.idList
                         }
                     },
                     skip() {
                         return this.skipSub;
                     },
                     result ({ data }) {
+                        // Ignore the first query results but save ids to ignore later, as they are not an update but the original query
                         let arches = data.Architecture;
+                        if (this.ignoreQuery) {
+                            for (let x = 0; x < arches.length; x++) {
+                                let arch = arches[x];
+                                this.idList.push(arch.id);
+                            }
+                            this.ignoreQuery = false;
+                            return;
+                        }
                         if (arches.length === 0) {
                             return;
                         }
@@ -141,7 +149,7 @@
                             if (arch.eval_status && (arch.input.length == requiredLen)) {
                                 let bool_ary = [];
 
-                                blocked_archs.push(arch.input);
+                                blocked_archs.push(arch.id);
                                 for (let y = 0; y < arch.input.length; y++) {
                                     if(arch.input[y] == '1') {
                                         bool_ary.push(true);
@@ -150,7 +158,7 @@
                                         bool_ary.push(false);
                                     }
                                 }
-                                console.log("\n----------- SUBSCRIPTION DESIGN --", "\n ------- id", this.problemData.length, "\n --- inputs", arch.input, "\n -- science", arch.science, "\n ----- cost", arch.cost)
+                                console.log("\n----------- SUBSCRIPTION DESIGN --", "\n ------- id", this.problemData.length, "\n --- inputs", arch.input, "\n -- science", arch.science, "\n ----- cost", arch.cost);
                                 let new_obj = {
                                     id: this.problemData.length,
                                     inputs: bool_ary,
@@ -163,7 +171,7 @@
 
                         console.log("---> SUBSCRIPTION END\n");
                         console.log("--> BLOCKED ARCHS:", blocked_archs);
-                        this.inputsList = this.inputsList.concat(blocked_archs);
+                        this.idList = this.idList.concat(blocked_archs);
 
                         let t1 = performance.now();
                         console.log("SUBSCRIPTION NUM", this.subCount, "took " + (t1 - t0) + " milliseconds for ", arches.length, "designs");
@@ -248,9 +256,6 @@
                 }
                 this.local_orbits = local_orbits;
             },
-            problem_id(){
-                console.log("-----> CURRENT PROBLEM ID", this.problem_id);
-            }
         }
     }
 </script>
