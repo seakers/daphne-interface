@@ -1,16 +1,14 @@
 <template>
     <div class="problem-picker">
         <form>
-
-
             <!-- GROUP -->
             <div class="problem">
                 <div class="field">
                     <label class="label">Group:</label>
                     <div class="control">
                         <div class="select">
-                            <select v-model="group_id">
-                                <option v-for="(group, idx) in user_groups" v-bind:value="group.id" v-bind:key="idx">{{ group.name }}</option>
+                            <select v-model="selectedGroupId">
+                                <option v-for="(group, idx) in userGroups" v-bind:value="group.id" v-bind:key="idx">{{ group.name }}</option>
                             </select>
                         </div>
                     </div>
@@ -23,35 +21,49 @@
                     <label class="label">Problem:</label>
                     <div class="control">
                         <div class="select">
-                            <select v-model="problem_id">
-                                <option v-for="(problem, idx) in user_problems" v-bind:value="problem.id" v-bind:key="idx">{{ problem.name }}</option>
+                            <select v-model="selectedProblemId">
+                                <option v-for="(problem, idx) in userProblems" v-bind:value="problem.id" v-bind:key="idx">{{ problem.name }}</option>
                             </select>
                         </div>
                     </div>
                 </div>
+            </div>
 
-
-
+            <!-- DATASET -->
+            <div class="problem">
                 <div class="field">
+                    <label class="label">Dataset:</label>
                     <div class="control">
-                        <button class="button is-link" v-on:click.prevent="changeProblem">Load</button>
-                    </div>
-                </div>
-
-                <div class="field" v-if="isLoggedIn">
-                    <div class="control">
-                        <a class="button is-link" target="_blank" href="vassar.html">Problem Builder</a>
-                    </div>
-                </div>
-
-                <hr>
-
-                <div class="field" v-if="isLoggedIn">
-                    <div class="control">
-                        <a class="button is-link" target="_blank" href="adds.html">Decision Graph</a>
+                        <div class="select">
+                            <select v-model="selectedDatasetId">
+                                <option v-for="(dataset, idx) in userDatasets" v-bind:value="dataset.id" v-bind:key="idx">{{ fullDatasetName(dataset) }}</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="field">
+                <div class="control">
+                    <button class="button is-link" v-on:click.prevent="changeProblem" v-bind:disabled="!changedSelection">Load</button>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="field" v-if="isLoggedIn">
+                <div class="control">
+                    <a class="button is-link" target="_blank" href="vassar.html">Problem Builder</a>
+                </div>
+            </div>
+
+            <div class="field" v-if="isLoggedIn">
+                <div class="control">
+                    <a class="button is-link" target="_blank" href="adds.html">Decision Graph</a>
+                </div>
+            </div>
+
+            
 
         </form>
     </div>
@@ -60,45 +72,30 @@
 <script>
     import { mapState } from 'vuex';
     import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
-    import { DaphneGroupQuery, DaphneProblemQuery } from '../scripts/apollo-queries';
+    import { DaphneGroupQuery, DaphneProblemQuery, DaphneDatasetQuery } from '../scripts/apollo-queries';
 
 
     export default {
         name: 'ProblemPicker',
         data: function () {
             return {
-                user_groups: [],
-                user_problems: [],
-                group_id: null,
-                problem_id: null,
+                selectedGroupId: null,
+                selectedProblemId: null,
+                selectedDatasetId: null,
+                userGroups: [],
+                userProblems: [],
+                userDatasets: [],
             }
         },
         computed: {
             ...mapState({
-                problemList: state => state.problem.problemList,
-                datasetList: state => state.problem.datasetList,
-                global_group_id: state => state.problem.group_id,
-                global_problem_id: state => state.problem.problem_id,
                 isLoggedIn: state => state.auth.isLoggedIn,
                 username: state => state.auth.username,
-                user_pk: state => state.auth.user_pk,
+                userPk: state => state.auth.user_pk,
+                groupId: state => state.problem.groupId,
+                problemId: state => state.problem.problemId,
+                datasetId: state => state.problem.datasetId,
             }),
-            problemName: {
-                get() {
-                    return this.$store.state.problem.problemName;
-                },
-                set(newProblem) {
-                    this.$store.dispatch('setProblemName', newProblem);
-                }
-            },
-            datasetInformation: {
-                get() {
-                    return this.$store.state.problem.datasetInformation;
-                },
-                set(newDatasetInformation) {
-                    this.$store.commit('setDatasetInformation', newDatasetInformation);
-                }
-            },
             downloadUrl() {
                 let params = {
                     filename: this.datasetInformation.filename
@@ -107,6 +104,9 @@
                     return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
                 }).join('&');
                 return API_URL + 'eoss/data/download-data?' + queryString;
+            },
+            changedSelection() {
+                return this.groupId !== this.selectedGroupId || this.problemId !== this.selectedProblemId || this.datasetId !== this.selectedDatasetId;
             }
         },
         methods: {
@@ -119,14 +119,15 @@
                         await this.$store.dispatch('stopBackgroundTasks');
 
                         // 2. Init the new problem
-                        await this.$store.dispatch('initProblem', this.problem_id);
+                        await this.$store.dispatch('initProblem', this.problemId);
 
                         // 3. Load the new dataset
                         let parameters = {
-                            'problem_id': this.problem_id,
-                            'group_id': this.group_id
+                            'problem_id': this.selectedProblemId,
+                            'group_id': this.selectedGroupId,
+                            'dataset_id': this.selectedDatasetId
                         };
-                        await this.$store.dispatch('loadNewData', parameters);
+                        await this.$store.dispatch('loadData', parameters);
 
                         // 4. Start the background search algorithm
                         if (this.$store.state.auth.isLoggedIn) {
@@ -145,46 +146,85 @@
             },
             openSaveModal() {
                 this.$store.commit('activateModal', 'SaveDatasetModal');
+            },
+            fullDatasetName(dataset) {
+                let fullName = dataset.name;
+                if (dataset.user_id === null) {
+                    if (dataset.Group === null) {
+                        fullName += " - Global (read only)";
+                    }
+                    else {
+                        fullName += " - Owner: " + dataset.Group.name;
+                    }
+                }
+                else {
+                    fullName += " - Owner: User";
+                }
+                return fullName
             }
         },
         apollo: {
             // TODO: query groups
             // TODO: query problems
             $subscribe: {
-                user_groups: {
+                userGroups: {
                     query: DaphneGroupQuery,
                     variables() {
                         return {
-                            user_pk: this.user_pk,
+                            user_pk: this.userPk,
                         }
                     },
-                    result (data) {
-                        this.user_groups = data.data.user_groups;
-                        if(this.group_id === null){
-                            if(this.user_groups.length > 0){
-                                this.group_id = this.user_groups[0].id;
+                    result ({ data }) {
+                        this.userGroups = data.user_groups;
+                        if (this.selectedGroupId === null) {
+                            if (this.userGroups.length > 0) {
+                                this.selectedGroupId = this.userGroups[0].id;
                             }
-                            else{
-                                this.group_id = 0;
+                            else {
+                                this.selectedGroupId = 1;
                             }
                         }
                     }
                 },
-                user_problems: {
+                userProblems: {
                     query: DaphneProblemQuery,
                     variables() {
                         return {
-                            group_id: this.group_id,
+                            group_id: this.selectedGroupId,
                         }
                     },
-                    result (data) {
-                        this.user_problems = data.data.user_problems;
-                        if(this.problem_id === null){
-                            if(this.user_problems.length > 0){
-                                this.problem_id = this.user_problems[0].id;
+                    result ({ data }) {
+                        this.userProblems = data.user_problems;
+                        if (this.selectedProblemId === null) {
+                            if (this.userProblems.length > 0) {
+                                this.selectedProblemId = this.userProblems[0].id;
                             }
-                            else{
-                                this.problem_id = 0;
+                            else {
+                                this.selectedProblemId = 1;
+                            }
+                        }
+                    }
+                },
+                userDatasets: {
+                    query: DaphneDatasetQuery,
+                    variables() {
+                        return {
+                            user_pk: this.userPk,
+                            group_id: this.selectedGroupId,
+                            problem_id: this.selectedProblemId,
+                        }
+                    },
+                    result ({ data }) {
+                        this.userDatasets = data.user_datasets;
+                        if (this.selectedDatasetId === null) {
+                            this.selectedDatasetId = 1;
+                            if (this.userDatasets.length > 0) {
+                                this.selectedDatasetId = this.userDatasets[0].id;
+                                for (let dataset of this.userDatasets) {
+                                    if (dataset.user_id === this.userPk) {
+                                        this.selectedDatasetId = dataset.id;
+                                    }
+                                }
                             }
                         }
                     }
@@ -192,38 +232,16 @@
             }
         },
         watch: {
-
-            // // --> User logs in
-            // user_groups() {
-            //     if(this.user_groups.length > 0){
-            //         this.group_id = this.user_groups[0].id;
-            //     }
-            //     else{
-            //         this.group_id = 0;
-            //     }
-            // },
-            //
-            // // --> New group selected
-            // user_problems() {
-            //     if(this.user_problems.length > 0){
-            //         this.problem_id = this.user_problems[0].id;
-            //     }
-            //     else{
-            //         this.problem_id = 0;
-            //     }
-            // },
-
-            global_group_id() {
-                this.group_id = this.global_group_id;
+            groupId: function(newGroupId, _) {
+                this.selectedGroupId = newGroupId;
             },
-            global_problem_id(){
-                this.problem_id = this.global_problem_id;
+            problemId: function(newProblemId, _) {
+                this.selectedProblemId = newProblemId;
+            },
+            datasetId: function(newDatasetId, _) {
+                this.selectedDatasetId = newDatasetId;
             },
         },
-      async mounted() {
-        // this.$apollo.subscriptions.user_groups.start();
-        // this.$apollo.subscriptions.user_problems.start();
-      }
     }
 </script>
 

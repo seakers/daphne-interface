@@ -1,5 +1,4 @@
 import store from '../store';
-import {fetchGet, fetchPost} from "./fetch-helpers";
 import { client } from '../index';
 import { LocalOrbitQuery, LocalInstrumentQuery } from "./apollo-queries";
 
@@ -9,13 +8,12 @@ class Architecture {
         this.id = id;
         this.inputs = inputs;
         this.outputs = outputs;
-        this.eb_id = db_id;
+        this.db_id = db_id;
     }
 }
 
 export default {
     problemName: 'SMAP',
-    vassarPort: 9090,
     inputNum: 1,
     outputNum: 2,
     inputList: [],
@@ -317,7 +315,7 @@ function preprocessing(data, extra) {
             let inputs = d.inputs;
             let id = +d.id;
 
-            let arch = new Architecture(id, inputs, outputs);
+            let arch = new Architecture(id, inputs, outputs, d.db_id);
 
             output.push(arch);
         });

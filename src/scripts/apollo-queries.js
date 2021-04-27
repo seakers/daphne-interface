@@ -46,15 +46,6 @@ query MyQuery($selected_group_id: Int) {
 
 
 
-
-
-
-
-
-
-
-
-
 const GlobalInstrumentQuery = gql`
 query MyQuery($problem_id: Int!) {
   Join__Instrument_Characteristic(where: {problem_id: {_eq: $problem_id}}, distinct_on: [instrument_id]) {
@@ -139,7 +130,7 @@ query MyQuery($selected_group_id: Int) {
 
 
 const DaphneGroupQuery = gql`
-query MyQuery($user_pk: Int) {
+query group_list($user_pk: Int) {
     user_groups: Group(where: {Join__AuthUser_Groups: {auth_user: {id: {_eq: $user_pk}}}}) {
       id
       name
@@ -147,11 +138,23 @@ query MyQuery($user_pk: Int) {
 }`;
 
 const DaphneProblemQuery = gql`
-query MyQuery($group_id: Int) {
+query problem_list($group_id: Int) {
     user_problems: Problem(where: {Group: {id: {_eq: $group_id}}}) {
       id
       name
     }
+}`;
+
+const DaphneDatasetQuery = gql`
+query dataset_list($user_pk: Int, $group_id: Int, $problem_id: Int) {
+  user_datasets: Dataset(where: {_and: [{problem_id: {_eq: $problem_id}}, {_or: [{user_id: {_is_null: true}}, {user_id: {_eq: $user_pk}}]}, {_or: [{group_id: {_is_null: true}}, {group_id: {_eq: $group_id}}]}]}) {
+    id
+    name
+    user_id
+    Group {
+      name
+    }
+  }
 }`;
 
 
@@ -160,8 +163,8 @@ query MyQuery($group_id: Int) {
 
 
 const ArchitectureQuery = gql`
-subscription ArchitectureQuery($problem_id: Int, $input_list: [String!]) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, input: {_nin: $input_list}, ga: {_eq: false}, eval_status: {_eq: true}}) {
+subscription ArchitectureQuery($problem_id: Int, $dataset_id: Int, $id_list: [Int!]) {
+    Architecture(where: {problem_id: {_eq: $problem_id}, dataset_id: {_eq: $dataset_id}, id: {_nin: $id_list}, ga: {_eq: false}, eval_status: {_eq: true}}) {
     id
     user_id
     ga
@@ -173,8 +176,8 @@ subscription ArchitectureQuery($problem_id: Int, $input_list: [String!]) {
 }`;
 
 const ArchitectureEvalCount = gql`
-subscription MyQuery($problem_id: Int) {
-    Architecture_aggregate(where: {problem_id: {_eq: $problem_id}, eval_status: {_eq: false}}) {
+subscription ArchitectureEvalCount($problem_id: Int, $dataset_id: Int) {
+    Architecture_aggregate(where: {problem_id: {_eq: $problem_id}, dataset_id: {_eq: $dataset_id}, eval_status: {_eq: false}}) {
     aggregate {
       count
     }
@@ -307,6 +310,7 @@ export {
     OrbitAttributeAcceptedValuesQuery,
     DaphneGroupQuery,
     DaphneProblemQuery,
+    DaphneDatasetQuery,
     GlobalInstrumentQuery,
     LocalInstrumentQuery,
     LocalOrbitQuery,

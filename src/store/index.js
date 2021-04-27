@@ -32,24 +32,22 @@ export default new Vuex.Store({
     mutations: {
     },
     actions: {
-        async initProblem({ commit, state }, problem_id) {
+        async initProblem({ commit, state }, problemId) {
 
             // Load correct problem module based on problem
             let problem = null;
             let filter  = null;
 
-
             problem             = SMAP;
-            problem.problemName = parseInt(problem_id);
+            problem.problemName = problemId;
             filter              = EOSSFilter;
-
 
             commit('setProblem', problem);
             if (filter !== null) {
                 commit('setFilter', filter);
             }
 
-            commit('updateExtra', await problem.initFunction(parseInt(problem_id)));
+            commit('updateExtra', await problem.initFunction(problemId));
 
             // Load all the initial functionalities
             commit('resetDaphne');
@@ -66,8 +64,6 @@ export default new Vuex.Store({
                 }
             }
         },
-
-
 
         async onWebsocketsMessage({ commit, state, getters, dispatch }, message) {
             let received_info = JSON.parse(message.data);
@@ -148,16 +144,7 @@ export default new Vuex.Store({
                 }
             }
 
-
-
-
-
-
-
-
-
-
-
+            
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");
             }
@@ -196,8 +183,7 @@ export default new Vuex.Store({
             // Stop the GA
             try {
                 let reqData = new FormData();
-                reqData.append('problem', rootState.problem.problemName);
-                reqData.append('inputType', rootState.problem.inputType);
+                reqData.append('problem_id', rootState.problem.problem_id);
 
                 let url = API_URL + 'eoss/explorer/stop-ga';
                 let dataResponse = await fetchPost(url, reqData);

@@ -5,27 +5,13 @@ import {parse} from "graphql";
 
 // initial state
 const state = {
-    group_id: null,
-    problem_id: null,
+    groupId: null,
+    problemId: null,
+    // eslint-disable-next-line no-undef
+    datasetId: null,
     status: false,
-
-
-    problemList: [
-        'ClimateCentric',
-        'SMAP',
-        'SMAP_JPL1',
-        'SMAP_JPL2',
-        'Decadal2017Aerosols'
-    ],
-    problemName: '',
-    vassarPort: 9090,
     problemData: [],
     dataUpdateFrom: '',
-    datasetList: [],
-
-
-    // eslint-disable-next-line no-undef
-    datasetInformation: parseInt(PROBLEM__ID),
     inputNum: 0,
     outputNum: 0,
     inputList: [],
@@ -55,8 +41,8 @@ const getters = {
     getExtraInfo(state) {
         return state.extra;
     },
-    getProblemModuleId(state) {
-        return state.problem_id;
+    getProblemId(state) {
+        return state.problemId;
     },
     getProblemStatus(state) {
         return state.status;
@@ -65,23 +51,23 @@ const getters = {
 
 // actions
 const actions = {
-
-
-    async loadNewData({ state, commit }, parameters) {
-        console.log('Importing data...');
+    async loadData({ state, commit }, parameters) {
+        console.log('Importing data from the database...');
 
         try {
             let reqData = new FormData();
 
-            let problem_id = parameters['problem_id'];
-            let group_id   = parameters['group_id'];
+            let problemId = parameters['problem_id'];
+            let groupId   = parameters['group_id'];
+            let datasetId = parameters['dataset_id'];
 
-            reqData.append('problem_id', problem_id);
-            reqData.append('group_id', group_id);
+            commit('setProblemId', problemId);
+            commit('setGroupId', groupId);
+            commit('setDatasetId', datasetId);
 
-            commit('commitProblemId', problem_id);
-            commit('commitGroupId', group_id);
-
+            reqData.append('problem_id', problemId);
+            reqData.append('group_id', groupId);
+            reqData.append('dataset_id', datasetId);
 
             // GET PROBLEM DATA
             let dataResponse = await fetchPost(API_URL + 'eoss/data/import-data', reqData);
@@ -101,32 +87,10 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
-    async reloadOldData({ state, commit }, oldData) {
-        console.log("---> Old data", oldData);
-        let problemData = state.importCallback(oldData, state.extra);
-        console.log("---> Reload problem data", problemData);
-        calculateParetoRanking(problemData);
-        commit('updateProblemData', problemData);
-        commit('setDataUpdateFrom', 'reloadOldData');
-    },
     async addNewData({ state, commit }, newData) {
-        let dataAlreadyThere = false;
-        let newIndex = -1;
-        state.problemData.forEach((d, i) => {
-            if (d.outputs[0] === newData.outputs[0] && d.outputs[1] === newData.outputs[1]) {
-                dataAlreadyThere = true;
-                newIndex = i;
-            }
-        });
-
-        if (!dataAlreadyThere) {
-            let problemData = state.importCallback([newData], state.extra);
-            commit('addProblemData', problemData[0]);
-            commit('addPlotData', problemData[0]);
-        }
-        else {
-            commit('updateClickedArch', newIndex);
-        }
+        let problemData = state.importCallback([newData], state.extra);
+        commit('addProblemData', problemData[0]);
+        commit('addPlotData', problemData[0]);
     },
     // GENETIC
     async addNewDataFromGA({ state, commit }, newData) {
@@ -166,20 +130,6 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
-
-    // setting the problem name gets the different datasets for that problem
-    async setProblemName({ state, commit, rootState }, problemName) {
-        try {
-            commit('setProblemName', problemName);
-
-
-            let datasetList = [];
-            commit('setDatasetList', datasetList);
-        }
-        catch(e) {
-            console.error('Networking error:', e);
-        }
-    },
 };
 
 // mutations
@@ -189,8 +139,6 @@ const mutations = {
     },
     setProblem(state, problemInfo) {
         // Set the problem instance
-        state.problemName = problemInfo.problemName;
-        state.vassarPort = problemInfo.vassarPort;
         state.inputNum = problemInfo.inputNum;
         state.outputNum = problemInfo.outputNum;
         state.inputList = problemInfo.inputList;
@@ -217,14 +165,14 @@ const mutations = {
         state.index2DisplayName = problemInfo.index2DisplayName;
         state.ppFeatureSingle = problemInfo.ppFeatureSingle;
     },
-    setProblemName(state, problemName) {
-        state.problemName = problemName;
+    setGroupId(state, groupId){
+        state.groupId = groupId;
     },
-    setDatasetList(state, datasetList) {
-        state.datasetList = datasetList;
+    setProblemId(state, problemId) {
+        state.problemId = problemId;
     },
-    setDatasetInformation(state, datasetInformation) {
-        state.datasetInformation = datasetInformation;
+    setDatasetId(state, datasetId) {
+        state.datasetId = datasetId;
     },
     updateExtra(state, extra) {
         state.extra = extra;
@@ -245,13 +193,6 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    },
-
-    commitGroupId(state, group_id){
-        state.group_id = group_id;
-    },
-    commitProblemId(state, problem_id) {
-        state.problem_id = problem_id;
     },
 };
 
