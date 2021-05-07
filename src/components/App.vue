@@ -11,7 +11,7 @@
                             v-on:countdown-end="onCountdownEnd">
                     </timer>
                     <problem-picker v-if="!inExperiment"></problem-picker>
-                    <active-switches></active-switches>
+                    <services-menu></services-menu>
                     <user class="user-info" v-if="!inExperiment"></user>
                 </div>
             </aside>
@@ -53,7 +53,7 @@
     import User from './User';
     import ProblemPicker from './ProblemPicker';
     import ActiveMessage from "./ActiveMessage";
-    import ActiveSwitches from "./ActiveSwitches";
+    import ServicesMenu from "./ServicesMenu";
     import ChatWindow from "./ChatWindow";
 
     import { ProblemReload } from "../scripts/apollo-queries";
@@ -154,11 +154,9 @@
                 this.$store.dispatch('loadData', parameters);
 
                 // 4. Connect to a VASSAR Evaluator/GA pair
-                fetchPost(API_URL +  'eoss/vassar/connect').then(async (response) => {
-                    if (response.ok) {
-                        console.log("Connection to VASSAR successful.");
-                    }
-                });
+                wsTools.websocket.send(JSON.stringify({
+                    msg_type: "connect_services"
+                }));
 
                 // 5. Load past dialogue - scroll chat window down
                 this.$store.dispatch('loadDialogue').then(() => {
@@ -188,6 +186,9 @@
                             problem_id: this.problemId
                         }
                     },
+                    skip() {
+                        return this.problemId === null;
+                    },
                     result({ data }) {
                         console.log(data)
                         if (data['problem_status'] !== null) {
@@ -213,7 +214,7 @@
         },
         components: {
             ChatWindow,
-            ActiveSwitches,
+            ServicesMenu,
             ActiveMessage,
             MainMenu,
             Timer,

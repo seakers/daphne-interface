@@ -52,7 +52,7 @@
                     password: formData.get("password")
                 }).then(async () => {
                     // Start the Websocket
-                    await wsTools.wsRefresh();
+                    await wsTools.wsReconnect();
                 });
             },
             openRegisterForm() {

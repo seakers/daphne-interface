@@ -194,7 +194,13 @@
                     return;
                 }
 
-                let duration = d3.event && d3.event.altKey ? 5000 : 500;
+                let duration = 500;
+
+                d3.select('#feature-application-panel').on('keydown', (event, d) => {
+                    if (event.altKey) {
+                        duration = 5000;
+                    }
+                })
 
                 let root = d3.hierarchy(this.expressionTree, d => d.children);
                 root.x0 = this.height / 2;

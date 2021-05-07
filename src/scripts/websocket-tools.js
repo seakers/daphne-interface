@@ -41,12 +41,12 @@ class WebsocketTools {
         this.experimentWebsocket.onmessage = function (data) {};
     }
 
-    async wsRefresh() {
-        this.websocket.refresh();
+    async wsReconnect() {
+        this.websocket.reconnect();
     }
 
-    async experimentWsRefresh() {
-        this.experimentWebsocket.refresh();
+    async experimentWsReconnect() {
+        this.experimentWebsocket.reconnect();
     }
 }
 

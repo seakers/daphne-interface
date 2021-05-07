@@ -203,8 +203,8 @@
 
                 this.zoom = d3.zoom()
                     .scaleExtent([0.4, 25])
-                    .on('zoom', d => {
-                        this.transform = d3.event.transform;
+                    .on('zoom', (event, d) => {
+                        this.transform = event.transform;
                         gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
                         gY.call(yAxis.scale(this.transform.rescaleY(yScale)));
                         this.drawPoints(this.context, false);
@@ -281,8 +281,8 @@
                 // Canvas interaction
                 let self = this;
 
-                canvas.on('mousemove.inspection', function() { self.canvasMousemove(); });
-                canvas.on('click.inspection', function() { self.canvasClick(); });
+                canvas.on('mousemove.inspection', function(event, d) { self.canvasMousemove(event); });
+                canvas.on('click.inspection', function(event, d) { self.canvasClick(event); });
             },
 
             drawPoints(context, hidden) {
@@ -323,12 +323,12 @@
                 context.restore();
             },
 
-            getPointUnderMouse() {
+            getPointUnderMouse(event) {
                 // Draw the hidden canvas.
                 this.drawPoints(this.hiddenContext, true);
 
                 // Get mouse positions from the main canvas.
-                let mousePos = d3.mouse(d3.select('#main-plot').select('canvas').node());
+                let mousePos = d3.pointer(d3.select('#main-plot').select('canvas').node());
                 let mouseX = mousePos[0];
                 let mouseY = mousePos[1];
 
@@ -358,8 +358,8 @@
                 return maxcolor;
             },
 
-            canvasMousemove() {
-                let pointColor = this.getPointUnderMouse();
+            canvasMousemove(event) {
+                let pointColor = this.getPointUnderMouse(event);
 
                 // Get the data from our map!
                 if (pointColor in this.colorMap) {
@@ -377,8 +377,8 @@
                 }
             },
 
-            canvasClick() {
-                let pointColor = this.getPointUnderMouse();
+            canvasClick(event) {
+                let pointColor = this.getPointUnderMouse(event);
 
                 // Get the data from our map!
                 if (pointColor in this.colorMap) {
@@ -522,8 +522,8 @@
                     let self = this;
                     let justSelectedArchs = new Set();
 
-                    function selectMousedown() {
-                        let mousePos = d3.mouse(this);
+                    function selectMousedown(event) {
+                        let mousePos = d3.pointer(event);
                         svg.append('rect')
                             .attrs(
                                 {
@@ -543,11 +543,11 @@
                         justSelectedArchs = new Set();
                     }
 
-                    function selectMousemove() {
+                    function selectMousemove(event) {
                         let selection = svg.select('rect.selection');
                         if (!selection.empty()) {
                             let selectionUpdated = false;
-                            let mousePos = d3.mouse(this);
+                            let mousePos = d3.pointer(event);
 
                             let box = {
                                 x      : parseInt(selection.attr('x'), 10),
@@ -641,19 +641,19 @@
                         }
                     }
 
-                    function selectMouseup() {
+                    function selectMouseup(event) {
                         // remove selection frame
                         svg.selectAll('rect.selection').remove();
                         justSelectedArchs.clear();
                     }
 
-                    svg.on('mousedown.modes', selectMousedown)
-                        .on('mousemove.modes', selectMousemove)
-                        .on('mouseup.modes', selectMouseup);
+                    svg.on('mousedown.modes', (event) => selectMousedown(event))
+                        .on('mousemove.modes', (event) => selectMousemove(event))
+                        .on('mouseup.modes', (event) => selectMouseup(event));
 
-                    canvases.on('mousedown.modes', selectMousedown)
-                        .on('mousemove.modes', selectMousemove)
-                        .on('mouseup.modes', selectMouseup);
+                    canvases.on('mousedown.modes', (event) => selectMousedown(event))
+                        .on('mousemove.modes', (event) => selectMousemove(event))
+                        .on('mouseup.modes', (event) => selectMouseup(event));
                 }
             },
 

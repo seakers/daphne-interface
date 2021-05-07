@@ -23,7 +23,7 @@
             logout() {
                 this.$store.dispatch('logoutUser').then(async () => {
                     // Start the Websocket
-                    await wsTools.wsRefresh();
+                    await wsTools.wsReconnect();
                 });
             }
         }

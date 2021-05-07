@@ -75,8 +75,8 @@
 
                 this.zoom = d3.zoom()
                     .scaleExtent([0.4, 25])
-                    .on('zoom', d => {
-                        this.transform = d3.event.transform;
+                    .on('zoom', (event, d) => {
+                        this.transform = event.transform;
                         gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
                         let newXScale = this.transform.rescaleX(xScale);
                         missionLines

@@ -1,5 +1,9 @@
 <template>
     <div class="active-menu" v-if="logged_in">
+        <p class="has-text-weight-bold">VASSAR status:</p>
+        <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>
+        <p class="has-text-weight-bold">GA status:</p>
+        <p :class="connectionStatusToColor(gaStatus)">{{connectionStatusToExplanation(gaStatus)}}</p>
         <label class="checkbox" v-if="backgroundSearchExperimentCondition">
             <input type="checkbox" v-model="runBackgroundSearch">
             Run Background Search
@@ -23,12 +27,14 @@
     import {mapState} from "vuex";
 
     export default {
-        name: "ActiveSwitches",
+        name: "ServicesMenu",
         computed: {
             ...mapState({
                 inExperiment: state => state.experiment.inExperiment,
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
+                vassarStatus: state => state.services.vassarStatus,
+                gaStatus: state => state.services.gaStatus
             }),
             runBackgroundSearch: {
                 get () {
@@ -92,11 +98,51 @@
                     return this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions');
                 }
             },
+        },
+        methods: {
+            connectionStatusToExplanation(connectionStatus) {
+                switch (connectionStatus) {
+                    case "waiting_for_user":
+                        return "Starting connection...";
+                    case "waiting_for_ack":
+                        return "Waiting for a response...";
+                    case "uninitialized":
+                        return "Initializing service...";
+                    case "ready":
+                        return "Connected";
+                    case "ack_error":
+                        return "Error during connection";
+                    case "build_error":
+                        return "Error during initialization";
+                    default:
+                        return "Unknown status";
+                }
+            },
+            connectionStatusToColor(connectionStatus) {
+                switch (connectionStatus) {
+                    case "waiting_for_user":
+                        return "conn-start";
+                    case "waiting_for_ack":
+                        return "conn-connecting";
+                    case "uninitialized":
+                        return "conn-connecting";
+                    case "ready":
+                        return "conn-success";
+                    case "ack_error":
+                        return "conn-error";
+                    case "build_error":
+                        return "conn-error";
+                    default:
+                        return "conn-error";
+                }
+            }
         }
     }
 </script>
 
-<style scoped>
+<style lang="scss">
+    @import "../../node_modules/bulma/sass/utilities/_all";
+
     .active-menu {
         padding: 30px;
         color: white;
@@ -104,5 +150,21 @@
 
     .checkbox:hover {
         color: white;
+    }
+
+    .conn-start {
+        color: $grey-light;
+    }
+
+    .conn-connecting {
+        color: $orange;
+    }
+
+    .conn-success {
+        color: $green;
+    }
+
+    .conn-error {
+        color: $red;
     }
 </style>

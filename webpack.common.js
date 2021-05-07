@@ -24,14 +24,16 @@ module.exports = {
         rules: [
             // script-loader with 'env' preset
             {
+                test: /\.vue$/,
+                use: ['vue-loader']
+            },
+            {
                 test: /\.js$/,
+                use: ['babel-loader'],
                 exclude: file => (
                     /node_modules/.test(file) &&
                     !/\.vue\.js/.test(file)
-                ),
-                use: {
-                    loader: 'babel-loader'
-                }
+                )
             },
             // html-loader
             {
@@ -40,7 +42,7 @@ module.exports = {
             },
             // sass-loader with sourceMap activated
             {
-                test: /\.scss$/,
+                test: /\.(s[ac]ss|css)$/,
                 use: [
                     MiniCssExtractPlugin.loader,
                     {
@@ -57,27 +59,19 @@ module.exports = {
                     }
                 ]
             },
-            // css-loader with sourceMap activated
-            {
-                test: /\.css$/,
-                use: [
-                    MiniCssExtractPlugin.loader,
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            sourceMap: true
-                        }
-                    }
-                ]
-            },
             // file-loader(for images)
-            { test: /\.(jpg|png|gif|svg)$/, use: [ { loader: 'file-loader', options: { name: '[name].[ext]', outputPath: './assets/img/' } } ] },
-            // file-loader(for fonts)
-            { test: /\.(woff|woff2|eot|ttf|otf)$/, use: ['file-loader'] },
             {
-                test: /\.vue$/,
-                loader: 'vue-loader'
-            }
+                test: /\.(jpg|png|gif)$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'assets/img/[hash][ext][query]'
+                }
+            },
+            // file-loader(for fonts)
+            { 
+                test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+                type: 'asset/inline',
+            },
         ]
     },
 

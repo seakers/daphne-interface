@@ -70,7 +70,7 @@
                 let metrics = d.metrics;
 
                 // Set variables
-                let mousePos = d3.mouse(this.svg.node());
+                let mousePos = d3.pointer(this.svg.node());
                 let mouseLocX = mousePos[0];
                 let mouseLocY = mousePos[1];
 
@@ -212,13 +212,13 @@
                     // Set zoom
                     let zoom = d3.zoom()
                         .scaleExtent([0.2, 50])
-                        .on('zoom', d => {
-                            gX.call(xAxis.scale(d3.event.transform.rescaleX(xScale)));
-                            gY.call(yAxis.scale(d3.event.transform.rescaleY(yScale)));
+                        .on('zoom', (event, d) => {
+                            gX.call(xAxis.scale(event.transform.rescaleX(xScale)));
+                            gY.call(yAxis.scale(event.transform.rescaleY(yScale)));
 
                             objects.attr('transform', d => {
-                                let xCoord = d3.event.transform.applyX(this.xMap(d));
-                                let yCoord = d3.event.transform.applyY(this.yMap(d));
+                                let xCoord = event.transform.applyX(this.xMap(d));
+                                let yCoord = event.transform.applyY(this.yMap(d));
                                 return 'translate(' + xCoord + ',' + yCoord + ')';
                             });
                         });

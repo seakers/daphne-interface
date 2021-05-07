@@ -11,7 +11,8 @@ import filter from './modules/filter';
 import featureApplication from './modules/feature-application';
 import experiment from './modules/experiment';
 import modal from './modules/modal';
-import mycroft from './modules/mycroft'
+import mycroft from './modules/mycroft';
+import services from './modules/services';
 
 import ClimateCentric from '../scripts/climate-centric';
 import SMAP from '../scripts/smap';
@@ -144,6 +145,16 @@ export default new Vuex.Store({
                 }
             }
 
+
+            if (received_info['type'] === 'services.vassar_status') {
+                commit('setVassarStatus', received_info['status']);
+            }
+
+            if (received_info['type'] === 'services.ga_status') {
+                commit('setGaStatus', received_info['status']);
+            }
+
+
             
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");
@@ -205,6 +216,7 @@ export default new Vuex.Store({
         active,
         auth,
         daphne,
+        services,
         problem,
         tradespacePlot,
         functionalityList,
