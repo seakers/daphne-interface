@@ -64,13 +64,13 @@
                 }
             },
 
-            featureMouseover(d) {
+            featureMouseover(event, d) {
                 let id = d.id;
                 let expression = d.expression;
                 let metrics = d.metrics;
 
                 // Set variables
-                let mousePos = d3.pointer(this.svg.node());
+                let mousePos = d3.pointer(event, this.svg.node());
                 let mouseLocX = mousePos[0];
                 let mouseLocY = mousePos[1];
 
@@ -139,7 +139,7 @@
                 this.currentFeature = nodes[i];
             },
 
-            featureMouseout(d) {
+            featureMouseout(event, d) {
                 // Remove the tooltip
                 d3.selectAll('#tooltip-g').remove();
 
@@ -265,8 +265,8 @@
 
                     // Add interaction to the features on the plot
                     objects.filter(d => d.name !== 'utopiaPoint')
-                        .on('mouseover', d => { this.featureMouseover(d); })
-                        .on('mouseout', d => { this.featureMouseout(d); })
+                        .on('mouseover', (event, d) => { this.featureMouseover(event, d); })
+                        .on('mouseout', (event, d)  => { this.featureMouseout(event, d); })
                         .on('click', (d, i, nodes) => { this.featureClick(d, i, nodes); });
 
                     //Transition the colors to a rainbow

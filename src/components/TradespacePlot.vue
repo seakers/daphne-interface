@@ -328,7 +328,7 @@
                 this.drawPoints(this.hiddenContext, true);
 
                 // Get mouse positions from the main canvas.
-                let mousePos = d3.pointer(d3.select('#main-plot').select('canvas').node());
+                let mousePos = d3.pointer(event, d3.select('#main-plot').select('canvas').node());
                 let mouseX = mousePos[0];
                 let mouseY = mousePos[1];
 
