@@ -49,6 +49,12 @@
                 </div>
             </div>
 
+            <div class="field">
+                <div class="control">
+                    <button class="button is-link" v-on:click.prevent="cloneDataset">Copy</button>
+                </div>
+            </div>
+
             <hr>
 
             <div class="field" v-if="isLoggedIn">
@@ -122,6 +128,7 @@
                         await this.$store.dispatch('initProblem', this.problemId);
 
                         // 3. Load the new dataset
+                        this.$store.commit("setIgnoreQuery", true);
                         let parameters = {
                             'problem_id': this.selectedProblemId,
                             'group_id': this.selectedGroupId,
@@ -143,6 +150,9 @@
                 catch(e) {
                     console.error('Networking error:', e);
                 }
+            },
+            cloneDataset() {
+                this.$store.commit('activateModal', 'CopyDatasetModal');
             },
             openSaveModal() {
                 this.$store.commit('activateModal', 'SaveDatasetModal');
@@ -240,6 +250,7 @@
             },
             datasetId: function(newDatasetId, _) {
                 this.selectedDatasetId = newDatasetId;
+                this.$apollo.subscriptions.userDatasets.refresh();
             },
         },
     }

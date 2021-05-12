@@ -157,6 +157,23 @@ query dataset_list($user_pk: Int, $group_id: Int, $problem_id: Int) {
   }
 }`;
 
+const DaphneDatasetIdQuery = gql`
+query current_dataset($dataset_id: Int!) {
+  current_dataset: Dataset(where: {id: {_eq: $dataset_id}}) {
+    id
+    name
+    user_id
+    Problem {
+      id
+      name
+    }
+    Group {
+      id
+      name
+    }
+  }
+}`;
+
 
 
 
@@ -311,6 +328,7 @@ export {
     DaphneGroupQuery,
     DaphneProblemQuery,
     DaphneDatasetQuery,
+    DaphneDatasetIdQuery,
     GlobalInstrumentQuery,
     LocalInstrumentQuery,
     LocalOrbitQuery,

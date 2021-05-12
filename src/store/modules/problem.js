@@ -10,6 +10,7 @@ const state = {
     // eslint-disable-next-line no-undef
     datasetId: null,
     status: false,
+    ignoreQuery: true,
     problemData: [],
     dataUpdateFrom: '',
     inputNum: 0,
@@ -173,6 +174,9 @@ const mutations = {
     },
     setDatasetId(state, datasetId) {
         state.datasetId = datasetId;
+    },
+    setIgnoreQuery(state, ignoreQuery) {
+        state.ignoreQuery = ignoreQuery;
     },
     updateExtra(state, extra) {
         state.extra = extra;

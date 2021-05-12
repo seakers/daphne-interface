@@ -6,7 +6,7 @@
                 <span v-for="(output, index) in outputList" v-bind:key="index">
                     <b>{{ output }}</b>: {{ outputVal(index) }};
                 </span>
-                <a class="button" v-on:click.prevent="evaluateArch">
+                <a class="button" v-on:click.prevent="evaluateArch" :disabled="!canEvaluate">
                     <img src="assets/img/loader.svg" style="margin-right: 5px;" height="20" width="20" v-if="isComputing">
                     Evaluate Architecture
                 </a>
@@ -25,7 +25,7 @@
     import EOSSBuilder from './EOSSBuilder';
     import PartitionBuilder from './PartitionBuilder';
     import {fetchPost} from "../scripts/fetch-helpers";
-    import { ArchitectureQuery, GlobalInstrumentQuery, LocalInstrumentQuery, LocalOrbitQuery } from '../scripts/apollo-queries';
+    import { ArchitectureQuery, GlobalInstrumentQuery, LocalInstrumentQuery, LocalOrbitQuery, DaphneDatasetIdQuery } from '../scripts/apollo-queries';
 
 
 
@@ -45,7 +45,8 @@
                 subCount: 0,
                 idList: [],
                 skipSub: false,
-                ignoreQuery: true,
+
+                currentDatasetInfo: null
             }
         },
         computed: {
@@ -57,12 +58,15 @@
                 problemId: state => state.problem.problemId,
                 datasetId: state => state.problem.datasetId,
                 groupId: state => state.problem.groupId,
+                ignoreQuery: state => state.problem.ignoreQuery,
                 outputList: state => state.problem.outputList,
                 extraData: state => state.problem.extra,
                 displayComponent: state => state.problem.displayComponent,
                 inExperiment: state => state.experiment.inExperiment,
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
+                isLoggedIn: state => state.auth.isLoggedIn,
+                vassarStatus: state => state.services.vassarStatus,
             }),
             // ...mapGetters({
             //     problem_id: 'getProblemModuleId'
@@ -81,6 +85,20 @@
                     return this.stageInformation[this.experimentStage].availableFunctionalities.includes('Details');
                 }
             },
+            canEvaluate() {
+                return this.isLoggedIn && this.vassarStatus == "ready" && !this.readOnlyDataset;
+            },
+            readOnlyDataset() {
+                if (this.currentDatasetInfo) {
+                    if (this.currentDatasetInfo[0].user_id === null && this.currentDatasetInfo[0].Group === null) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                return true;
+            }
         },
         components: {
             EOSSBuilder, PartitionBuilder
@@ -131,7 +149,7 @@
                                 let arch = arches[x];
                                 this.idList.push(arch.id);
                             }
-                            this.ignoreQuery = false;
+                            this.$store.commit("setIgnoreQuery", false);
                             return;
                         }
                         if (arches.length === 0) {
@@ -178,6 +196,17 @@
                         this.subCount = this.subCount + 1;
                     },
                 },
+                selectedDataset: {
+                    query: DaphneDatasetIdQuery,
+                    variables() {
+                        return {
+                            dataset_id: this.datasetId
+                        }
+                    },
+                    result ({ data }) {
+                        this.currentDatasetInfo = data.current_dataset;
+                    }
+                }
             }
         },
         methods: {

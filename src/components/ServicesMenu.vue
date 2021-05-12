@@ -1,8 +1,8 @@
 <template>
     <div class="active-menu" v-if="logged_in">
-        <p class="has-text-weight-bold">VASSAR status:</p>
+        <p class="has-text-weight-bold">VASSAR status: <a v-on:click="connectVassar">Reconnect</a></p>
         <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>
-        <p class="has-text-weight-bold">GA status:</p>
+        <p class="has-text-weight-bold">GA status: <a v-on:click="connectGa">Reconnect</a></p>
         <p :class="connectionStatusToColor(gaStatus)">{{connectionStatusToExplanation(gaStatus)}}</p>
         <label class="checkbox" v-if="backgroundSearchExperimentCondition">
             <input type="checkbox" v-model="runBackgroundSearch">
@@ -25,6 +25,7 @@
 
 <script>
     import {mapState} from "vuex";
+    import {wsTools} from "../scripts/websocket-tools";
 
     export default {
         name: "ServicesMenu",
@@ -114,6 +115,8 @@
                         return "Error during connection";
                     case "build_error":
                         return "Error during initialization";
+                    case "missed_ping":
+                        return "Missed a ping...";
                     default:
                         return "Unknown status";
                 }
@@ -132,9 +135,21 @@
                         return "conn-error";
                     case "build_error":
                         return "conn-error";
+                    case "missed_ping":
+                        return "conn-connecting";
                     default:
                         return "conn-error";
                 }
+            },
+            connectVassar() {
+                wsTools.websocket.send(JSON.stringify({
+                    msg_type: 'connect_vassar',
+                }));
+            },
+            connectGa() {
+                wsTools.websocket.send(JSON.stringify({
+                    msg_type: 'connect_ga',
+                }));
             }
         }
     }
@@ -157,7 +172,7 @@
     }
 
     .conn-connecting {
-        color: $orange;
+        color: $yellow;
     }
 
     .conn-success {
