@@ -181,7 +181,7 @@ query current_dataset($dataset_id: Int!) {
 
 const ArchitectureQuery = gql`
 subscription ArchitectureQuery($problem_id: Int, $dataset_id: Int, $id_list: [Int!]) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, dataset_id: {_eq: $dataset_id}, id: {_nin: $id_list}, ga: {_eq: false}, eval_status: {_eq: true}}) {
+    Architecture(order_by: {id: asc}, where: {problem_id: {_eq: $problem_id}, dataset_id: {_eq: $dataset_id}, id: {_nin: $id_list}, ga: {_eq: false}, eval_status: {_eq: true}}) {
     id
     user_id
     ga
@@ -216,7 +216,7 @@ subscription ArchitectureEvalCount($problem_id: Int, $dataset_id: Int) {
 
 const UserArchitectureQuery = gql`
 query MyQuery($problem_id: Int) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: false}}) {
+    Architecture(order_by: {id: asc}, where: {problem_id: {_eq: $problem_id}, ga: {_eq: false}}) {
     id
     user_id
     ga
@@ -229,7 +229,7 @@ query MyQuery($problem_id: Int) {
 
 const UserArchitectureSubscription = gql`
 subscription MyQuery($problem_id: Int) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: false}}) {
+    Architecture(order_by: {id: asc}, where: {problem_id: {_eq: $problem_id}, ga: {_eq: false}}) {
     id
     user_id
     ga
@@ -246,7 +246,7 @@ subscription MyQuery($problem_id: Int) {
 
 const GaArchitectureQuery = gql`
 query MyQuery($problem_id: Int) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: true}}) {
+    Architecture(order_by: {id: asc}, where: {problem_id: {_eq: $problem_id}, ga: {_eq: true}}) {
     id
     user_id
     ga
@@ -259,7 +259,7 @@ query MyQuery($problem_id: Int) {
 
 const GaArchitectureSubscription = gql`
 subscription MyQuery($problem_id: Int) {
-    Architecture(where: {problem_id: {_eq: $problem_id}, ga: {_eq: true}, improve_hv: {_eq: false}}) {
+    Architecture(order_by: {id: asc}, where: {problem_id: {_eq: $problem_id}, ga: {_eq: true}, improve_hv: {_eq: false}}) {
     id
     user_id
     ga

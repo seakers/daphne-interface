@@ -525,18 +525,15 @@
                     function selectMousedown(event) {
                         let mousePos = d3.pointer(event);
                         svg.append('rect')
-                            .attrs(
-                                {
-                                    rx     : 0,
-                                    ry     : 0,
-                                    class  : 'selection',
-                                    x      : mousePos[0],
-                                    y      : mousePos[1],
-                                    width  : 0,
-                                    height : 0,
-                                    x0     : mousePos[0],
-                                    y0     : mousePos[1]
-                                })
+                            .attr("rx", 0)
+                            .attr("ry", 0)
+                            .attr("class", 'selection')
+                            .attr("x", mousePos[0])
+                            .attr("y", mousePos[1])
+                            .attr("width", 0)
+                            .attr("height", 0)
+                            .attr("x0", mousePos[0])
+                            .attr("y0", mousePos[1])
                             .style('background-color', '#EEEEEE')
                             .style('opacity', 0.18)
                             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
@@ -580,7 +577,12 @@
                             box.width = Math.abs(move.x);
                             box.height = Math.abs(move.y);
 
-                            selection.attrs(box);
+                            selection.attr("x", box.x)
+                                     .attr("y", box.y)
+                                     .attr("x0", box.x0)
+                                     .attr("y0", box.y0)
+                                     .attr("width", box.width)
+                                     .attr("height", box.height);
 
                             let hiddenArchsSet = new Set(self.hiddenArchs);
                             let selectedArchsSet = new Set(self.selectedArchs);
