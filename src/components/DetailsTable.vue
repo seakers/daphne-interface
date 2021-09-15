@@ -2,26 +2,26 @@
     <div>
         <div class="content">
             <h3>Details</h3>
-            <p>Subobjective: {{ subobjectiveDetails.subobjective }} | Parameter: {{ subobjectiveDetails.param }}</p>
+            <p>Subobjective: {{ subobjectiveDetails["subobjective"] }} | Measurement: {{ subobjectiveDetails.measurement }}</p>
         </div>
         <div class="table-wrapper">
             <table class="table">
                 <thead>
                 <tr>
-                    <th v-for="attrName in subobjectiveDetails.attr_names">{{ attrName }}</th>
+                    <th v-for="attributeName in Object.keys(subobjectiveDetails.rows[0].attribute_values)">{{ attributeName }}</th>
                     <th>Score</th>
                     <th>Taken By</th>
                     <th>Justification</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="index in subobjectiveDetails.attr_values.length">
-                    <td v-for="attrValue in subobjectiveDetails.attr_values[index-1]">{{ attrValue }}</td>
-                    <td>{{ subobjectiveDetails.scores[index-1] }}</td>
-                    <td>{{ subobjectiveDetails.taken_by[index-1] }}</td>
+                <tr v-for="index in subobjectiveDetails.rows.length">
+                    <td v-for="attrValue in subobjectiveDetails.rows[index-1].attribute_values">{{ attrValue }}</td>
+                    <td>{{ subobjectiveDetails.rows[index-1].score }}</td>
+                    <td>{{ subobjectiveDetails.rows[index-1].taken_by }}</td>
                     <td class="content justification-cell">
                         <ul>
-                            <li v-for="justification in subobjectiveDetails.justifications[index-1]">{{ justification }}</li>
+                            <li v-for="justification in subobjectiveDetails.rows[index-1].justifications">{{ justification }}</li>
                         </ul>
                     </td>
                 </tr>

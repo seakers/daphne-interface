@@ -18,7 +18,8 @@ const actions = {
             let reqData = new FormData();
             reqData.append('arch_id', rootState.archID);
             reqData.append('subobjective', subobjective);
-            reqData.append('problem', rootState.problem);
+            reqData.append('problem_id', rootState.problemId);
+            reqData.append('dataset_id', rootState.datasetId);
             let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-subobjective-details', reqData);
 
             if (dataResponse.ok) {
