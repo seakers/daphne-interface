@@ -172,9 +172,6 @@ export default new Vuex.Store({
             // Start the GA on login
             try {
                 let reqData = new FormData();
-                reqData.append('problem', rootState.problem.problemName);
-                reqData.append('inputType', rootState.problem.inputType);
-
                 let url = API_URL + 'eoss/explorer/start-ga';
                 let dataResponse = await fetchPost(url, reqData);
 
