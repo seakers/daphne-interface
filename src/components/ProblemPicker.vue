@@ -122,10 +122,12 @@
                     let dataResponse = await fetchPost(API_URL + 'eoss/settings/clear-session', new FormData());
                     if (dataResponse.ok) {
                         // 1. Stop all running background tasks
+                        console.log("--> STOPPING BACKGROUND TASKS")
                         await this.$store.dispatch('stopBackgroundTasks');
 
                         // 2. Init the new problem
-                        await this.$store.dispatch('initProblem', this.problemId);
+                        this.$store.commit('setProblemId', this.selectedProblemId);
+                        await this.$store.dispatch('initProblem', this.selectedProblemId);
 
                         // 3. Load the new dataset
                         this.$store.commit("setIgnoreQuery", true);
