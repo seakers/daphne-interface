@@ -115,16 +115,20 @@ const actions = {
             console.log(selectedArchsSet);
             rootState.tradespacePlot.plotData.forEach(point => {
                 if (selectedArchsSet.has(point.id)) {
-                    selectedIds.push(point.id);
+                    // selectedIds.push(point.id);
+                    selectedIds.push(point.db_id);
                 }
                 else {
-                    nonSelectedIds.push(point.id);
+                    // nonSelectedIds.push(point.id);
+                    nonSelectedIds.push(point.db_id);
                 }
             });
             reqData.append('selected', JSON.stringify(selectedIds));
             reqData.append('non_selected', JSON.stringify(nonSelectedIds));
             reqData.append('problem', rootState.problem.problemName);
             reqData.append('input_type', rootState.problem.inputType);
+            reqData.append('problem_id', rootState.problem.problemId);
+            reqData.append('dataset_id', rootState.problem.datasetId);
 
             let dataResponse = await fetchPost(API_URL + 'eoss/analyst/get-driving-features-epsilon-moea', reqData);
 
