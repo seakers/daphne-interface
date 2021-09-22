@@ -71,7 +71,7 @@
             this.id = id;
             this.inputs = inputs;
             this.outputs = outputs;
-            this.eb_id = db_id;
+            this.db_id = db_id;
         }
     }
 
@@ -97,6 +97,7 @@
                 Architecture_aggregate: {},
                 arch_to_eval: 0,
                 arch_loaded: 0,
+                updateTargetSelection_debounce: 0,
             }
         },
         computed: {
@@ -404,12 +405,16 @@
                 let selectedArchsSet = new Set(this.selectedArchs);
                 let selectedIds = [];
                 let nonSelectedIds = [];
+                let selectedIds_db = [];
+                let nonSelectedIds_db = [];
                 this.plotData.forEach(point => {
                     if (selectedArchsSet.has(point.id)) {
                         selectedIds.push(point.id);
+                        selectedIds_db.push(point.db_id);
                     }
                     else {
                         nonSelectedIds.push(point.id);
+                        nonSelectedIds_db.push(point.db_id);
                     }
                 });
 
@@ -417,6 +422,8 @@
                     let reqData = new FormData();
                     reqData.append('selected', JSON.stringify(selectedIds));
                     reqData.append('non_selected', JSON.stringify(nonSelectedIds));
+                    reqData.append('selected_db', JSON.stringify(selectedIds_db));
+                    reqData.append('non_selected_db', JSON.stringify(nonSelectedIds_db));
                     let dataResponse = await fetchPost(API_URL + 'ifeed/set-target', reqData);
 
                     if (dataResponse.ok) {
@@ -661,7 +668,7 @@
 
             selectedArchs: function(val, oldVal) {
                 this.drawPoints(this.context, false);
-                _.debounce(this.updateTargetSelection, 1000);
+                this.updateTargetSelection_debounce();
             },
 
             highlightedArchs: function(val, oldVal) {
@@ -702,6 +709,9 @@
                     }
                 }
             });
+
+            console.log('--> CREATING DEBOUNCE FUNC');
+            this.updateTargetSelection_debounce = _.debounce(this.updateTargetSelection, 1000);
         }
     }
 </script>
