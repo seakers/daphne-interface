@@ -182,7 +182,13 @@
                                     inputs: bool_ary,
                                     outputs: [arch.science, arch.cost],
                                 };
-                                this.$store.dispatch('addNewData', new_obj);
+                                if (arch.ga === false) {
+                                    this.$store.dispatch('addNewData', new_obj);
+                                }
+                                else {
+                                    this.$store.dispatch('addNewDataFromGA', new_obj);
+                                }
+                                
                                 console.log("--> new data point", new_obj);
                             }
                         }
