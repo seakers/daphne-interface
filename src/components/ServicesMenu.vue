@@ -141,12 +141,12 @@
                         return "conn-error";
                 }
             },
-            connectVassar() {
+            async connectVassar() {
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: 'connect_vassar',
                 }));
             },
-            connectGa() {
+            async connectGa() {
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: 'connect_ga',
                 }));
