@@ -6,9 +6,9 @@
             <p>Instrument Library</p>
         </div>
 
-        <!-- ORBITS -->
+        <!-- INSTRUMENTS -->
         <div class="instrument-library-select">
-            <table class="table" style="width: 43vw; background-color: #f6f6f9;">
+            <table class="hover-table table" style="width: 43vw;">
 
                 <tbody>
                 <tr v-for="(row, index_row) in instrument_rows" :key="index_row" v-on:click="select_instrument(index_row)">
@@ -19,14 +19,14 @@
             </table>
         </div>
 
-        <!-- EDIT ORBIT -->
+        <!-- EDIT INSTRUMENT -->
         <div class="instrument-edit-btns">
             <button class="button is-warning" v-on:click="edit_attributes()" :disabled="!instrument_selected">
                 Edit Attributes
             </button>
         </div>
 
-        <!-- ORBIT OPERATIONS -->
+        <!-- INSTRUMENT OPERATIONS -->
         <div class="instrument-operations">
             <button class="button is-primary" style="margin: 5px;" v-on:click="assign_problem()" :disabled="!instrument_selected">
                 Assign Problem
@@ -242,6 +242,15 @@
 
 
 <style lang="scss">
+
+    .hover-table{
+        background-color: #f6f6f9 !important;
+    }
+
+    .hover-table tr:hover{
+        background-color: #9aa3b1;
+    }
+
 
     .instruments-panel{
         display: flex;
