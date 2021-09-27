@@ -151,7 +151,8 @@
             async eval_designs(){
                 console.log("---> re-evaluating designs");
                 let reqData = new FormData();
-                reqData.append('problem_id', this.problem_id);
+                reqData.append('problem_id', this.problemId);
+                reqData.append('dataset_id', this.datasetId);
                 let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-false-architectures', reqData);
 
                 if (dataResponse.ok) {
