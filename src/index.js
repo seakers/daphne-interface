@@ -8,9 +8,9 @@ import {wsTools} from "./scripts/websocket-tools";
 
 // Apollo
 import VueApollo from "vue-apollo";
-import ApolloClient from "apollo-client";
-import { WebSocketLink } from 'apollo-link-ws';
-import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloClient } from '@apollo/client/core';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { InMemoryCache } from "@apollo/client/cache";
 
 // Non ES-modularized libraries
 let annyang = require('annyang');
