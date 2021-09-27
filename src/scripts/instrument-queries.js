@@ -16,6 +16,14 @@ query MyQuery($selected_group_id: Int) {
   }
 }`;
 
+const InstrumentFilterQuery = gql`
+query MyQuery($selected_group_id: Int, $filter_problem_id: Int) {
+  Instrument_Filter: Instrument(where: {group_id: {_eq: $selected_group_id}, Join__Problem_Instruments: {problem_id: {_eq: $filter_problem_id}}}) {
+    id
+    name
+  }
+}`;
+
 const InstrumentAttributeQuery = gql`
 query MyQuery($selected_group_id: Int) {
     Instrument_Attribute(where: {Group: {id: {_eq: $selected_group_id}}}) {
@@ -31,6 +39,15 @@ query MyQuery($selected_group_id: Int) {
       }
     }
   }
+`;
+
+const ProblemQuery = gql`
+query MyQuery ($selected_group_id: Int){
+  Problem(where: {group_id: {_eq: $selected_group_id}}) {
+    id
+    name
+  }
+}
 `;
 
 
@@ -404,5 +421,7 @@ export {
     GetNumInstruments,
     GetNumOrbits,
     UpdateArchitectureStatus,
-    UpdateArchitectureStatusBatch
+    UpdateArchitectureStatusBatch,
+    InstrumentFilterQuery,
+    ProblemQuery
 }

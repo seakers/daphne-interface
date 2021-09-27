@@ -7,6 +7,7 @@
                 v-on:instrument-selected="set_selected_instrument"
                 v-on:display-attribute-library="display_attribute_library"
                 v-on:refresh-instrument-query="refresh_instrument_query"
+                v-on:toggle-filters="toggle_instrument_filters"
                 v-if="!display_attribute_lib"
         >
         </instrument-library>
@@ -27,7 +28,7 @@
 
 <script>
     import { mapState, mapGetters } from 'vuex';
-    import { InstrumentQuery, InstrumentAttributeQuery} from '../../scripts/instrument-queries';
+    import { InstrumentQuery, InstrumentFilterQuery, InstrumentAttributeQuery} from '../../scripts/instrument-queries';
     import * as _ from 'lodash-es';
 
 
@@ -48,6 +49,12 @@
                 has_selection: false,
 
                 display_attribute_lib: false,
+
+                // --> Filter stuff
+                Instrument_Filter:[],
+                query_filter: false,
+                filter_problem_id: 0,
+
             }
         },
         computed: {
@@ -73,20 +80,46 @@
             },
             display_instrument_library(){
                 this.display_attribute_lib = false;
+                this.refresh_instrument_query()
             },
 
             refresh_instrument_query(){
-                console.log("---> ORBIT REFETCH QUERIES");
+                console.log("---> INSTRUMENT REFETCH QUERIES");
                 this.$apollo.queries.Instrument.refetch();
+                this.$apollo.queries.Instrument_Filter.refetch();
                 this.$apollo.queries.Instrument_Attribute.refetch();
+                if(this.query_filter === false){
+                    this.set_rows_from_query(this.Instrument);
+                }
+                else{
+                    this.set_rows_from_query(this.Instrument_Filter);
+                }
             },
 
             refresh_attribute_query(){
                 console.log("---> ORBIT ATTRIBUTE REFETCH QUERIES");
                 this.$apollo.queries.Instrument_Attribute.refetch();
                 this.$apollo.queries.Instrument.refetch();
-            }
+            },
 
+            toggle_instrument_filters(args){
+                console.log("--> TOGGLING INSTRUMENT FILTERS", args)
+                this.query_filter = args.query_filter;
+                this.filter_problem_id = args.filter_problem_id;
+                this.refresh_instrument_query();
+            },
+
+
+            set_rows_from_query(query){
+                this.instrument_rows = [];
+                for(let x=0;x<query.length;x++){
+                    let row = _.cloneDeep(query[x]);
+                    row['selected'] = false;
+                    row['hidden'] = false;
+                    row['index'] = x;
+                    this.instrument_rows.push(row);
+                }
+            },
 
         },
         components: {
@@ -99,6 +132,15 @@
                 variables() {
                     return {
                         selected_group_id: this.selected_group_id,
+                    }
+                }
+            },
+            Instrument_Filter: {
+                query: InstrumentFilterQuery,
+                variables() {
+                    return {
+                        selected_group_id: this.selected_group_id,
+                        filter_problem_id: this.filter_problem_id,
                     }
                 }
             },
@@ -117,14 +159,15 @@
         },
         watch: {
             Instrument() {
-                this.instrument_rows = [];
                 console.log("---> Instrument Query", this.Instrument);
-                for(let x=0;x<this.Instrument.length;x++){
-                    let row = _.cloneDeep(this.Instrument[x]);
-                    row['selected'] = false;
-                    row['hidden'] = false;
-                    row['index'] = x;
-                    this.instrument_rows.push(row);
+                if(this.query_filter === false){
+                    this.set_rows_from_query(this.Instrument);
+                }
+            },
+            Instrument_Filter() {
+                console.log("---> Instrument Filter Query", this.Instrument_Filter);
+                if(this.query_filter === true){
+                    this.set_rows_from_query(this.Instrument_Filter);
                 }
             },
             Instrument_Attribute() {

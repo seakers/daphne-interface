@@ -6,6 +6,22 @@
             <p>Instrument Library</p>
         </div>
 
+        <!-- FILTER-->
+        <div class="filter-container">
+            <div style="padding: 5px;">
+                <input type="checkbox" id="instrument-filter-checkbox" v-model="instrument_filter">
+                <label for="instrument-filter-checkbox">Apply Filters</label>
+            </div>
+            <div class="instrument-filters">
+                <div style="padding-right: 10px">Problem</div>
+                <select v-model="filter_problem_id">
+                    <option v-for="option in Problem" v-bind:value="option.id" :key="option.id">
+                        {{ option.name }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
         <!-- INSTRUMENTS -->
         <div class="instrument-library-select">
             <table class="hover-table table" style="width: 43vw;">
@@ -61,7 +77,14 @@
     import AssignInstrument from './modals/instrument/AssignInstrument';
     import AddInstrument from './modals/instrument/AddInstrument';
 
-    import { DeleteInstrument, DeleteInstrumentAttribute, DeleteInstrumentAssignation, DeleteInstrumentMeasurementValues, DeleteInstrumentMeasurement } from '../../../scripts/instrument-queries';
+    import {
+        DeleteInstrument,
+        DeleteInstrumentAttribute,
+        DeleteInstrumentAssignation,
+        DeleteInstrumentMeasurementValues,
+        DeleteInstrumentMeasurement,
+        InstrumentSpecificAttributeQuery, ProblemQuery
+    } from '../../../scripts/instrument-queries';
 
     export default {
 
@@ -69,6 +92,7 @@
         data: function () {
             return {
                 instrument_selected: false,
+                instrument_filter: false,
                 selection: false,
 
                 // MODALS
@@ -76,6 +100,9 @@
                 assign_modal: false,
                 add_modal: false,
 
+                // --> Filter stuff
+                Problem: [],
+                filter_problem_id: 0,
             }
         },
         props: ['instrument_rows'],
@@ -83,12 +110,13 @@
             ...mapState({
             }),
             ...mapGetters({
+                selected_group_id: 'get_group_id',
             }),
         },
         methods: {
 
             select_instrument(index){
-                console.log("---> ORBIT SELECTED", index);
+                console.log("---> INSTRUMENT SELECTED", index);
                 let toggle = this.instrument_rows[index].selected;
 
                 // DESELECT
@@ -223,10 +251,28 @@
                 this.$emit('display-attribute-library', {});
             }
         },
+        watch: {
+            instrument_filter(){
+                this.$emit('toggle-filters', {'query_filter': this.instrument_filter, 'filter_problem_id': this.filter_problem_id});
+            },
+            filter_problem_id(){
+                this.$emit('toggle-filters', {'query_filter': this.instrument_filter, 'filter_problem_id': this.filter_problem_id});
+            }
+        },
         components: {
             CloneInstrument,
             AssignInstrument,
             AddInstrument,
+        },
+        apollo: {
+            Problem: {
+                query: ProblemQuery,
+                variables() {
+                    return {
+                        selected_group_id: this.selected_group_id
+                    }
+                }
+            }
         },
         mounted() {
             console.log("---> Mounting InstrumentLibrary");
@@ -243,12 +289,27 @@
 
 <style lang="scss">
 
+    .filter-container{
+        display: flex;
+        flex-direction: column;
+        margin-top: 15px;
+        padding-left: 2vw;
+        padding-top: 1vh;
+    }
+
+    .instrument-filters{
+        display: flex;
+        flex-direction: row;
+        padding: 5px;
+    }
+
+
     .hover-table{
         background-color: #f6f6f9 !important;
     }
 
     .hover-table tr:hover{
-        background-color: #9aa3b1;
+        background-color: #b7bdc8;
     }
 
 
