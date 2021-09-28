@@ -34,6 +34,7 @@
         data() {
             return {
                 isComputing: false,
+                eval_request_inputs: null,
                 Join__Instrument_Characteristic: [],
                 Join__Problem_Instrument: [],
                 Join__Problem_Orbit: [],
@@ -177,6 +178,10 @@
                                     }
                                 }
                                 console.log("\n----------- SUBSCRIPTION DESIGN --", "\n ------- id", this.problemData.length, "\n --- inputs", arch.input, "\n -- science", arch.science, "\n ----- cost", arch.cost);
+                                if(this.compareInputsBoolBit(this.eval_request_inputs, arch.input)){
+                                    this.isComputing = false
+                                }
+
                                 let new_obj = {
                                     id: this.problemData.length,
                                     inputs: bool_ary,
@@ -216,6 +221,21 @@
             }
         },
         methods: {
+            compareInputsBoolBit(bool_ary, bit_str){
+                for(let x = 0; x < bool_ary.length; x++){
+                    let bit = bit_str.charAt(x);
+                    let bit_bool = false;
+                    if(bit === '1'){
+                        bit_bool = true;
+                    }
+                    if(bit_bool !== bool_ary[x]){
+                        console.log('--> INPUTS DO NOT MATCH')
+                        return false;
+                    }
+                }
+                console.log('--> INPUTS MATCH')
+                return true;
+            },
             outputVal(index) {
                 let rawValue = this.problemData.find((point) => point.id === this.pointID).outputs[index];
                 if (typeof rawValue === "number") {
@@ -242,6 +262,7 @@
                     let reqData = new FormData();
                     reqData.append('inputs', JSON.stringify(newInputs));
                     console.log("---> EVAL INPUTS:", newInputs);
+                    this.eval_request_inputs = newInputs;
                     try {
                         let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-architecture', reqData);
                         if (dataResponse.ok) {
@@ -264,7 +285,7 @@
                         console.error('Networking error:', e);
                     }
                 }
-                this.isComputing = false;
+                // this.isComputing = false;
             }
         },
         watch: {
