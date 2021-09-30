@@ -61,15 +61,15 @@ module.exports = {
             },
             // file-loader(for images)
             {
-                test: /\.(jpg|png|gif)$/,
+                test: /\.(jpg|png|gif|svg)$/,
                 type: 'asset/resource',
                 generator: {
-                    filename: 'assets/img/[hash][ext][query]'
+                    filename: 'assets/img/[name][ext][query]'
                 }
             },
             // file-loader(for fonts)
-            { 
-                test: /\.(woff|woff2|eot|ttf|otf|svg)$/,
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/,
                 type: 'asset/inline',
             },
         ]
