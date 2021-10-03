@@ -4,7 +4,7 @@
   "description": "Daphne unified interface",
   "main": "dist/index.html",
   "scripts": {
-    "dev": "webpack serve --inline --config webpack.dev.js",
+    "dev": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.dev.js",
     "build:prod": "webpack --config webpack.prod.js",
     "watch": "webpack --watch --config webpack.dev.js",

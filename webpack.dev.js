@@ -18,7 +18,7 @@ module.exports = merge(common, {
     devtool: 'eval-source-map',
     devServer: {
         historyApiFallback: true,
-        noInfo: false,
+        // noInfo: false,
         host: '0.0.0.0',
         allowedHosts: [
             'daphne',
