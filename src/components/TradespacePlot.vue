@@ -8,6 +8,15 @@
                 <button class="button is-info is-small" v-on:click="eval_designs()">
                     evaluate all
                 </button>
+                <br>
+                x-axis <select v-model="xObjective">
+                    <option v-for="(objective, idx) in objective_objs" v-if="objective.active" v-bind:value="objective.obj_id" v-bind:key="idx">{{ objective.name }}</option>
+                </select>
+                <br>
+                y-axis <select v-model="yObjective">
+                    <option v-for="(objective, idx) in objective_objs" v-if="objective.active" v-bind:value="idx" v-bind:key="idx">{{ objective.name }}</option>
+                </select>
+
             </p>
             <div class="panel-block" id="main-plot-block">
                 <div id="main-plot"></div>
@@ -98,10 +107,19 @@
                 arch_to_eval: 0,
                 arch_loaded: 0,
                 updateTargetSelection_debounce: 0,
+
+                // --> Dynamically choose axis objectives
+                // - 0 science
+                // - 1 cost
+                // - 2 programmatic cost
+                xObjective: 0,
+                yObjective: 1,
+                objective_list: ['Cost', 'Data Continuity', 'Fairness', 'Programmatic Risk', 'Atmospheric Panel Satisfaction', 'Oceanic Panel Satisfaction', 'Terrestrial Panel Satisfaction']
             }
         },
         computed: {
             ...mapState({
+                objective_objs: state => state.problem.objective_objs,
                 problemData: state => state.problem.problemData,
                 plotData: state => state.tradespacePlot.plotData,
                 colorMap: state => state.tradespacePlot.colorMap,
@@ -459,6 +477,13 @@
         },
 
         watch: {
+            xObjective: function(val, oldVal){
+                this.updatePlot(this.xObjective, this.yObjective);
+            },
+            yObjective: function(val, oldVal){
+                this.updatePlot(this.xObjective, this.yObjective);
+            },
+
             status: function(val, oldVal){
                 if(this.status === true){
                     console.log("--> Resetting banned inputs");
@@ -467,7 +492,7 @@
             },
 
             plotData: function(val, oldVal) {
-                this.updatePlot(0, 1);
+                this.updatePlot(this.xObjective, this.yObjective);
                 this.arch_loaded = this.plotData.length;
 
                 if(this.plotData.length == 0){
@@ -695,7 +720,7 @@
 
         mounted() {
             window.addEventListener('resize', () => {
-                this.updatePlot(0, 1);
+                this.updatePlot(this.xObjective, this.yObjective);
             });
 
             this.$store.subscribe((mutation, state) => {

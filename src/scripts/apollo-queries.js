@@ -11,6 +11,78 @@ import gql from 'graphql-tag';
 
 
 
+const StakeholderMutation = gql`
+mutation MyQuery($panel_id: Int!, $panel_weight: float8) {
+  update_Stakeholder_Needs_Panel_by_pk(pk_columns: {id: $panel_id} _set: {weight: $panel_weight}) {
+    id
+    weight
+  }
+}
+`;
+
+
+const StakeholderQuery = gql`
+query MyQuery($problem_id: Int) {
+  Stakeholder_Needs_Panel(where: {problem_id: {_eq: $problem_id}}) {
+    id
+    name
+    description
+    weight
+  }
+}
+`;
+
+
+const DatasetCounterQuery = gql`
+query MyQuery($user_id: Int, $problem_id: Int) {
+  Dataset_aggregate(where: {problem_id: {_eq: $problem_id}, user_id: {_eq: $user_id}}) {
+    aggregate {
+      count
+    }
+  }
+}`;
+
+const InsertDatasetArchSingleMutation = gql`
+mutation MyMutation($cost: float8, $dataset_id: Int, $eval_status: Boolean, $ga: Boolean, $improve_hv: Boolean, $input: String, $problem_id: Int, $science: float8, $user_id: Int) {
+  insert_Architecture_one(object: {cost: $cost, dataset_id: $dataset_id, eval_status: $eval_status, ga: $ga, improve_hv: $improve_hv, input: $input, problem_id: $problem_id, science: $science, user_id: $user_id}) {
+    id
+  }
+}`;
+
+const InsertDatasetArchsMutation = gql`
+mutation MyMutation($archs: [Architecture_insert_input!]!) {
+  insert_Architecture(objects: $archs){
+    affected_rows
+    returning {
+      id
+    }
+  }
+}`;
+
+
+const InsertDatasetMutation = gql`
+mutation MyMutation($group_id: Int, $problem_id: Int, $user_id: Int, $name: String) {
+  insert_Dataset_one(object: {group_id: $group_id, problem_id: $problem_id, user_id: $user_id, name: $name}) {
+    id
+  }
+}`;
+
+
+const ArchitectureDatasetQuery = gql`
+query MyQuery($problem_id: Int, $dataset_id: Int) {
+  Architecture(where: {dataset_id: {_eq: $dataset_id}, problem_id: {_eq: $problem_id}}) {
+    input
+    science
+    cost
+    eval_status
+    ga
+    improve_hv
+    critique
+    user_id
+  }
+}`;
+
+
 // GLOBAL ORBITS
 const OrbitQuery = gql`
 query MyQuery($selected_group_id: Int) {
@@ -189,6 +261,13 @@ subscription ArchitectureQuery($problem_id: Int, $dataset_id: Int, $id_list: [In
     input
     science
     cost
+    data_continuity
+    fairness
+    programmatic_risk
+    ArchitectureScoreExplanations {
+        panel_id
+        satisfaction
+    }
   }
 }`;
 
@@ -341,5 +420,12 @@ export {
     ProblemReload,
     SetProblemReload,
     UserGroups,
-    DaphneUsers
+    DaphneUsers,
+    ArchitectureDatasetQuery,
+    InsertDatasetMutation,
+    InsertDatasetArchsMutation,
+    InsertDatasetArchSingleMutation,
+    DatasetCounterQuery,
+    StakeholderQuery,
+    StakeholderMutation
 }

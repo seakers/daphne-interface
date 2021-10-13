@@ -17,7 +17,8 @@ export default {
     inputNum: 1,
     outputNum: 2,
     inputList: [],
-    outputList: ['Science', 'Cost ($M)'],
+    // outputList: ['Science', 'Cost ($M)'],
+    outputList: ['Cost ($M)', 'Data Continuity', 'Fairness', 'Programmatic Risk', 'Atmospheric Panel Satisfaction', 'Oceanic Panel Satisfaction', 'Terrestrial Panel Satisfaction'],
     outputObj: [1, -1],
     inputType: 'binary',
     displayComponent: 'EOSSBuilder',
@@ -291,14 +292,14 @@ function preprocessing(data, extra) {
     let output = [];
     if (data.length === 0) {
         let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
-        let arch = new Architecture(0, inputs, [0, 0]);
+        let arch = new Architecture(0, inputs, [0, 0, 0, 0, 0, 0, 0]);
         output.push(arch);
     }
     else if (data[0].inputs.length !== extra.orbitNum*extra.instrumentNum){
 
         //---> Change is num instruments or orbits??
         let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
-        let arch = new Architecture(0, inputs, [0, 0]);
+        let arch = new Architecture(0, inputs, [0, 0, 0, 0, 0, 0, 0]);
         output.push(arch);
 
     }

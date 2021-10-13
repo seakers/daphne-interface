@@ -3,6 +3,28 @@ import gql from 'graphql-tag';
 
 
 // ----- INSTRUMENT.VUE
+const InstrumentByName = gql`
+query MyQuery($selected_group_id: Int, $inst_names: [String!]) {
+  Instrument(where: {group_id: {_eq: $selected_group_id}, name: {_in: $inst_names}}) {
+    id
+    name
+  }
+}`;
+
+
+
+
+const InstrumentId = gql`
+query MyQuery($selected_group_id: Int, $inst_name: String) {
+  Instrument(where: {group_id: {_eq: $selected_group_id}, name: {_eq: $inst_name}}) {
+    id
+    name
+  }
+}`;
+
+
+
+
 const InstrumentQuery = gql`
 query MyQuery($selected_group_id: Int) {
     Instrument(where: {Group: {id: {_eq: $selected_group_id}}}) {
@@ -423,5 +445,7 @@ export {
     UpdateArchitectureStatus,
     UpdateArchitectureStatusBatch,
     InstrumentFilterQuery,
-    ProblemQuery
+    ProblemQuery,
+    InstrumentId,
+    InstrumentByName
 }

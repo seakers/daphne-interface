@@ -21,6 +21,15 @@ const state = {
     inputType: 'binary',
     displayComponent: '',
     problemFunctionalities: [],
+    objective_objs: [
+        {name: 'Cost', active: true, obj_id: 0},
+        {name: 'Data Continuity', active: true, obj_id: 1},
+        {name: 'Fairness', active: true, obj_id: 2},
+        {name: 'Programmatic Risk', active: true, obj_id: 3},
+        {name: 'Atmospheric Panel Satisfaction', active: true, obj_id: 4},
+        {name: 'Oceanic Panel Satisfaction', active: true, obj_id: 5},
+        {name: 'Terrestrial Panel Satisfaction', active: true, obj_id: 6}
+    ],
     importCallback: (data, extra) => {
         return {};
     }, // Callback function to be called after importing data (preprocessing)
@@ -131,6 +140,17 @@ const actions = {
 
 // mutations
 const mutations = {
+    setObjectiveOption(state, objective){
+        for(let x=0;x<state.objective_objs.length;x++){
+            let temp_obj = state.objective_objs[x];
+            if(temp_obj.name === objective.name){
+                state.objective_objs[x].active = objective.active;
+            }
+        }
+    },
+    // enableObjectiveOption(state, objective){
+    //
+    // },
     setProblemStatus(state, status) {
         state.status = status;
     },

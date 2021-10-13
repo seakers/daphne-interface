@@ -10,6 +10,24 @@ import gql from 'graphql-tag';
 //  \____/|_|  |_.__/|_|\__|___/
 
 
+const OrbitByName = gql`
+query MyQuery($selected_group_id: Int, $orb_names: [String!]) {
+  Orbit(where: {group_id: {_eq: $selected_group_id}, name: {_in: $orb_names}}) {
+    id
+    name
+  }
+}`;
+
+
+const OrbitFilterQuery = gql`
+query MyQuery($selected_group_id: Int, $filter_problem_id: Int) {
+  Orbit_Filter: Orbit(where: {group_id: {_eq: $selected_group_id}, Join__Problem_Orbits: {problem_id: {_eq: $filter_problem_id}}}) {
+    id
+    name
+  }
+}`;
+
+
 
 // GLOBAL ORBITS
 const OrbitQuery = gql`
@@ -254,7 +272,9 @@ export {
     InsertOrbitAttributeValue,
     DeleteLocalOrbitAttribute,
     InsertOrbitAttribute,
-    DeleteGlobalOrbitAttribute
+    DeleteGlobalOrbitAttribute,
+    OrbitFilterQuery,
+    OrbitByName
 }
 
 

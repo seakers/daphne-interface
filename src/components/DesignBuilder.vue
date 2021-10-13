@@ -3,8 +3,8 @@
         <div id="arch-info-display" v-if="isPointSelected">
             <p id="output-info">
                 <span><b>Design ID</b>: D{{ pointID }}; </span>
-                <span v-for="(output, index) in outputList" v-bind:key="index">
-                    <b>{{ output }}</b>: {{ outputVal(index) }};
+                <span v-for="(output, index) in objective_objs" v-if="output.active" v-bind:key="index">
+                    <b>{{ output.name }}</b>: {{ outputVal(output.obj_id) }};
                 </span>
                 <a class="button" v-on:click.prevent="evaluateArch" :disabled="!canEvaluate">
                     <img src="assets/img/loader.svg" style="margin-right: 5px;" height="20" width="20" v-if="isComputing">
@@ -12,6 +12,9 @@
                 </a>
                 <a class="button" target="_blank" :href="'details.html?archID=' + pointID + '&problemId=' + problemId + '&datasetId=' + datasetId" v-if="detailsExperimentCondition">
                     Details
+                </a>
+                <a class="button" v-on:click.prevent="editProblem">
+                    Edit Problem
                 </a>
             </p>
             <component v-bind:is="displayComponent"></component>
@@ -60,7 +63,7 @@
                 datasetId: state => state.problem.datasetId,
                 groupId: state => state.problem.groupId,
                 ignoreQuery: state => state.problem.ignoreQuery,
-                outputList: state => state.problem.outputList,
+                objective_objs: state => state.problem.objective_objs,
                 extraData: state => state.problem.extra,
                 displayComponent: state => state.problem.displayComponent,
                 inExperiment: state => state.experiment.inExperiment,
@@ -182,10 +185,15 @@
                                     this.isComputing = false
                                 }
 
+                                // let new_obj = {
+                                //     id: this.problemData.length,
+                                //     inputs: bool_ary,
+                                //     outputs: [arch.science, arch.cost],
+                                // };
                                 let new_obj = {
                                     id: this.problemData.length,
                                     inputs: bool_ary,
-                                    outputs: [arch.science, arch.cost],
+                                    outputs: [arch.cost, arch.data_continuity, arch.fairness, arch.programmatic_risk, arch.ArchitectureScoreExplanations[0].satisfaction, arch.ArchitectureScoreExplanations[1].satisfaction, arch.ArchitectureScoreExplanations[2].satisfaction],
                                 };
                                 if (arch.ga === false) {
                                     this.$store.dispatch('addNewData', new_obj);
@@ -221,6 +229,9 @@
             }
         },
         methods: {
+            editProblem(){
+                this.$store.commit('activateModal', 'EditProblemModal');
+            },
             compareInputsBoolBit(bool_ary, bit_str){
                 for(let x = 0; x < bool_ary.length; x++){
                     let bit = bit_str.charAt(x);
