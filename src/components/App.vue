@@ -57,6 +57,7 @@
     import ChatWindow from "./ChatWindow";
 
     import { ProblemReload } from "../scripts/apollo-queries";
+    import {ExperimentProblem} from "../scripts/experiment-queries";
 
 
     export default {
@@ -175,6 +176,19 @@
                 // 8. Start-up has finished
                 this.isStartup = false;
             },
+            async get_experiment_problem_data(problem_name){
+                let result = await this.$apollo.query({
+                    deep: true,
+                    fetchPolicy: 'no-cache',
+                    query: ExperimentProblem,
+                    variables: {
+                        problem_name: problem_name,
+                    }
+                });
+                console.log(result);
+                return result.data.Problem[0].id;
+
+            },
         },
         apollo: {
             $subscribe: {
@@ -273,7 +287,7 @@
                 console.error('Networking error:', e);
             }
 
-            /*// Generate the session
+            // Generate the session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
             // Experiment
@@ -284,8 +298,8 @@
                 if (!this.inExperiment) {
                     // First of all login
                     await this.$store.dispatch('loginUser', {
-                        username: "tamu-experiment",
-                        password: "tamu2019"
+                        username: "gtest15",
+                        password: "gtest15"
                     });
 
                     this.$store.dispatch('startExperiment').then(async () => {
@@ -298,12 +312,23 @@
                         this.$store.commit('setInExperiment', true);
                     });
                 }
-            });*/
+            });
 
         },
         watch: {
             experimentStage: async function (val, oldVal) {
                 if (this.inExperiment && !this.isRecovering) {
+
+                    // 1. Set problem for this stage
+                    // - Create new dataset for the beginning of each stage
+                    let problem_name = this.problems[this.currentStageNum];
+                    let problem_data = await this.get_experiment_problem_data(problem_name);
+
+
+
+
+
+
                     // Set problem for this stage and load the corresponding dataset
                     console.log(this.problems, this.currentStageNum);
                     await this.$store.dispatch('setProblemName', this.problems[this.currentStageNum]);

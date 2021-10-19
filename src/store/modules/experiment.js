@@ -52,7 +52,12 @@ const state = {
         { filename: 'start.csv', user: false },
         { filename: 'start.csv', user: false }
     ],
-    problems: ["SMAP", "SMAP_JPL1", "SMAP_JPL2"],
+    problems: ["ClimateCentric", "ClimateCentric_1", "ClimateCentric_2"],
+    problems_list: [
+        { group_id: 1, problem_id: 1, dataset_id: null},
+        { group_id: 1, problem_id: 1, dataset_id: null},
+        { group_id: 1, problem_id: 1, dataset_id: null}
+    ],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [

@@ -28,9 +28,9 @@
 
 
         <div>
-            <button class="button is-link" v-on:click.prevent="commit_changes" style="margin-top: 15px;">Commit</button>
-            <button class="button is-link" v-on:click.prevent="reload_module" style="margin-top: 15px;">Reload</button>
-            <button class="button is-link" v-on:click.prevent="close" style="margin-top: 15px;">Close</button>
+            <button class="button is-link" :disabled="processing" v-on:click.prevent="commit_changes" style="margin-top: 15px;">Commit</button>
+            <button class="button is-link" :disabled="processing" v-on:click.prevent="reload_module" style="margin-top: 15px;">Reload</button>
+            <button class="button is-link" :disabled="processing" v-on:click.prevent="close" style="margin-top: 15px;">Close</button>
         </div>
 
     </div>
@@ -43,9 +43,9 @@
     import EditOrbits from "./design_builder_editor/EditOrbits";
     import EditStakeholders from "./design_builder_editor/EditStakeholders";
     import EditObjectives from "./design_builder_editor/EditObjectives";
-    import {LocalOrbitQuery, LocalInstrumentQuery, ArchitectureDatasetQuery} from "../scripts/apollo-queries";
+    import {LocalOrbitQuery, LocalInstrumentQuery, ArchitectureDatasetQuery, ArchitectureDatasetGAQuery} from "../scripts/apollo-queries";
     import {client} from "../index";
-    import {consolidate_architecture, index_new_dataset, index_instrument_changes, index_orbit_changes, generate_dataset_name} from "../scripts/arch_operations";
+    import {consolidate_architecture, index_new_dataset, index_instrument_changes, index_orbit_changes, generate_dataset_name, index_single_dataset} from "../scripts/arch_operations";
     import * as _ from 'lodash-es';
     import {fetchPost} from "../scripts/fetch-helpers";
 
@@ -54,7 +54,8 @@
         name: "edit-problem-modal",
         data() {
             return {
-                selected_tab: 'instruments'
+                selected_tab: 'instruments',
+                processing: false,
             }
         },
         computed: {
@@ -127,7 +128,19 @@
                     }
                 });
                 let architectures = response['data']['Architecture'];
-                return architectures;
+
+                let response_ga = await client.query({
+                    deep: true,
+                    fetchPolicy: 'no-cache',
+                    query: ArchitectureDatasetGAQuery,
+                    variables: {
+                        problem_id: this.problemId,
+                        dataset_id: this.datasetId
+                    }
+                });
+                let architectures_ga = response_ga['data']['Architecture'];
+                let combined = architectures.concat(architectures_ga);
+                return combined;
             },
             async consolidate_inst_orb_changes(inst_changes, orb_changes){
                 let insts = await this.getInstrumentList();
@@ -141,31 +154,63 @@
                     let new_arch = _.cloneDeep(arch)
                     let result = consolidate_architecture(insts, inst_changes, orbs, orb_changes, arch);
                     new_arch.input = result.input;
-                    new_arch.eval_status = result.eval_status;
+                    // new_arch.eval_status = result.eval_status;
+                    new_arch.eval_status = false;
                     new_archs.push(new_arch);
                 }
 
                 // --> Index new dataset with new architectures
                 let dataset_name = await generate_dataset_name(this.userPk, this.problemId);
-                let new_dataset_id = await index_new_dataset(this.groupId, this.problemId, this.userPk, dataset_name, new_archs);
-                return new_dataset_id
+                // let new_dataset_id = await index_new_dataset(this.groupId, this.problemId, this.userPk, dataset_name, new_archs);
+                let new_dataset_id = await index_single_dataset(this.groupId, this.problemId, this.userPk, dataset_name);
+                return {
+                    dataset_id: new_dataset_id,
+                    archs: new_archs
+                };
+            },
+            async clear_arch_eval_requests(){
+                let reqData = new FormData();
+                let url = API_URL + 'eoss/formulation/clear-eval-requests';
+                let dataResponse = await fetchPost(url, reqData);
+            },
+            async re_evaluate_architectures(archs){
+                let reqData = new FormData();
+                reqData.append("archs", JSON.stringify(archs));
+                let url = API_URL + 'eoss/engineer/evaluate-false-architectures';
+                let dataResponse = await fetchPost(url, reqData);
             },
             async commit_changes() {
+                this.processing = true;
+                this.$refs.objmod.commit_changes();
                 let inst_items = this.$refs.instmod.commit_changes();
                 let orb_items = this.$refs.orbmod.commit_changes();
                 await this.$refs.stakemod.commit_changes();
-                this.$refs.objmod.commit_changes();
+                if(this.$refs.instmod.changes === false && this.$refs.orbmod.changes === false && this.$refs.stakemod.changes === false){
+                    // Close modal
+                    console.log("--> NO RELOADABLE CHANGES");
+                    this.processing = false;
+                    await this.send_changes();
+                    this.$emit('close-modal');
+                    return;
+                }
 
-                let new_dataset_id = await this.consolidate_inst_orb_changes(inst_items, orb_items);
 
-                // Index instrument changes
+                let result = await this.consolidate_inst_orb_changes(inst_items, orb_items);
+                let new_dataset_id = result.dataset_id;
+                let archs = result.archs;
+
+                // 1. Stop all running background tasks (stop ga)
+                await this.$store.dispatch('stopBackgroundTasks');
+                await new Promise(r => setTimeout(r, 1500));
+
+                // 2. Clear any current eval requests
+                await this.clear_arch_eval_requests();
+
+                // 3. Index instrument changes
                 await index_instrument_changes(inst_items, this.problemId);
 
-                // Index orbit changes
+                // 4. Index orbit changes
                 await index_orbit_changes(orb_items, this.problemId);
-
-                // 1. Stop all running background tasks
-                await this.$store.dispatch('stopBackgroundTasks');
 
                 // 1.1 Init the new problem
                 this.$store.commit('setProblemId', this.problemId);
@@ -183,8 +228,18 @@
                 // Set data mining settings
                 this.$store.dispatch('setProblemParameters');
 
+                // Re-evaluate Architectures
+                await this.re_evaluate_architectures(archs);
+
+                // Re-start background search + show background architectures
+                this.$store.dispatch("toggleRunBackgroundSearch", true);
+                this.$store.commit('setShowFoundArchitectures', true);
+
                 // Determine Changes
                 await this.send_changes();
+
+                // Stop processing
+                this.processing = false;
 
                 // Close modal
                 this.$emit('close-modal');

@@ -97,6 +97,7 @@
                 let dataResponse = await fetchPost(API_URL + 'eoss/formulation/toggle-agent', reqData);
                 if (dataResponse.ok) {
                     let data = await dataResponse.json();
+                    console.log('--> AGENT RESPONSE', data);
                     if (data['status'] === 'on') {
                         this.agentRunning = true;
                     }

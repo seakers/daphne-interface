@@ -85,11 +85,8 @@
                         this.changes = true;
                     }
                 }
-            },
-        },
-        watch: {
-            Stakeholder_Needs_Panel(){
-                  this.update_stakeholder_list();
+                this.$apollo.queries.Stakeholder_Needs_Panel.refetch();
+                this.update_stakeholder_list();
             },
         },
         apollo: {

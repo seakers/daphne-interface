@@ -22,6 +22,8 @@
 
 <script>
 
+    import {mapState} from "vuex";
+
     export default {
         name: "edit-stakeholders",
         data() {
@@ -40,7 +42,9 @@
             }
         },
         computed: {
-
+            ...mapState({
+                objective_objs_store: state => state.problem.objective_objs,
+            }),
         },
         methods: {
             update_objective_values(){
@@ -59,6 +63,9 @@
                         this.$store.commit('setObjectiveOption', obj);
                         obj.initial = obj.active;
                         this.changes = true;
+                    }
+                    else{
+                        this.$store.commit('setObjectiveOption', obj);
                     }
                 }
             },

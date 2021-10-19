@@ -43,10 +43,24 @@ query MyQuery($user_id: Int, $problem_id: Int) {
 }`;
 
 const InsertDatasetArchSingleMutation = gql`
-mutation MyMutation($cost: float8, $dataset_id: Int, $eval_status: Boolean, $ga: Boolean, $improve_hv: Boolean, $input: String, $problem_id: Int, $science: float8, $user_id: Int) {
-  insert_Architecture_one(object: {cost: $cost, dataset_id: $dataset_id, eval_status: $eval_status, ga: $ga, improve_hv: $improve_hv, input: $input, problem_id: $problem_id, science: $science, user_id: $user_id}) {
-    id
-  }
+mutation MyMutation($fairness: float8, $data_continuity: float8, $programmatic_risk: float8, $cost: float8, $dataset_id: Int, $eval_status: Boolean, $ga: Boolean, $improve_hv: Boolean, $input: String, $problem_id: Int, $science: float8, $user_id: Int) {
+  insert_Architecture_one(
+    object: {
+        cost: $cost,
+        dataset_id: $dataset_id,
+        eval_status: $eval_status,
+        ga: $ga,
+        improve_hv: $improve_hv,
+        input: $input,
+        problem_id: $problem_id,
+        science: $science,
+        user_id: $user_id,
+        fairness: $fairness,
+        data_continuity: $data_continuity,
+        programmatic_risk: $programmatic_risk
+    }) {
+        id
+    }
 }`;
 
 const InsertDatasetArchsMutation = gql`
@@ -70,7 +84,7 @@ mutation MyMutation($group_id: Int, $problem_id: Int, $user_id: Int, $name: Stri
 
 const ArchitectureDatasetQuery = gql`
 query MyQuery($problem_id: Int, $dataset_id: Int) {
-  Architecture(where: {dataset_id: {_eq: $dataset_id}, problem_id: {_eq: $problem_id}}) {
+  Architecture(where: {dataset_id: {_eq: $dataset_id}, problem_id: {_eq: $problem_id}, ga: {_eq: false}}) {
     input
     science
     cost
@@ -79,6 +93,26 @@ query MyQuery($problem_id: Int, $dataset_id: Int) {
     improve_hv
     critique
     user_id
+    fairness
+    data_continuity
+    programmatic_risk
+  }
+}`;
+
+const ArchitectureDatasetGAQuery = gql`
+query MyQuery($problem_id: Int, $dataset_id: Int) {
+  Architecture(where: {dataset_id: {_eq: $dataset_id}, problem_id: {_eq: $problem_id}, ga: {_eq: true}, improve_hv: {_eq: true}}) {
+    input
+    science
+    cost
+    eval_status
+    ga
+    improve_hv
+    critique
+    user_id
+    fairness
+    data_continuity
+    programmatic_risk
   }
 }`;
 
@@ -427,5 +461,6 @@ export {
     InsertDatasetArchSingleMutation,
     DatasetCounterQuery,
     StakeholderQuery,
-    StakeholderMutation
+    StakeholderMutation,
+    ArchitectureDatasetGAQuery
 }

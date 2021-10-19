@@ -233,6 +233,9 @@
                 this.$store.commit('activateModal', 'EditProblemModal');
             },
             compareInputsBoolBit(bool_ary, bit_str){
+                if(bool_ary === null){
+                    return false;
+                }
                 for(let x = 0; x < bool_ary.length; x++){
                     let bit = bit_str.charAt(x);
                     let bit_bool = false;

@@ -17,6 +17,7 @@ export async function generate_dataset_name(user_id, problem_id){
 
     let response = await client.query({
         deep: true,
+        fetchPolicy: 'no-cache',
         query: DatasetCounterQuery,
         variables: {
             user_id: user_id,
@@ -103,9 +104,7 @@ export async function index_orbit_changes(orb_items, problem_id){
 }
 
 
-
-export async function index_new_dataset(group_id, problem_id, user_id, name, architectures){
-
+export async function index_single_dataset(group_id, problem_id, user_id, name){
     // --> 1. INSERT NEW DATASET
     let new_dataset_insert = await client.mutate({
         mutation: InsertDatasetMutation,
@@ -123,6 +122,14 @@ export async function index_new_dataset(group_id, problem_id, user_id, name, arc
     });
     let new_dataset_id = new_dataset_insert.data.insert_Dataset_one.id;
     console.log("--> NEW DATASET", new_dataset_id);
+    return new_dataset_id;
+}
+
+
+
+export async function index_new_dataset(group_id, problem_id, user_id, name, architectures){
+
+    let new_dataset_id = await index_single_dataset(group_id, problem_id, user_id, name);
 
 
 
@@ -143,7 +150,10 @@ export async function index_new_dataset(group_id, problem_id, user_id, name, arc
                 input: arch.input,
                 problem_id: problem_id,
                 science: arch.science,
-                user_id: user_id
+                user_id: user_id,
+                fairness: arch.fairness,
+                data_continuity: arch.data_continuity,
+                programmatic_risk: arch.programmatic_risk
             },
             update: (cache, { data: { insert_archs } }) => {console.log(insert_archs);},
         });

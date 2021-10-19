@@ -251,8 +251,8 @@
                 this.selectedProblemId = newProblemId;
             },
             datasetId: function(newDatasetId, _) {
-                this.selectedDatasetId = newDatasetId;
                 this.$apollo.subscriptions.userDatasets.refresh();
+                this.selectedDatasetId = newDatasetId;
             },
         },
     }
