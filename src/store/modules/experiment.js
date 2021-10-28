@@ -13,7 +13,15 @@ function chooseProblem(problemName) {
     let filter = null;
     switch (problemName) {
     case 'ClimateCentric':
-        problem = ClimateCentric;
+        problem = SMAP;
+        filter = EOSSFilter;
+        break;
+    case 'ClimateCentric_1':
+        problem = SMAP;
+        filter = EOSSFilter;
+        break;
+    case 'ClimateCentric_2':
+        problem = SMAP;
         filter = EOSSFilter;
         break;
     case 'SMAP':
@@ -53,11 +61,6 @@ const state = {
         { filename: 'start.csv', user: false }
     ],
     problems: ["ClimateCentric", "ClimateCentric_1", "ClimateCentric_2"],
-    problems_list: [
-        { group_id: 1, problem_id: 1, dataset_id: null},
-        { group_id: 1, problem_id: 1, dataset_id: null},
-        { group_id: 1, problem_id: 1, dataset_id: null}
-    ],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -65,19 +68,12 @@ const state = {
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
                 'Details',
                 'BackgroundSearch',
                 'Diversifier',
-                'LiveSuggestions'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation'
@@ -94,43 +90,36 @@ const state = {
                 {
                     text: `<p>Thank you for participating in this experiment! You will be using Daphne, a virtual
 assistant and design tool for earth observation satellite system design. The task you will complete in the experiment
-is to explore and expand a dataset of designs for a new soil moisture mission. You will consider missions ranging from
-small (a few hundred millions) to large (several billion $).</p>
-<p>You will solve two similar tasks related to this problem using two different versions of Daphne, with different functions
-activated each time. One of them will act more as a peer to your work, by suggesting changes in real time and giving its
- opinions on designs, while the other will be more of an assistant to you, by answering questions on how everything you
- see on screen is computed and answering specific questions you might have. Which one you get to
+is to explore both the problem space and solution space of a climate centered earth observing mission.</p>
+<p>You will solve two similar tasks related to this problem using two different versions of Daphne: one version where Daphne will attempt to help you explore both
+the problem space and solution space of the climate problem, and one where Daphne will provide no assistnace. Which one you get to
 use first is randomized, but the problem you will be solving is not. In both tasks, you will be considering a set of
-instruments developed at JPL (e.g., an L band radar) and a set of orbits (e.g., SSO dawn-dusk at 600km).
-However, the emphasis is different in the two tasks. In the first task, the priority is to study surface water processes
-(runoff, evapotranspiration, etc), whereas in the second case the emphasis is on societal benefits and applications
-such as heat stress, drought, flood monitoring and wild fires prediction.</p>
+instruments, a set of orbits, and creating designs by assigning instruments to orbits. At the beginning of each task, you will be asked to define an initial
+problem formulation. This process involves: picking the problem's orbits to consider, picking the problem's instruments to consider, setting stakeholder panel weights, and selecting
+figures of merit (objectives) to consider while searching the solution space.</p>
 <p><b>We have models and datasets available to estimate the science/societal benefit of different combinations of
 instruments and orbits (e.g., calculation of revisit time of a constellation and comparison to a requirement from the
 World Meteorological Organization). While these models are not perfect, they are assumed good enough for these purposes,
 so the focus should be on trying to get the best possible architectures given these models, where best means those that
-maximize the science/societal benefit while minimizing lifecycle cost.</b></p>`
+maximize the figures of merit you choose for the problem formulation.</b></p>`
                 },
                 {
-                    text: `Specifically, the task consists on designing different constellations of satellites for
-Earth observation. This means you will be assigning different sets of instruments from a predefined pool of instruments
-to different orbits and then evaluating your constellation design (e.g, the set of satellites with specific instruments
-assigned to specific orbits) to see which constellations are the best for each of the two tasks. Note that a
-constellation design that works well for one of the two problems might not work well at all for the next one, so simply
- copying designs from one stage to the next is unlikely to work well.`
+                    text: `Specifically, the task consists of iterating between tweaking problem formulation and exploring that formulation's
+                     solution space. At the beginning of each task, you will be asked to define an initial problem formulation. This involves selecting which
+                     instruments, orbits, stakeholder weights, and objectives you would like the problem formulation to contain. When you have finished this, the problem formulation
+                     you just defined will be loaded into Daphne and the experiment will start. You will then be able to: 1. explore the current problem formulation by creating
+                     and evaluating designs, 2. re-define the problem formulation if you think it would help find better designs. Note, a design that works well for the first task
+                     might not work well for the second.`
                 },
                 {
-                    text: `Again, to reiterate: for each focus (e.g, Water or Applications), you have <b>two main
+                    text: `Again, to reiterate: for each task, you have <b>two main
 objectives</b>: <b>FIRST</b>: You need to come up with a range of constellation designs (not just one constellation)
-that spans a wide range of costs (e.g., from $800M to $4,000M) with the best science score you can come up with
-(later we will describe how to get those designs). The science score is a measure (a number that ranges from 0 to 1)
-of how well you are satisfying a set of requirements which are decided by different stakeholders. The same constellation
-design can have different scores if different stakeholders are given more prominence, which is what happens in this
-experiment. Then, the <b>SECOND</b> objective: After 15 minutes working on either task, you will do two short tests
-consisting of 12 questions each asking you either say whether a design is on the set of best designs or not, or to
-choose the best constellation design out of a pair of designs with the same cost. With this out of the way, let's learn
-how to actually design new satellite constellations! It's important to try out the functions you are being shown now,
-as this will help you perform better during the experiment.`
+that spans a wide range of costs (e.g., from $800M to $4,000M) with the best objective scores you can come up with
+(later we will describe how to get those designs). The possible objectives for the tasks is the following: programmatic risk -
+lower is better (defined by instrument TRL), cost - lower is better, stakeholder panel satisfaction - higher is better (Oceanic, Terresterial, Atmosphere),
+fairness - lower is better, data continuity - lower is better. When defining the problem formulation, you can choose to consider any of these objectives when exploring the
+solution space. After 20 minutes of working on either task, you will take a short test consisting of 20 question asking questions about problem formulation understanding. These questions include
+things like: which instrument has a higher sensitivity for objective X. With this out of the way, let's learn how to use Daphne for the experiment tasks!`
                 },
                 {
                     attachTo: {
@@ -157,10 +146,9 @@ Instruments Information panel. <b>You should read about them now by clicking on 
                         element: '#main-plot-block',
                         on: 'bottom'
                     },
-                    text: `Your first task in the experiment is, again, to come up with a range of constellation
-designs with the highest science benefit for a range of costs. To make things specific, we have set up lower and upper
-cost bounds at $800M and $4,000M. You can see some initial constellation designs here, but you will learn how to create
-new ones in a moment.`
+                    text: `The objective of your first task is to explore a wide range of designs that optimize figures of merit you choose to
+                    consider (ex. minimize cost, minimize data continuity...). You will achieve this objective by iterating between the following as you see fit: 1. Exploring the current
+                    problem definition's solution space by creating and evaluating designs, 2. Re-defining the problem formulation to explore new design possibilities.`
                 },
                 {
                     attachTo: {
@@ -168,20 +156,17 @@ new ones in a moment.`
                         on: 'bottom'
                     },
                     text: `This is the plot that shows the trade-space of the constellation designs you come up with.
-This set of constellation designs comes from a different problem, so don't worry if you see something different when
-the actual focused task begins. Each dot here is a single constellation design, and each design has an associated
-science/societal score and a cost. The science score, just as a reminder, is a measure (ranging from 0 to 1) of how
-well you are satisfying a set of requirements which are decided by different stakeholders.`
+                    For each task, you will start with a blank slate, aka no previous designs. For each design you create and evaluate, a dot will appear on this graph.`
+
                 },
                 {
                     attachTo: {
-                        element: '#admin-panel',
-                        on: 'top right'
+                        element: '#main-plot-block-2',
+                        on: 'bottom'
                     },
-                    text: `As you hover over each dot on the scatter plot, you can see the corresponding information
-being changed in the Design Builder space. If you click on a dot, it is replaced by a cross. The cross means you have
-selected that constellation design. <b>Try selecting a design which has the highest science benefit for a certain cost
-(so the one the furthest right for any cost).</b>`
+                    text: `Above the plot, you can use the x-axis and y-axis dropdowns to select which objectives in the problem formulation you would like to see in the
+                    trade-space plot. Trying changing these values to see the plot change.`
+
                 },
                 {
                     attachTo: {
@@ -198,6 +183,16 @@ with the tutorial.</b>`
                 },
                 {
                     attachTo: {
+                        element: '#admin-panel',
+                        on: 'top right'
+                    },
+                    text: `As you hover over each dot on the scatter plot, you can see the corresponding information
+being changed in the Design Builder space. If you click on a dot, it is replaced by a cross. The cross means you have
+selected that constellation design. <b>Try selecting a design which has the highest science benefit for a certain cost
+(so the one the furthest right for any cost).</b>`
+                },
+                {
+                    attachTo: {
                         element: '.design-builder',
                         on: 'right'
                     },
@@ -209,53 +204,11 @@ will open a new window with more information on this architecture. This is one o
                 },
                 {
                     attachTo: {
-                        element: '.data-mining',
-                        on: 'left'
-                    },
-                    text: `While this is the basic functionality for tradespace analysis, you have more tools available
-to you in this experiment. The first of them, and the one you will have available in the Assistant Daphne, is
-Data Mining. The Data Mining feature allows you to select a set of points in the dataset either by drawing squares in
-the dataset or using filters. Then, by pressing Run Data Mining, you obtain a set of "features". A feature is a set of
-characteristics shared by a group of designs, such as having an L-band radar and an L-band radiometer in the same orbit.
-Let's see how it works step by step.`
-                },
-                {
-                    attachTo: {
                         element: '#main-plot-block',
                         on: 'bottom'
                     },
                     text: `First of all, choose Drag-select in the Mouse Selection panel. This allows you to select a
 subset of points from which you want to obtain relevant features. <b>Try making a selection.</b>`
-                },
-                {
-                    attachTo: {
-                        element: '.data-mining',
-                        on: 'right'
-                    },
-                    text: `With that done, ,<b>click on Run data mining</b> to see the features. They are represented
-as triangles in this plot, where two important metrics for them are represented: Coverage and Specificity. Coverage
-measures how many points in your selection are covered by this feature, while Specificity measures which percentage of
-the points with the feature are inside your selection. An ideal feature would be the one with perfect Coverage (all your
-selected points are inside it) and Specificity (no points outside your selection have this feature). To learn more about
-a feature, we have the Feature Application. <b>Before clicking on Next, click on one Feature</b>`
-                },
-                {
-                    attachTo: {
-                        element: '.feature-application',
-                        on: 'left'
-                    },
-                    text: `In this window you can see how a feature is described. The tree you see is how the feature
-explains itself. Thus, if you have found a feature you want your designs to have, this window here will tell you how to
-ensure that. Now on to the last feature of the Data Mining functionality.`
-                },
-                {
-                    attachTo: {
-                        element: '.filter',
-                        on: 'left'
-                    },
-                    text: `This last window is the Filters window. Instead of selecting a group of features manually in
-                    the dataset, you can use this window to select a set of designs that have something in common. You
-                    can try using any of those, as they're pretty self explanatory.`
                 },
                 {
                     attachTo: {
@@ -467,11 +420,13 @@ const getters = {
 // actions
 const actions = {
     async startExperiment({ state, commit }) {
+        console.log('--> STARTING EXPERIMENT FUNC');
         // Call server to start experiment
         try {
             let response = await fetchGet(API_URL + 'experiment/start-experiment');
             if (response.ok) {
                 let experimentStages = await response.json();
+                console.log('--> EXPERIMENT STAGES', experimentStages);
                 // Start the experiment: set the order of the conditions after the tutorial
                 commit('setNextStage', { experimentStage: 'tutorial', nextStage: experimentStages[0] });
                 for (let i = 0; i < experimentStages.length - 1; ++i) {

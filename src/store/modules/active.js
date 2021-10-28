@@ -4,9 +4,9 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 import Vue from 'vue';
 
 const state = {
-    runBackgroundSearch: false,
-    showFoundArchitectures: false,
-    runDiversifier: false,
+    runBackgroundSearch: true,
+    showFoundArchitectures: true,
+    runDiversifier: true,
     showSuggestions: false,
     notificationTitle: "",
     notificationBody: "",

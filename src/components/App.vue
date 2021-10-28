@@ -58,6 +58,7 @@
 
     import { ProblemReload } from "../scripts/apollo-queries";
     import {ExperimentProblem} from "../scripts/experiment-queries";
+    import { index_single_dataset, generate_dataset_name } from "../scripts/arch_operations";
 
 
     export default {
@@ -176,7 +177,7 @@
                 // 8. Start-up has finished
                 this.isStartup = false;
             },
-            async get_experiment_problem_data(problem_name){
+            async get_experiment_problem_id(problem_name){
                 let result = await this.$apollo.query({
                     deep: true,
                     fetchPolicy: 'no-cache',
@@ -250,7 +251,9 @@
                 exitOnEsc: false
             });
 
-            // Generate the session
+
+
+            // --> REGULAR DAPHNE FRONTEND
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
             // Start the Websocket
@@ -287,32 +290,31 @@
                 console.error('Networking error:', e);
             }
 
-            // Generate the session
+
+
+
+            /*
+
+            // --> EXPERIMENT FRONTEND
+
+            // 1. Generate the session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
-            // Experiment
+            // 2. Start websocket
+            await wsTools.wsConnect(this.$store);
+
+            // 3. Recover experiment if needed
             this.$store.dispatch('recoverExperiment').then(async () => {
                 this.$store.commit('setIsRecovering', false);
 
-                // Only start experiment if it wasn't already running
+                // 4. Start new experiment if no recovery
                 if (!this.inExperiment) {
-                    // First of all login
-                    await this.$store.dispatch('loginUser', {
-                        username: "gtest15",
-                        password: "gtest15"
-                    });
-
-                    this.$store.dispatch('startExperiment').then(async () => {
-                        // Restart WS after login
-                        await wsTools.wsConnect(this.$store);
-                        await wsTools.experimentWsConnect();
-
-                        // Set the tutorial
-                        this.$store.commit('setExperimentStage', 'tutorial');
-                        this.$store.commit('setInExperiment', true);
-                    });
+                    this.$store.commit('activateModal', 'ExperimentRegisterModal');
                 }
             });
+
+
+             */
 
         },
         watch: {
@@ -322,28 +324,45 @@
                     // 1. Set problem for this stage
                     // - Create new dataset for the beginning of each stage
                     let problem_name = this.problems[this.currentStageNum];
-                    let problem_data = await this.get_experiment_problem_data(problem_name);
+                    let problem_id = await this.get_experiment_problem_id(problem_name);
 
+                    // 2. Index new dataset for problem
+                    let dataset_name = await generate_dataset_name(this.user_pk, problem_id);
+                    let dataset_id = await index_single_dataset(1, problem_id, this.user_pk, dataset_name);
 
-
-
-
-
-                    // Set problem for this stage and load the corresponding dataset
-                    console.log(this.problems, this.currentStageNum);
-                    await this.$store.dispatch('setProblemName', this.problems[this.currentStageNum]);
-                    this.$store.commit('setDatasetInformation', this.datasetInformations[this.currentStageNum]);
-
-                    // Stop all running background tasks
+                    // 3. Stop all running background tasks
                     await this.$store.dispatch('stopBackgroundTasks');
 
-                    // Initialize the new problem
+                    // 4. Initialize the new problem
+                    await this.$store.dispatch('initProblem', problem_id);
+
+                    // 5. Load architectures from back-end
                     let parameters = {
-                        'problem_id': parseInt(PROBLEM__ID),
-                        'group_id': 1
+                        'group_id'  : 1,
+                        'problem_id': problem_id,
+                        'dataset_id': dataset_id
                     };
-                    await this.$store.dispatch('initProblem', parseInt(PROBLEM__ID));
-                    await this.$store.dispatch('loadNewData', parameters);
+                    await this.$store.dispatch('loadData', parameters);
+
+                    // 6. Connect to a VASSAR Evaluator/GA pair
+                    wsTools.websocket.send(JSON.stringify({
+                        msg_type: "connect_services"
+                    }));
+
+                    // 7. Load past dialogue - scroll chat window down
+                    this.$store.dispatch('loadDialogue').then(() => {
+                        this.$refs.chatWindow.scrollToBottom();
+                    });
+
+
+                    // 8. Initialize user-only features
+                    // if (this.$store.state.auth.isLoggedIn) {
+                    //     this.$store.dispatch('retrieveActiveSettings');
+                    // }
+
+                    // 9. Call backend to initialize data-mining
+                    await this.$store.dispatch('setProblemParameters');
+
 
                     // Add functionalities
                     for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
@@ -394,9 +413,9 @@
                     // Initialize user-only features
                     await this.$store.dispatch("retrieveActiveSettings");
                     if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
-                        this.$store.dispatch("startBackgroundSearch");
+                        // await this.$store.dispatch("startBackgroundSearch");
                     }
-                    this.$store.commit('setShowFoundArchitectures', false);
+                    this.$store.commit('setShowFoundArchitectures', true);
 
 
                     if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier')) {
@@ -412,10 +431,10 @@
                     else {
                         this.$store.commit('setShowSuggestions', false);
                     }
-                    this.$store.dispatch("updateActiveSettings");
+                    await this.$store.dispatch("updateActiveSettings");
 
                     // Data Mining initialization
-                    this.$store.dispatch('setProblemParameters');
+                    await this.$store.dispatch('setProblemParameters');
                 }
             }
         }

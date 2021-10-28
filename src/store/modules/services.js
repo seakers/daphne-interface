@@ -5,7 +5,7 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 
 const state = {
     vassarStatus: 'waiting_for_user',
-    gaStatus: 'waiting_for_user'
+    gaStatus: 'waiting_for_user',
 };
 
 const initialState = _.cloneDeep(state);

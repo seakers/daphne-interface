@@ -28,6 +28,11 @@
     import {wsTools} from "../scripts/websocket-tools";
 
     export default {
+        data() {
+            return {
+                firstGaConnect: true,
+            }
+        },
         name: "ServicesMenu",
         computed: {
             ...mapState({
@@ -97,6 +102,14 @@
                 }
                 else {
                     return this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions');
+                }
+            },
+        },
+        watch: {
+            gaStatus() {
+                if(this.firstGaConnect === true && this.gaStatus === 'ready'){
+                    this.$store.dispatch("startBackgroundSearch");
+                    this.firstGaConnect = false;
                 }
             },
         },

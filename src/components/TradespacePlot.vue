@@ -1,5 +1,5 @@
 <template>
-    <div class="column">
+    <div class="column" id="main-plot-block-2">
         <section class="panel">
             <p class="panel-heading">
                 Tradespace exploration |
@@ -441,14 +441,14 @@
                     reqData.append('non_selected', JSON.stringify(nonSelectedIds));
                     reqData.append('selected_db', JSON.stringify(selectedIds_db));
                     reqData.append('non_selected_db', JSON.stringify(nonSelectedIds_db));
-                    let dataResponse = await fetchPost(API_URL + 'ifeed/set-target', reqData);
-
-                    if (dataResponse.ok) {
-                        console.log('Target selection updated');
-                    }
-                    else {
-                        console.error('Error obtaining the driving features.');
-                    }
+                    // let dataResponse = await fetchPost(API_URL + 'ifeed/set-target', reqData);
+                    //
+                    // if (dataResponse.ok) {
+                    //     console.log('Target selection updated');
+                    // }
+                    // else {
+                    //     console.error('Error obtaining the driving features.');
+                    // }
                 }
                 catch(e) {
                     console.error('Networking error:', e);

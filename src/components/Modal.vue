@@ -20,6 +20,7 @@
     import ReloadModal from './ReloadModal';
     import CopyDatasetModal from './CopyDatasetModal';
     import EditProblemModal from "./EditProblemModal";
+    import ExperimentRegisterModal from "./ExperimentRegisterModal";
 
     export default {
         name: 'modal',
@@ -37,7 +38,8 @@
             ResetPasswordModal,
             ReloadModal,
             CopyDatasetModal,
-            EditProblemModal
+            EditProblemModal,
+            ExperimentRegisterModal
         },
         methods: {
             onCloseModal() {
