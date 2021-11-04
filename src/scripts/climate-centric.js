@@ -25,6 +25,7 @@ export default {
         'DataMining',
         'EOSSFilter',
         'FeatureApplication',
+        'HypothesisTester',
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',

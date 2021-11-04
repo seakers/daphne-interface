@@ -13,6 +13,7 @@ import experiment from './modules/experiment';
 import modal from './modules/modal';
 import mycroft from './modules/mycroft';
 import services from './modules/services';
+import hypothesis from './modules/hypothesis';
 
 import ClimateCentric from '../scripts/climate-centric';
 import SMAP from '../scripts/smap';
@@ -222,7 +223,8 @@ export default new Vuex.Store({
         featureApplication,
         experiment,
         modal,
-        mycroft
+        mycroft,
+        hypothesis
     },
     strict: debug
 });

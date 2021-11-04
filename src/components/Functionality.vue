@@ -21,6 +21,7 @@
     import DataMining from './DataMining';
     import EOSSFilter from './EOSSFilter';
     import FeatureApplication from './FeatureApplication';
+    import HypothesisTester from './HypothesisTester';
     import TimelinePlot from "./TimelinePlot";
     import Mycroft from "./Mycroft";
 
@@ -45,6 +46,7 @@
             DataMining,
             EOSSFilter,
             FeatureApplication,
+            HypothesisTester,
             TimelinePlot,
             Mycroft
         },
