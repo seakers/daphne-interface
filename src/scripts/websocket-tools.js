@@ -34,7 +34,7 @@ class WebsocketTools {
     }
 
     async experimentWsConnect() {
-        this.experimentWebsocket = new WebSocket(WS_URL + 'experiment');
+        this.experimentWebsocket = new ReconnectingWebSocket(WS_URL + 'experiment');
         this.experimentWebsocket.onopen = function() {
             console.log('Experiment Web Socket Connection Made');
         };

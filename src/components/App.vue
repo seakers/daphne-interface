@@ -175,6 +175,28 @@
                 // 8. Start-up has finished
                 this.isStartup = false;
             },
+
+            async initExperiment(startData) {
+                // Experiment
+                this.$store.dispatch('recoverExperiment').then(async () => {
+                    this.$store.commit('setIsRecovering', false);
+
+                    // Only start experiment if it wasn't already running
+                    if (!this.inExperiment) {
+                        this.$store.dispatch('startExperiment').then(async () => {
+                            // Connect the Experiment WS
+                            await wsTools.experimentWsConnect();
+
+                            // Set the tutorial
+                            this.$store.commit('setExperimentStage', 'tutorial');
+                            this.$store.commit('setInExperiment', true);
+                        });
+                    }
+                });
+
+                // 8. Start-up has finished
+                this.isStartup = false;
+            },
         },
         apollo: {
             $subscribe: {
@@ -262,6 +284,9 @@
                         if (data['is_logged_in'] === true) {
                             this.$store.commit('logUserIn', data);
                             this.init(data);
+                            if (data["is_experiment_user"] === true) {
+                                this.initExperiment(data);
+                            }
                         }
                         else {
                             this.$store.commit('activateModal', 'LoginModal');
@@ -272,34 +297,6 @@
             catch (e) {
                 console.error('Networking error:', e);
             }
-
-            /*// Generate the session
-            await fetchPost(API_URL + 'auth/generate-session', new FormData());
-
-            // Experiment
-            this.$store.dispatch('recoverExperiment').then(async () => {
-                this.$store.commit('setIsRecovering', false);
-
-                // Only start experiment if it wasn't already running
-                if (!this.inExperiment) {
-                    // First of all login
-                    await this.$store.dispatch('loginUser', {
-                        username: "tamu-experiment",
-                        password: "tamu2019"
-                    });
-
-                    this.$store.dispatch('startExperiment').then(async () => {
-                        // Restart WS after login
-                        await wsTools.wsConnect(this.$store);
-                        await wsTools.experimentWsConnect();
-
-                        // Set the tutorial
-                        this.$store.commit('setExperimentStage', 'tutorial');
-                        this.$store.commit('setInExperiment', true);
-                    });
-                }
-            });*/
-
         },
         watch: {
             experimentStage: async function (val, oldVal) {

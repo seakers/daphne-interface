@@ -451,6 +451,73 @@ instrument-orbits pairings appear most often in the best architectures you can f
             nextStage: '',
             startTime: 0,
             stageDuration: 60*15
+        },
+        daphne_classic: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'EOSSFilter',
+                'FeatureApplication',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+                'Details',
+                'BackgroundSearch'
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'DataMining',
+                'EOSSFilter',
+                'FeatureApplication',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+            ],
+            restrictedQuestions: {
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
+                analyst: [],
+                explorer: [],
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                critic: [],
+            },
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 60*15
+        },
+        daphne_hypothesis: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions'
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+            ],
+            restrictedQuestions: {
+                engineer: [],
+                analyst: [],
+                explorer: [],
+                historian: [],
+                critic: ['3000', '3005'],
+                engineer_instruments: [],
+                engineer_instrument_parameters: [],
+                engineer_measurements: [],
+                engineer_stakeholders: [],
+                engineer_objectives: [],
+                engineer_subobjectives: [],
+                historian_technologies: [],
+                historian_measurements: [],
+                historian_missions: [],
+                historian_space_agencies: []
+            },
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 60*15
         }
     }
 };
@@ -472,8 +539,6 @@ const actions = {
                 for (let i = 0; i < experimentStages.length - 1; ++i) {
                     commit('setNextStage', { experimentStage: experimentStages[i], nextStage: experimentStages[i+1] });
                 }
-                // Start the websockets after completing the request so the session cookie is already set
-                await wsTools.experimentWsConnect();
             }
             else {
                 console.error('Error starting the experiment.');
@@ -566,11 +631,10 @@ const actions = {
                     commit('restoreDataMining', experimentInformation.experiment_data.dataMining);
                     commit('restoreFeatureApplication', experimentInformation.experiment_data.featureApplication);
                     commit('restoreActive', experimentInformation.experiment_data.active);
+                    commit('restoreHypothesis', experimentInformation.experiment_data.hypothesis);
                     commit('restoreExperiment', experimentInformation.experiment_data.experiment);
                     // Start the websockets after completing the request so the session cookie is already set
                     await wsTools.experimentWsConnect();
-                    // Start the Websocket
-                    await wsTools.wsConnect(this);
                     await dispatch('stopBackgroundTasks');
                     if (state.stageInformation[state.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
                         dispatch("startBackgroundSearch");
