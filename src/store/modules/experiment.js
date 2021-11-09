@@ -48,11 +48,11 @@ const state = {
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
     datasetInformations: [
-        { filename: 'jpl_tutorial.csv', user: false },
-        { filename: 'start.csv', user: false },
-        { filename: 'start.csv', user: false }
+        { name: 'experiment_tutorial' },
+        { name: 'experiment' },
+        { name: 'experiment' }
     ],
-    problems: ["SMAP", "SMAP_JPL1", "SMAP_JPL2"],
+    problems: ["SMAP", "SMAP_W", "SMAP_C"],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -88,11 +88,12 @@ const state = {
             steps: [
                 {
                     text: `<p>Thank you for participating in this experiment! You will be using Daphne, a virtual 
-assistant and design tool for earth observation satellite system design. The task you will complete in the experiment
-is to explore and expand a dataset of designs for a new soil moisture mission. You will consider missions ranging from 
+assistant and design tool for Earth Observation Satellite Systems (EOSS from now on) design. During this experiment, you will
+help shape a new soil moisture measuring mission with multiple satellites and sensors involved. You will consider missions ranging from 
 small (a few hundred millions) to large (several billion $).</p> 
-<p>You will solve two similar tasks related to this problem using two different versions of Daphne, with different functions
-activated each time. One of them will act more as a peer to your work, by suggesting changes in real time and giving its
+<p>Your role during the experiment is that of an <b>Engineering Designer</b>. In order to shape the mission design, You will solve two similar tasks related to this problem using two different versions of Daphne. One of Daphne's versions
+is the currently released one, with some features disabled to help you focus on what we want you to try. The other version
+includes a new function named "Hypothesis Tester", where you act more as a peer to your work, by suggesting changes in real time and giving its
  opinions on designs, while the other will be more of an assistant to you, by answering questions on how everything you 
  see on screen is computed and answering specific questions you might have. Which one you get to 
 use first is randomized, but the problem you will be solving is not. In both tasks, you will be considering a set of 

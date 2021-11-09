@@ -303,19 +303,19 @@
                 if (this.inExperiment && !this.isRecovering) {
                     // Set problem for this stage and load the corresponding dataset
                     console.log(this.problems, this.currentStageNum);
+
+                    // 1. Find problem and dataset ids from names (might change from computer to computer)
                     await this.$store.dispatch('setProblemName', this.problems[this.currentStageNum]);
                     this.$store.commit('setDatasetInformation', this.datasetInformations[this.currentStageNum]);
-
+                    let parameters = {
+                        'group_id'  : groupId,
+                        'problem_id': problemId,
+                        'dataset_id': datasetId
+                    };
+                    this.$store.dispatch('loadData', parameters);
+                    
                     // Stop all running background tasks
                     await this.$store.dispatch('stopBackgroundTasks');
-
-                    // Initialize the new problem
-                    let parameters = {
-                        'problem_id': parseInt(PROBLEM__ID),
-                        'group_id': 1
-                    };
-                    await this.$store.dispatch('initProblem', parseInt(PROBLEM__ID));
-                    await this.$store.dispatch('loadNewData', parameters);
 
                     // Add functionalities
                     for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
@@ -352,10 +352,10 @@
                         case 'no_daphne': {
                             break;
                         }
-                        case 'daphne_peer': {
+                        case 'daphne_classic': {
                             break;
                         }
-                        case 'daphne_assistant': {
+                        case 'daphne_hypothesis': {
                             break;
                         }
                         default: {
