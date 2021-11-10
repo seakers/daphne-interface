@@ -67,7 +67,7 @@
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
                 isLoggedIn: state => state.auth.isLoggedIn,
-                vassarStatus: state => state.services.vassarStatus,
+                vassarStatus: state => state.services.vassarServiceStatus,
             }),
             // ...mapGetters({
             //     problem_id: 'getProblemModuleId'

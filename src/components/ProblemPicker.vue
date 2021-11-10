@@ -77,6 +77,7 @@
 
 <script>
     import { mapState } from 'vuex';
+    import {wsTools} from "../scripts/websocket-tools";
     import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import { DaphneGroupQuery, DaphneProblemQuery, DaphneDatasetQuery } from '../scripts/apollo-queries';
 
@@ -129,7 +130,14 @@
                         this.$store.commit('setProblemId', this.selectedProblemId);
                         await this.$store.dispatch('initProblem', this.selectedProblemId);
 
-                        // 3. Load the new dataset
+                        // 3. Rebuild the VASSAR service
+                        wsTools.websocket.send(JSON.stringify({
+                            msg_type: "rebuild_vassar",
+                            group_id: this.selectedGroupId,
+                            problem_id: this.selectedProblemId
+                        }));
+
+                        // 4. Load the new dataset
                         this.$store.commit("setIgnoreQuery", true);
                         let parameters = {
                             'problem_id': this.selectedProblemId,
@@ -138,9 +146,9 @@
                         };
                         await this.$store.dispatch('loadData', parameters);
 
-                        // 4. Start the background search algorithm
+                        // 5. Start the background search algorithm
                         if (this.$store.state.auth.isLoggedIn) {
-                            // this.$store.dispatch("startBackgroundSearch");
+                            this.$store.dispatch("startBackgroundSearch");
                         }
                         // Set data mining settings
                         this.$store.dispatch('setProblemParameters');
@@ -176,8 +184,6 @@
             }
         },
         apollo: {
-            // TODO: query groups
-            // TODO: query problems
             $subscribe: {
                 userGroups: {
                     query: DaphneGroupQuery,

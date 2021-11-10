@@ -106,27 +106,6 @@ const actions = {
         reqData.append('design', JSON.stringify(arch));
         let dataResponse = await fetchPost(API_URL + 'eoss/data/add-design', reqData);
     },
-    async changeVassarPort({ state, commit }, port) {
-        try {
-            let reqData = new FormData();
-            let vassarPort = state.vassarPort;
-            if (port !== undefined) {
-                vassarPort = port;
-            }
-            reqData.append('port', vassarPort);
-            let dataResponse = await fetchPost(API_URL + 'eoss/settings/change-port', reqData);
-
-            if (dataResponse.ok) {
-                let data = await dataResponse.json();
-            }
-            else {
-                console.error('Error changing VASSAR port.');
-            }
-        }
-        catch(e) {
-            console.error('Networking error:', e);
-        }
-    },
 };
 
 // mutations

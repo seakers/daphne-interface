@@ -84,6 +84,7 @@
                 groupId: state => state.problem.groupId,
                 problemId: state => state.problem.problemId,
                 user_pk: state => state.auth.user_pk,
+                gaServiceStatus: state => state.services.gaServiceStatus,
             }),
             timerExperimentCondition() {
                 if (!this.inExperiment) {
@@ -157,6 +158,20 @@
                 this.$store.dispatch('loadData', parameters);
 
                 // 4. Connect to a VASSAR Evaluator/GA pair
+                // Set up a watcher for the GA status to start GA as soon as it's ready
+                if (this.$store.state.auth.isLoggedIn) {
+                    const stopGaWatch = this.$watch(
+                        function() {
+                            return this.gaServiceStatus;
+                        },
+                        function(newStatus, _) {
+                        if (newStatus === "ready") {
+                            this.$store.dispatch('startBackgroundSearch');
+                            stopGaWatch();
+                        }
+                    });
+                }
+                // Initialize services
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: "connect_services"
                 }));
@@ -169,7 +184,6 @@
                 // 6. Initialize user-only features
                 if (this.$store.state.auth.isLoggedIn) {
                     this.$store.dispatch('retrieveActiveSettings');
-                    // this.$store.dispatch("startBackgroundSearch");
                 }
 
                 // 7. Call backend to initialize data-mining
@@ -333,9 +347,21 @@
                     // Set problem for this stage and load the corresponding dataset
                     console.log(this.problems, this.currentStageNum);
 
+                     // Stop all running background tasks
+                    await this.$store.dispatch('stopBackgroundTasks');
+
                     // 1. Find problem and dataset ids from names (might change from computer to computer)
                     this.stageProblemName = this.problems[this.currentStageNum];
                     this.stageDatasetName = this.datasetInformations[this.currentStageNum];
+
+                    // 2. Rebuild the VASSAR service
+                    wsTools.websocket.send(JSON.stringify({
+                        msg_type: "rebuild_vassar",
+                        group_id: this.groupId,
+                        problem_id: this.stageProblemId
+                    }));
+
+                    // 3. Load the new dataset
                     let parameters = {
                         'group_id'  : this.groupId,
                         'problem_id': this.stageProblemId,
@@ -343,19 +369,15 @@
                     };
                     this.$store.dispatch('loadData', parameters);
 
-                    // Stop all running background tasks
-                    await this.$store.dispatch('stopBackgroundTasks');
+                    // 4. Clear dialogue and reload
+                    this.$store.dispatch('clearHistory');
 
-                    // TODO: Rebuild vassar
-
-                    // TODO: Clear dialogue and reload
-
-                    // Add functionalities
+                    // 5. Add stage-specific functionalities
                     for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
                         this.$store.commit('addFunctionality', { functionality: shownFunc, funcData: null });
                     }
 
-                    // Stage specific behaviour
+                    // 6. Stage specific behaviour
                     switch (this.experimentStage) {
                         case 'tutorial': {
                             this.$store.state.experiment.stageInformation.tutorial.steps.forEach(step => {
@@ -396,7 +418,7 @@
                         }
                     }
 
-                    // Initialize user-only features
+                    // 6. Initialize user-only features
                     await this.$store.dispatch("retrieveActiveSettings");
                     if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
                         this.$store.dispatch("startBackgroundSearch");
@@ -418,8 +440,10 @@
                         this.$store.commit('setShowSuggestions', false);
                     }
                     this.$store.dispatch("updateActiveSettings");
+                    // Start GA
+                    this.$store.dispatch('startBackgroundSearch');
 
-                    // Data Mining initialization
+                    // 7. Data Mining initialization
                     this.$store.dispatch('setProblemParameters');
                 }
             }
