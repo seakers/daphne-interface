@@ -56,7 +56,7 @@
     import ServicesMenu from "./ServicesMenu";
     import ChatWindow from "./ChatWindow";
 
-    import { ProblemReload } from "../scripts/apollo-queries";
+    import { ProblemReload, ProblemByNameQuery, DatasetByNameQuery } from "../scripts/apollo-queries";
 
 
     export default {
@@ -66,6 +66,8 @@
                 tutorial: {},
                 isStartup: true,
                 problemStatus: {},
+                stageProblemName: "",
+                stageDatasetName: "",
             }
         },
         computed: {
@@ -79,6 +81,7 @@
                 stageInformation: state => state.experiment.stageInformation,
                 isRecovering: state => state.experiment.isRecovering,
                 currentStageNum: state => state.experiment.currentStageNum,
+                groupId: state => state.problem.groupId,
                 problemId: state => state.problem.problemId,
                 user_pk: state => state.auth.user_pk,
             }),
@@ -199,6 +202,32 @@
             },
         },
         apollo: {
+            stageProblemId: {
+                query: ProblemByNameQuery,
+                variables() {
+                    return {
+                        problem_name: this.stageProblemName
+                    }
+                },
+                skip() {
+                    return this.stageProblemName === "";
+                },
+                update: data => data.problem.name
+            },
+            stageDatasetId: {
+                query: DatasetByNameQuery,
+                variables() {
+                    return {
+                        dataset_name: this.stageDatasetName,
+                        problem_id: this.stageProblemId,
+                        user_id: this.user_pk
+                    }
+                },
+                skip() {
+                    return this.stageDatasetName === "";
+                },
+                update: data => data.dataset.id
+            },
             $subscribe: {
                 problemStatus: {
                     deep: true,
@@ -305,17 +334,21 @@
                     console.log(this.problems, this.currentStageNum);
 
                     // 1. Find problem and dataset ids from names (might change from computer to computer)
-                    await this.$store.dispatch('setProblemName', this.problems[this.currentStageNum]);
-                    this.$store.commit('setDatasetInformation', this.datasetInformations[this.currentStageNum]);
+                    this.stageProblemName = this.problems[this.currentStageNum];
+                    this.stageDatasetName = this.datasetInformations[this.currentStageNum];
                     let parameters = {
-                        'group_id'  : groupId,
-                        'problem_id': problemId,
-                        'dataset_id': datasetId
+                        'group_id'  : this.groupId,
+                        'problem_id': this.stageProblemId,
+                        'dataset_id': this.stageDatasetId
                     };
                     this.$store.dispatch('loadData', parameters);
-                    
+
                     // Stop all running background tasks
                     await this.$store.dispatch('stopBackgroundTasks');
+
+                    // TODO: Rebuild vassar
+
+                    // TODO: Clear dialogue and reload
 
                     // Add functionalities
                     for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {

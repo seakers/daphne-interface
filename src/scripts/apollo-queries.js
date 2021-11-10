@@ -145,6 +145,14 @@ query problem_list($group_id: Int) {
     }
 }`;
 
+const ProblemByNameQuery = gql`
+query problem_by_name($problem_name: String = "") {
+  problem: Problem(where: {name: {_eq: $problem_name}}) {
+    id
+    name
+  }
+}`;
+
 const DaphneDatasetQuery = gql`
 query dataset_list($user_pk: Int, $group_id: Int, $problem_id: Int) {
   user_datasets: Dataset(where: {_and: [{problem_id: {_eq: $problem_id}}, {_or: [{user_id: {_is_null: true}}, {user_id: {_eq: $user_pk}}]}, {_or: [{group_id: {_is_null: true}}, {group_id: {_eq: $group_id}}]}]}) {
@@ -171,6 +179,14 @@ query current_dataset($dataset_id: Int!) {
       id
       name
     }
+  }
+}`;
+
+const DatasetByNameQuery = gql`
+query dataset_by_name($dataset_name: String = "", $problem_id: Int = -1, $user_id: Int = -1) {
+  dataset: Dataset(where: {name: {_eq: $dataset_name}, problem_id: {_eq: $problem_id}, user_id: {_eq: $user_id}}) {
+    id
+    name
   }
 }`;
 
@@ -324,11 +340,13 @@ export {
     OrbitAttributeQuery,
     OrbitAttributeJoinQuery,
     ProblemQuery,
+    ProblemByNameQuery,
     OrbitAttributeAcceptedValuesQuery,
     DaphneGroupQuery,
     DaphneProblemQuery,
     DaphneDatasetQuery,
     DaphneDatasetIdQuery,
+    DatasetByNameQuery,
     GlobalInstrumentQuery,
     LocalInstrumentQuery,
     LocalOrbitQuery,
