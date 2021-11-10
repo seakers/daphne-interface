@@ -193,7 +193,7 @@
                                 let new_obj = {
                                     id: this.problemData.length,
                                     inputs: bool_ary,
-                                    outputs: [arch.cost, arch.data_continuity, arch.fairness, arch.programmatic_risk, arch.ArchitectureScoreExplanations[0].satisfaction, arch.ArchitectureScoreExplanations[1].satisfaction, arch.ArchitectureScoreExplanations[2].satisfaction],
+                                    outputs: [arch.cost, arch.programmatic_risk, arch.ArchitectureScoreExplanations[0].satisfaction, arch.ArchitectureScoreExplanations[1].satisfaction, arch.ArchitectureScoreExplanations[2].satisfaction],
                                 };
                                 if (arch.ga === false) {
                                     this.$store.dispatch('addNewData', new_obj);

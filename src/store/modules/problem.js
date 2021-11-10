@@ -23,12 +23,10 @@ const state = {
     problemFunctionalities: [],
     objective_objs: [
         {name: 'Cost', active: true, obj_id: 0},
-        {name: 'Data Continuity', active: true, obj_id: 1},
-        {name: 'Fairness', active: true, obj_id: 2},
-        {name: 'Programmatic Risk', active: true, obj_id: 3},
-        {name: 'Atmospheric Panel Satisfaction', active: true, obj_id: 4},
-        {name: 'Oceanic Panel Satisfaction', active: true, obj_id: 5},
-        {name: 'Terrestrial Panel Satisfaction', active: true, obj_id: 6}
+        {name: 'Programmatic Risk', active: true, obj_id: 1},
+        {name: 'Atmospheric Panel Satisfaction', active: true, obj_id: 2},
+        {name: 'Oceanic Panel Satisfaction', active: true, obj_id: 3},
+        {name: 'Terrestrial Panel Satisfaction', active: true, obj_id: 4}
     ],
     importCallback: (data, extra) => {
         return {};

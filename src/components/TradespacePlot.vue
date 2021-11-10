@@ -467,6 +467,12 @@
                             dataset_id: this.datasetId,
                         }
                     },
+                    skip() {
+                        if(this.problemId == null || this.datasetId == null){
+                            return true;
+                        }
+                        return false;
+                    },
                     result ({ data }) {
                         this.arch_to_eval = data.Architecture_aggregate.aggregate.count;
                     },
