@@ -18,7 +18,7 @@ export default {
     outputNum: 2,
     inputList: [],
     // outputList: ['Science', 'Cost ($M)'],
-    outputList: ['Cost ($M)', 'Data Continuity', 'Fairness', 'Programmatic Risk', 'Atmospheric Panel Satisfaction', 'Oceanic Panel Satisfaction', 'Terrestrial Panel Satisfaction'],
+    outputList: ['Cost ($M)', 'Programmatic Risk', 'Atmospheric Panel Satisfaction', 'Oceanic Panel Satisfaction', 'Terrestrial Panel Satisfaction'],
     outputObj: [1, -1],
     inputType: 'binary',
     displayComponent: 'EOSSBuilder',

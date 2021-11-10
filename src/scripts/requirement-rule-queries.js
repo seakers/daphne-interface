@@ -35,7 +35,7 @@ query myQuery($problem_id: Int!) {
 }`;
 
 const RequirementRuleAttributeFilters = gql`
-query myQuery($problem_id: Int!, $instrument: String, $measurement: String, $measurement_attr: String, $subobjective: String, $objective: String, $panel: String) {
+query myQuery($problem_id: Int, $instrument: String, $measurement: String, $measurement_attr: String, $subobjective: String, $objective: String, $panel: String) {
     attr_rules_filter: Requirement_Rule_Attribute(where: {problem_id: {_eq: 4}, Measurement: {Join__Instrument_Measurements: {Instrument: {name: {_ilike: $instrument}}}, name: {_ilike: $measurement}}, Measurement_Attribute: {name: {_ilike: $measurement_attr}}, Stakeholder_Needs_Subobjective: {name: {_ilike: $subobjective}, Stakeholder_Needs_Objective: {name: {_ilike: $objective}, Stakeholder_Needs_Panel: {name: {_ilike: $panel}}}}}) {
         id
         type

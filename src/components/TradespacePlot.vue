@@ -9,13 +9,15 @@
                     evaluate all
                 </button>
                 <br>
+                y-axis <select v-model="yObjective">
+                <option v-for="(objective, idx) in objective_objs" v-if="objective.active" v-bind:value="idx" v-bind:key="idx">{{ objective.name }}</option>
+                </select>
+                <br>
                 x-axis <select v-model="xObjective">
                     <option v-for="(objective, idx) in objective_objs" v-if="objective.active" v-bind:value="objective.obj_id" v-bind:key="idx">{{ objective.name }}</option>
                 </select>
-                <br>
-                y-axis <select v-model="yObjective">
-                    <option v-for="(objective, idx) in objective_objs" v-if="objective.active" v-bind:value="idx" v-bind:key="idx">{{ objective.name }}</option>
-                </select>
+
+
 
             </p>
             <div class="panel-block" id="main-plot-block">
