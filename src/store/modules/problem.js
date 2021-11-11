@@ -161,6 +161,7 @@ const mutations = {
     },
     addProblemData(state, newData) {
         state.problemData.splice(newData.id, 0, newData);
+        calculateParetoRanking(state.problemData);
     },
     setDataUpdateFrom(state, dataUpdateFrom) {
         state.dataUpdateFrom = dataUpdateFrom;

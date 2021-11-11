@@ -70,8 +70,9 @@ const apolloProvider = new VueApollo({
 
 
 
-// Experiment Websocket connection
+// Websockets functions
 store.subscribe(async (mutation, state) => {
+    
     // Only update if inside experiment
     if (state.experiment.inExperiment) {
         // Only update mutations if after tutorial (currentStageNum > 0)
@@ -91,7 +92,7 @@ store.subscribe(async (mutation, state) => {
                     msg_type: 'update_state',
                     state: state
                 }));
-            }, 10000);
+            }, 5000);
         }
     }
     else {
@@ -157,6 +158,14 @@ store.subscribe(async (mutation, state) => {
         }
     }
 });
+
+// Active Analyst
+window.setInterval(function() {
+    console.log("Sending things to active analyst!");
+    wsTools.websocket.send(JSON.stringify({
+        msg_type: 'active_analyst'
+    }));
+}, 60*1000);
 
 
 
