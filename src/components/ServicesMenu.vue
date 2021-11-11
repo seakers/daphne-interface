@@ -34,8 +34,8 @@
                 inExperiment: state => state.experiment.inExperiment,
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
-                vassarStatus: state => state.services.vassarStatus,
-                gaStatus: state => state.services.gaStatus
+                vassarStatus: state => state.services.vassarServiceStatus,
+                gaStatus: state => state.services.gaServiceStatus
             }),
             runBackgroundSearch: {
                 get () {

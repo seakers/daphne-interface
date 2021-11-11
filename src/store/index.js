@@ -148,11 +148,11 @@ export default new Vuex.Store({
 
 
             if (received_info['type'] === 'services.vassar_status') {
-                commit('setVassarStatus', received_info['status']);
+                commit('setVassarServiceStatus', received_info['status']);
             }
 
             if (received_info['type'] === 'services.ga_status') {
-                commit('setGaStatus', received_info['status']);
+                commit('setGaServiceStatus', received_info['status']);
             }
 
 
