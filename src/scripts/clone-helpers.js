@@ -844,7 +844,7 @@ export async function clone_problem_stakeholder_subobjective(old_objective_id, n
         let new_subobjective_id = insert_clone.data.insert_Stakeholder_Needs_Subobjective_one.id;
 
         await clone_problem_requirement_rule_attributes(old_subobjective_id, new_subobjective_id, new_problem_id);
-        await clone_problem_requirement_rule_case(old_subobjective_id, new_subobjective_id, new_problem_id);
+        await clone_problem_requirement_rule_case(old_subobjective_id, new_subobjective_id, new_problem_id, new_objective_id);
     }
 }
 
@@ -915,7 +915,7 @@ export async function clone_problem_requirement_rule_attributes(old_subobjective
 
 }
 
-export async function clone_problem_requirement_rule_case(old_subobjective_id, new_subobjective_id, new_problem_id){
+export async function clone_problem_requirement_rule_case(old_subobjective_id, new_subobjective_id, new_problem_id, new_objective_id){
     console.log("clone_problem_requirement_rule_case");
 
     // 1. QUERY
@@ -924,11 +924,12 @@ export async function clone_problem_requirement_rule_case(old_subobjective_id, n
           Requirement_Rule_Case(where: {subobjective_id: {_eq: $subobjective_id}}) {
             id
             measurement_id
-            measurement_attribute_id
             problem_id
             subobjective_id
             rule
             value
+            text
+            description
           }
         }
     `;
@@ -941,44 +942,98 @@ export async function clone_problem_requirement_rule_case(old_subobjective_id, n
         }
     });
 
-    // 2. CLONE ROWS
-    let rows = rows_request['data']['Requirement_Rule_Case'];
-    let clones = [];
-    let ids    = [];
-    for(let x=0;x<rows.length;x++){
-        let clone = {
-            'problem_id': new_problem_id,
-            'measurement_id': rows[x].measurement_id,
-            'measurement_attribute_id': rows[x].measurement_attribute_id,
-            'subobjective_id': new_subobjective_id,
-            'rule': String(rows[x].rule),
-            'value': String(rows[x].value)
-        };
-        ids.push(rows[x].id);
-        clones.push(clone);
-    }
 
-    // 3. INDEX CLONES
-    const BulkInsert = gql`
-        mutation myMutation($clones: [Requirement_Rule_Case_insert_input!]!) {
-          insert_Requirement_Rule_Case(objects: $clones) {
-            affected_rows
+
+    // 2. CLONE ROWS
+    const SingleInsert = gql`
+        mutation myMutation($clone: Requirement_Rule_Case_insert_input!) {
+          insert_Requirement_Rule_Case_one(object: $clone) {
+            id
           }
         }
     `;
-    let insert_clones = await client.mutate({
-        mutation: BulkInsert,
-        variables: {
-            clones: clones,
-        },
-        update: (cache, { data: { update_arch_status } }) => {console.log(update_arch_status);},
-    });
-    console.log("--> CLONED Requirement_Rule_Case", insert_clones);
+    let rows = rows_request['data']['Requirement_Rule_Case'];
+    let clones = [];
+    for(let x=0;x<rows.length;x++){
 
+        // Create clone
+        let clone = {
+            'problem_id': new_problem_id,
+            'measurement_id': rows[x].measurement_id,
+            'subobjective_id': new_subobjective_id,
+            'objective_id': new_objective_id,
+            'rule': String(rows[x].rule),
+            'value': String(rows[x].value),
+            'text': String(rows[x].text),
+            'description': String(rows[x].description)
+        };
+        clones.push(clone);
+
+        // Insert Clone
+        let insert_clone = await client.mutate({
+            mutation: SingleInsert,
+            variables: {
+                clone: clone,
+            },
+            update: (cache, { data: { update_arch_status } }) => {console.log(update_arch_status);},
+        });
+        let old_requirement_rule_case_id = rows[x].id;
+        let new_requirement_rule_case_id = insert_clone.data.insert_Requirement_Rule_Case_one.id;
+
+        // Clone Case Attributes
+        await clone_problem_case_attribute(old_requirement_rule_case_id, new_requirement_rule_case_id);
+    }
 }
 
 
+export async function clone_problem_case_attribute(old_requirement_rule_case_id, new_requirement_rule_case_id){
+    console.log('--> cloning case attributes')
 
+    // 1. QUERY
+    const Query = gql`
+        query myQuery($requirement_rule_id: Int!) {
+          Join__Case_Attribute(where: {rule_id: {_eq: $requirement_rule_id}}) {
+            id
+            rule_id
+            measurement_attribute_id
+            operation
+            value
+          }
+        }
+    `;
+    let rows_request = await client.query({
+        deep: true,
+        fetchPolicy: 'no-cache',
+        query: Query,
+        variables: {
+            requirement_rule_id: old_requirement_rule_case_id,
+        }
+    });
+
+    let rows = rows_request['data']['Join__Case_Attribute'];
+    const SingleInsert = gql`
+        mutation myMutation($clone: Join__Case_Attribute_insert_input!) {
+          insert_Join__Case_Attribute_one(object: $clone) {
+            id
+          }
+        }
+    `;
+    for(let x=0;x<rows.length;x++){
+        let clone = {
+            'rule_id': new_requirement_rule_case_id,
+            'measurement_attribuite_id': rows[x].measurement_attribute_id,
+            'operation': rows[x].operation,
+            'value': rows[x].value
+        };
+        let insert_clone = await client.mutate({
+            mutation: SingleInsert,
+            variables: {
+                clone: clone,
+            },
+            update: (cache, { data: { update_arch_status } }) => {console.log(update_arch_status);},
+        });
+    }
+}
 
 
 
