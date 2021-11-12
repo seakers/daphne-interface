@@ -159,16 +159,6 @@ store.subscribe(async (mutation, state) => {
     }
 });
 
-// Active Analyst
-window.setInterval(function() {
-    console.log("Sending things to active analyst!");
-    wsTools.websocket.send(JSON.stringify({
-        msg_type: 'active_analyst'
-    }));
-}, 60*1000);
-
-
-
 let app = new Vue({
     el: '#app',
     store,

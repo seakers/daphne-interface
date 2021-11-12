@@ -454,6 +454,9 @@
                     result ({ data }) {
                         this.arch_to_eval = data.Architecture_aggregate.aggregate.count;
                     },
+                    skip() {
+                        return this.problemId === null || this.datasetId === null;
+                    }
                 },
             },
         },

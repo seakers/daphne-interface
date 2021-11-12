@@ -55,6 +55,12 @@
                 </div>
             </div>
 
+            <div class="field">
+                <div class="control">
+                    <button class="button is-link" v-on:click.prevent="uploadDataset">Upload</button>
+                </div>
+            </div>
+
             <hr>
 
             <div class="field" v-if="isLoggedIn">
@@ -164,6 +170,24 @@
             cloneDataset() {
                 this.$store.commit('activateModal', 'CopyDatasetModal');
             },
+            async uploadDataset() {
+                let formData = new FormData();
+
+                // Clone the dataset
+                try {
+                    formData.append("filename", "experiment")
+                    let response = await fetchPost(API_URL + 'eoss/data/upload-data', formData);
+                    if (response.ok) {
+                        let data = await response.json();
+                    }
+                    else {
+                        console.error('Error upload data.');
+                    }
+                }
+                catch(e) {
+                    console.error('Networking error:', e);
+                }
+            },
             openSaveModal() {
                 this.$store.commit('activateModal', 'SaveDatasetModal');
             },
@@ -202,6 +226,9 @@
                                 this.selectedGroupId = 1;
                             }
                         }
+                    },
+                    skip() {
+                        return this.userPk === null;
                     }
                 },
                 userProblems: {
@@ -221,6 +248,9 @@
                                 this.selectedProblemId = 1;
                             }
                         }
+                    },
+                    skip() {
+                        return this.selectedGroupId === null;
                     }
                 },
                 userDatasets: {
@@ -245,6 +275,9 @@
                                 }
                             }
                         }
+                    },
+                    skip() {
+                        return this.userPk === null || this.selectedGroupId === null || this.selectedProblemId === null;
                     }
                 }
             }
