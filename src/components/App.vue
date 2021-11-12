@@ -68,6 +68,7 @@
                 problemStatus: {},
                 stageProblemName: "",
                 stageDatasetName: "",
+                activeAnalystInterval: -1
             }
         },
         computed: {
@@ -189,6 +190,13 @@
                 // 7. Call backend to initialize data-mining
                 this.$store.dispatch('setProblemParameters');
 
+                // 8. Init active Analyst
+                this.activeAnalystInterval = window.setInterval(function() {
+                    wsTools.websocket.send(JSON.stringify({
+                        msg_type: 'active_analyst'
+                    }));
+                }, 60*1000);
+
                 // 8. Start-up has finished
                 this.isStartup = false;
             },
@@ -214,6 +222,111 @@
                 // 8. Start-up has finished
                 this.isStartup = false;
             },
+            async continueStageInit() {
+                // Wait on the Vue apollo queries before proceeding!!!
+                console.log(this.stageProblemId, this.stageDatasetId);
+
+                // 2. Rebuild the VASSAR service
+                wsTools.websocket.send(JSON.stringify({
+                    msg_type: "rebuild_vassar",
+                    group_id: this.groupId,
+                    problem_id: this.stageProblemId
+                }));
+
+                // 3. Load the new dataset
+                let parameters = {
+                    'group_id'  : this.groupId,
+                    'problem_id': this.stageProblemId,
+                    'dataset_id': this.stageDatasetId
+                };
+                this.$store.dispatch('loadData', parameters);
+
+                // 4. Clear dialogue and reload
+                this.$store.dispatch('clearHistory');
+
+                // 5. Add stage-specific functionalities
+                for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
+                    this.$store.commit('addFunctionality', { functionality: shownFunc, funcData: null });
+                }
+
+                // 6. Stage specific behaviour
+                switch (this.experimentStage) {
+                    case 'tutorial': {
+                        this.$store.state.experiment.stageInformation.tutorial.steps.forEach(step => {
+                            this.tutorial.addStep({
+                                    ...step,
+                                    buttons: [
+                                        {
+                                            text: 'Previous',
+                                            action: this.tutorial.back
+                                        },
+                                        {
+                                            text: 'Next',
+                                            action: this.tutorial.next
+                                        }
+                                    ]
+                                });
+                        });
+                        this.tutorial.on("complete", () => {
+                            this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
+                                this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
+                            });
+                        });
+                        // TODO: Hijack next button action on tutorial
+                        this.tutorial.start();
+                        break;
+                    }
+                    case 'no_daphne': {
+                        break;
+                    }
+                    case 'daphne_classic': {
+                        break;
+                    }
+                    case 'daphne_hypothesis': {
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+
+                // 6. Initialize user-only features
+                await this.$store.dispatch("retrieveActiveSettings");
+                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
+                    this.$store.dispatch("startBackgroundSearch");
+                }
+                this.$store.commit('setShowFoundArchitectures', false);
+
+
+                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier')) {
+                    this.$store.commit('setRunDiversifier', true);
+                }
+                else {
+                    this.$store.commit('setRunDiversifier', false);
+                }
+
+                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions')) {
+                    this.$store.commit('setShowSuggestions', true);
+                }
+                else {
+                    this.$store.commit('setShowSuggestions', false);
+                }
+                this.$store.dispatch("updateActiveSettings");
+                // Start GA
+                this.$store.dispatch('startBackgroundSearch');
+
+                // 7. Data Mining initialization
+                this.$store.dispatch('setProblemParameters');
+
+                // 8. Active Analyst init (if supposed to)
+                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('HypothesisTester')) {
+                    this.activeAnalystInterval = window.setInterval(function() {
+                        wsTools.websocket.send(JSON.stringify({
+                            msg_type: 'active_analyst'
+                        }));
+                    }, 60*1000);
+                }
+            }
         },
         apollo: {
             stageProblemId: {
@@ -226,7 +339,10 @@
                 skip() {
                     return this.stageProblemName === "";
                 },
-                update: data => data.problem.name
+                update: data => {
+                    console.log(data);
+                    return data.problem[0].id;
+                }
             },
             stageDatasetId: {
                 query: DatasetByNameQuery,
@@ -240,7 +356,13 @@
                 skip() {
                     return this.stageDatasetName === "";
                 },
-                update: data => data.dataset.id
+                update: data => {
+                    console.log(data);
+                    return data.dataset[0].id;
+                },
+                result({ data, loading, networkStatus }) {
+                    this.continueStageInit();
+                },
             },
             $subscribe: {
                 problemStatus: {
@@ -347,104 +469,15 @@
                     // Set problem for this stage and load the corresponding dataset
                     console.log(this.problems, this.currentStageNum);
 
-                     // Stop all running background tasks
+                    // Stop all running background tasks
                     await this.$store.dispatch('stopBackgroundTasks');
+                    window.clearInterval(this.activeAnalystInterval);
 
                     // 1. Find problem and dataset ids from names (might change from computer to computer)
                     this.stageProblemName = this.problems[this.currentStageNum];
-                    this.stageDatasetName = this.datasetInformations[this.currentStageNum];
+                    this.stageDatasetName = this.datasetInformations[this.currentStageNum]["name"];
 
-                    // 2. Rebuild the VASSAR service
-                    wsTools.websocket.send(JSON.stringify({
-                        msg_type: "rebuild_vassar",
-                        group_id: this.groupId,
-                        problem_id: this.stageProblemId
-                    }));
-
-                    // 3. Load the new dataset
-                    let parameters = {
-                        'group_id'  : this.groupId,
-                        'problem_id': this.stageProblemId,
-                        'dataset_id': this.stageDatasetId
-                    };
-                    this.$store.dispatch('loadData', parameters);
-
-                    // 4. Clear dialogue and reload
-                    this.$store.dispatch('clearHistory');
-
-                    // 5. Add stage-specific functionalities
-                    for (let shownFunc of this.stageInformation[this.experimentStage].shownFunctionalities) {
-                        this.$store.commit('addFunctionality', { functionality: shownFunc, funcData: null });
-                    }
-
-                    // 6. Stage specific behaviour
-                    switch (this.experimentStage) {
-                        case 'tutorial': {
-                            this.$store.state.experiment.stageInformation.tutorial.steps.forEach(step => {
-                                this.tutorial.addStep({
-                                        ...step,
-                                        buttons: [
-                                            {
-                                                text: 'Previous',
-                                                action: this.tutorial.back
-                                            },
-                                            {
-                                                text: 'Next',
-                                                action: this.tutorial.next
-                                            }
-                                        ]
-                                    });
-                            });
-                            this.tutorial.on("complete", () => {
-                                this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
-                                    this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
-                                });
-                            });
-                            // TODO: Hijack next button action on tutorial
-                            this.tutorial.start();
-                            break;
-                        }
-                        case 'no_daphne': {
-                            break;
-                        }
-                        case 'daphne_classic': {
-                            break;
-                        }
-                        case 'daphne_hypothesis': {
-                            break;
-                        }
-                        default: {
-                            break;
-                        }
-                    }
-
-                    // 6. Initialize user-only features
-                    await this.$store.dispatch("retrieveActiveSettings");
-                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
-                        this.$store.dispatch("startBackgroundSearch");
-                    }
-                    this.$store.commit('setShowFoundArchitectures', false);
-
-
-                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier')) {
-                        this.$store.commit('setRunDiversifier', true);
-                    }
-                    else {
-                        this.$store.commit('setRunDiversifier', false);
-                    }
-
-                    if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions')) {
-                        this.$store.commit('setShowSuggestions', true);
-                    }
-                    else {
-                        this.$store.commit('setShowSuggestions', false);
-                    }
-                    this.$store.dispatch("updateActiveSettings");
-                    // Start GA
-                    this.$store.dispatch('startBackgroundSearch');
-
-                    // 7. Data Mining initialization
-                    this.$store.dispatch('setProblemParameters');
+                    // Continued after Vue Apollo queries are finished in continueStageInit()
                 }
             }
         }

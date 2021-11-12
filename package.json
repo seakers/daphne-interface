@@ -13,9 +13,11 @@
   "author": "SEAK",
   "license": "MIT",
   "dependencies": {
+    "@apollo/client": "^3.4.14",
+    "@stdlib/stats-base-mean": "0.0.6",
+    "@stdlib/stats-ttest2": "0.0.6",
     "@vue/cli": "^4.5.13",
     "annyang": "^2.6.1",
-    "@apollo/client": "^3.4.14",
     "bulma": "^0.9.3",
     "d3": "^7.0.4",
     "d3-selection-multi": "^1.0.1",

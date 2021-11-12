@@ -184,6 +184,7 @@
 
                                 let new_obj = {
                                     id: this.problemData.length,
+                                    db_id: arch.id,
                                     inputs: bool_ary,
                                     outputs: [arch.science, arch.cost],
                                 };

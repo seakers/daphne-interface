@@ -3,6 +3,12 @@
         <p>Please introduce a name for the new dataset.</p>
         <form id="name-form">
             <div class="field">
+                <label class="label">Old Dataset Id</label>
+                <div class="control">
+                    <input class="input" type="text" name="src_dataset_id">
+                </div>
+            </div>
+            <div class="field">
                 <label class="label">Name</label>
                 <div class="control">
                     <input class="input" type="text" placeholder="Dataset name" name="dst_dataset_name">
@@ -37,7 +43,9 @@
 
                 // Clone the dataset
                 try {
-                    formData.append("src_dataset_id", this.datasetId)
+                    if (formData.get("src_dataset_id") === "") {
+                        formData.set("src_dataset_id", this.datasetId);
+                    }
                     let response = await fetchPost(API_URL + 'eoss/data/copy-data', formData);
                     if (response.ok) {
                         let data = await response.json();
