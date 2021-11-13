@@ -125,7 +125,6 @@ const actions = {
             });
             reqData.append('selected', JSON.stringify(selectedIds));
             reqData.append('non_selected', JSON.stringify(nonSelectedIds));
-            reqData.append('problem', rootState.problem.problemName);
             reqData.append('input_type', rootState.problem.inputType);
             reqData.append('problem_id', rootState.problem.problemId);
             reqData.append('dataset_id', rootState.problem.datasetId);

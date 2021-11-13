@@ -13,7 +13,6 @@ class Architecture {
 }
 
 export default {
-    problemName: 'SMAP',
     inputNum: 1,
     outputNum: 2,
     inputList: [],
@@ -233,7 +232,7 @@ export default {
     Returns the list of orbits
     @return orbitList: a string list containing the names of orbits
     */
-async function getOrbitList(problemName) {
+async function getOrbitList(problemId) {
     try {
         // 1. Get orbit list from direct query
 
@@ -242,7 +241,7 @@ async function getOrbitList(problemName) {
             fetchPolicy: 'no-cache',
             query: LocalOrbitQuery,
             variables: {
-                problem_id: problemName,
+                problem_id: problemId,
             }
         });
 
@@ -263,7 +262,7 @@ async function getOrbitList(problemName) {
     Returns the list of instruments
     @return instrumentList: a string list containing the names of instruments
     */
-async function getInstrumentList(problemName) {
+async function getInstrumentList(problemId) {
     try {
 
 
@@ -272,7 +271,7 @@ async function getInstrumentList(problemName) {
             fetchPolicy: 'no-cache',
             query: LocalInstrumentQuery,
             variables: {
-                problem_id: problemName,
+                problem_id: problemId,
             }
         });
         let instruments = response['data']['Join__Problem_Instrument'];

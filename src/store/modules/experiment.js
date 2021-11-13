@@ -1,49 +1,16 @@
 // initial state
 import * as _ from "lodash-es";
 import {fetchGet} from "../../scripts/fetch-helpers";
-import ClimateCentric from "../../scripts/climate-centric";
-import SMAP from "../../scripts/smap";
-import Decadal2017Aerosols from "../../scripts/decadal";
+import EOSS_assignment from "../../scripts/eoss_assignment";
 import EOSSFilter from "../../scripts/eoss-filter";
+import Decadal2017Aerosols from "../../scripts/decadal";
 import DecadalFilter from "../../scripts/decadal-filter";
 import {wsTools} from "../../scripts/websocket-tools";
-
-function chooseProblem(problemName) {
-    let problem = null;
-    let filter = null;
-    switch (problemName) {
-    case 'ClimateCentric':
-        problem = ClimateCentric;
-        filter = EOSSFilter;
-        break;
-    case 'SMAP':
-        problem = SMAP;
-        problem.problemName = 'SMAP';
-        filter = EOSSFilter;
-        break;
-    case 'SMAP_JPL1':
-        problem = SMAP;
-        problem.problemName = 'SMAP_JPL1';
-        filter = EOSSFilter;
-        break;
-    case 'SMAP_JPL2':
-        problem = SMAP;
-        problem.problemName = 'SMAP_JPL2';
-        filter = EOSSFilter;
-        break;
-    case 'Decadal2017Aerosols':
-        problem = Decadal2017Aerosols;
-        filter = DecadalFilter;
-    }
-    return {
-        problem: problem,
-        filter: filter
-    }
-}
 
 const state = {
     inExperiment: false,
     isRecovering: false,
+    isRecoveringAsync: false,
     experimentStage: '',
     currentStageNum: -1,
     modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
@@ -53,6 +20,8 @@ const state = {
         { name: 'experiment' }
     ],
     problems: ["SMAP", "SMAP_W", "SMAP_C"],
+    stageProblemName: "",
+    stageDatasetName: "",
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -113,10 +82,10 @@ in order to inform future missions and designs. An example of a performance driv
 you will be considering a set of instruments developed at JPL (e.g., an L band radar) and a set of orbits (e.g., SSO dawn-dusk at 600km). 
 However, the emphasis is different in the two tasks. In the first task, the priority is to study surface water processes (runoff, evapotranspiration, etc),
 whereas in the second case the emphasis is on societal benefits and applications such as heat stress, drought, flood monitoring and wild fires prediction.</p>
-<p><b>We have models and datasets available to estimate the science/societal benefit of different combinations of instruments and orbits (e.g., 
+<p>We have models and datasets available to estimate the science/societal benefit of different combinations of instruments and orbits (e.g., 
 calculation of revisit time of a constellation and comparison to a requirement from the World Meteorological Organization). While these models
  are not perfect, they are assumed good enough for these purposes, so the focus should be on trying to get the best possible architectures given
-  these models, where best means those that maximize the science/societal benefit while minimizing lifecycle cost.</b></p>`
+  these models, where best means those that maximize the science/societal benefit while minimizing lifecycle cost.</p>`
                 },
                 {
                     text: `<p>Specifically, the task consists on designing different constellations of satellites for 
@@ -276,21 +245,24 @@ ensure that. Now on to the last feature of the Data Mining functionality.`
                 },
                 {
                     attachTo: {
-                        element: '#admin-panel'
+                        element: '#admin-panel',
+                        on: 'left'
                     },
                     text: `The next feature you need to know about is how to communicate with the Virtual Assistant. 
                     Let's learn how you can ask questions.`
                 },
                 {
                     attachTo: {
-                        element: '.chat-container'
+                        element: '.chat-container',
+                        on: 'left'
                     },
                     text: `To ask a question, you can write it down here, and then either click Send or press Enter
 on your keyboard.`
                 },
                 {
                     attachTo: {
-                        element: '.chat-container'
+                        element: '.chat-container',
+                        on: 'left'
                     },
                     text: `In this experiment, you can only ask Daphne what she thinks about the current design. 
 After thinking for a while, Daphne will give her thoughts on the design along with some suggestions on how to improve it. 
@@ -299,7 +271,8 @@ If you want to hear the output instead of just reading it, you can unmute Daphne
                 },
                 {
                     attachTo: {
-                        element: '.chat-container'
+                        element: '.chat-container',
+                        on: 'left'
                     },
                     text: `You can read all the suggestions Daphne has for you about your design in here. You can see 
 there is advice from different roles: the Expert Critic will give advice based on a knowledge base with simple rules of 
@@ -333,7 +306,8 @@ few more that are outside of scope for this experiment.`
 //                 },
                 {
                     attachTo: {
-                        element: '.chat-container'
+                        element: '.chat-container',
+                        on: 'left'
                     },
                     text: `You might have already seen some messages from Daphne that appear without you asking a question.
 This is one feature only available in the third Daphne configuration. Daphne (Analyst) will explicitely tell you features that
@@ -353,7 +327,8 @@ drive performance and bring designs closer to the Pareto front.`
 //                 },
                 {
                     attachTo: {
-                        element: '#main-plot-block'
+                        element: '#main-plot-block',
+                        on: 'bottom'
                     },
                     text: `You might also have already seen some blue dots appearing here. There is a search algorithm that is running 
 behind the scenes, helping you find better designs. While all Daphne versions have this, a different version of this algorithm will run in
@@ -380,7 +355,8 @@ shown in blue to differentiate them from the ones already there that you found.`
 //                 },
                 {
                     attachTo: {
-                        element: '.hypothesis-tester'
+                        element: '.hypothesis-tester',
+                        on: 'left'
                     },
                     text: `Last but not least, the Hypothesis Tester. This feature, only available to you if you get the third 
 version of Daphne, helps you test simple hypothesis on whether a feature is driving the performance of designs both in science
@@ -714,13 +690,22 @@ const actions = {
                 if (experimentInformation.is_running) {
                     // If experiment was already running restore the last known state
                     commit('setIsRecovering', true);
+                    commit('setIsRecoveringAsync', true);
                     commit('restoreAuth', experimentInformation.experiment_data.auth);
                     // Functions inside the problem don't survive the recovery, so they need to be reloaded from scratch
                     commit('restoreProblem', experimentInformation.experiment_data.problem);
-                    let problemInfo = chooseProblem(rootState.problem.problemName);
+                    let problemInfo = {
+                        problem: EOSS_assignment,
+                        filter: EOSSFilter
+                    };
                     commit('setProblemFunctions', problemInfo.problem);
                     commit('restoreFilter', experimentInformation.experiment_data.filter);
                     commit('setFilterFunctions', problemInfo.filter);
+                    wsTools.websocket.send(JSON.stringify({
+                        msg_type: "rebuild_vassar",
+                        group_id: rootState.problem.groupId,
+                        problem_id: rootState.problem.problemId
+                    }));
                     commit('restoreTradespacePlot', experimentInformation.experiment_data.tradespacePlot);
                     commit('restoreDaphne', experimentInformation.experiment_data.daphne);
                     commit('restoreFunctionalityList', experimentInformation.experiment_data.functionalityList);
@@ -757,6 +742,12 @@ const mutations = {
         state.experimentStage = experimentStage;
         state.currentStageNum++;
     },
+    setStageProblemName(state, stageProblemName) {
+        state.stageProblemName = stageProblemName;
+    },
+    setStageDatasetName(state, stageDatasetName) {
+        state.stageDatasetName = stageDatasetName;
+    },
     setNextStage(state, { experimentStage, nextStage }) {
         state.stageInformation[experimentStage].nextStage = nextStage;
     },
@@ -765,13 +756,16 @@ const mutations = {
     },
     restoreExperiment(state, recoveredState) {
         Object.keys(recoveredState).forEach((key) => {
-            if (key !== 'isRecovering') {
+            if (key !== 'isRecovering' && key !== 'isRecoveringAsync') {
                 state[key] = recoveredState[key];
             }
         });
     },
     setIsRecovering(state, isRecovering) {
         state.isRecovering = isRecovering;
+    },
+    setIsRecoveringAsync(state, isRecoveringAsync) {
+        state.isRecoveringAsync = isRecoveringAsync;
     },
 };
 

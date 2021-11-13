@@ -64,17 +64,7 @@
     import * as d3 from 'd3';
     import 'd3-selection-multi';
     import {fetchGet, fetchPost} from "../scripts/fetch-helpers";
-    import { ArchitectureEvalCount, UserArchitectureQuery, UserArchitectureSubscription, GaArchitectureQuery, GaArchitectureSubscription } from "../scripts/apollo-queries";
-
-    class Architecture {
-        constructor(id, inputs, outputs, db_id) {
-            this.id = id;
-            this.inputs = inputs;
-            this.outputs = outputs;
-            this.db_id = db_id;
-        }
-    }
-
+    import { ArchitectureEvalCount } from "../scripts/apollo-queries";
 
     export default {
         name: 'tradespace-plot',

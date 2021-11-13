@@ -4,22 +4,23 @@
         <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>
         <p class="has-text-weight-bold">GA status: <a v-on:click="connectGa">Reconnect</a></p>
         <p :class="connectionStatusToColor(gaStatus)">{{connectionStatusToExplanation(gaStatus)}}</p>
-        <label class="checkbox" v-if="backgroundSearchExperimentCondition">
+        <label class="checkbox" v-if="!inExperiment">
             <input type="checkbox" v-model="runBackgroundSearch">
             Run Background Search
         </label>
-        <label class="checkbox" v-if="backgroundSearchExperimentCondition">
+        <label class="checkbox" v-if="!inExperiment">
             <input type="checkbox" v-model="showFoundArchitectures">
             Show New Architectures
         </label>
-        <label class="checkbox" v-if="diversifierExperimentCondition">
+        <label class="checkbox" v-if="!inExperiment">
             <input type="checkbox" v-model="runDiversifier">
             Enable Diversifier
         </label>
-        <label class="checkbox" v-if="liveSuggestionsExperimentCondition">
+        <label class="checkbox" v-if="!inExperiment">
             <input type="checkbox" v-model="showSuggestions">
             Enable Suggestions
         </label>
+        <button class="button" v-on:click="finishExperiment">Finish Experiment</button>
     </div>
 </template>
 
@@ -150,6 +151,9 @@
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: 'connect_ga',
                 }));
+            },
+            async finishExperiment() {
+                this.$store.dispatch('finishExperiment');
             }
         }
     }

@@ -66,8 +66,6 @@
                 tutorial: {},
                 isStartup: true,
                 problemStatus: {},
-                stageProblemName: "",
-                stageDatasetName: "",
                 activeAnalystInterval: -1
             }
         },
@@ -81,11 +79,15 @@
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
                 isRecovering: state => state.experiment.isRecovering,
+                isRecoveringAsync: state => state.experiment.isRecoveringAsync,
                 currentStageNum: state => state.experiment.currentStageNum,
+                stageProblemName: state => state.experiment.stageProblemName,
+                stageDatasetName: state => state.experiment.stageDatasetName,
                 groupId: state => state.problem.groupId,
                 problemId: state => state.problem.problemId,
                 user_pk: state => state.auth.user_pk,
                 gaServiceStatus: state => state.services.gaServiceStatus,
+                vassarRebuildStatus: state => state.services.vassarRebuildStatus,
             }),
             timerExperimentCondition() {
                 if (!this.inExperiment) {
@@ -149,6 +151,9 @@
 
                 // 2. Initialize the new problem
                 await this.$store.dispatch('initProblem', problemId);
+                if (startData["is_experiment_user"]) {
+                    this.$store.commit("resetFunctionalityList");
+                }
 
                 // 3. Load architectures from back-end
                 let parameters = {
@@ -160,7 +165,7 @@
 
                 // 4. Connect to a VASSAR Evaluator/GA pair
                 // Set up a watcher for the GA status to start GA as soon as it's ready
-                if (this.$store.state.auth.isLoggedIn) {
+                if (this.$store.state.auth.isLoggedIn && !startData["is_experiment_user"]) {
                     const stopGaWatch = this.$watch(
                         function() {
                             return this.gaServiceStatus;
@@ -191,19 +196,22 @@
                 this.$store.dispatch('setProblemParameters');
 
                 // 8. Init active Analyst
-                this.activeAnalystInterval = window.setInterval(function() {
-                    wsTools.websocket.send(JSON.stringify({
-                        msg_type: 'active_analyst'
-                    }));
-                }, 60*1000);
+                if (!startData["is_experiment_user"]) {
+                    this.activeAnalystInterval = window.setInterval(function() {
+                        wsTools.websocket.send(JSON.stringify({
+                            msg_type: 'active_analyst'
+                        }));
+                    }, 60*1000);
+                }
 
-                // 8. Start-up has finished
+                // 9. Start-up has finished
                 this.isStartup = false;
             },
 
             async initExperiment(startData) {
                 // Experiment
                 this.$store.dispatch('recoverExperiment').then(async () => {
+                    console.log(this.isRecovering);
                     this.$store.commit('setIsRecovering', false);
 
                     // Only start experiment if it wasn't already running
@@ -218,15 +226,31 @@
                         });
                     }
                 });
-
-                // 8. Start-up has finished
-                this.isStartup = false;
             },
             async continueStageInit() {
                 // Wait on the Vue apollo queries before proceeding!!!
                 console.log(this.stageProblemId, this.stageDatasetId);
 
+                // 1. Initialize the problem
+                await this.$store.dispatch('initProblem', this.stageProblemId);
+
                 // 2. Rebuild the VASSAR service
+                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
+                    const stopGaWatch = this.$watch(
+                        function() {
+                            return this.vassarRebuildStatus;
+                        },
+                        function(newStatus, _) {
+                        if (newStatus === "success") {
+                            this.$store.dispatch('startBackgroundSearch');
+                            stopGaWatch();
+                        }
+                        else {
+                            console.log("Failure reinitializing VASSAR. Please abort experiment!");
+                            stopGaWatch();
+                        }
+                    });
+                }
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: "rebuild_vassar",
                     group_id: this.groupId,
@@ -234,6 +258,7 @@
                 }));
 
                 // 3. Load the new dataset
+                this.$store.commit("setIgnoreQuery", true);
                 let parameters = {
                     'group_id'  : this.groupId,
                     'problem_id': this.stageProblemId,
@@ -273,6 +298,7 @@
                             });
                         });
                         // TODO: Hijack next button action on tutorial
+                        console.log("Started tutorial!");
                         this.tutorial.start();
                         break;
                     }
@@ -292,9 +318,6 @@
 
                 // 6. Initialize user-only features
                 await this.$store.dispatch("retrieveActiveSettings");
-                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
-                    this.$store.dispatch("startBackgroundSearch");
-                }
                 this.$store.commit('setShowFoundArchitectures', false);
 
 
@@ -312,7 +335,8 @@
                     this.$store.commit('setShowSuggestions', false);
                 }
                 this.$store.dispatch("updateActiveSettings");
-                // Start GA
+
+                // Start GA when vassar is already on new problem
                 this.$store.dispatch('startBackgroundSearch');
 
                 // 7. Data Mining initialization
@@ -361,7 +385,12 @@
                     return data.dataset[0].id;
                 },
                 result({ data, loading, networkStatus }) {
-                    this.continueStageInit();
+                    if (!this.isRecoveringAsync) {
+                        this.continueStageInit();
+                    }
+                    else {
+                        this.$store.commit("setIsRecoveringAsync", false);
+                    }
                 },
             },
             $subscribe: {
@@ -467,15 +496,13 @@
             experimentStage: async function (val, oldVal) {
                 if (this.inExperiment && !this.isRecovering) {
                     // Set problem for this stage and load the corresponding dataset
-                    console.log(this.problems, this.currentStageNum);
-
                     // Stop all running background tasks
                     await this.$store.dispatch('stopBackgroundTasks');
                     window.clearInterval(this.activeAnalystInterval);
 
                     // 1. Find problem and dataset ids from names (might change from computer to computer)
-                    this.stageProblemName = this.problems[this.currentStageNum];
-                    this.stageDatasetName = this.datasetInformations[this.currentStageNum]["name"];
+                    this.$store.commit("setStageProblemName", this.problems[this.currentStageNum]);
+                    this.$store.commit("setStageDatasetName", this.datasetInformations[this.currentStageNum]["name"]);
 
                     // Continued after Vue Apollo queries are finished in continueStageInit()
                 }

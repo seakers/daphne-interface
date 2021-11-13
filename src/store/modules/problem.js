@@ -173,6 +173,7 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
+        state.ignoreQuery = true;
     },
 };
 

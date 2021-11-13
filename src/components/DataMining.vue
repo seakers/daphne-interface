@@ -133,10 +133,10 @@
                 this.$store.commit('setHoveredExpression', expression);
             },
 
-            featureClick(d, i, nodes) {
+            featureClick(d, node) {
                 // Replaces the current feature expression with the stashed expression
                 this.$store.commit('setClickedExpression', this.$store.state.featureApplication.hoveredExpression);
-                this.currentFeature = nodes[i];
+                this.currentFeature = node;
             },
 
             featureMouseout(event, d) {
@@ -267,7 +267,7 @@
                     objects.filter(d => d.name !== 'utopiaPoint')
                         .on('mouseover', (event, d) => { this.featureMouseover(event, d); })
                         .on('mouseout', (event, d)  => { this.featureMouseout(event, d); })
-                        .on('click', (d, i, nodes) => { this.featureClick(d, i, nodes); });
+                        .on('click', (event, d) => { this.featureClick(d, event.currentTarget); });
 
                     //Transition the colors to a rainbow
                     objects.style('fill', (d, i) => colorScaleRainbow(colorInterpolateRainbow(this.scores[i])));

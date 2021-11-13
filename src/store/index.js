@@ -15,11 +15,11 @@ import mycroft from './modules/mycroft';
 import services from './modules/services';
 import hypothesis from './modules/hypothesis';
 
-import ClimateCentric from '../scripts/climate-centric';
-import SMAP from '../scripts/smap';
+import EOSS_assignment from '../scripts/eoss_assignment';
+import EOSSFilter from '../scripts/eoss-filter';
 import Decadal2017Aerosols from '../scripts/decadal';
 import DecadalFilter from '../scripts/decadal-filter';
-import EOSSFilter from '../scripts/eoss-filter';
+
 import {fetchPost} from "../scripts/fetch-helpers";
 
 Vue.use(Vuex);
@@ -37,12 +37,8 @@ export default new Vuex.Store({
         async initProblem({ commit, state }, problemId) {
 
             // Load correct problem module based on problem
-            let problem = null;
-            let filter  = null;
-
-            problem             = SMAP;
-            problem.problemName = problemId;
-            filter              = EOSSFilter;
+            let problem = EOSS_assignment;
+            let filter  = EOSSFilter;
 
             commit('setProblem', problem);
             if (filter !== null) {
@@ -153,6 +149,10 @@ export default new Vuex.Store({
 
             if (received_info['type'] === 'services.ga_status') {
                 commit('setGaServiceStatus', received_info['status']);
+            }
+
+            if (received_info['type'] === 'services.vassar_rebuild') {
+                commit('setVassarRebuildStatus', received_info['status']);
             }
 
 
