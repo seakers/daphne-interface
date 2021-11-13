@@ -19,7 +19,17 @@
                         <input type="checkbox" id="checkbox5" v-model="clone_designs">
                         <label for="checkbox5">Clone designs</label>
                     </div>
+
+                    <!-- SELECT DATASET -->
+                    <div v-if="clone_designs === true">
+                        <select v-model="selectedDatasetId">
+                            <option v-for="(dataset, idx) in userDatasets" v-bind:value="dataset.id" v-bind:key="idx">{{ fullDatasetName(dataset) }}</option>
+                        </select>
+                    </div>
                 </div>
+
+
+
 
                 <!-- BUTTONS-->
                 <div class="modal-clone-actions">
@@ -43,10 +53,10 @@
 import { mapState, mapGetters } from 'vuex';
 import {UserGroups} from "../../../scripts/apollo-queries";
 import {clone_problem} from "../../../scripts/clone-helpers";
+import { DaphneDatasetQuery } from "../../../scripts/apollo-queries";
 
 
-
-    export default {
+export default {
         name: "clone-problem",
         props: ['isActive', 'selected_problem'],
         data() {
@@ -54,9 +64,12 @@ import {clone_problem} from "../../../scripts/clone-helpers";
                 problem_id: null,
                 problem_name: "",
                 new_name: "",
+                selectedDatasetId: null,
 
                 auth_user: [],
                 clone_designs: true,
+
+                userDatasets: [],
 
                 disable_cancel: false,
                 disable_clone: false,
@@ -75,12 +88,27 @@ import {clone_problem} from "../../../scripts/clone-helpers";
                 this.disable_cancel = true;
                 this.disable_clone  = true;
 
-                await clone_problem(this.problem_id, this.group_id, this.new_name, this.clone_designs);
+                await clone_problem(this.problem_id, this.group_id, this.new_name, this.clone_designs, this.selectedDatasetId, this.user_id);
 
                 this.disable_cancel = false;
                 this.disable_clone  = false;
                 this.$emit('close-modal-refresh');
             },
+            fullDatasetName(dataset) {
+                let fullName = dataset.name;
+                if (dataset.user_id === null) {
+                    if (dataset.Group === null) {
+                        fullName += " - Global (read only)";
+                    }
+                    else {
+                        fullName += " - Owner: " + dataset.Group.name;
+                    }
+                }
+                else {
+                    fullName += " - Owner: User";
+                }
+                return fullName
+            }
         },
         apollo: {
             auth_user: {
@@ -91,6 +119,19 @@ import {clone_problem} from "../../../scripts/clone-helpers";
                     }
                 }
             },
+            userDatasets: {
+                query: DaphneDatasetQuery,
+                variables() {
+                    return {
+                        user_pk: this.user_id,
+                        group_id: this.group_id,
+                        problem_id: this.problem_id,
+                    }
+                },
+                result ({ data }) {
+                    this.userDatasets = data.user_datasets;
+                }
+            }
         },
         watch: {
             auth_user(){

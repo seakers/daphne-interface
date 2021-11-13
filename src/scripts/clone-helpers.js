@@ -1,6 +1,7 @@
 import { client } from "../vassar";
 import gql from "graphql-tag";
 import {GetArchitectures, UpdateArchitectureStatusBatch} from "./instrument-queries";
+import * as _ from "lodash-es";
 
 
 
@@ -15,31 +16,8 @@ mutation myMutation($group_id: Int, $problem_name: String) {
 }
 `;
 
-const ProblemDesigns = gql`
-query MyQuery($problem_id: Int) {
-  Architecture(where: {problem_id: {_eq: $problem_id}}) {
-    problem_id
-    user_id
-    input
-    science
-    cost
-    ga
-    improve_hv
-    eval_status
-    critique
-  }
-}`;
 
-const BulkDesignInsert = gql`
-mutation myMutation($designs: [Architecture_insert_input!]!) {
-  insert_Architecture(objects: $designs) {
-    affected_rows
-  }
-}
-`;
-
-
-export async function clone_problem(old_problem_id, group_id, new_problem_name, clone_designs){
+export async function clone_problem(old_problem_id, group_id, new_problem_name, clone_designs, old_dataset_id, user_id){
 
 
     // 1. INSERT GROUP PROBLEM
@@ -47,7 +25,7 @@ export async function clone_problem(old_problem_id, group_id, new_problem_name, 
 
     // 2. CLONE DESIGNS
     if(clone_designs === true){
-        await clone_problem_designs(old_problem_id, new_problem_id);
+        await clone_problem_designs(old_problem_id, new_problem_id, old_dataset_id, group_id, user_id);
     }
 
     // 3. CLONE ENTRIES FROM: Join__Problem_Instrument
@@ -93,47 +71,87 @@ export async function insert_new_group_problem(group_id, new_problem_name){
     return new_problem_id;
 }
 
-export async function clone_problem_designs(old_problem_id, new_problem_id){
+export async function clone_problem_designs(old_problem_id, new_problem_id, old_dataset_id, group_id, user_id){
     console.log("clone_problem_designs");
 
-    let old_designs = await client.query({
+    // 1. Query existing dataset and designs
+    const DesignQuery = gql`
+        query MyQuery($dataset_id: Int!) {
+          Dataset(where: {id: {_eq: $dataset_id}}) {
+            id
+            name
+            problem_id
+          }
+          Architecture(order_by: {id: asc}, where: {dataset_id: {_eq: $dataset_id}}) {
+              cost
+              science
+              problem_id
+              eval_status
+              ga
+              improve_hv
+              critique
+              input
+          }
+        }`;
+    let design_query = await client.query({
         deep: true,
         fetchPolicy: 'no-cache',
-        query: ProblemDesigns,
+        query: DesignQuery,
         variables: {
-            problem_id: old_problem_id,
+            dataset_id: old_dataset_id,
         }
     });
-    let designs = old_designs['data']['Architecture'];
-    let designs_insert = [];
 
-    // Iterate over designs and change problem id
-    for(let x=0;x<designs.length;x++){
-        // designs[x].problem_id = new_problem_id;
-        let new_design = {
-            'problem_id': new_problem_id,
-            'user_id': designs[x].user_id,
-            'input': designs[x].input,
-            'science': designs[x].science,
-            'cost': designs[x].cost,
-            'ga': designs[x].ga,
-            'improve_hv': designs[x].improve_hv,
-            'eval_status': designs[x].eval_status,
-            'critique': designs[x].critique,
-        };
-        designs_insert.push(new_design);
+    // 2. Insert new dataset
+    const DatasetMutation = gql`
+    mutation MyMutation($group_id: Int, $name: String, $problem_id: Int, $user_id: Int) {
+        insert_Dataset_one(object: {group_id: $group_id, name: $name, problem_id: $problem_id, user_id: $user_id}) {
+            id
+        }
     }
-    console.log("--> DESIGNS", designs);
-
-    // Insert changed designs
-    let insert_designs = await client.mutate({
-        mutation: BulkDesignInsert,
+    `;
+    let dataset_mutation = await client.mutate({
+        mutation: DatasetMutation,
         variables: {
-            designs: designs_insert,
+            group_id: group_id,
+            name: design_query['data']['Dataset'][0]['name'],
+            problem_id: new_problem_id,
+            user_id: user_id,
         },
         update: (cache, { data: { update_arch_status } }) => {console.log(update_arch_status);},
     });
-    console.log("--> CLONED DESIGNS", insert_designs);
+    let new_dataset_id = dataset_mutation['data']['insert_Dataset_one']['id'];
+
+
+    // 3. Clone designs and insert to new dataset
+    const DesignInsert = gql`
+    mutation MyMutation($cost: float8, $science: float8, $problem_id: Int, $eval_status: Boolean, $ga: Boolean, $improve_hv: Boolean, $critique: String, $input: String, $dataset_id: Int, $user_id: Int) {
+        insert_Architecture_one(object: {cost: $cost, science: $science, problem_id: $problem_id, eval_status: $eval_status, ga: $ga, improve_hv: $improve_hv, critique: $critique, input: $input, dataset_id: $dataset_id, user_id: $user_id}) {
+            id
+        }
+    }`;
+    let old_designs = design_query['data']['Architecture'];
+    for(let x = 0; x < old_designs.length; x++){
+        let design = old_designs[x];
+        let insert_design = await client.mutate({
+            mutation: DesignInsert,
+            variables: {
+                cost: design['cost'],
+                science: design['science'],
+                problem_id: new_problem_id,
+                eval_status: design['eval_status'],
+                ga: design['ga'],
+                improve_hv: design['improve_hv'],
+                critique: design['critique'],
+                input: design['input'],
+                dataset_id: new_dataset_id,
+                user_id: user_id,
+            },
+            update: (cache, { data: { update_arch_status } }) => {console.log(update_arch_status);},
+        });
+        console.log("--> CLONED DESIGN", x);
+    }
+
 }
 
 export async function clone_problem_instrument_assignation(old_problem_id, new_problem_id){
