@@ -375,11 +375,12 @@ are available to you. In each of the tasks, you will get randomly assigned one o
 Remember, you have two objectives: <b>1. Find a range of designs with good science scores with a cost between $800M 
 and $4,000M</b> and <b>2. Learn what features are driving the performance of the designs for metrics such as cost, performance,
 and distance to the Pareto front.</b>. or example, you may try to find which instrument-orbits pairings appear most often 
-in the best architectures you can find. You will be automatically evaluated for task 1 and you will answer a test and survey for task 2.
-<b>The Daphne versions you get are completely randomized</b>. You are also encouraged to take notes during each task, and you will be
-asked about them in the surveys. The first stage will be to design the Surface Water focused mission and the second one will be for the Applications 
-focused mission. And once again, <b>trying to reuse good designs from the first task for the second task will likely 
-not work!</b>. With all this being said, click on done to start the experiment!`
+in the best architectures you can find. You will be automatically evaluated for objective 1 and you will answer a test and survey for objective 2.
+<b>The Daphne versions you get are completely randomized</b>. You are also <b>HIGHLY encouraged</b> to take notes during each task, preferrably on
+a text editor so it's easy to copy and paste later. <b>You will be asked about them in the surveys and tests.</b> The first stage task will be 
+designing the Surface Water focused mission, and the second one will be for the Applications focused mission. And once again, <b>trying to reuse 
+good designs and driving features from the first task for the second task will likely not work!</b>. With all this being said, click on done to
+start the experiment!`
                 }
             ],
         },

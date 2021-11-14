@@ -113,7 +113,7 @@
             instrument(s)
         </span>
          perform better on average.</p>
-        <button v-on:click="testHypothesis" class="button is-primary">Test hypothesis</button>
+        <button v-on:click="testHypothesis" v-bind:disabled="!checkHypothesisInputs()" class="button is-primary">Test hypothesis</button>
     </div>
     <div class="panel-block functionality" v-if="featureExpression !== ''">
         <ul>
@@ -277,6 +277,38 @@
                 this.$store.commit('setFeatureExpression', featureString);
                 this.$store.dispatch('startHypothesisTesting');
             },
+            checkHypothesisInputs() {
+                switch(this.selectedHypothesis) {
+                    case "present": {
+                        return this.selectedInstruments[0] != -1;
+                    }
+                    case "absent": {
+                        return this.selectedInstruments[0] != -1;
+                    }
+                    case "inOrbit": {
+                        return this.selectedInstruments[0] != -1 && this.selectedOrbits[0] != -1;
+                    }
+                    case "notInOrbit": {
+                        return this.selectedInstruments[0] != -1 && this.selectedOrbits[0] != -1;
+                    }
+                    case "together": {
+                        return this.selectedInstruments[0] != -1;
+                    }
+                    case "separate": {
+                        return this.selectedInstruments[0] != -1;
+                    }
+                    case "emptyOrbit": {
+                        return this.selectedOrbits[0] != -1;
+                    }
+                    case "numOrbits": {
+                        return this.selectedNumber != -1;
+                    }
+                    case "numOfInstruments": {
+                        return this.selectedNumber != -1;
+                    }
+                }
+                return false;
+            }
         }
     }
 </script>
