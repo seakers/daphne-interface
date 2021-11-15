@@ -229,28 +229,41 @@
             },
             async continueStageInit() {
                 // Wait on the Vue apollo queries before proceeding!!!
-                console.log(this.stageProblemId, this.stageDatasetId);
+                console.log("Stage Problem ID: ", this.stageProblemId, "Stage Dataset ID:", this.stageDatasetId);
 
                 // 1. Initialize the problem
                 await this.$store.dispatch('initProblem', this.stageProblemId);
 
-                // 2. Rebuild the VASSAR service
-                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
-                    const stopGaWatch = this.$watch(
-                        function() {
-                            return this.vassarRebuildStatus;
-                        },
-                        function(newStatus, _) {
-                        if (newStatus === "success") {
+                // 2. Rebuild the VASSAR service & set GA to start as soon as that is done (and not before!!!)
+                const stopVassarRebuildWatch = this.$watch(
+                function() {
+                    return this.vassarRebuildStatus;
+                },
+                function(newStatus, _) {
+                    if (newStatus === "success") {
+                        // 6. GA initialization
+                        if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
                             this.$store.dispatch('startBackgroundSearch');
-                            stopGaWatch();
                         }
-                        else {
-                            console.log("Failure reinitializing VASSAR. Please abort experiment!");
-                            stopGaWatch();
+                        // 7. Data Mining initialization
+                        this.$store.dispatch('setProblemParameters');
+                        // 8. Active Analyst init (if supposed to)
+                        if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('HypothesisTester')) {
+                            this.activeAnalystInterval = window.setInterval(function() {
+                                wsTools.websocket.send(JSON.stringify({
+                                    msg_type: 'active_analyst'
+                                }));
+                            }, 60*1000);
                         }
-                    });
-                }
+
+                        stopVassarRebuildWatch();
+                    }
+                    else {
+                        console.log("Failure reinitializing VASSAR. Please abort experiment!");
+                        stopVassarRebuildWatch();
+                    }
+                });
+
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: "rebuild_vassar",
                     group_id: this.groupId,
@@ -320,7 +333,6 @@
                 await this.$store.dispatch("retrieveActiveSettings");
                 this.$store.commit('setShowFoundArchitectures', false);
 
-
                 if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier')) {
                     this.$store.commit('setRunDiversifier', true);
                 }
@@ -335,21 +347,6 @@
                     this.$store.commit('setShowSuggestions', false);
                 }
                 this.$store.dispatch("updateActiveSettings");
-
-                // Start GA when vassar is already on new problem
-                this.$store.dispatch('startBackgroundSearch');
-
-                // 7. Data Mining initialization
-                this.$store.dispatch('setProblemParameters');
-
-                // 8. Active Analyst init (if supposed to)
-                if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('HypothesisTester')) {
-                    this.activeAnalystInterval = window.setInterval(function() {
-                        wsTools.websocket.send(JSON.stringify({
-                            msg_type: 'active_analyst'
-                        }));
-                    }, 60*1000);
-                }
             }
         },
         apollo: {
@@ -386,9 +383,11 @@
                 },
                 result({ data, loading, networkStatus }) {
                     if (!this.isRecoveringAsync) {
+                        console.log("Experiment is not recovering. Starting stage!");
                         this.continueStageInit();
                     }
                     else {
+                        console.log("Experiment is recovering! Not starting stage.");
                         this.$store.commit("setIsRecoveringAsync", false);
                     }
                 },
@@ -477,7 +476,7 @@
                         // If the user is already logged in, just proceed with loading as usual; if not, show login screen
                         if (data['is_logged_in'] === true) {
                             this.$store.commit('logUserIn', data);
-                            this.init(data);
+                            await this.init(data);
                             if (data["is_experiment_user"] === true) {
                                 this.initExperiment(data);
                             }
