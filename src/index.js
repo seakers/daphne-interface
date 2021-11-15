@@ -149,11 +149,12 @@ store.subscribe(async (mutation, state) => {
             if (numberOfHistChanges >= 3) {
                 numberOfHistChanges = 0;
                 // Send a WS request for historian information on current arch
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: 'active_historian',
-                    type: 'binary', // TODO!
-                    genome: mutation.payload
-                }));
+                // TODO: Fix hisotrian critic with new architecture of database (includes NLP work)
+                // wsTools.websocket.send(JSON.stringify({
+                //     msg_type: 'active_historian',
+                //     type: 'binary', // TODO!
+                //     genome: mutation.payload
+                // }));
             }
         }
     }

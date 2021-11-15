@@ -5,7 +5,7 @@
                 Tradespace exploration |
                 Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }} <br>
                 Designs requiring re-evaluation: {{ arch_to_eval }}
-                <button class="button is-info is-small" v-on:click="eval_designs()">
+                <button class="button is-info is-small" v-on:click="eval_designs()" v-if="!inExperiment">
                     evaluate all
                 </button>
             </p>
@@ -105,6 +105,7 @@
                 problemId: state => state.problem.problemId,
                 datasetId: state => state.problem.datasetId,
                 groupId: state => state.problem.groupId,
+                inExperiment: state => state.experiment.inExperiment,
             }),
             ...mapGetters({
                 numPoints: 'getNumPoints',
