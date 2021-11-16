@@ -137,6 +137,7 @@
                         await this.$store.dispatch('initProblem', this.selectedProblemId);
 
                         // 3. Rebuild the VASSAR service
+                        this.$store.commit("setVassarRebuildStatus", "");
                         wsTools.websocket.send(JSON.stringify({
                             msg_type: "rebuild_vassar",
                             group_id: this.selectedGroupId,

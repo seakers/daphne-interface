@@ -702,6 +702,7 @@ const actions = {
                     commit('setProblemFunctions', problemInfo.problem);
                     commit('restoreFilter', experimentInformation.experiment_data.filter);
                     commit('setFilterFunctions', problemInfo.filter);
+                    commit("setVassarRebuildStatus", "");
                     wsTools.websocket.send(JSON.stringify({
                         msg_type: "rebuild_vassar",
                         group_id: rootState.problem.groupId,
