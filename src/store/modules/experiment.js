@@ -705,7 +705,8 @@ const actions = {
                     wsTools.websocket.send(JSON.stringify({
                         msg_type: "rebuild_vassar",
                         group_id: rootState.problem.groupId,
-                        problem_id: rootState.problem.problemId
+                        problem_id: rootState.problem.problemId,
+                        dataset_id: rootState.problem.datasetId
                     }));
                     commit('restoreTradespacePlot', experimentInformation.experiment_data.tradespacePlot);
                     commit('restoreDaphne', experimentInformation.experiment_data.daphne);

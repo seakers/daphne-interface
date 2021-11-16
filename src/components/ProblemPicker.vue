@@ -140,7 +140,8 @@
                         wsTools.websocket.send(JSON.stringify({
                             msg_type: "rebuild_vassar",
                             group_id: this.selectedGroupId,
-                            problem_id: this.selectedProblemId
+                            problem_id: this.selectedProblemId,
+                            dataset_id: this.selectedDatasetId
                         }));
 
                         // 4. Load the new dataset
