@@ -21,6 +21,7 @@ import Decadal2017Aerosols from '../scripts/decadal';
 import DecadalFilter from '../scripts/decadal-filter';
 
 import {fetchPost} from "../scripts/fetch-helpers";
+import { wsTools } from '../scripts/websocket-tools';
 
 Vue.use(Vuex);
 
@@ -170,44 +171,15 @@ export default new Vuex.Store({
         },
         async startBackgroundSearch({ rootState }) {
             console.log("Starting the GA!!");
-            // Start the GA on login
-            try {
-                let reqData = new FormData();
-                let url = API_URL + 'eoss/explorer/start-ga';
-                let dataResponse = await fetchPost(url, reqData);
-
-                if (dataResponse.ok) {
-                    let data = await dataResponse.text();
-                    console.log(data);
-                }
-                else {
-                    console.error('Error starting the GA.');
-                }
-            }
-            catch(e) {
-                console.error('Networking error:', e);
-            }
+            wsTools.websocket.send(JSON.stringify({
+                msg_type: 'start_ga'
+            }));
         },
         async stopBackgroundSearch({ rootState }) {
             // Stop the GA
-            try {
-                let reqData = new FormData();
-                reqData.append('problem_id', rootState.problem.problem_id);
-
-                let url = API_URL + 'eoss/explorer/stop-ga';
-                let dataResponse = await fetchPost(url, reqData);
-
-                if (dataResponse.ok) {
-                    let data = await dataResponse.text();
-                    console.log(data);
-                }
-                else {
-                    console.error('Error starting the GA.');
-                }
-            }
-            catch(e) {
-                console.error('Networking error:', e);
-            }
+            wsTools.websocket.send(JSON.stringify({
+                msg_type: 'stop_ga'
+            }));
         }
     },
     modules: {

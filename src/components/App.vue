@@ -130,6 +130,9 @@
                             this.$store.commit('setGroupId', groupId);
                             this.$store.commit('setDatasetId', datasetId);
                             await this.init(data);
+                            if (data["is_experiment_user"] === true) {
+                                this.initExperiment(data);
+                            }
                         }
                     });
                 }

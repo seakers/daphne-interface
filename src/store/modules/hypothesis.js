@@ -18,24 +18,10 @@ const getters = {
 const actions = {
     async startHypothesisTesting({ state, commit, dispatch }, value) {
         console.log("Starting the GA!!");
-        // Start the GA on login
-        try {
-            let reqData = new FormData();
-            reqData.append("featureExpression", state.featureExpression)
-            let url = API_URL + 'eoss/explorer/start-ga';
-            let dataResponse = await fetchPost(url, reqData);
-
-            if (dataResponse.ok) {
-                let data = await dataResponse.text();
-                console.log(data);
-            }
-            else {
-                console.error('Error starting the hypothesis tester.');
-            }
-        }
-        catch(e) {
-            console.error('Networking error:', e);
-        }
+        wsTools.websocket.send(JSON.stringify({
+            msg_type: 'start_ga',
+            featureExpression: state.featureExpression
+        }));
     },
 };
 
