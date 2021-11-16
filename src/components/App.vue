@@ -238,6 +238,8 @@
                 await this.$store.dispatch('initProblem', this.stageProblemId);
 
                 // 2. Rebuild the VASSAR service & set GA to start as soon as that is done (and not before!!!)
+                this.$store.commit("setVassarRebuildStatus", "");
+                
                 const stopVassarRebuildWatch = this.$watch(
                 function() {
                     return this.vassarRebuildStatus;
@@ -268,7 +270,6 @@
                     this.$store.commit("setVassarRebuildStatus", "");
                 });
 
-                this.$store.commit("setVassarRebuildStatus", "");
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: "rebuild_vassar",
                     group_id: this.groupId,
