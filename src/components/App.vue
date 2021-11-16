@@ -255,13 +255,14 @@
                                 }));
                             }, 60*1000);
                         }
-
                         stopVassarRebuildWatch();
                     }
                     else {
                         console.log("Failure reinitializing VASSAR. Please abort experiment!");
                         stopVassarRebuildWatch();
                     }
+                    // Set rebuild status back to empty
+                    this.$store.commit("setVassarRebuildStatus", "");
                 });
 
                 wsTools.websocket.send(JSON.stringify({
