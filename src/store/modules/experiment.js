@@ -718,7 +718,6 @@ const actions = {
                     commit('restoreExperiment', experimentInformation.experiment_data.experiment);
                     // Start the websockets after completing the request so the session cookie is already set
                     await wsTools.experimentWsConnect();
-                    await dispatch('stopBackgroundTasks');
                     if (state.stageInformation[state.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
                         dispatch("startBackgroundSearch");
                     }
