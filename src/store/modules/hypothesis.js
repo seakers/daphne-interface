@@ -1,6 +1,6 @@
 // initial state
 import * as _ from 'lodash-es';
-import {wsTools} from "../scripts/websocket-tools";
+import {wsTools} from "../../scripts/websocket-tools";
 import Vue from 'vue';
 
 const state = {
