@@ -96,6 +96,7 @@
         padding: 1em;
         overflow: auto;
         flex-grow: 1;
+        scroll-behavior: smooth;
     }
     .chat-message {
         width: 95%;

@@ -239,13 +239,14 @@
 
                 // 2. Rebuild the VASSAR service & set GA to start as soon as that is done (and not before!!!)
                 this.$store.commit("setVassarRebuildStatus", "");
-                
+                this.$store.commit("setVassarServiceStatus", "uninitialized");
                 const stopVassarRebuildWatch = this.$watch(
                 function() {
                     return this.vassarRebuildStatus;
                 },
                 function(newStatus, _) {
                     if (newStatus === "success") {
+                        this.$store.commit("setVassarServiceStatus", "ready");
                         // 6. GA initialization
                         if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('BackgroundSearch')) {
                             this.$store.dispatch('startBackgroundSearch');

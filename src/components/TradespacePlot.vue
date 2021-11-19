@@ -703,6 +703,15 @@
                         }
                     }
                 }
+                if (mutation.type === 'addPlotData') {
+                    let updateFrom = state.problem.dataUpdateFrom;
+                    if (updateFrom === 'designBuilder') {
+                        // Mark the last point added as the selected one
+                        if (this.plotData.length > 0) {
+                            this.$store.commit('updateClickedArch', this.plotData.length - 1);
+                        }
+                    }
+                }
             });
 
             console.log('--> CREATING DEBOUNCE FUNC');

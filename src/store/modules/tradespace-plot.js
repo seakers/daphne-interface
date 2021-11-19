@@ -131,7 +131,6 @@ const mutations = {
         plotPoint.interactColor = genColor();
         state.colorMap[plotPoint.interactColor] = plotPoint.id;
         state.plotData.splice(plotPoint.id, 0, plotPoint);
-        state.clickedArch = plotPoint.id;
     },
     addPlotDataFromGA(state, problemData) {
         // Function to create new colours for the picking.

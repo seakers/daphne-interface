@@ -144,9 +144,8 @@ Instruments Information panel. <b>You should read about them now by clicking on 
                         on: 'bottom'
                     },
                     text: `Your first task in the experiment is, again, to come up with a range of constellation 
-designs with the highest science benefit for a range of costs. To make things specific, we have set up lower and upper 
-cost bounds at $800M and $4,000M. You can see some initial constellation designs here, but you will learn how to create 
-new ones in a moment.`
+designs with the highest science benefit for a range of costs. You can see some initial constellation designs here, 
+but you will learn how to create new ones in a moment.`
                 },
                 {
                     attachTo: {

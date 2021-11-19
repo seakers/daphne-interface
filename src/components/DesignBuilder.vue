@@ -178,16 +178,23 @@
                                     }
                                 }
                                 console.log("\n----------- SUBSCRIPTION DESIGN --", "\n ------- id", this.problemData.length, "\n --- inputs", arch.input, "\n -- science", arch.science, "\n ----- cost", arch.cost);
-                                if(this.compareInputsBoolBit(this.clickedArchInputs, arch.input)){
-                                    this.isComputing = false
-                                }
-
+                                
                                 let new_obj = {
                                     id: this.problemData.length,
                                     db_id: arch.id,
                                     inputs: bool_ary,
                                     outputs: [arch.science, arch.cost],
                                 };
+
+                                if(this.eval_request_inputs !== null && this.compareInputsBoolBit(this.eval_request_inputs, arch.input)){
+                                    this.isComputing = false
+                                    this.$toast("Design " + new_obj.id + " has been evaluated.");
+                                    this.$store.commit('setDataUpdateFrom', 'designBuilder');
+                                }
+                                else {
+                                    this.$store.commit('setDataUpdateFrom', 'searchAlgorithm');
+                                }
+                                
                                 if (arch.ga === false) {
                                     this.$store.dispatch('addNewData', new_obj);
                                 }

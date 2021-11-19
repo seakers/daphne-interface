@@ -138,6 +138,28 @@
 
                         // 3. Rebuild the VASSAR service
                         this.$store.commit("setVassarRebuildStatus", "");
+                        const stopVassarRebuildWatch = this.$watch(
+                        function() {
+                            return this.vassarRebuildStatus;
+                        },
+                        function(newStatus, _) {
+                            if (newStatus === "success") {
+                                this.$store.commit("setVassarServiceStatus", "ready");
+                                // 5. GA initialization
+                                if (this.$store.state.auth.isLoggedIn) {
+                                    this.$store.dispatch('startBackgroundSearch');
+                                }
+                                // 6. Data Mining initialization
+                                this.$store.dispatch('setProblemParameters');
+                                stopVassarRebuildWatch();
+                            }
+                            else {
+                                console.log("Failure reinitializing VASSAR. Please reload!");
+                                stopVassarRebuildWatch();
+                            }
+                            // Set rebuild status back to empty
+                            this.$store.commit("setVassarRebuildStatus", "");
+                        });
                         wsTools.websocket.send(JSON.stringify({
                             msg_type: "rebuild_vassar",
                             group_id: this.selectedGroupId,
@@ -153,13 +175,6 @@
                             'dataset_id': this.selectedDatasetId
                         };
                         await this.$store.dispatch('loadData', parameters);
-
-                        // 5. Start the background search algorithm
-                        if (this.$store.state.auth.isLoggedIn) {
-                            this.$store.dispatch("startBackgroundSearch");
-                        }
-                        // Set data mining settings
-                        this.$store.dispatch('setProblemParameters');
                     }
                     else {
                         console.error('Error changing the problem.');

@@ -1,6 +1,6 @@
 <template>
 <div style="display: flex; flex-direction: column; flex-grow: 1; overflow: auto;">
-    <div class="panel-block functionality">
+    <div class="panel-block" style="flex-direction: column; align-items: start;">
         <p>Select a hypothesis to test.</p>
         <p>Architectures <span class="select is-small" style="max-width: 40px;">
             <select id="hypothesis-menu" v-model="selectedHypothesis" style="color: white;">
@@ -115,7 +115,7 @@
          perform better on average.</p>
         <button v-on:click="testHypothesis" v-bind:disabled="!checkHypothesisInputs()" class="button is-primary">Test hypothesis</button>
     </div>
-    <div class="panel-block functionality" v-if="featureExpression !== ''">
+    <div class="panel-block" v-if="featureExpression !== ''">
         <ul>
             <li>{{ parseFloat(precision*100).toFixed(2) }}% of architectures close to the Pareto front have the tested feature.</li>
             <li>{{ parseFloat(recall*100).toFixed(2) }}% of architectures with the tested feature are close to the Pareto front.</li>

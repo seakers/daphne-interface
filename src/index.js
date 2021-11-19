@@ -12,6 +12,11 @@ import { ApolloClient } from '@apollo/client/core';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from "@apollo/client/cache";
 
+// Toastification
+import Toast, { POSITION } from "vue-toastification";
+// Import the CSS or use your own!
+import "vue-toastification/dist/index.css";
+
 // Non ES-modularized libraries
 let annyang = require('annyang');
 let SpeechKITT = window.SpeechKITT;
@@ -67,6 +72,15 @@ export const client = new ApolloClient({
 const apolloProvider = new VueApollo({
     defaultClient: client,
 })
+
+// Vue toastification
+const toastOptions = {
+    // You can set your default options here
+    position: POSITION.BOTTOM_LEFT,
+    transition: "Vue-Toastification__fade",
+};
+
+Vue.use(Toast, toastOptions);
 
 
 

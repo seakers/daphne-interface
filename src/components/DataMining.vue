@@ -1,5 +1,6 @@
 <template>
-    <div class="panel-block functionality">
+    <div style="position:relative;">
+    <div class="panel-block functionality" style="position: relative;">
         <div id="feature-plot" v-show="features.length !== 0"></div>
         <template v-if="features.length === 0">
             <div class="content">
@@ -13,6 +14,15 @@
                 </div>
             </div>
         </template>
+    </div>
+    <article class="message" v-if="tooltipOn" v-bind:style="tooltipCss">
+        <div class="message-body">
+            <p>Lift: {{roundNum(tooltipMetrics[1])}}</p>
+            <p>Support: {{roundNum(tooltipMetrics[0])}}</p>
+            <p>Confidence(F->S): {{roundNum(tooltipMetrics[2])}}</p>
+            <p>Confidence(S->F): {{roundNum(tooltipMetrics[3])}}</p>
+        </div>
+    </article>
     </div>
 </template>
 
@@ -33,7 +43,10 @@
                 yMap: {},
                 svg: {},
                 currentFeature: {},
-                currentFeatureBlinkInterval: null
+                currentFeatureBlinkInterval: null,
+                tooltipOn: false,
+                d3MousePosition: null,
+                tooltipMetrics: []
             }
         },
         beforeMount() {
@@ -49,6 +62,15 @@
             }),
             numSelectedPoints() {
                 return this.selectedArchs.length;
+            },
+            tooltipCss() {
+                return {
+                    "position": "absolute",
+                    "top": (this.d3MousePosition[1] + 35) + "px",
+                    "left": (this.d3MousePosition[0] + 60) + "px",
+                    "z-index": 100,
+                    "pointer-events": "none",
+                }
             }
         },
         methods: {
@@ -65,72 +87,15 @@
             },
 
             featureMouseover(event, d) {
-                let id = d.id;
+                this.d3MousePosition = d3.pointer(event, this.svg.node());
+                this.tooltipMetrics = d.metrics;
                 let expression = d.expression;
-                let metrics = d.metrics;
-
-                // Set variables
-                let mousePos = d3.pointer(event, this.svg.node());
-                let mouseLocX = mousePos[0];
-                let mouseLocY = mousePos[1];
-
-                let tooltipLocation = { x: 0, y: 0 };
-                let tooltipWidth = 360;
-                let tooltipHeight = 170;
-
-                let hThreshold = (this.width + this.margin.left + this.margin.right)*0.5;
-                let vThreshold = (this.height + this.margin.top + this.margin.bottom)*0.55;
-
-
-                if (mouseLocX >= hThreshold) {
-                    tooltipLocation.x = -10 - tooltipWidth;
-                }
-                else {
-                    tooltipLocation.x = 10;
-                }
-                if (mouseLocY < vThreshold) {
-                    tooltipLocation.y = 10;
-                }
-                else {
-                    tooltipLocation.y = -10 - tooltipHeight;
-                }
-
-                let tooltipGroup = this.svg.append('g')
-                    .attr('id', 'tooltip-g');
-
-                tooltipGroup.append('rect')
-                    .attr('id', 'tooltip-rect')
-                    .attr('transform', () => {
-                        let x = mouseLocX + tooltipLocation.x;
-                        let y = mouseLocY + tooltipLocation.y;
-                        return 'translate(' + x + ',' + y + ')';
-                    })
-                    .attr('width', tooltipWidth)
-                    .attr('height', tooltipHeight)
-                    .style('fill', '#4B4B4B')
-                    .style('opacity', 0.92);
-
-                let fo = tooltipGroup
-                    .append('foreignObject')
-                    .attr('id', 'tooltip-foreignObject')
-                    .attr('x', () => mouseLocX + tooltipLocation.x)
-                    .attr('y', () => mouseLocY + tooltipLocation.y)
-                    .attr('width', tooltipWidth)
-                    .attr('height', tooltipHeight)
-                    .data([ { id: id, expression: expression, metrics: metrics } ])
-                    .html(d => {
-                        return "lift: " + roundNum(d.metrics[1]) +
-                            "<br> Support: " + roundNum(d.metrics[0]) +
-                            "<br> Confidence(F->S): " + roundNum(d.metrics[2]) +
-                            "<br> Confidence(S->F): " + roundNum(d.metrics[3]) +"";
-                    })
-                    .style('padding', '8px')
-                    .style('color', '#F7FF55')
-                    .style('word-wrap', 'break-word');
-
                 // Update the placeholder with the driving feature and stash the expression
                 this.$store.commit('setCurrentExpression', expression);
                 this.$store.commit('setHoveredExpression', expression);
+
+                // Finally, activate tooltip in the right spot
+                this.tooltipOn = true;
             },
 
             featureClick(d, node) {
@@ -141,12 +106,14 @@
 
             featureMouseout(event, d) {
                 // Remove the tooltip
-                d3.selectAll('#tooltip-g').remove();
+                this.tooltipOn = false;
 
                 // Remove all the features created temporarily and bring back the previously stored feature expression
                 this.$store.commit('setCurrentExpression', '');
                 this.$store.commit('setHoveredExpression', '');
-            }
+            },
+
+            roundNum: roundNum,
 
         },
         watch: {

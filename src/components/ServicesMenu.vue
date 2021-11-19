@@ -1,17 +1,11 @@
 <template>
     <div class="active-menu" v-if="logged_in">
-        <p class="has-text-weight-bold">VASSAR status: <a v-on:click="connectVassar">Reconnect</a></p>
+        <p class="has-text-weight-bold">VASSAR connection status: <a v-on:click="connectVassar">Reconnect</a></p>
         <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>
-        <p class="has-text-weight-bold">GA status: <a v-on:click="connectGa">Reconnect</a></p>
-        <p :class="connectionStatusToColor(gaStatus)">{{connectionStatusToExplanation(gaStatus)}}</p>
-        <label class="checkbox" v-if="!inExperiment">
-            <input type="checkbox" v-model="runBackgroundSearch">
-            Run Background Search
-        </label>
-        <label class="checkbox" v-if="!inExperiment">
-            <input type="checkbox" v-model="showFoundArchitectures">
-            Show New Architectures
-        </label>
+        <p class="has-text-weight-bold">GA connection status: <a v-on:click="connectGa">Reconnect</a></p>
+        <p :class="connectionStatusToColor(gaServiceStatus)">{{connectionStatusToExplanation(gaServiceStatus)}}</p>
+        <p class="has-text-weight-bold">GA search status: <a v-on:click="startGa">Restart</a></p>
+        <p :class="gaStatusToColor(gaRunningStatus)">{{gaStatusToExplanation(gaRunningStatus)}}</p>
         <label class="checkbox" v-if="!inExperiment">
             <input type="checkbox" v-model="runDiversifier">
             Enable Diversifier
@@ -36,25 +30,9 @@
                 experimentStage: state => state.experiment.experimentStage,
                 stageInformation: state => state.experiment.stageInformation,
                 vassarStatus: state => state.services.vassarServiceStatus,
-                gaStatus: state => state.services.gaServiceStatus
+                gaServiceStatus: state => state.services.gaServiceStatus,
+                gaRunningStatus: state => state.services.gaRunningStatus
             }),
-            runBackgroundSearch: {
-                get () {
-                    return this.$store.state.active.runBackgroundSearch;
-                },
-                set (value) {
-                    this.$store.dispatch('toggleRunBackgroundSearch', value);
-                }
-            },
-            showFoundArchitectures: {
-                get () {
-                    return this.$store.state.active.showFoundArchitectures;
-                },
-                set (value) {
-                    this.$store.commit('setShowFoundArchitectures', value);
-                    this.$store.dispatch("updateActiveSettings");
-                }
-            },
             runDiversifier: {
                 get () {
                     return this.$store.state.active.runDiversifier;
@@ -142,6 +120,47 @@
                         return "conn-error";
                 }
             },
+            gaStatusToExplanation(gaStatus) {
+                switch (gaStatus) {
+                    case "started":
+                        return "Running";
+                    case "stopped":
+                        return "Stopped";
+                    case "start_requested":
+                        return "Run requested";
+                    case "stop_requested":
+                        return "Stop requested";
+                    case "start_error":
+                        return "Error starting";
+                    case "stop_error":
+                        return "Error stopping";
+                    case "dataset_error":
+                        return "Read only";
+                    case "auth_error":
+                        return "Not logged in";
+                    default:
+                        return "Unknown status";
+                }
+            },
+            gaStatusToColor(gaStatus) {
+                switch (gaStatus) {
+                    case "started":
+                        return "conn-success";
+                    case "stopped":
+                        return "conn-error";
+                    case "start_requested":
+                        return "conn-connecting";
+                    case "stop_requested":
+                        return "conn-connecting";
+                    case "start_error":
+                    case "stop_error":
+                    case "dataset_error":
+                    case "auth_error":
+                        return "conn-error";
+                    default:
+                        return "conn-error";
+                }
+            },
             async connectVassar() {
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: 'connect_vassar',
@@ -151,6 +170,9 @@
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: 'connect_ga',
                 }));
+            },
+            async startGa() {
+                this.$store.dispatch('startBackgroundSearch');
             },
             async finishExperiment() {
                 this.$store.dispatch('finishExperiment');

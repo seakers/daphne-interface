@@ -76,12 +76,8 @@ export default new Vuex.Store({
                     dispatch('addNewDataFromGA', arch);
                 });
             }
-            if (received_info['type'] === 'ga.started') {
-                commit('setGaStatus', true);
-            }
-            if (received_info['type'] === 'ga.finished') {
-                commit('setGaStatus', false);
-            }
+
+            
             if (received_info['type'] === 'active.notification') {
                 commit('setNotificationTitle', received_info["notification"]["title"]);
                 commit('setNotificationBody', received_info["notification"]["message"]);
@@ -154,6 +150,10 @@ export default new Vuex.Store({
 
             if (received_info['type'] === 'services.vassar_rebuild') {
                 commit('setVassarRebuildStatus', received_info['status']);
+            }
+
+            if (received_info['type'] === 'services.ga_running_status') {
+                commit('setGARunningStatus', received_info['status']);
             }
 
 

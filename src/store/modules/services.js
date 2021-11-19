@@ -7,6 +7,7 @@ const state = {
     vassarServiceStatus: 'waiting_for_user',
     gaServiceStatus: 'waiting_for_user',
     vassarRebuildStatus: '',
+    gaRunningStatus: 'stopped'
 };
 
 const initialState = _.cloneDeep(state);
@@ -29,6 +30,9 @@ const mutations = {
     },
     setVassarRebuildStatus(state, vassarRebuildStatus) {
         state.vassarRebuildStatus = vassarRebuildStatus;
+    },
+    setGARunningStatus(state, gaRunningStatus) {
+        state.gaRunningStatus = gaRunningStatus;
     },
     resetServices(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
