@@ -142,10 +142,25 @@ export default new Vuex.Store({
 
             if (received_info['type'] === 'services.vassar_status') {
                 commit('setVassarServiceStatus', received_info['status']);
+                if (state.services.vassarServicePingId != -1) {
+                    window.clearTimeout(state.services.vassarServicePingId);
+                }
+                let pingId = window.setTimeout(() => {
+                    commit('setVassarServiceStatus', "missed_ping");
+                }, 45*1000);
+                commit('setVassarServicePingId', pingId);
             }
 
             if (received_info['type'] === 'services.ga_status') {
                 commit('setGaServiceStatus', received_info['status']);
+                if (state.services.gaServicePingId != -1) {
+                    window.clearTimeout(state.services.gaServicePingId);
+                }
+                let pingId = window.setTimeout(() => {
+                    commit('setGaServiceStatus', "missed_ping");
+                }, 45*1000);
+                commit('setGaServicePingId', pingId);
+
             }
 
             if (received_info['type'] === 'services.vassar_rebuild') {
@@ -154,6 +169,13 @@ export default new Vuex.Store({
 
             if (received_info['type'] === 'services.ga_running_status') {
                 commit('setGARunningStatus', received_info['status']);
+                if (state.services.gaRunningPingId != -1) {
+                    window.clearTimeout(state.services.gaRunningPingId);
+                }
+                let pingId = window.setTimeout(() => {
+                    commit('setGARunningStatus', "missed_ping");
+                }, 45*1000);
+                commit('setGARunningPingId', pingId);
             }
 
 

@@ -138,6 +138,8 @@
                         return "Read only";
                     case "auth_error":
                         return "Not logged in";
+                    case "missed_ping":
+                        return "Missed a ping...";
                     default:
                         return "Unknown status";
                 }
@@ -151,6 +153,8 @@
                     case "start_requested":
                         return "conn-connecting";
                     case "stop_requested":
+                        return "conn-connecting";
+                    case "missed_ping":
                         return "conn-connecting";
                     case "start_error":
                     case "stop_error":
@@ -177,7 +181,7 @@
             async finishExperiment() {
                 this.$store.dispatch('finishExperiment');
             }
-        }
+        },
     }
 </script>
 
