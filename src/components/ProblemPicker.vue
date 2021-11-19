@@ -108,6 +108,7 @@
                 groupId: state => state.problem.groupId,
                 problemId: state => state.problem.problemId,
                 datasetId: state => state.problem.datasetId,
+                vassarRebuildStatus: state => state.services.vassarRebuildStatus,
             }),
             downloadUrl() {
                 let params = {

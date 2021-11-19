@@ -120,6 +120,20 @@ the way, let's learn how to actually design new satellite constellations! It's i
                 },
                 {
                     attachTo: {
+                        element: '#main-plot-block',
+                        on: 'bottom'
+                    },
+                    text: `First, let's do a quick tour of Daphne. This is the plot that shows the trade-space of 
+                    the constellation designs you come up with. This set of constellation designs comes from a different 
+                    problem, so don't worry if you see something different when the experiment task begins. Each dot here 
+                    is a single constellation design, and each design has an associated science/societal score and a cost. 
+                    The science score, just as a reminder, is a measure (ranging from 0 to 1) of how well you are satisfying 
+                    a set of requirements which are decided by different stakeholders. Your first task in the experiment is, again, 
+                    to come up with a range of constellation designs with the highest science benefit for a range of costs. 
+                    You will learn how to create new ones in a moment.`
+                },
+                {
+                    attachTo: {
                         element: '#arch-info-display-table',
                         on: 'right'
                     },
@@ -140,26 +154,6 @@ Instruments Information panel. <b>You should read about them now by clicking on 
                 },
                 {
                     attachTo: {
-                        element: '#main-plot-block',
-                        on: 'bottom'
-                    },
-                    text: `Your first task in the experiment is, again, to come up with a range of constellation 
-designs with the highest science benefit for a range of costs. You can see some initial constellation designs here, 
-but you will learn how to create new ones in a moment.`
-                },
-                {
-                    attachTo: {
-                        element: '#main-plot-block',
-                        on: 'bottom'
-                    },
-                    text: `This is the plot that shows the trade-space of the constellation designs you come up with. 
-This set of constellation designs comes from a different problem, so don't worry if you see something different when 
-the actual focused task begins. Each dot here is a single constellation design, and each design has an associated 
-science/societal score and a cost. The science score, just as a reminder, is a measure (ranging from 0 to 1) of how 
-well you are satisfying a set of requirements which are decided by different stakeholders.`
-                },
-                {
-                    attachTo: {
                         element: '#admin-panel',
                         on: 'top right'
                     },
@@ -174,12 +168,13 @@ selected that constellation design. <b>Try selecting a design which has the high
                         on: 'right'
                     },
                     text: `You can move the instruments from one orbit to another, add new instruments, or remove them 
-using drag-and-drop. After modifying the constellation design, you can evaluate it using the 
-<b>"Evaluate Architecture"</b> button on the top-right side. After the evaluation is finished, a new red cross will 
-appear on the scatter plot with its location determined by the new science score and cost of your constellation design. 
-It is very important to evaluate the new designs you make, as otherwise they won't get saved and you won't know how 
-much you improved or worsened the design! <b>Try coming up with a new constellation design before going forward 
-with the tutorial.</b>`
+using drag-and-drop. To remove instruments from all orbits, drop them on the list of available instruments.
+After modifying the constellation design, you can evaluate it using the <b>"Evaluate Architecture"</b> button on the 
+top-right side. After the evaluation is finished, a new red cross will appear on the scatter plot with its location 
+determined by the new science score and cost of your constellation design. It is very important to evaluate the new 
+designs you make, as otherwise they won't get saved and you won't know how much you improved or worsened the design! 
+<b>Try coming up with a new constellation design before going forward with the tutorial.</b> You should see a notification
+as soon as it is evaluated`
                 },
                 {
                     attachTo: {
@@ -194,12 +189,30 @@ only when needed).`
                 },
                 {
                     attachTo: {
+                        element: '.main',
+                        on: 'right'
+                    },
+                    text: `While this is the basic functionality for tradespace analysis, and what will be available 
+to you in the first version of Daphne, you have more tools available to you in this experiment. This menu shows all 
+the available ones to you them. To open an unopened feature, click on one of the features with a greyed out name. If there
+aren't any, don't worry, but remember this in case you close one accidentally.`
+                },
+                {
+                    attachTo: {
+                        element: '#functionalities-list',
+                        on: 'top'
+                    },
+                    text: `All of Daphne's functions will appear in this area. You have already seen the Design Builder, and we'll
+                    go through the rest in a second. If the current order is not to your liking, you can rearrange the functions to suit
+                    your workflow by dragging and dropping them on the area you want them to be. Some of them can also be made
+                    bigger or smaller with the icons on top, and all of them can be closed to free up space if you don't need them.`
+                },
+                {
+                    attachTo: {
                         element: '.data-mining',
                         on: 'left'
                     },
-                    text: `While this is the basic functionality for tradespace analysis, and what will be available 
-to you in the first version of Daphne, you have more tools available to you in this experiment. The first of them, 
-and the one you will have available in both the second and third Daphne versions, is Data Mining. The Data Mining feature 
+                    text: `Moving on to the functions, let's talk about Data Mining. The Data Mining feature 
 allows you to select a set of points in the dataset either by drawing squares in the dataset or using filters. Then, 
 by pressing Run Data Mining, you obtain a set of driving "features". A feature is a set of characteristics shared by a 
 group of designs, such as having an L-band radar and an L-band radiometer in the same orbit. Let's see how it works step by step.`
@@ -244,6 +257,15 @@ ensure that. Now on to the last feature of the Data Mining functionality.`
                 },
                 {
                     attachTo: {
+                        element: '#main-plot-block',
+                        on: 'right'
+                    },
+                    text: `Before we move on, if you want to run data mining on a different selection, click on Cancel
+                    All Selections and the Data Mining plot will reset to its default state, allowing you to run the 
+                    algorithm with a different selection.`
+                },
+                {
+                    attachTo: {
                         element: '#admin-panel',
                         on: 'left'
                     },
@@ -264,7 +286,7 @@ on your keyboard.`
                         on: 'left'
                     },
                     text: `In this experiment, you can only ask Daphne what she thinks about the current design. 
-After thinking for a while, Daphne will give her thoughts on the design along with some suggestions on how to improve it. 
+After thinking for a few seconds, Daphne will give her thoughts on the design along with some suggestions on how to improve it. 
 <b>Try writing or copying the following question into the Question Bar: "What do you think of this design?"</b> 
 If you want to hear the output instead of just reading it, you can unmute Daphne by clicking on the speaker.`
                 },
@@ -365,6 +387,17 @@ computed for you about the feature. These metrics include the p-values of t-test
 as well as coverage and specificity, similar to the Data Mining module. Remember, the smaller the p-value is the better!`
                 },
                 {
+                    attachTo: {
+                        element: '.active-menu',
+                        on: 'left'
+                    },
+                    text: `If everything is green here, you have nothing to worry about. If anything is yellow or red, please let me (Antoni)
+                    know immediately, and I'll try to sort it out before you begin the experiment to ensure a smooth ride. Do not press any of the 
+                    reconnect/restart links unless I tell you to. If I'm not available at all, feel free to press them at your own risk. These are
+                    meant as manual overrides to things that should (and mostly do) work by themselves. Again <b>if all is green you are fine, if 
+                    something is not, contact me immediately!</b> If I'm not there in person, you will have my contact information.`
+                },
+                {
                     text: `Now you know every tool available to you! The experiment, just as a reminder, will have two 
 stages. Apart from the different tasks with different focus, the main difference between them will be what functions 
 are available to you. In each of the tasks, you will get randomly assigned one of the three Daphnes we described.`
@@ -378,7 +411,7 @@ in the best architectures you can find. You will be automatically evaluated for 
 <b>The Daphne versions you get are completely randomized</b>. You are also <b>HIGHLY encouraged</b> to take notes during each task, preferrably on
 a text editor so it's easy to copy and paste later. <b>You will be asked about them in the surveys and tests.</b> The first stage task will be 
 designing the Surface Water focused mission, and the second one will be for the Applications focused mission. And once again, <b>trying to reuse 
-good designs and driving features from the first task for the second task will likely not work!</b>. With all this being said, click on done to
+good designs and driving features from the first task for the second task will likely not work!</b>. With all this being said, click on Next to
 start the experiment!`
                 }
             ],
