@@ -5,6 +5,10 @@ import {parse} from "graphql";
 
 // initial state
 const state = {
+    // -- FORMULATION EXPERIMENT
+    mainEffects: null,
+    formulationFeatures: null,
+
     groupId: null,
     problemId: null,
     // eslint-disable-next-line no-undef
@@ -22,11 +26,11 @@ const state = {
     displayComponent: '',
     problemFunctionalities: [],
     objective_objs: [
-        {name: 'Cost', active: true, obj_id: 0},
-        {name: 'Programmatic Risk', active: true, obj_id: 1},
-        {name: 'Atmospheric Panel Satisfaction', active: true, obj_id: 2},
-        {name: 'Oceanic Panel Satisfaction', active: true, obj_id: 3},
-        {name: 'Terrestrial Panel Satisfaction', active: true, obj_id: 4}
+        {key: 'cost', name: 'Cost', active: true, obj_id: 0},
+        {key: 'programmatic_risk', name: 'Programmatic Risk', active: true, obj_id: 1},
+        {key: 'Atmosphere', name: 'Atmospheric Panel Satisfaction', active: true, obj_id: 2},
+        {key: 'Oceanic', name: 'Oceanic Panel Satisfaction', active: true, obj_id: 3},
+        {key: 'Terrestrial', name: 'Terrestrial Panel Satisfaction', active: true, obj_id: 4}
     ],
     importCallback: (data, extra) => {
         return {};
@@ -138,6 +142,12 @@ const actions = {
 
 // mutations
 const mutations = {
+    setMainEffects(state, mainEffects){
+        state.mainEffects = mainEffects;
+    },
+    setFormulationFeatures(state, formulationFeatures){
+        state.formulationFeatures = formulationFeatures;
+    },
     setObjectiveOption(state, objective){
         for(let x=0;x<state.objective_objs.length;x++){
             let temp_obj = state.objective_objs[x];

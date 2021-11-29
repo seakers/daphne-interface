@@ -11,7 +11,7 @@ import gql from 'graphql-tag';
 
 
 const OrbitByName = gql`
-query MyQuery($selected_group_id: Int, $orb_names: [String!]) {
+query MyQuery($selected_group_id: Int!, $orb_names: [String!]) {
   Orbit(where: {group_id: {_eq: $selected_group_id}, name: {_in: $orb_names}}) {
     id
     name
@@ -20,7 +20,7 @@ query MyQuery($selected_group_id: Int, $orb_names: [String!]) {
 
 
 const OrbitFilterQuery = gql`
-query MyQuery($selected_group_id: Int, $filter_problem_id: Int) {
+query MyQuery($selected_group_id: Int!, $filter_problem_id: Int) {
   Orbit_Filter: Orbit(where: {group_id: {_eq: $selected_group_id}, Join__Problem_Orbits: {problem_id: {_eq: $filter_problem_id}}}) {
     id
     name
@@ -31,7 +31,7 @@ query MyQuery($selected_group_id: Int, $filter_problem_id: Int) {
 
 // GLOBAL ORBITS
 const OrbitQuery = gql`
-query MyQuery($selected_group_id: Int) {
+query MyQuery($selected_group_id: Int!) {
     Orbit(where: {Group: {id: {_eq: $selected_group_id}}}) {
       id
       name
@@ -59,7 +59,7 @@ query MyQuery($group_id: Int!, $orbit_id: Int!) {
 
 // GLOBAL ORBIT ATTRIBUTES
 const OrbitAttributeQuery = gql`
-query MyQuery($selected_group_id: Int) {
+query MyQuery($selected_group_id: Int!) {
     Orbit_Attribute(where: {Group: {id: {_eq: $selected_group_id}}}) {
       id
       name
@@ -77,7 +77,7 @@ query MyQuery($selected_group_id: Int) {
 
 // PROBLEM ORBIT ATTRIBUTES
 const OrbitSpecificAttributeQuery = gql`
-query MyQuery($orbit_id: Int, $problem_id: Int) {
+query MyQuery($orbit_id: Int) {
     Orbit(where: {id: {_eq: $orbit_id}}) {
       id
       name

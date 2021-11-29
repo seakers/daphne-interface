@@ -176,7 +176,13 @@
                         selected_group_id: this.selected_group_id,
                         selected_orbit_id: this.selected_orbit_id
                     }
-                }
+                },
+                skip(){
+                    if(this.selected_group_id === null){
+                        return true;
+                    }
+                    return false
+                },
             },
         },
 

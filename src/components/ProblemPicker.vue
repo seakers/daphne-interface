@@ -186,6 +186,7 @@
                             user_pk: this.userPk,
                         }
                     },
+                    skip(){return this.userPk === null;},
                     result ({ data }) {
                         this.userGroups = data.user_groups;
                         if (this.selectedGroupId === null) {
@@ -205,6 +206,7 @@
                             group_id: this.selectedGroupId,
                         }
                     },
+                    skip(){return this.selectedGroupId === null;},
                     result ({ data }) {
                         this.userProblems = data.user_problems;
                         if (this.selectedProblemId === null) {
@@ -225,6 +227,12 @@
                             group_id: this.selectedGroupId,
                             problem_id: this.selectedProblemId,
                         }
+                    },
+                    skip() {
+                        if(this.selectedGroupId === null || this.selectedProblemId === null || this.userPk === null){
+                            return true;
+                        }
+                        return false;
                     },
                     result ({ data }) {
                         this.userDatasets = data.user_datasets;

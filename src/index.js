@@ -5,10 +5,11 @@ import Vue from 'vue';
 import App from './components/App';
 import store from './store';
 import {wsTools} from "./scripts/websocket-tools";
+import { onError } from "@apollo/client/link/error";
 
 // Apollo
 import VueApollo from "vue-apollo";
-import { ApolloClient } from '@apollo/client/core';
+import {ApolloClient, from, HttpLink, split} from '@apollo/client/core';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from "@apollo/client/cache";
 
@@ -19,6 +20,8 @@ let SpeechKITT = window.SpeechKITT;
 // Styles
 import './styles/app.scss';
 import 'shepherd.js/dist/css/shepherd.css';
+import {getMainDefinition} from "@apollo/client/utilities";
+import {logErrorMessages} from "@vue/apollo-util";
 
 // Record state and mutations when inside an experiment
 let stateTimer = 0;
@@ -44,8 +47,8 @@ const getHeaders = () => {
     return headers;
 };
 
-// HASURA URL
-const link = new WebSocketLink({
+// WEBSOCKET LINK URL
+const wsLink = new WebSocketLink({
     uri: GRAPH_QL_WS_URL,
     options: {
         reconnect: true,
@@ -57,15 +60,48 @@ const link = new WebSocketLink({
     }
 });
 
+const httpLink = new HttpLink({
+    uri: GRAPH_QL_URL
+});
+
+const splitLink = split(
+    ({ query }) => {
+        const definition = getMainDefinition(query);
+        return (
+            definition.kind === 'OperationDefinition' &&
+            definition.operation === 'subscription'
+        );
+    },
+    wsLink,
+    httpLink,
+);
+
+// ERROR LINK
+const errorLink = onError(error => {
+    logErrorMessages(error);
+});
+
+const defaultOptions = {
+    query: {
+        errorPolicy: 'all',
+    }
+};
+
+
 // APOLLO
 export const client = new ApolloClient({
-    link: link,
+    link: from([errorLink, splitLink]),
     cache: new InMemoryCache({
         addTypename: true
-    })
+    }),
+    defaultOptions: defaultOptions,
 });
 const apolloProvider = new VueApollo({
     defaultClient: client,
+    errorHandler (error) {
+        console.log('Global error handler')
+        console.error(error)
+    },
 })
 
 

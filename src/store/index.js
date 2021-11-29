@@ -122,8 +122,6 @@ export default new Vuex.Store({
             if (received_info['type'] === 'active.message') {
                 commit('addDialoguePiece', received_info['message']);
             }
-
-
             if (received_info['type'] === 'mycroft.message') {
                 //--> Connection Information
                 if (received_info['subject'] === 'connection') {
@@ -144,21 +142,45 @@ export default new Vuex.Store({
                     dispatch('executeCommand');
                 }
             }
-
-
             if (received_info['type'] === 'services.vassar_status') {
                 commit('setVassarStatus', received_info['status']);
             }
-
             if (received_info['type'] === 'services.ga_status') {
                 commit('setGaStatus', received_info['status']);
             }
-
-
-            
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");
             }
+
+
+
+            if (received_info['type'] === 'formulation.main_effect') {
+                console.log('--> FORMULATION MAIN EFFECT MESSAGE');
+                // --> 1. Set message data in store for message component to parse
+                commit('setMainEffects', received_info['data']);
+
+                // --> 2. Place message in chatbox
+                commit('addDialoguePiece', {
+                    "voice_message": 'testing',
+                    "visual_message_type": ["formulation_main_effect"],
+                    "visual_message": ["ping"],
+                    "writer": "daphne"
+                });
+            }
+            if (received_info['type'] === 'formulation.feature') {
+                console.log('--> FORMULATION FEATURE MESSAGE');
+                // --> 1. Set message data in store for message component to parse
+                commit('setFormulationFeatures', received_info['data']);
+
+                // --> 2. Place message in chatbox
+                commit('addDialoguePiece', {
+                    "voice_message": 'testing',
+                    "visual_message_type": ["formulation_feature"],
+                    "visual_message": ["ping"],
+                    "writer": "daphne"
+                });
+            }
+
 
 
 
@@ -172,6 +194,16 @@ export default new Vuex.Store({
             // Start the GA on login
             try {
                 let reqData = new FormData();
+                let objective_objs = rootState.problem.objective_objs;
+                console.log('--> OBJECTIVE OBJS:', objective_objs);
+                let objective_str = "";
+                for(let x = 0; x < objective_objs.length; x++){
+                    if(objective_objs[x].active === true){
+                        objective_str = objective_str + objective_objs[x].key + ",";
+                    }
+                }
+                let trimmed_obj_string = objective_str.slice(0, -1);
+                reqData.append("objectives", trimmed_obj_string);
                 let url = API_URL + 'eoss/explorer/start-ga';
                 let dataResponse = await fetchPost(url, reqData);
 

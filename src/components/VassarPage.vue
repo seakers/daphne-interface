@@ -165,7 +165,13 @@
                     return {
                         selected_group_id: this.selected_group_id,
                     }
-                }
+                },
+                skip() {
+                    if(this.selected_group_id === null){
+                        return true;
+                    }
+                    return false;
+                },
             },
             Orbit_Attribute: {
                 query: OrbitAttributeQuery,
@@ -173,7 +179,13 @@
                     return {
                         selected_group_id: this.selected_group_id,
                     }
-                }
+                },
+                skip(){
+                    if(this.selected_group_id === null){
+                        return true;
+                    }
+                    return false
+                },
             },
         },
     }

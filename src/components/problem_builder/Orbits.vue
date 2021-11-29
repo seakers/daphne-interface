@@ -56,6 +56,12 @@
             ...mapGetters({
                 selected_group_id: 'get_group_id',
             }),
+            fixed_group_id() {
+                if(this.selected_group_id === null){
+                    return 1;
+                }
+                return this.selected_group_id;
+            }
         },
         methods: {
             set_selected_orbit(orbit_selection){
@@ -96,17 +102,29 @@
         apollo: {
             Orbit: {
                 query: OrbitQuery,
+                skip() {
+                    if(this.selected_group_id === null){
+                        return true;
+                    }
+                    return false;
+                },
                 variables() {
                     return {
-                        selected_group_id: this.selected_group_id,
+                        selected_group_id: this.fixed_group_id,
                     }
-                }
+                },
             },
             Orbit_Attribute: {
                 query: OrbitAttributeQuery,
+                skip() {
+                    if(this.selected_group_id === null){
+                        return true;
+                    }
+                    return false;
+                },
                 variables() {
                     return {
-                        selected_group_id: this.selected_group_id,
+                        selected_group_id: this.fixed_group_id,
                     }
                 }
             },

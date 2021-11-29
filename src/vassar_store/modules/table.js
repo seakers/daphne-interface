@@ -248,11 +248,11 @@ const actions = {
         for(let x=0;x<instrument__row_objects.length;x++){
             let instrument__row_object_id = instrument__row_objects[x].objects.id;
             let query_capabilities = await vassar_query(state.tables.Instrument_Capability, instrument__row_object_id);
-            console.log("---> CAPABILITY RETURN:", query_instruments);
+            // console.log("---> CAPABILITY RETURN:", query_instruments);
             commit('table__set_rows', query_capabilities);
 
             let query_characteristics = await vassar_query(state.tables.Instrument_Characteristic, instrument__row_object_id);
-            console.log("---> CHARACTERISTIC RETURN:", query_instruments);
+            // console.log("---> CHARACTERISTIC RETURN:", query_instruments);
             commit('table__set_rows', query_characteristics);
         }
     },

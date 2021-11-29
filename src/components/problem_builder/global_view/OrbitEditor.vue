@@ -227,7 +227,13 @@
                     return {
                         selected_group_id: this.selected_group_id,
                     }
-                }
+                },
+                skip(){
+                    if(this.selected_group_id === null){
+                        return true;
+                    }
+                    return false
+                },
             },
             Orbit_Attribute_Values: {
                 query: OrbitAttributeAcceptedValuesQuery,
@@ -236,6 +242,7 @@
                         selected_group_id: this.selected_group_id,
                     }
                 },
+                skip(){return this.selected_group_id === null;},
                 update(data) {
                     Object.defineProperty(data, 'Orbit_Attribute_Values', Object.getOwnPropertyDescriptor(data, 'Orbit_Attribute'));
                     delete data['Orbit_Attribute'];
@@ -252,7 +259,8 @@
                         selected_group_id: this.selected_group_id,
                         selected_orbit_id: this.selected_orbit_id
                     }
-                }
+                },
+
             },
         },
 

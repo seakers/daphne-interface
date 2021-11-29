@@ -250,6 +250,14 @@
                 reqData.append("orbit", this.$refs.orbmod.changes.toString());
                 reqData.append("stakeholder", this.$refs.stakemod.changes.toString());
                 reqData.append("objective", this.$refs.objmod.changes.toString());
+                let curr_objectives = [];
+                for(let x = 0; x < this.$refs.objmod.objective_objs.length; x++){
+                    let obj = this.$refs.objmod.objective_objs[x];
+                    if(obj.initial === true){
+                        curr_objectives.push(obj.key);
+                    }
+                }
+                reqData.append("objective_list", JSON.stringify(curr_objectives));
                 let dataResponse = await fetchPost(API_URL + 'eoss/formulation/formulation-change', reqData);
                 this.$refs.instmod.changes = false;
                 this.$refs.orbmod.changes = false;

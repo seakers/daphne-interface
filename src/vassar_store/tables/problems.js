@@ -12,7 +12,7 @@ const Group = {
         "name",
     ],
     "row_object_mapper": {},
-    "selected_id": null,
+    "selected_id": 1,
     "selected_index": null,
     "selected_name": null, "insert_state": false,
     "relationship": {

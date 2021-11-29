@@ -27,6 +27,7 @@
     import TimelinePlot from "./TimelinePlot";
     import Mycroft from "./Mycroft";
     import {fetchPost} from "../scripts/fetch-helpers";
+    import {mapState} from "vuex";
 
     let sizeScale = [
         'half',
@@ -55,6 +56,9 @@
             Mycroft
         },
         computed: {
+            ...mapState({
+                objective_objs: state => state.problem.objective_objs,
+            }),
             sizeClass: function () {
                 return 'is-' + this.size + '-desktop';
             },
@@ -88,11 +92,18 @@
             async toggle_agent(){
                 this.agentWait = true;
                 let reqData = new FormData();
+                let objective_list = [];
+                for(let x = 0; x < this.objective_objs.length; x++){
+                    if(this.objective_objs[x].active === true){
+                        objective_list.push(this.objective_objs[x].key);
+                    }
+                }
                 if(this.agentRunning === true){
                     reqData.append("mode", "stop");
                 }
                 else{
                     reqData.append("mode", "start");
+                    reqData.append("objective_list", JSON.stringify(objective_list));
                 }
                 let dataResponse = await fetchPost(API_URL + 'eoss/formulation/toggle-agent', reqData);
                 if (dataResponse.ok) {

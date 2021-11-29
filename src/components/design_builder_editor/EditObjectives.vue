@@ -29,11 +29,11 @@
         data() {
             return {
                 objective_objs: [
-                    {name: 'Cost', active: true, initial:true, obj_id: 0},
-                    {name: 'Programmatic Risk', active: true, initial:true, obj_id: 1},
-                    {name: 'Atmospheric Panel Satisfaction', active: true, initial:true, obj_id: 2},
-                    {name: 'Oceanic Panel Satisfaction', active: true, initial:true, obj_id: 3},
-                    {name: 'Terrestrial Panel Satisfaction', active: true, initial:true, obj_id: 4}
+                    {key: 'cost', name: 'Cost', active: true, initial:true, obj_id: 0},
+                    {key: 'programmatic_risk', name: 'Programmatic Risk', active: true, initial:true, obj_id: 1},
+                    {key: 'Atmosphere', name: 'Atmospheric Panel Satisfaction', active: true, initial:true, obj_id: 2},
+                    {key: 'Oceanic', name: 'Oceanic Panel Satisfaction', active: true, initial:true, obj_id: 3},
+                    {key: 'Terrestrial', name: 'Terrestrial Panel Satisfaction', active: true, initial:true, obj_id: 4}
                 ],
 
                 changes: false,

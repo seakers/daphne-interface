@@ -21,6 +21,9 @@
     import MultiListResponse from './MultiListResponse';
     import TimelineResponse from './TimelineResponse';
     import ActiveMessage from "./ActiveMessage";
+    import FormulationMainEffectMsg from "./FormulationMainEffectMsg";
+    import FormulationFeatureMsg from "./FormulationFeatureMsg";
+
     import {mapState} from "vuex";
 
     let loaderImage = require('../images/loader.svg');
@@ -33,7 +36,9 @@
             ListResponse,
             MultiListResponse,
             TimelineResponse,
-            ActiveMessage
+            ActiveMessage,
+            FormulationMainEffectMsg,
+            FormulationFeatureMsg
         },
         data() {
             return {
@@ -42,7 +47,10 @@
                     list: 'ListResponse',
                     multilist: 'MultiListResponse',
                     timeline_plot: 'TimelineResponse',
-                    active_message: 'ActiveMessage'
+                    active_message: 'ActiveMessage',
+
+                    formulation_main_effect: 'FormulationMainEffectMsg',
+                    formulation_feature: 'FormulationFeatureMsg'
                 }
             }
         },

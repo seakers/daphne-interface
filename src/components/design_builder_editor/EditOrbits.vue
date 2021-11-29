@@ -54,7 +54,7 @@
                 groupId: state => state.problem.groupId,
                 problemId: state => state.problem.problemId,
                 datasetId: state => state.problem.datasetId,
-            }),
+            })
         },
         components: {
         },
@@ -145,6 +145,12 @@
                         selected_group_id: this.groupId,
                         filter_problem_id: this.problemId,
                     }
+                },
+                skip(){
+                    if(this.groupId === null){
+                        return true;
+                    }
+                    return false;
                 }
             },
             Orbit: {
@@ -154,6 +160,12 @@
                         selected_group_id: this.groupId,
                         orb_names: this.all_orbits,
                     }
+                },
+                skip(){
+                    if(this.groupId === null){
+                        return true;
+                    }
+                    return false;
                 }
             }
 
