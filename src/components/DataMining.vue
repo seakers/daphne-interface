@@ -19,8 +19,8 @@
         <div class="message-body">
             <p>Lift: {{roundNum(tooltipMetrics[1])}}</p>
             <p>Support: {{roundNum(tooltipMetrics[0])}}</p>
-            <p>Confidence(F->S): {{roundNum(tooltipMetrics[2])}}</p>
-            <p>Confidence(S->F): {{roundNum(tooltipMetrics[3])}}</p>
+            <p>Specificity: {{roundNum(tooltipMetrics[2])}}</p>
+            <p>Coverage: {{roundNum(tooltipMetrics[3])}}</p>
         </div>
     </article>
     </div>
