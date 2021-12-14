@@ -184,7 +184,7 @@ let app = new Vue({
 // Voice recognition
 if (annyang) {
     annyang.addCallback('result', phrases => {
-        if (SpeechSynthesis.speaking) {
+        if (window.speechSynthesis.speaking) {
             return;
         }
         app.$store.commit('setCommand', phrases[0]);
