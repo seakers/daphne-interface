@@ -20,6 +20,7 @@ import Decadal2017Aerosols from '../scripts/decadal';
 import DecadalFilter from '../scripts/decadal-filter';
 import EOSSFilter from '../scripts/eoss-filter';
 import {fetchPost} from "../scripts/fetch-helpers";
+import {wsTools} from "../scripts/websocket-tools";
 
 Vue.use(Vuex);
 
@@ -149,7 +150,9 @@ export default new Vuex.Store({
                 commit('setGaStatus', received_info['status']);
             }
             if (received_info['type'] === 'ping') {
-                console.log("Ping back!");
+                if('status' in received_info){
+                    commit('setServiceStatus', received_info['status']);
+                }
             }
 
 
@@ -187,6 +190,11 @@ export default new Vuex.Store({
         },
         async stopBackgroundTasks({ dispatch }) {
             // Stop all background tasks
+            wsTools.websocket.send(JSON.stringify({
+                msg_type: "regulate_services",
+                num_eval: -1,
+                num_ga: 0
+            }));
             await Promise.all([dispatch("stopBackgroundSearch")]);
         },
         async startBackgroundSearch({ rootState }) {

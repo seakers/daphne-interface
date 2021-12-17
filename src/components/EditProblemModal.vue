@@ -48,6 +48,7 @@
     import {consolidate_architecture, index_new_dataset, index_instrument_changes, index_orbit_changes, generate_dataset_name, index_single_dataset} from "../scripts/arch_operations";
     import * as _ from 'lodash-es';
     import {fetchPost} from "../scripts/fetch-helpers";
+    import {wsTools} from "../scripts/websocket-tools";
 
 
     export default {
@@ -118,6 +119,7 @@
                 return inst_list;
             },
             async getArchitectures(){
+                // Get all user evaluated architectures
                 let response = await client.query({
                     deep: true,
                     fetchPolicy: 'no-cache',
@@ -129,6 +131,7 @@
                 });
                 let architectures = response['data']['Architecture'];
 
+                // Get all GA architectures that improve HV
                 let response_ga = await client.query({
                     deep: true,
                     fetchPolicy: 'no-cache',
@@ -159,14 +162,7 @@
                     new_archs.push(new_arch);
                 }
 
-                // --> Index new dataset with new architectures
-                let dataset_name = await generate_dataset_name(this.userPk, this.problemId);
-                // let new_dataset_id = await index_new_dataset(this.groupId, this.problemId, this.userPk, dataset_name, new_archs);
-                let new_dataset_id = await index_single_dataset(this.groupId, this.problemId, this.userPk, dataset_name);
-                return {
-                    dataset_id: new_dataset_id,
-                    archs: new_archs
-                };
+                return new_archs;
             },
             async clear_arch_eval_requests(){
                 let reqData = new FormData();
@@ -176,7 +172,7 @@
             async re_evaluate_architectures(archs){
                 let reqData = new FormData();
                 reqData.append("archs", JSON.stringify(archs));
-                let url = API_URL + 'eoss/engineer/evaluate-false-architectures';
+                let url = API_URL + 'eoss/engineer/evaluate-architecture-set';
                 let dataResponse = await fetchPost(url, reqData);
             },
             async commit_changes() {
@@ -194,29 +190,39 @@
                     return;
                 }
 
+                // --> 1. Consolidate architectures with formulation changes
+                let archs = await this.consolidate_inst_orb_changes(inst_items, orb_items);
 
-                let result = await this.consolidate_inst_orb_changes(inst_items, orb_items);
-                let new_dataset_id = result.dataset_id;
-                let archs = result.archs;
+                // --> 2. Create new dataset for new formulation
+                let dataset_name = await generate_dataset_name(this.userPk, this.problemId);
+                let new_dataset_id = await index_single_dataset(this.groupId, this.problemId, this.userPk, dataset_name);
 
-                // 1. Stop all running background tasks (stop ga)
+                // --> 3. Stop all running background tasks (stop ga)
+                wsTools.websocket.send(JSON.stringify({
+                    msg_type: "stop_ga_all"
+                }));
                 await this.$store.dispatch('stopBackgroundTasks');
                 await new Promise(r => setTimeout(r, 1500));
 
-                // 2. Clear any current eval requests
+                // --> 4. Clear any current eval requests
                 await this.clear_arch_eval_requests();
 
-                // 3. Index instrument changes
+                // --> 5. Index instrument changes
                 await index_instrument_changes(inst_items, this.problemId);
 
-                // 4. Index orbit changes
+                // --> 6. Index orbit changes
                 await index_orbit_changes(orb_items, this.problemId);
 
-                // 1.1 Init the new problem
+                // --> 7. Rebuild containers
+                wsTools.websocket.send(JSON.stringify({
+                    msg_type: "build"
+                }));
+
+                // --> 8. Load new problem
                 this.$store.commit('setProblemId', this.problemId);
                 await this.$store.dispatch('initProblem', this.problemId);
 
-                // 2. Load the new dataset
+                // --> 9. Load new dataset
                 this.$store.commit("setIgnoreQuery", true);
                 let parameters = {
                     'problem_id': this.problemId,
@@ -225,23 +231,23 @@
                 };
                 await this.$store.dispatch('loadData', parameters);
 
-                // Set data mining settings
+                // --> 10. Reset data-mining
                 this.$store.dispatch('setProblemParameters');
 
-                // Re-evaluate Architectures
+                // --> 11. Re-evaluate architectures
                 await this.re_evaluate_architectures(archs);
 
-                // Re-start background search + show background architectures
-                this.$store.dispatch("toggleRunBackgroundSearch", true);
+                // --> 12. Start GA
+                // wsTools.websocket.send(JSON.stringify({
+                //     msg_type: "start_ga"
+                // }));
                 this.$store.commit('setShowFoundArchitectures', true);
 
-                // Determine Changes
+                // --> 13. Send formulation changes to agent
                 await this.send_changes();
 
-                // Stop processing
+                // --> 14. Stop processing and close
                 this.processing = false;
-
-                // Close modal
                 this.$emit('close-modal');
             },
             async send_changes(){
@@ -263,6 +269,7 @@
                 this.$refs.orbmod.changes = false;
                 this.$refs.stakemod.changes = false;
                 this.$refs.objmod.changes = false;
+
             },
             reload_module() {
                 this.$refs.instmod.reload_module();

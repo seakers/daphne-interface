@@ -1,24 +1,26 @@
 <template>
 
-        <div style="max-height: 500px; overflow-y: scroll; overflow-x: hidden">
-            <div class="columns is-multiline">
-                <div v-for="(row, idx) in orbit_list" :key="idx">
-                    <div class="card" style="margin: 5px">
-                        <div class="card-content"  style="padding: 1rem;">
-                            <div>{{row.name}}</div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="card-footer-item" style="background-color: #FF7F7F; padding: 0.5rem;" v-if="row.is_assigned">
-                                <span><a v-on:click.prevent="remove_orbit(idx, row)" style="text-decoration: none">Remove</a></span>
-                            </div>
+        <div style="max-height: 600px; overflow-y: scroll; overflow-x: hidden">
 
-                            <div class="card-footer-item" style="background-color: #7FFFBF; padding: 0.5rem;" v-if="!row.is_assigned">
-                                <span><a v-on:click.prevent="assign_orbit(idx, row)" style="text-decoration: none">Assign</a></span>
-                            </div>
 
-                        </div>
-                    </div>
-                </div>
+            <div class="box">
+                <table class='table is-fullwidth'>
+                    <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Instrument</th>
+                        <th>Control</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(row, idx) in orbit_list" :key="idx">
+                        <td>{{ idx }}</td>
+                        <td>{{ row.name }}</td>
+                        <td v-if="row.is_assigned"><button class="button is-danger is-small" v-on:click.prevent="remove_orbit(idx, row)">Remove</button></td>
+                        <td v-if="!row.is_assigned"><button class="button is-success is-small" v-on:click.prevent="assign_orbit(idx, row)">Add</button></td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 

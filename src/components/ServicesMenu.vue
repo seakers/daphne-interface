@@ -1,17 +1,21 @@
 <template>
     <div class="active-menu" v-if="logged_in">
-        <p class="has-text-weight-bold">VASSAR status: <a v-on:click="connectVassar">Reconnect</a></p>
-        <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>
-        <p class="has-text-weight-bold">GA status: <a v-on:click="connectGa">Reconnect</a></p>
-        <p :class="connectionStatusToColor(gaStatus)">{{connectionStatusToExplanation(gaStatus)}}</p>
-        <label class="checkbox" v-if="backgroundSearchExperimentCondition">
-            <input type="checkbox" v-model="runBackgroundSearch">
-            Run Background Search
-        </label>
+
+
+        <div class="control">
+            <button class="button is-link" v-on:click="activateControlPanel">Control Panel</button>
+        </div>
+
         <label class="checkbox" v-if="backgroundSearchExperimentCondition">
             <input type="checkbox" v-model="showFoundArchitectures">
             Show New Architectures
         </label>
+
+
+
+
+
+
         <label class="checkbox" v-if="diversifierExperimentCondition">
             <input type="checkbox" v-model="runDiversifier">
             Enable Diversifier
@@ -114,6 +118,10 @@
             },
         },
         methods: {
+            activateControlPanel() {
+                this.$store.commit('activateModal', 'ControlPanelModal');
+            },
+
             connectionStatusToExplanation(connectionStatus) {
                 switch (connectionStatus) {
                     case "waiting_for_user":

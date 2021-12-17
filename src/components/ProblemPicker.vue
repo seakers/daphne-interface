@@ -79,6 +79,7 @@
     import { mapState } from 'vuex';
     import {fetchGet, fetchPost} from '../scripts/fetch-helpers';
     import { DaphneGroupQuery, DaphneProblemQuery, DaphneDatasetQuery } from '../scripts/apollo-queries';
+    import {wsTools} from "../scripts/websocket-tools";
 
 
     export default {
@@ -139,9 +140,10 @@
                         await this.$store.dispatch('loadData', parameters);
 
                         // 4. Start the background search algorithm
-                        if (this.$store.state.auth.isLoggedIn) {
-                            // this.$store.dispatch("startBackgroundSearch");
-                        }
+                        // --> rebuild evaluator containers
+                        wsTools.websocket.send(JSON.stringify({
+                            msg_type: "build",
+                        }));
                         // Set data mining settings
                         this.$store.dispatch('setProblemParameters');
                     }

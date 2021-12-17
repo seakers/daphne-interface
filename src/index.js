@@ -7,11 +7,17 @@ import store from './store';
 import {wsTools} from "./scripts/websocket-tools";
 import { onError } from "@apollo/client/link/error";
 
+// Bulma
+
 // Apollo
 import VueApollo from "vue-apollo";
 import {ApolloClient, from, HttpLink, split} from '@apollo/client/core';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from "@apollo/client/cache";
+
+
+
+
 
 // Non ES-modularized libraries
 let annyang = require('annyang');
@@ -98,10 +104,6 @@ export const client = new ApolloClient({
 });
 const apolloProvider = new VueApollo({
     defaultClient: client,
-    errorHandler (error) {
-        console.log('Global error handler')
-        console.error(error)
-    },
 })
 
 

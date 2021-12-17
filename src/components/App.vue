@@ -157,7 +157,9 @@
 
                 // 4. Connect to a VASSAR Evaluator/GA pair
                 wsTools.websocket.send(JSON.stringify({
-                    msg_type: "connect_services"
+                    msg_type: "regulate_services",
+                    num_eval: 1,
+                    num_ga: 0
                 }));
 
                 // 5. Load past dialogue - scroll chat window down
@@ -346,7 +348,9 @@
 
                     // 6. Connect to a VASSAR Evaluator/GA pair
                     wsTools.websocket.send(JSON.stringify({
-                        msg_type: "connect_services"
+                        msg_type: "regulate_services",
+                        num_eval: 0,
+                        num_ga: 0
                     }));
 
                     // 7. Load past dialogue - scroll chat window down

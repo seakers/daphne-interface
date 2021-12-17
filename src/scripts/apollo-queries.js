@@ -9,7 +9,14 @@ import gql from 'graphql-tag';
 // | |__| | |  | |_) | | |_\__ \
 //  \____/|_|  |_.__/|_|\__|___/
 
-
+const AllProblemsQuery = gql`
+    query MyQuery {
+        Problem {
+            id
+            name
+        }
+    }
+`;
 
 const StakeholderMutation = gql`
 mutation MyQuery($panel_id: Int!, $panel_weight: float8) {
@@ -462,5 +469,6 @@ export {
     DatasetCounterQuery,
     StakeholderQuery,
     StakeholderMutation,
-    ArchitectureDatasetGAQuery
+    ArchitectureDatasetGAQuery,
+    AllProblemsQuery
 }

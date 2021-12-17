@@ -1,11 +1,22 @@
 <template>
     <div class="modal" v-bind:class="{ 'is-active': isActive }">
         <div class="modal-background"></div>
-        <div class="modal-content">
-            <article class="message">
-                <component v-bind:is="modalContent" v-on:close-modal="onCloseModal"></component>
-            </article>
+
+        <div v-if="modalContent === 'ControlPanelModal'">
+            <div class="modal-content" style="width: 100%;">
+                <article class="message">
+                    <component v-bind:is="modalContent" v-on:close-modal="onCloseModal"></component>
+                </article>
+            </div>
         </div>
+        <div v-if="modalContent !== 'ControlPanelModal'">
+            <div class="modal-content">
+                <article class="message">
+                    <component v-bind:is="modalContent" v-on:close-modal="onCloseModal"></component>
+                </article>
+            </div>
+        </div>
+
         <button class="modal-close is-large" aria-label="close"  v-on:click.prevent="$emit('close-modal')"></button>
     </div>
 </template>
@@ -21,6 +32,7 @@
     import CopyDatasetModal from './CopyDatasetModal';
     import EditProblemModal from "./EditProblemModal";
     import ExperimentRegisterModal from "./ExperimentRegisterModal";
+    import ControlPanelModal from "./ControlPanelModal";
 
     export default {
         name: 'modal',
@@ -39,7 +51,8 @@
             ReloadModal,
             CopyDatasetModal,
             EditProblemModal,
-            ExperimentRegisterModal
+            ExperimentRegisterModal,
+            ControlPanelModal
         },
         methods: {
             onCloseModal() {

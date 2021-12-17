@@ -6,12 +6,19 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 const state = {
     vassarStatus: 'waiting_for_user',
     gaStatus: 'waiting_for_user',
+    serviceStatus: {
+        'vassar_containers': [],
+        'ga_containers': []
+    },
 };
 
 const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
+    getServiceStatus(state){
+        return state.serviceStatus;
+    }
 };
 
 // actions
@@ -20,6 +27,10 @@ const actions = {
 
 // mutations
 const mutations = {
+    setServiceStatus(state, serviceStatus){
+        console.log('--> SETTING SERVICE STATUS:', serviceStatus);
+        state.serviceStatus = serviceStatus;
+    },
     setVassarStatus(state, vassarStatus) {
         state.vassarStatus = vassarStatus;
     },

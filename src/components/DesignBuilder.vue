@@ -90,7 +90,7 @@
                 }
             },
             canEvaluate() {
-                return this.isLoggedIn && this.vassarStatus == "ready" && !this.readOnlyDataset;
+                return this.isLoggedIn && !this.readOnlyDataset;
             },
             readOnlyDataset() {
                 if (this.currentDatasetInfo) {
@@ -184,6 +184,7 @@
                                 if(this.compareInputsBoolBit(this.eval_request_inputs, arch.input)){
                                     this.isComputing = false
                                 }
+                                console.log('--> NEW ARCHITECTURE: ', arch);
 
                                 // let new_obj = {
                                 //     id: this.problemData.length,

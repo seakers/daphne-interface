@@ -1,13 +1,18 @@
 <template>
     <div class="column" id="main-plot-block-2">
         <section class="panel">
-            <p class="panel-heading">
+            <div class="panel-heading">
                 Tradespace exploration |
                 Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }} <br>
-                Designs requiring re-evaluation: {{ arch_to_eval }}
-                <button class="button is-info is-small" v-on:click="eval_designs()">
-                    evaluate all
-                </button>
+
+                <div>
+                    Designs requiring re-evaluation: {{ arch_to_eval }}
+                    <button class="button is-info is-small" v-on:click="eval_designs()">
+                        evaluate all
+                    </button>
+                </div>
+
+
                 <br>
                 y-axis <select v-model="yObjective">
                 <option v-for="(objective, idx) in objective_objs" v-if="objective.active" v-bind:value="idx" v-bind:key="idx">{{ objective.name }}</option>
@@ -19,7 +24,7 @@
 
 
 
-            </p>
+            </div>
             <div class="panel-block" id="main-plot-block">
                 <div id="main-plot"></div>
                 <div id="selections-block">
@@ -169,6 +174,16 @@
                 'updateHoveredArch',
             ]),
             async eval_designs(){
+                // --> 1. Reload problem / dataset designs
+                await this.$store.dispatch('initProblem', this.problemId);
+                let parameters = {
+                    'group_id'  : 1,
+                    'problem_id': this.problemId,
+                    'dataset_id': this.datasetId
+                };
+                await this.$store.dispatch('loadData', parameters);
+
+
                 console.log("---> re-evaluating designs");
                 let reqData = new FormData();
                 let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-false-architectures', reqData);
@@ -180,8 +195,6 @@
                     console.error('Error obtaining the driving features.');
                 }
             },
-
-
             resetMainPlot() {
                 //Resets the main plot
                 d3.select('#main-plot').select('svg').remove();
@@ -304,7 +317,6 @@
                 canvas.on('mousemove.inspection', function(event, d) { self.canvasMousemove(event); });
                 canvas.on('click.inspection', function(event, d) { self.canvasClick(event); });
             },
-
             drawPoints(context, hidden) {
                 context.clearRect(0, 0, this.plotWidth, this.plotHeight);
                 context.save();
@@ -342,7 +354,6 @@
 
                 context.restore();
             },
-
             getPointUnderMouse(event) {
                 // Draw the hidden canvas.
                 this.drawPoints(this.hiddenContext, true);
@@ -377,7 +388,6 @@
                 }
                 return maxcolor;
             },
-
             canvasMousemove(event) {
                 let pointColor = this.getPointUnderMouse(event);
 
@@ -396,7 +406,6 @@
                     }
                 }
             },
-
             canvasClick(event) {
                 let pointColor = this.getPointUnderMouse(event);
 
@@ -409,17 +418,11 @@
                     }
                 }
             },
-
-            /*
-               Removes selections and/or highlights in the scatter plot
-               @param option: option to remove all selections and highlights or remove only highlights
-            */
             cancelSelection() {
                 // Remove both highlights and selections
                 this.$store.commit('clearSelectedArchs');
                 this.$store.commit('clearHighlightedArchs');
             },
-
             async updateTargetSelection() {
                 let selectedArchsSet = new Set(this.selectedArchs);
                 let selectedIds = [];
