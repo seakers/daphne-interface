@@ -15,9 +15,6 @@
             </div>
         </template>
 
-
-
-
         <!--Mycroft connected-->
         <template v-if="mycroft_connection === true">
             <div style="font-size: larger; padding-bottom: 12px;">You are connected!</div>
@@ -43,12 +40,9 @@
             }),
 
         },
-
         methods: {
 
         },
-
-
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         // Check if a mycroft device is already connected on mount
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

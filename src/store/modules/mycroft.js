@@ -23,13 +23,13 @@ const actions = {
     // calls: set_mycroft_connection
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     async check_mycroft_connection({ state, commit, rootState }){
+
+        // --> 1. Check to see if mycroft is already connected
         let reqData = new FormData();
-        reqData.append('problem', rootState.problemName);
         let dataResponse = await fetchPost(API_URL + 'mycroft/check-connection', reqData);
 
         if (dataResponse.ok) {
             let data = await dataResponse.json();
-            console.log(data['connection']);
             if (data['connection'] === 'false'){
                 commit('set_mycroft_connection', false);
                 commit('set_access_token', data['access_token']);
@@ -54,7 +54,6 @@ const mutations = {
 
     set_mycroft_connection(state, mycroft_connection){
         state.mycroft_connection = mycroft_connection;
-        state.mycroft_connection = true;
     },
     set_access_token(state, access_token){
         state.access_token = access_token;
