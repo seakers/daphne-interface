@@ -75,6 +75,12 @@
                 </div>
             </div>
 
+            <div class="field" v-if="isLoggedIn">
+                <div class="control">
+                    <a class="button is-link" target="_blank" href="AdaptiveTesting.html">Adaptive Testing</a>
+                </div>
+            </div>
+
             
 
         </form>

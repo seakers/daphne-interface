@@ -13,7 +13,8 @@ module.exports = {
         index: './src/index.js',
         details: './src/details.js',
         vassar: './src/vassar.js',
-        adds: './src/adds.js'
+        adds: './src/adds.js',
+        AdaptiveTesting: './src/AdaptiveTesting.js'
     },
 
     output: {
@@ -97,6 +98,11 @@ module.exports = {
             template: './src/adds.html',
             chunks: ['adds'],
             filename: 'adds.html'
+        }),
+        new HtmlWebpackPlugin({
+            template: './src/AdaptiveTesting.html',
+            chunks: ['AdaptiveTesting'],
+            filename: 'AdaptiveTesting.html'
         }),
         new MiniCssExtractPlugin({
             // Options similar to the same options in webpackOptions.output
