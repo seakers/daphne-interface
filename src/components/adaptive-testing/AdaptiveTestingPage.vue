@@ -5,6 +5,8 @@
 </template>
 
 <script>
+    import { fetchGet, fetchPost} from '../../scripts/fetch-helpers';
+
     export default {
         name: "adaptive-testing-page",
         data: function () {
@@ -21,12 +23,23 @@
         components: {
 
         },
-        mounted() {
-
-        },
         watch: {
 
-        }
+        },
+        async mounted() {
+
+            // --> 1. Get login status
+            let dataResponse     = await fetchGet(API_URL + 'auth/check-status');
+            let auth_information = await dataResponse.json();
+
+            // --> 2. If logged in, set user ID in store
+            if(auth_information.is_logged_in){
+                dataResponse         = await fetchPost(API_URL + 'auth/get-user-pk');
+                let user_information = await dataResponse.json();
+                this.$store.commit('set_user_id', user_information['user_id']);
+            }
+
+        },
     }
 </script>
 
