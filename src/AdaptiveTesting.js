@@ -1,6 +1,7 @@
 'use strict';
 
 import Vue from 'vue';
+import vuetify from './plugins/vuetify' // path to vuetify export
 import AdaptiveTestingPage from './components/adaptive-testing/AdaptiveTestingPage';
 import store from './testing_store';
 
@@ -19,5 +20,6 @@ import 'shepherd.js/dist/css/shepherd.css';
 let AdaptiveTesting = new Vue({
     el: '#AdaptiveTesting',
     store,
+    vuetify,
     render: h => h(AdaptiveTestingPage)
 });

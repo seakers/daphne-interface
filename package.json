@@ -38,6 +38,7 @@
     "vue-plotly": "^1.1.0",
     "vue-toastification": "^1.7.14",
     "vuedraggable": "^2.24.3",
+    "vuetify": "^2.6.2",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
