@@ -11,7 +11,7 @@
                         <v-row justify="center">
                             <v-col>
                                 <v-slider
-                                    v-model="num_questions"
+                                    v-model="exam_length"
                                     min="1"
                                     max="50"
                                     label="Questions"
@@ -23,7 +23,7 @@
                         <v-row justify="center">
                             <v-col>
                                 <v-slider
-                                    v-model="exam_length"
+                                    v-model="exam_duration"
                                     min="1"
                                     max="30"
                                     label="Duration (min)"
@@ -47,7 +47,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import adaptiveExam from "../../../testing_store/modules/adaptive-test";
+import adaptiveExam from "../../../testing_store/modules/testing";
 
 export default {
     name: "adaptive-test",
@@ -56,28 +56,37 @@ export default {
     },
     data: function () {
         return {
-            current_question: 1,
 
-            exam_length: 5,
-            num_questions: 10,
         }
     },
     computed: {
         ...mapState({
-            user_id: state => state.adaptiveTestingPages.user_id,
-            username: state => state.adaptiveTestingPages.username,
-            email: state => state.adaptiveTestingPages.email,
-            ability_parameters: state => state.adaptiveTestingPages.ability_parameters,
-            test_history: state => state.adaptiveTestingPages.test_history,
-            learning_modules: state => state.adaptiveTestingPages.learning_modules,
-            excel_exercises: state => state.adaptiveTestingPages.excel_exercises,
-            questions: state => state.adaptiveTest.questions
+
         }),
+        exam_length: {
+            get() {
+                return this.$store.state.testing.exam_length;
+            },
+            set(exam_length){
+                this.$store.commit('set_exam_length', exam_length);
+            }
+        },
+        exam_duration: {
+            get() {
+                return this.$store.state.testing.exam_duration;
+            },
+            set(exam_duration){
+                this.$store.commit('set_exam_duration', exam_duration);
+            }
+        }
     },
     methods: {
         async begin_exam(){
-            await this.$store.commit('set_exam_length', this.exam_length);
-            await this.$store.dispatch('build_adaptive_exam', this.num_questions);
+            let exam_parameters = {
+                duration: this.exam_duration,
+                num_questions: this.num_questions
+            }
+            await this.$store.dispatch('create_adaptive_exam');
             await this.$router.push('test');
         },
     },

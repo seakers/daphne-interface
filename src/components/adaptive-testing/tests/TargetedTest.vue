@@ -29,14 +29,7 @@ export default {
     },
     computed: {
         ...mapState({
-            user_id: state => state.adaptiveTestingPages.user_id,
-            username: state => state.adaptiveTestingPages.username,
-            email: state => state.adaptiveTestingPages.email,
-            ability_parameters: state => state.adaptiveTestingPages.ability_parameters,
-            test_history: state => state.adaptiveTestingPages.test_history,
-            learning_modules: state => state.adaptiveTestingPages.learning_modules,
-            excel_exercises: state => state.adaptiveTestingPages.excel_exercises,
-            questions: state => state.adaptiveTest.questions
+
         }),
     },
     methods: {

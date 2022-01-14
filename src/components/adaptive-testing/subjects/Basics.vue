@@ -8,7 +8,7 @@
 import { mapState } from 'vuex';
 
 export default {
-    name: "estimation-methods",
+    name: "basics",
     components: {
 
     },
@@ -19,7 +19,7 @@ export default {
     },
     computed: {
         ...mapState({
-            user_id: state => state.adaptiveTestingPages.user_id
+
         }),
     },
     methods: {

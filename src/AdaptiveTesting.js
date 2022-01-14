@@ -21,18 +21,20 @@ import 'shepherd.js/dist/css/shepherd.css';
 
 // --- Vue Router ---
 import Mastery from './components/adaptive-testing/Mastery'
-import CERs from './components/adaptive-testing/subjects/CERs'
-import EconomiesOfScale from './components/adaptive-testing/subjects/EconomiesOfScale'
-import EstimationMethods from './components/adaptive-testing/subjects/EstimationMethods'
+import Basics from './components/adaptive-testing/subjects/Basics'
 import AdaptiveTest from './components/adaptive-testing/tests/AdaptiveTest'
 import TargetedTest from './components/adaptive-testing/tests/TargetedTest'
 import Test from './components/adaptive-testing/tests/Test'
 
 const routes = [
+
+    // Mastery
     { path: '/mastery', component: Mastery },
-    { path: '/cers', component: CERs },
-    { path: '/eos', component: EconomiesOfScale },
-    { path: '/em', component: EstimationMethods },
+
+    // Learning modules
+    { path: '/basics', component: Basics },
+
+    // Testing
     { path: '/adaptive-test', component: AdaptiveTest },
     { path: '/targeted-test', component: TargetedTest },
     { path: '/test', component: Test },

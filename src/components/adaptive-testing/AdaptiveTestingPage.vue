@@ -16,14 +16,13 @@
                     </v-list-item-subtitle>
                 </v-list-item-content>
             </v-list-item>
-
             <v-divider class="primary darken-1"></v-divider>
 
 <!--        MENU ITEMS-->
             <v-list dense nav>
 
 
-<!--            MAIN ITEMS-->
+<!--            MASTERY-->
                 <v-list-item v-for="item in main_items" :key="item.title" :to="item.link" link active-class="bg-active">
                     <v-list-item-icon>
                         <v-icon color="white">{{ item.icon }}</v-icon>
@@ -121,6 +120,7 @@
 <script>
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
     import {mapState} from "vuex";
+    import user from "../../testing_store/modules/user";
 
     export default {
         name: "adaptive-testing-page",
@@ -130,19 +130,17 @@
         data: function () {
             return {
                 drawer: null,
-                main_items: [
-                    { title: 'Mastery', icon: 'mdi-school', link: '/mastery'},
-                ],
                 progress: 10,
             }
         },
         computed: {
             ...mapState({
-                user_id: state => state.adaptiveTestingPages.user_id,
-                username: state => state.adaptiveTestingPages.username,
-                email: state => state.adaptiveTestingPages.email,
-                learning_modules: state => state.adaptiveTestingPages.learning_modules,
-                tests: state => state.adaptiveTestingPages.tests
+                user_id: state => state.user.user_id,
+                username: state => state.user.username,
+                email: state => state.user.email,
+                learning_modules: state => state.user.learning_modules,
+                tests: state => state.user.tests,
+                main_items: state => state.user.main_items
             }),
         },
         methods: {
