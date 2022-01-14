@@ -1,97 +1,149 @@
 <template>
-    <v-app>
+    <v-app dark>
 
-        <v-app-bar app color="white" flat>
-            <v-container class="py-0 fill-height">
 
-                <v-avatar class="mr-10" color="grey darken-1" size="32"></v-avatar>
 
-                <v-btn v-for="link in links" :key="link" text>
-                    {{ link }}
-                </v-btn>
+        <v-navigation-drawer v-model="drawer" app color="primary lighten-1">
 
-                <v-spacer></v-spacer>
+<!--        MENU HEADER-->
+            <v-list-item class="white--text">
+                <v-list-item-content>
+                    <v-list-item-title class="text-h6">
+                        {{ username }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="white--text">
+                        {{ email }}
+                    </v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
 
-                <v-responsive max-width="260">
-                    <v-text-field
-                        dense
-                        flat
-                        hide-details
-                        rounded
-                        solo-inverted
-                    ></v-text-field>
-                </v-responsive>
+            <v-divider class="primary darken-1"></v-divider>
 
-            </v-container>
+<!--        MENU ITEMS-->
+            <v-list dense nav>
+
+
+<!--            MAIN ITEMS-->
+                <v-list-item v-for="item in main_items" :key="item.title" :to="item.link" link active-class="bg-active">
+                    <v-list-item-icon>
+                        <v-icon color="white">{{ item.icon }}</v-icon>
+                    </v-list-item-icon>
+
+                    <v-list-item-content class="white--text">
+                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+
+<!--            LEARNING MODULE LIST-->
+                <v-list-group :value="false">
+                    <v-icon slot="prependIcon" color="white">mdi-book</v-icon>
+                    <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
+                    <template v-slot:activator>
+                        <v-list-item-title class="white--text">Learning Modules</v-list-item-title>
+                    </template>
+
+<!--                LEARNING MODULE ITEMS-->
+                    <v-list-item v-for="item in learning_modules" :key="item.title" :to="item.link" link active-class="bg-active">
+
+                        <v-list-item-content>
+                            <v-list-item-title v-text="item.title" class="white--text"></v-list-item-title>
+                            <div v-if="item.progress === 0">
+                                <v-progress-linear v-model="item.progress * 100" color="white" rounded style="margin-top: 2px"></v-progress-linear>
+                            </div>
+                            <div v-if="item.progress > 0 && item.progress < 1">
+                                <v-progress-linear v-model="item.progress * 100" color="warning" rounded style="margin-top: 2px"></v-progress-linear>
+                            </div>
+                            <div v-if="item.progress === 1">
+                                <v-progress-linear v-model="item.progress * 100" color="success" rounded style="margin-top: 2px"></v-progress-linear>
+                            </div>
+                        </v-list-item-content>
+
+
+
+                        <v-list-item-icon>
+                            <v-icon v-text="item.icon" color="white"></v-icon>
+                        </v-list-item-icon>
+
+                    </v-list-item>
+                </v-list-group>
+
+
+
+<!--            TESTING ITEM LIST-->
+                <v-list-group :value="false">
+                    <v-icon slot="prependIcon" color="white">mdi-lead-pencil</v-icon>
+                    <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
+                    <template v-slot:activator>
+                        <v-list-item-title class="white--text">Testing</v-list-item-title>
+                    </template>
+
+                    <!--                TESTING ITEMS-->
+                    <v-list-item v-for="item in tests" :key="item.title" :to="item.link" link active-class="bg-active">
+                        <v-list-item-title v-text="item.title" class="white--text"></v-list-item-title>
+
+                        <v-list-item-icon>
+                            <v-icon v-text="item.icon" color="white"></v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+                </v-list-group>
+
+
+
+
+
+
+
+
+
+
+            </v-list>
+
+
+
+        </v-navigation-drawer>
+
+
+        <v-app-bar app class="primary white--text">
+            <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
+
+            <v-toolbar-title>Daphne Academy</v-toolbar-title>
         </v-app-bar>
 
 
-        <v-main class="grey lighten-3">
-            <v-container>
-                <v-row>
-                    <v-col cols="2">
-                        <v-sheet rounded="lg">
-                            <v-list color="transparent">
-                                <v-list-item v-for="n in 5" :key="n" link>
-                                    <v-list-item-content>
-                                        <v-list-item-title>
-                                            List Item {{ n }}
-                                        </v-list-item-title>
-                                    </v-list-item-content>
-                                </v-list-item>
-
-                                <v-divider class="my-2"></v-divider>
-
-                                <v-list-item link color="grey lighten-4">
-                                    <v-list-item-content>
-                                        <v-list-item-title>
-                                            Refresh
-                                        </v-list-item-title>
-                                    </v-list-item-content>
-                                </v-list-item>
-
-                            </v-list>
-                        </v-sheet>
-                    </v-col>
-
-                    <v-col>
-                        <v-sheet
-                            min-height="70vh"
-                            rounded="lg"
-                        >
-                            <!--  -->
-                        </v-sheet>
-                    </v-col>
-                </v-row>
-            </v-container>
+        <v-main class="secondary lighten-3">
+                <router-view></router-view>
         </v-main>
-
-
 
     </v-app>
 </template>
 
 <script>
     import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
-    import TestingMenu from './TestingMenu'
-    import BulmaMenu from './BulmaMenu'
+    import {mapState} from "vuex";
 
     export default {
         name: "adaptive-testing-page",
         components: {
-            TestingMenu,
-            BulmaMenu
+
         },
         data: function () {
             return {
-                links: [
-                    'Progress',
-                    'Topics',
+                drawer: null,
+                main_items: [
+                    { title: 'Mastery', icon: 'mdi-school', link: '/mastery'},
                 ],
+                progress: 10,
             }
         },
         computed: {
-
+            ...mapState({
+                user_id: state => state.adaptiveTestingPages.user_id,
+                username: state => state.adaptiveTestingPages.username,
+                email: state => state.adaptiveTestingPages.email,
+                learning_modules: state => state.adaptiveTestingPages.learning_modules,
+                tests: state => state.adaptiveTestingPages.tests
+            }),
         },
         methods: {
 
@@ -126,4 +178,11 @@
     width: 100vw;
     height: 100vh;
 }
+
+.bg-active {
+    background-color: #232C3A;
+    color : white !important;
+}
+
+
 </style>

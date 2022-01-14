@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import {fetchPost} from "../scripts/fetch-helpers";
 
 import adaptiveTestingPages from './modules/adaptive-testing-page';
+import adaptiveTest from './modules/adaptive-test'
 
 Vue.use(Vuex);
 
@@ -18,7 +19,8 @@ export default new Vuex.Store({
     actions: {
     },
     modules: {
-        adaptiveTestingPages
+        adaptiveTestingPages,
+        adaptiveTest
     },
     strict: debug
 });
