@@ -110,7 +110,7 @@
 
 <!--                                        EXPLANATION-->
                                             <v-row no-gutters>
-                                                <v-expansion-panels>
+                                                <v-expansion-panels :value="show_answer" multiple>
                                                     <v-expansion-panel :disabled="!slide.answered">
                                                         <v-expansion-panel-header>Why?</v-expansion-panel-header>
                                                         <v-expansion-panel-content>
@@ -152,6 +152,9 @@ export default {
             slide_idx: 0,
             module: {},
             slides: [],
+
+            // --> Expansion panel answer
+            show_answer: [],
 
             // --> Disable slideshow buttons
             disable_back: false,
@@ -210,7 +213,8 @@ export default {
             return 'error'
         },
         slide_logic(){
-            if(this.slides.length === 0){
+            this.show_answer = [];
+            if(this.slides.length === 0 || typeof this.slides[this.slide_idx] === 'undefined'){
                 return;
             }
 
@@ -275,11 +279,20 @@ export default {
         slide_idx(){
             this.slide_logic();
             this.update_slide_idx();
+            console.log('--> SLIDE:', this.slides[this.slide_idx]);
+        },
+        module_name(){
+            console.log('--> REFETCHING MODULE DATA');
+            this.$forceUpdate();
+            // this.$apollo.queries.slide_idx.refresh();
+            // this.$apollo.queries.module.refresh();
+            // this.$apollo.queries.slides.refresh();
         }
     },
     apollo: {
         slide_idx: {
             query: SlideIdxQuery,
+            fetchPolicy: 'no-cache',
             variables() {
                 return {
                     user_id: this.user_id,
@@ -298,6 +311,7 @@ export default {
         },
         module: {
             query: ModuleQuery,
+            fetchPolicy: 'no-cache',
             variables() {
                 return {
                     user_id: this.user_id,
@@ -327,6 +341,7 @@ export default {
         },
         slides: {
             query: SlidesQuery,
+            fetchPolicy: 'no-cache',
             variables() {
                 return {
                     user_id: this.user_id,
@@ -338,6 +353,7 @@ export default {
             },
             update: data => {
                 let slides = _.cloneDeep(data.slides);
+                console.log('--> CLONING SLIDES');
                 for(let x = 0; x < slides.length; x++){
                     if(slides[x].type === 'question'){
                         slides[x].question.choices = JSON.parse(slides[x].question.choices);
