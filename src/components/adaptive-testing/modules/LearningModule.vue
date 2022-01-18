@@ -52,13 +52,28 @@
 <!--                        SLIDE-->
                             <v-carousel-item v-for="(slide, idx) in slides" :key="idx">
 
-<!--                            CONTENT SLIDE-->
+<!--                            CONTENT SLIDE -->
                                 <v-img
                                     v-if="slide.type === 'info'"
                                     max-height="500"
                                     :src="get_slide_image(slide.src)"
                                     contain
+                                    v-on:click="toggle_overlay(true)"
+                                    style="cursor: zoom-in"
                                 ></v-img>
+
+<!--                            IMAGE ZOOM OVERLAY-->
+                                <v-overlay v-model="show_overlay">
+                                        <v-img
+                                            v-if="slide.type === 'info'"
+                                            :src="get_slide_image(slide.src)"
+                                            contain
+                                            v-on:click="toggle_overlay(false)"
+                                            style="cursor: zoom-out"
+                                        ></v-img>
+                                </v-overlay>
+
+
 
 
 <!--                            QUESTION SLIDE-->
@@ -156,6 +171,9 @@ export default {
             // --> Expansion panel answer
             show_answer: [],
 
+            // --> Zoom on slide
+            show_overlay: false,
+
             // --> Disable slideshow buttons
             disable_back: false,
             disable_next: false,
@@ -205,6 +223,9 @@ export default {
         },
         get_slide_image(src){
             return get_slide_src(src);
+        },
+        toggle_overlay(val){
+            this.show_overlay = val;
         },
         choice_color(value){
             if(value === true){
@@ -277,16 +298,15 @@ export default {
     },
     watch: {
         slide_idx(){
+            this.show_overlay = false;
             this.slide_logic();
             this.update_slide_idx();
             console.log('--> SLIDE:', this.slides[this.slide_idx]);
         },
         module_name(){
+            this.show_overlay = false;
             console.log('--> REFETCHING MODULE DATA');
             this.$forceUpdate();
-            // this.$apollo.queries.slide_idx.refresh();
-            // this.$apollo.queries.module.refresh();
-            // this.$apollo.queries.slides.refresh();
         }
     },
     apollo: {
