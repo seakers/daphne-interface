@@ -3,7 +3,7 @@
     <div class="panel-block" style="flex-direction: column; align-items: start;">
         <p>Select a hypothesis to test.</p>
         <p>Architectures <span class="select is-small" style="max-width: 40px;">
-            <select id="hypothesis-menu" v-model="selectedHypothesis" style="color: white;">
+            <select id="hypothesis-menu" v-model="selectedHypothesis">
                 <option v-for="option in hypothesisOptions" :value="option.value" :key="option.value">{{ option.text }}</option>
             </select>
         </span>
