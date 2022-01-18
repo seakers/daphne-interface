@@ -61,7 +61,7 @@
                                     <td style="vertical-align: middle">{{ item.name }}</td>
                                     <td style="vertical-align: middle">
                                         {{item.progress * 100}}%
-                                        <v-progress-linear v-model="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px" height="8"></v-progress-linear>
+                                        <v-progress-linear :value="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px" height="8" ></v-progress-linear>
                                     </td>
                                 </tr>
                             </tbody>
@@ -145,7 +145,7 @@
                                         <v-row justify="center">
                                             <v-col>
                                                 <div class="text-center">
-                                                    <v-progress-linear v-model="item.value * 100" color="secondary lighten-4" rounded height="8"></v-progress-linear>
+                                                    <v-progress-linear :value="item.value * 100" color="secondary lighten-4" rounded height="8"></v-progress-linear>
                                                 </div>
 
                                             </v-col>

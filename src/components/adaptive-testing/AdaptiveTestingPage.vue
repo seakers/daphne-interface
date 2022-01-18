@@ -47,7 +47,7 @@
 
                         <v-list-item-content>
                             <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
-                            <v-progress-linear v-model="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px"></v-progress-linear>
+                            <v-progress-linear :value="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px"></v-progress-linear>
                         </v-list-item-content>
 
 
@@ -156,13 +156,6 @@
         watch: {
 
         },
-        async created() {
-            await this.$store.dispatch('get_user_info');
-            await this.$store.dispatch('get_learning_module_pages');
-            await this.$store.dispatch('get_excel_exercises');
-            await this.$store.dispatch('get_ability_levels');
-            await this.$store.dispatch('get_test_history');
-        },
         apollo: {
             $subscribe: {
                 modules_db: {
@@ -211,6 +204,9 @@
                     },
                 },
             },
+        },
+        async created() {
+            await this.$store.dispatch('get_user_info');
         }
     }
 </script>
