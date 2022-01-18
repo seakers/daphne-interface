@@ -23,13 +23,13 @@
 
 
 <!--            MASTERY-->
-                <v-list-item v-for="item in main_items" :key="item.title" :to="item.link" link active-class="bg-active">
+                <v-list-item v-for="item in main_links" :key="item.name" :to="item.link" link active-class="bg-active">
                     <v-list-item-icon>
                         <v-icon color="white">{{ item.icon }}</v-icon>
                     </v-list-item-icon>
 
                     <v-list-item-content class="white--text">
-                        <v-list-item-title>{{ item.title }}</v-list-item-title>
+                        <v-list-item-title>{{ item.name }}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
@@ -43,19 +43,11 @@
                     </template>
 
 <!--                LEARNING MODULE ITEMS-->
-                    <v-list-item v-for="item in learning_modules" :key="item.title" :to="item.link" link active-class="bg-active">
+                    <v-list-item v-for="item in module_links" :key="item.name" :to="item.link" link active-class="bg-active">
 
                         <v-list-item-content>
-                            <v-list-item-title v-text="item.title" class="white--text"></v-list-item-title>
-                            <div v-if="item.progress === 0">
-                                <v-progress-linear v-model="item.progress * 100" color="white" rounded style="margin-top: 2px"></v-progress-linear>
-                            </div>
-                            <div v-if="item.progress > 0 && item.progress < 1">
-                                <v-progress-linear v-model="item.progress * 100" color="warning" rounded style="margin-top: 2px"></v-progress-linear>
-                            </div>
-                            <div v-if="item.progress === 1">
-                                <v-progress-linear v-model="item.progress * 100" color="success" rounded style="margin-top: 2px"></v-progress-linear>
-                            </div>
+                            <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
+                            <v-progress-linear v-model="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px"></v-progress-linear>
                         </v-list-item-content>
 
 
@@ -78,8 +70,8 @@
                     </template>
 
                     <!--                TESTING ITEMS-->
-                    <v-list-item v-for="item in tests" :key="item.title" :to="item.link" link active-class="bg-active">
-                        <v-list-item-title v-text="item.title" class="white--text"></v-list-item-title>
+                    <v-list-item v-for="item in test_links" :key="item.name" :to="item.link" link active-class="bg-active">
+                        <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
 
                         <v-list-item-icon>
                             <v-icon v-text="item.icon" color="white"></v-icon>
@@ -118,9 +110,8 @@
 </template>
 
 <script>
-    import {fetchGet, fetchPost} from '../../scripts/fetch-helpers';
     import {mapState} from "vuex";
-    import user from "../../testing_store/modules/user";
+    import {ModuleLinkSubscription} from "../../testing_store/queries";
 
     export default {
         name: "adaptive-testing-page",
@@ -130,7 +121,21 @@
         data: function () {
             return {
                 drawer: null,
-                progress: 10,
+                modules_db: null,
+
+                // --> Main links <--
+                main_links: [
+                    { name: 'Mastery', icon: 'mdi-school', link: '/mastery'},
+                ],
+
+                // --> Test links <--
+                test_links: [
+                    { name: 'Adaptive Test', icon: 'mdi-brain', link: '/adaptive-test'},
+                    { name: 'Targeted Test', icon: 'mdi-bullseye-arrow', link: '/targeted-test'},
+                ],
+
+                // --> Module links <--
+                module_links: [],
             }
         },
         computed: {
@@ -138,35 +143,80 @@
                 user_id: state => state.user.user_id,
                 username: state => state.user.username,
                 email: state => state.user.email,
-                learning_modules: state => state.user.learning_modules,
-                tests: state => state.user.tests,
-                main_items: state => state.user.main_items
             }),
         },
         methods: {
-
+            get_progress_color(progress){
+                if(progress === 1){
+                    return "success";
+                }
+                return "white";
+            }
         },
         watch: {
 
         },
-        async mounted() {
-
-            // // --> 1. Get login status
-            // let dataResponse     = await fetchGet(API_URL + 'auth/check-status');
-            // let auth_information = await dataResponse.json();
-            //
-            // // --> 2. If logged in, set user ID in store
-            // if(auth_information.is_logged_in){
-            //     dataResponse         = await fetchPost(API_URL + 'auth/get-user-pk');
-            //     let user_information = await dataResponse.json();
-            //     this.$store.commit('set_user_id', user_information['user_id']);
-            // }
-
+        async created() {
+            await this.$store.dispatch('get_user_info');
+            await this.$store.dispatch('get_learning_module_pages');
+            await this.$store.dispatch('get_excel_exercises');
+            await this.$store.dispatch('get_ability_levels');
+            await this.$store.dispatch('get_test_history');
         },
+        apollo: {
+            $subscribe: {
+                modules_db: {
+                    deep: true,
+                    query: ModuleLinkSubscription,
+                    variables() {
+                        return {
+                            user_id: this.user_id
+                        }
+                    },
+                    skip() {
+                        return (this.user_id === null);
+                    },
+                    result(result) {
+                        console.log(result);
+                        let modules = result.data.modules_db;
+                        let module_links = [];
+                        for(let x = 0; x < modules.length; x++){
+                            let module = modules[x];
+
+                            // --> Find module progress
+                            let progress = 0;
+                            let slide_questions = 0;
+                            let slide_questions_completed = 0;
+                            for(let y = 0; y < module.slides.length; y++){
+                                let slide = module.slides[y];
+                                if(slide.type === 'question'){
+                                    slide_questions++;
+                                    if(slide.answered === true){
+                                        slide_questions_completed++;
+                                    }
+                                }
+                            }
+                            if(slide_questions !== 0){
+                                progress = (slide_questions_completed / slide_questions);
+                            }
+
+                            module_links.push({
+                                name: module.name,
+                                icon: module.icon,
+                                link: ('/LearningModule/' + module.name + '/' + module.id),
+                                progress: progress
+                            });
+                        }
+                        this.module_links = module_links;
+                    },
+                },
+            },
+        }
     }
 </script>
 
 <style scoped>
+
 .wrapper {
     display: grid;
     grid-template-rows: repeat(2, 1fr);
@@ -181,6 +231,5 @@
     background-color: #232C3A;
     color : white !important;
 }
-
 
 </style>

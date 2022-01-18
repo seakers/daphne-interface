@@ -5,9 +5,8 @@ import * as _ from 'lodash-es';
 const state = {
 
     example_mc: {
+        answer: -1,
         step: 1,
-        answer: 0,
-        type: 'MC',
         text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua?',
         choices: [
             {text: 'Choice 1', correct: true},
@@ -16,8 +15,6 @@ const state = {
             {text: 'Choice 4', correct: false}
         ]
     },
-
-
 
     exam: [],
     exam_duration: 5,

@@ -1,0 +1,351 @@
+import gql from "graphql-tag";
+
+
+const LearningModuleQuery = gql`
+
+    query LearningModuleQuery($user_id: Int!) {
+        modules: LearningModule(where: {Join__User_LearningModules: {user_id: {_eq: $user_id}}}) {
+            id
+            name
+            icon
+            join_info: Join__User_LearningModules(where: {user_id: {_eq: $user_id}}){
+                slide_idx
+            }
+            slides: Slides(where: {user_id: {_eq: $user_id}}, order_by: {idx: asc}) {
+                id
+                idx
+                correct
+                choice_id
+                answered
+                type
+                src
+                question_id
+                module_id
+                attempts
+                question: Question {
+                    choices
+                    difficulty
+                    discrimination
+                    explanation
+                    guessing
+                    id
+                    text
+                    topic_list: Join__Question_Topics {
+                        topic: Topic {
+                            id
+                            name
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const ExcelExerciseQuery = gql`
+
+    query ExcelExerciseQuery($user_id: Int!) {
+        exercises: ExcelExercise(where: {ExcelExerciseCompletions: {user_id: {_eq: $user_id}}}) {
+            id
+            name
+            completion: ExcelExerciseCompletions {
+                id
+                is_completed
+                reason
+            }
+        }
+    }
+`;
+
+
+const AbilityLevelQuery = gql`
+
+    query AbilityLevelQuery($user_id: Int!) {
+        topics: Topic(where: {AbilityParameters: {user_id: {_eq: $user_id}}}) {
+            id
+            name
+            ability_level: AbilityParameters {
+                value
+            }
+        }
+    }
+`;
+
+const TestHistoryQuery = gql`
+
+    query TestHistoryQuery($user_id: Int!) {
+        tests: Test(where: {user_id: {_eq: $user_id}}, order_by: {date: asc}) {
+            questions: TestQuestions {
+                id
+                correct
+                choice_id
+                answered
+                test_id
+                question_id
+                question: Question {
+                    text
+                    id
+                    guessing
+                    explanation
+                    discrimination
+                    difficulty
+                    choices
+                    Join__Question_Topics {
+                        Topic {
+                            name
+                        }
+                    }
+                }
+            }
+            type
+            num_questions
+            in_progress
+            id
+            duration
+            date
+            score
+        }
+    }
+`;
+
+
+
+
+
+
+const SingleModuleQuery = gql`
+
+    query TestHistoryQuery($user_id: Int!, $module_id: Int!) {
+        module: LearningModule_by_pk(id: $module_id) {
+            id
+            name
+            icon
+            slides: Slides(where: {user_id: {_eq: $user_id}}, order_by: {idx: asc}) {
+                id
+                idx
+                correct
+                choice_id
+                src
+                type
+                attempts
+                answered
+                question: Question {
+                    text
+                    choices
+                    explanation
+                    difficulty
+                    discrimination
+                    guessing
+                    topics: Join__Question_Topics {
+                        topic: Topic {
+                            name
+                        }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+
+
+
+
+
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+const ExcelMasterySub = gql`
+
+    subscription ExcelMasterySub($user_id: Int!) {
+        excel_exercises_db: ExcelExerciseCompletion(where: {user_id: {_eq: $user_id}}) {
+            id
+            is_completed
+            reason
+            exercise: ExcelExercise {
+                id
+                name
+            }
+        }
+    }
+`;
+
+const TestHistoryMasterySub = gql`
+
+    subscription TestHistoryMasterySub($user_id: Int!) {
+        tests: Test(where: {user_id: {_eq: $user_id}}, order_by: {date: asc}) {
+            date
+            duration
+            id
+            in_progress
+            num_questions
+            score
+            type
+            questions: TestQuestions_aggregate {
+                aggregate {
+                    count
+                }
+            }
+        }
+    }
+`;
+const AbilityParameterMasterySub = gql`
+
+    subscription AbilityParameterMasterySub($user_id: Int!) {
+        parameters: AbilityParameter(where: {user_id: {_eq: $user_id}}) {
+            value
+            topic: Topic {
+                name
+            }
+        }
+    }
+`;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const ModuleLinkSubscription = gql`
+
+    subscription ModuleLinkSubscription($user_id: Int!) {
+        modules_db: LearningModule(where: {Join__User_LearningModules: {user_id: {_eq: $user_id}}}) {
+            id
+            name
+            icon
+            slides: Slides(where: {user_id: {_eq: $user_id}}, order_by: {idx: asc}) {
+                type
+                answered
+            }
+        }
+    }
+`;
+
+
+const SlideIdxQuery = gql`
+
+    query SlideIdxQuery($user_id: Int!, $module_id: Int!) {
+        entry: Join__User_LearningModule(where: {user_id: {_eq: $user_id}, LearningModule: {id: {_eq: $module_id}}}) {
+            slide_idx
+        }
+    }
+`;
+
+const ModuleQuery = gql`
+
+    query ModuleQuery($user_id: Int!, $module_id: Int!) {
+        module: LearningModule_by_pk(id: $module_id) {
+            id
+            name
+            icon
+            slides: Slides_aggregate(where: {user_id: {_eq: $user_id}}) {
+                aggregate {
+                    count
+                }
+            }
+            topics: Join__LearningModule_Topics {
+                topic: Topic {
+                    id
+                    name
+                }
+            }
+        }
+    }
+`;
+
+const SlidesQuery = gql`
+
+    query SlidesQuery($user_id: Int!, $module_id: Int!) {
+        slides: Slide(where: {user_id: {_eq: $user_id}, module_id: {_eq: $module_id}}, order_by: {idx: asc}) {
+            type
+            src
+            idx
+            id
+            correct
+            choice_id
+            attempts
+            answered
+            question: Question {
+                id
+                text
+                guessing
+                explanation
+                discrimination
+                difficulty
+                choices
+                topics: Join__Question_Topics {
+                    topic: Topic {
+                        name
+                    }
+                }
+            }
+        }
+    }
+`;
+
+const UpdateSlideIdx = gql`
+
+    mutation UpdateSlideIdx($user_id: Int!, $module_id: Int!, $slide_idx: Int!) {
+        update_Join__User_LearningModule(where: {module_id: {_eq: $module_id}, user_id: {_eq: $user_id}}, _set: {slide_idx: $slide_idx}) {
+            affected_rows
+        }
+    }
+`;
+
+const UpdateSlide = gql`
+
+    mutation UpdateSlide($slide_id: Int!, $answered: Boolean!, $correct: Boolean!, $attempts: Int!, $choice_id: Int!) {
+        update_Slide_by_pk(pk_columns: {id: $slide_id}, _set: {answered: $answered, correct: $correct, attempts: $attempts, choice_id: $choice_id}) {
+            id
+        }
+    }
+`;
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export {
+    LearningModuleQuery,
+    ExcelExerciseQuery,
+    AbilityLevelQuery,
+    TestHistoryQuery,
+    SingleModuleQuery,
+    SlideIdxQuery,
+    ModuleQuery,
+    SlidesQuery,
+    UpdateSlideIdx,
+    UpdateSlide,
+    ModuleLinkSubscription,
+    ExcelMasterySub,
+    TestHistoryMasterySub,
+    AbilityParameterMasterySub
+}

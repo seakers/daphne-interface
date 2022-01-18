@@ -20,7 +20,7 @@ export default new Vuex.Store({
     },
     modules: {
         user,
-        testing
+        testing,
     },
     strict: debug
 });

@@ -10,6 +10,8 @@ Vue.use(VueRouter)
 
 // Apollo
 import VueApollo from "vue-apollo";
+Vue.use(VueApollo);
+
 import { ApolloClient } from '@apollo/client/core';
 import { HttpLink } from "@apollo/client/core";
 import { InMemoryCache } from "@apollo/client/cache";
@@ -21,10 +23,14 @@ import 'shepherd.js/dist/css/shepherd.css';
 
 // --- Vue Router ---
 import Mastery from './components/adaptive-testing/Mastery'
-import Basics from './components/adaptive-testing/subjects/Basics'
+// import Basics from './components/adaptive-testing/modules/Basics'
+// import AbstractModule from './components/adaptive-testing/modules/AbstractModule'
+// import AbstractModule2 from './components/adaptive-testing/modules/AbstractModule2'
+import LearningModule from './components/adaptive-testing/modules/LearningModule'
 import AdaptiveTest from './components/adaptive-testing/tests/AdaptiveTest'
 import TargetedTest from './components/adaptive-testing/tests/TargetedTest'
 import Test from './components/adaptive-testing/tests/Test'
+import {WebSocketLink} from "@apollo/client/link/ws";
 
 const routes = [
 
@@ -32,7 +38,7 @@ const routes = [
     { path: '/mastery', component: Mastery },
 
     // Learning modules
-    { path: '/basics', component: Basics },
+    { path: '/LearningModule/:name/:id', component: LearningModule, props:true },
 
     // Testing
     { path: '/adaptive-test', component: AdaptiveTest },
@@ -45,10 +51,53 @@ const router = new VueRouter({
 
 
 
+
+
+
+
+// APOLLO HEADERS
+const getHeaders = () => {
+    const headers = {};
+    const token = window.localStorage.getItem('apollo-token');
+    if (token) {
+        headers.authorization = `Bearer ${token}`;
+    }
+    return headers;
+};
+// HASURA URL
+const link = new WebSocketLink({
+    uri: GRAPH_QL_WS_URL,
+    options: {
+        reconnect: true,
+        lazy: true,
+        timeout: 30000,
+        connectionParams: () => {
+            return { headers: getHeaders() };
+        },
+    }
+});
+// APOLLO
+export const client = new ApolloClient({
+    link: link,
+    cache: new InMemoryCache({
+        addTypename: true
+    })
+});
+const apolloProvider = new VueApollo({
+    defaultClient: client,
+})
+
+
+
+
+
+
+
 let AdaptiveTesting = new Vue({
     el: '#AdaptiveTesting',
     store,
     router,
     vuetify,
+    apolloProvider,
     render: h => h(AdaptiveTestingPage)
 });

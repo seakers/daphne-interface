@@ -29,11 +29,11 @@
                             </thead>
                             <tbody>
                             <tr v-for="(item, idx) in excel_exercises" :key="idx">
-                                <td style="vertical-align: middle">{{ item.file }}</td>
-                                <td style="vertical-align: middle" v-if="item.completed === true">
+                                <td style="vertical-align: middle">{{ item.name }}</td>
+                                <td style="vertical-align: middle" v-if="item.is_completed === true">
                                     <v-icon color="success" style="margin-left: 28px;">mdi-check</v-icon>
                                 </td>
-                                <td style="vertical-align: middle" v-if="item.completed === false">
+                                <td style="vertical-align: middle" v-if="item.is_completed === false">
                                     <v-icon color="error" style="margin-left: 28px;">mdi-cancel</v-icon>
                                 </td>
                             </tr>
@@ -58,22 +58,10 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(item, idx) in learning_modules" :key="idx">
-                                    <td style="vertical-align: middle">{{ item.title }}</td>
+                                    <td style="vertical-align: middle">{{ item.name }}</td>
                                     <td style="vertical-align: middle">
-<!--                                        <v-progress-circular :rotate="270" :size="45" width="5" :value="item.progress * 100" color="primary lighten-3" style="margin-left: 20px;">-->
-<!--                                            {{item.progress * 100}}%-->
-<!--                                        </v-progress-circular>-->
                                         {{item.progress * 100}}%
-                                        <div v-if="item.progress === 0">
-                                            <v-progress-linear v-model="item.progress * 100" color="primary lighten-1" rounded style="margin-top: 2px" height="8"></v-progress-linear>
-                                        </div>
-                                        <div v-if="item.progress > 0 && item.progress < 1">
-                                            <v-progress-linear v-model="item.progress * 100" color="warning" rounded style="margin-top: 2px" height="8"></v-progress-linear>
-                                        </div>
-                                        <div v-if="item.progress === 1">
-                                            <v-progress-linear v-model="item.progress * 100" color="success" rounded style="margin-top: 2px" height="8"></v-progress-linear>
-                                        </div>
-
+                                        <v-progress-linear v-model="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px" height="8"></v-progress-linear>
                                     </td>
                                 </tr>
                             </tbody>
@@ -126,7 +114,7 @@
                                                 <v-divider vertical></v-divider>
                                                 <v-col>
                                                     <div class="white--text" style="height: 65px; text-align: center; font-size: xxx-large">
-                                                        {{loaded_exam.time}}s
+                                                        {{loaded_exam.duration}}s
                                                     </div>
                                                     <div style="text-align: center; padding-top: 5px;" class="white--text">
                                                         Time
@@ -145,12 +133,13 @@
             <v-col>
                 <v-card elevation="0">
                     <v-card-title>Ability Levels</v-card-title>
-                    <v-divider style="margin-top: 0px; margin-bottom: 15px;"></v-divider>
+                    <v-divider style="margin-top: 0; margin-bottom: 15px;"></v-divider>
                     <v-container fluid>
                         <v-row dense>
-                            <v-col v-for="item in ability_parameters" :key="item.name" cols="4">
+                            <v-col v-for="(item, idx) in ability_parameters" :key="idx" cols="4">
                                 <v-card  elevation="8" color="primary lighten-1">
                                     <v-card-subtitle class="white--text" style="padding-bottom: 2px">{{ item.name }}</v-card-subtitle>
+
                                     <v-card-title class="white--text" style="padding-top: 2px; padding-bottom: 4px">{{ item.value }} / 1</v-card-title>
                                     <v-container style="padding-top: 4px;">
                                         <v-row justify="center">
@@ -162,35 +151,28 @@
                                             </v-col>
                                         </v-row>
                                     </v-container>
+
+
                                 </v-card>
                             </v-col>
                         </v-row>
                     </v-container>
                 </v-card>
             </v-col>
-
-
-
-
         </v-row>
-
-
     </v-container>
 </template>
 
 
 
-<!--<v-card>-->
-<!--<v-card-title>Something</v-card-title>-->
-<!--<v-card-text>Text</v-card-text>-->
-<!--<v-timeline>-->
-<!--    <v-timeline-item color="green" :key="n" small v-for="n in 5"></v-timeline-item>-->
-<!--</v-timeline>-->
-<!--</v-card>-->
-
 <script>
 import { mapState } from 'vuex';
-import user from "../../testing_store/modules/user";
+import {
+    ExcelMasterySub,
+    TestHistoryMasterySub,
+    AbilityParameterMasterySub,
+    ModuleLinkSubscription
+} from "../../testing_store/queries";
 
 export default {
     name: "mastery",
@@ -200,19 +182,46 @@ export default {
     data: function () {
         return {
             loaded_exam: null,
+
+
+            excel_exercises_db: [],
+            excel_exercises: [],
+
+
+            learning_modules_db: [],
+            learning_modules: [],
+
+
+            test_history_db: [],
+            // test_history: [],
+            test_history: [
+                { type: 'Adaptive', score: '5/15', date: '1/4/2021', icon: 'mdi-brain', duration: 30, active:false},
+                { type: 'Adaptive', score: '12/20', date: '1/7/2021', icon: 'mdi-brain', duration: 60, active:false},
+                { type: 'Targeted', score: '20/22', date: '1/8/2021', icon: 'mdi-bullseye-arrow', duration: 120, active:false}
+            ],
+
+
+            ability_parameters_db: [],
+            ability_parameters: [],
+            // ability_parameters: [
+            //     { name: 'Lifecycle Cost', value: 0.25 }
+            // ],
         }
     },
     computed: {
         ...mapState({
+            user_id: state => state.user.user_id,
             username: state => state.user.username,
             email: state => state.user.email,
-            ability_parameters: state => state.user.ability_parameters,
-            test_history: state => state.user.test_history,
-            learning_modules: state => state.user.learning_modules,
-            excel_exercises: state => state.user.excel_exercises
         }),
     },
     methods: {
+        get_progress_color(progress){
+            if(progress === 1){
+                return "success";
+            }
+            return "primary lighten-1";
+        },
         load_test_results(exam){
             if(this.loaded_exam === null){
                 exam.active = true;
@@ -238,7 +247,139 @@ export default {
             return result
         }
     },
+    apollo: {
+        $subscribe: {
+            excel_exercises_db: {
+                deep: true,
+                query: ExcelMasterySub,
+                variables() {
+                    return {
+                        user_id: this.user_id
+                    }
+                },
+                skip() {
+                    return (this.user_id === null);
+                },
+                result(result) {
+                    let excel_exercises = result.data.excel_exercises_db;
+                    let exercise_list = []
+                    for(let x = 0; x < excel_exercises.length; x++){
+                        let exercise = excel_exercises[x];
+                        exercise_list.push({
+                            id: exercise.id,
+                            is_completed: exercise.is_completed,
+                            reason: exercise.reason,
+                            name: exercise.exercise.name
+                        });
+                    }
+                    this.excel_exercises = exercise_list;
+                },
+            },
+            learning_modules_db: {
+                deep: true,
+                query: ModuleLinkSubscription,
+                variables() {
+                    return {
+                        user_id: this.user_id
+                    }
+                },
+                skip() {
+                    return (this.user_id === null);
+                },
+                result(result) {
+                    console.log(result);
+                    let modules = result.data.modules_db;
+                    let module_links = [];
+                    for(let x = 0; x < modules.length; x++){
+                        let module = modules[x];
 
+                        // --> Find module progress
+                        let progress = 0;
+                        let slide_questions = 0;
+                        let slide_questions_completed = 0;
+                        for(let y = 0; y < module.slides.length; y++){
+                            let slide = module.slides[y];
+                            if(slide.type === 'question'){
+                                slide_questions++;
+                                if(slide.answered === true){
+                                    slide_questions_completed++;
+                                }
+                            }
+                        }
+                        if(slide_questions !== 0){
+                            progress = (slide_questions_completed / slide_questions);
+                        }
+
+                        module_links.push({
+                            name: module.name,
+                            icon: module.icon,
+                            link: ('/LearningModule/' + module.name + '/' + module.id),
+                            progress: progress
+                        });
+                    }
+                    this.learning_modules = module_links;
+                },
+            },
+            test_history_db: {
+                deep: true,
+                query: TestHistoryMasterySub,
+                variables() {
+                    return {
+                        user_id: this.user_id
+                    }
+                },
+                skip() {
+                    return (this.user_id === null || this.test_history !== []);
+                },
+                result(result) {
+                    let tests = result.data.tests;
+                    let test_list = [];
+                    for(let x = 0; x < tests.length; x++){
+                        let test = tests[x];
+                        let icon = 'mdi-brain';
+                        if(test.type === 'Targeted'){
+                            icon = 'mdi-bullseye-arrow'
+                        }
+                        test_list.push({
+                            type: test.type,
+                            date: test.date,
+                            score: test.score,
+                            icon: icon,
+                            duration: test.duration,
+                            in_progress: test.in_progress,
+                            num_questions: test.questions.aggregate.count,
+                            active: false
+                        });
+                    }
+                    this.test_history = test_list;
+                },
+            },
+            ability_parameters_db: {
+                deep: true,
+                query: AbilityParameterMasterySub,
+                variables() {
+                    return {
+                        user_id: this.user_id
+                    }
+                },
+                skip() {
+                    return (this.user_id === null);
+                },
+                result(result) {
+                    let parameters = result.data.parameters;
+                    let ability_list = [];
+                    for(let x = 0; x < parameters.length; x++){
+                        let parameter = parameters[x];
+                        ability_list.push({
+                            name: parameter.topic.name,
+                            value: parameter.value,
+                        });
+                    }
+                    this.ability_parameters = ability_list;
+                },
+            },
+        },
+    },
     watch: {
 
     },
