@@ -120,7 +120,6 @@
         },
         data: function () {
             return {
-                drawer: null,
                 modules_db: null,
 
                 // --> Main links <--
@@ -144,6 +143,14 @@
                 username: state => state.user.username,
                 email: state => state.user.email,
             }),
+            drawer: {
+                get() {
+                    return this.$store.state.user.drawer;
+                },
+                set(value) {
+                    this.$store.commit('set_drawer_value', value);
+                }
+            }
         },
         methods: {
             get_progress_color(progress){

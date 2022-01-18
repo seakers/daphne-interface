@@ -35,6 +35,7 @@
 
                         <v-carousel v-model="slide_idx"
                                     hide-delimiter-background
+                                    hide-delimiters
                         >
 
 <!--                        PREV / NEXT SLIDE-->
@@ -225,6 +226,9 @@ export default {
             return get_slide_src(src);
         },
         toggle_overlay(val){
+            if(val === true){
+                this.$store.commit('set_drawer_value', false);
+            }
             this.show_overlay = val;
         },
         choice_color(value){

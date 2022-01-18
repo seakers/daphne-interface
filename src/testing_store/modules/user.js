@@ -12,6 +12,8 @@ const state = {
     user_id: null,
     username: 'Gabe Apaza',
     email: 'gapaza@tamu.edu',
+
+    drawer: null,
 };
 
 const getters = {
@@ -44,6 +46,9 @@ const mutations = {
     async set_user_email(state, email){
         state.email = email
     },
+    set_drawer_value(state, drawer){
+        state.drawer = drawer;
+    }
 };
 
 export default {
