@@ -119,9 +119,9 @@
         <ul>
             <li>{{ parseFloat(precision*100).toFixed(2) }}% of architectures close to the Pareto front have the tested feature.</li>
             <li>{{ parseFloat(recall*100).toFixed(2) }}% of architectures with the tested feature are close to the Pareto front.</li>
-            <li>Test score for better cost in architectures with the tested feature (a smaller value is better): {{parseFloat(costHypothesis).toFixed(4)}}/1 </li>
-            <li>Test score for better science in architectures with the tested feature (a smaller value is better): {{parseFloat(scienceHypothesis).toFixed(4)}}/1 </li>
-            <li>Test score for architectures with the tested feature being closer to Pareto front (a smaller value is better): {{parseFloat(paretoHypothesis).toFixed(4)}}/1 </li>
+            <li>Architectures with the tested feature have <span style="font-weight: bold;">better cost</span>: Data <span style="font-weight: bold;">{{ supportText(costHypothesis) }}</span> the hypothesis</li>
+            <li>Architectures with the tested feature have <span style="font-weight: bold;">better science</span>: Data <span style="font-weight: bold;">{{ supportText(scienceHypothesis) }}</span> the hypothesis</li>
+            <li>Architectures with the tested feature are <span style="font-weight: bold;">closer to Pareto front</span>: Data <span style="font-weight: bold;">{{ supportText(paretoHypothesis) }}</span> the hypothesis</li>
         </ul>
     </div>
 </div>
@@ -259,6 +259,17 @@
             },
         },
         methods: {
+            supportText(pValue) {
+                if (pValue > 0.05) {
+                    return "does NOT support"
+                }
+                else if (pValue < 0.005) {
+                    return "does STRONGLY SUPPORT"
+                }
+                else {
+                    return "SUPPORTS"
+                }
+            },
             addInstrument() {
                 this.selectedInstruments.push(0);
 
