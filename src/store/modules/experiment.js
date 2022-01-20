@@ -97,7 +97,7 @@ constellation design that works well for one of the two problems might not work 
                 },
                 {
                     text: `<p>To help you with the task, Daphne comes with a set of features and skills to help you create 
-new designs and test hypotheses. You might be presented with one of three <b>(or two, depends on how Pilot goes)</b> Daphne 
+new designs and test hypotheses. You might be presented with one of three Daphne 
 versions during the experiment. The first of Daphne's versions only includes design capabilities. The second version includes
 a full suite of Data Mining modules, which you as the designer can use. Finally, the last version includes a module that helps
 with Hypothesis Testing, as well as Daphne giving out features that might be interesting to look at. Which version you get for
@@ -168,7 +168,7 @@ selected that constellation design. <b>Try selecting a design which has the high
                         on: 'right'
                     },
                     text: `You can move the instruments from one orbit to another, add new instruments, or remove them 
-using drag-and-drop. To remove instruments from all orbits, drop them on the list of available instruments.
+using drag-and-drop. To remove an instrument from an orbit, drag it on the list of available instruments.
 After modifying the constellation design, you can evaluate it using the <b>"Evaluate Architecture"</b> button on the 
 top-right side. After the evaluation is finished, a new red cross will appear on the scatter plot with its location 
 determined by the new science score and cost of your constellation design. It is very important to evaluate the new 
