@@ -25,7 +25,7 @@
                 </div>
             </div>
         </form>
-        <p>If you do not have a username, you can either register by clicking <a v-on:click.prevent="openRegisterForm">here</a> or <a v-on:click.prevent="$emit('close-modal')">continue as a guest</a>.</p>
+        <p>If you do not have a username, you can either register by clicking <a v-on:click.prevent="openRegisterForm">here</a> or <a v-on:click.prevent="guestLogin">continue as a guest</a>.</p>
         <p>In case you have forgotten your password, click <a v-on:click.prevent="openResetPasswordForm">here</a> to recover it.</p>
     </div>
 </template>
@@ -33,6 +33,7 @@
 <script>
     import { mapState } from 'vuex';
     import {wsTools} from "../scripts/websocket-tools";
+    import {fetchPost} from '../scripts/fetch-helpers';
 
     export default {
         name: 'login-modal',
@@ -60,7 +61,11 @@
             },
             openResetPasswordForm() {
                 this.$store.commit('activateModal', 'ResetPasswordModal');
-            }
+            },
+            guestLogin() {
+                fetchPost(API_URL + 'auth/confirm-guest', new FormData());
+                this.$emit('close-modal');
+            },
         },
         watch: {
             isLoggedIn: function (val, oldVal) {

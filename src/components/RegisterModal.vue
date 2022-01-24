@@ -38,6 +38,7 @@
             <div class="field">
                 <div class="control">
                     <button class="button is-link" v-on:click.prevent="register">Register</button>
+                    <button class="button is-link" v-on:click.prevent="openLoginForm">Back</button>
                 </div>
             </div>
         </form>
@@ -60,6 +61,9 @@
             register() {
                 let form = document.getElementById('register-form');
                 this.$store.dispatch('registerUser', form);
+            },
+            openLoginForm() {
+                this.$store.commit('activateModal', 'LoginModal');
             }
         },
         watch: {

@@ -532,7 +532,12 @@
                             }
                         }
                         else {
-                            this.$store.commit('activateModal', 'LoginModal');
+                            if (data['is_guest'] === true) {
+                                this.init(data);
+                            }
+                            else {
+                                this.$store.commit('activateModal', 'LoginModal');
+                            }
                         }
                     }
                 });
