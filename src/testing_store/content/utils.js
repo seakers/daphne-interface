@@ -44,6 +44,22 @@ import AERO401Slide37 from './AERO401/Slide37.png'
 
 
 
+
+import COSTD_1 from './CostDrivers/Slide1CA.png'
+import COSTD_2 from './CostDrivers/Slide2CA.png'
+import COSTD_3 from './CostDrivers/Slide3CA.png'
+import COSTD_4 from './CostDrivers/Slide4CA.png'
+import COSTD_5 from './CostDrivers/Slide5CA.png'
+import COSTD_6 from './CostDrivers/Slide6CA.png'
+import COSTD_7 from './CostDrivers/Slide7CA.png'
+import COSTD_8 from './CostDrivers/Slide8CA.png'
+import COSTD_9 from './CostDrivers/Slide9CA.png'
+import COSTD_10 from './CostDrivers/Slide10CA.png'
+
+
+
+
+
 export function get_slide_src(src){
     if(src === 'LifecycleCost'){
         return LifecycleCost;
@@ -165,5 +181,37 @@ export function get_slide_src(src){
     else if(src === 'AERO401Slide37'){
         return AERO401Slide37;
     }
+
+    else if(src === 'COSTD_1'){
+        return COSTD_1;
+    }
+    else if(src === 'COSTD_2'){
+        return COSTD_2;
+    }
+    else if(src === 'COSTD_3'){
+        return COSTD_3;
+    }
+    else if(src === 'COSTD_4'){
+        return COSTD_4;
+    }
+    else if(src === 'COSTD_5'){
+        return COSTD_5;
+    }
+    else if(src === 'COSTD_6'){
+        return COSTD_6;
+    }
+    else if(src === 'COSTD_7'){
+        return COSTD_7;
+    }
+    else if(src === 'COSTD_8'){
+        return COSTD_8;
+    }
+    else if(src === 'COSTD_9'){
+        return COSTD_9;
+    }
+    else if(src === 'COSTD_10'){
+        return COSTD_10;
+    }
+
 
 }
