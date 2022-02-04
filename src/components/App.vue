@@ -109,8 +109,10 @@
                 console.log('Countdown ended!');
                 // First stop the current stage
                 this.$store.dispatch('finishStage').then(() => {
+                    // Stop GA
+                    this.$store.dispatch('stopBackgroundSearch');
                     // Activate the modal with end of stage information
-                    this.$store.commit('activateModal', this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum]);
+                    this.$store.commit('activateModal', this.$store.state.experiment.modalContent[this.$store.state.experiment.experimentCondition][this.$store.state.experiment.currentStageNum]);
                 });
             },
             onCloseModal() {

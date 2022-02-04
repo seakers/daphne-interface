@@ -3,8 +3,6 @@ import * as _ from "lodash-es";
 import {fetchGet} from "../../scripts/fetch-helpers";
 import EOSS_assignment from "../../scripts/eoss_assignment";
 import EOSSFilter from "../../scripts/eoss-filter";
-import Decadal2017Aerosols from "../../scripts/decadal";
-import DecadalFilter from "../../scripts/decadal-filter";
 import {wsTools} from "../../scripts/websocket-tools";
 
 const state = {
@@ -12,14 +10,19 @@ const state = {
     isRecovering: false,
     isRecoveringAsync: false,
     experimentStage: '',
+    experimentCondition: '',
     currentStageNum: -1,
-    modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
+    modalContent: {
+        "reflection": ['', 'ReflectionModal', 'Stage2Modal'],
+        "incubation": ['', 'IncubationModal', 'Stage2Modal'],
+        "control": ['', 'Stage2Modal'],
+    },
     datasetInformations: [
         { name: 'experiment_tutorial' },
         { name: 'experiment' },
         { name: 'experiment' }
     ],
-    problems: ["SMAP", "SMAP_W", "SMAP_C"],
+    problems: ["SMAP", "SMAP", "SMAP"],
     stageProblemName: "",
     stageDatasetName: "",
     stageInformation: {
@@ -434,152 +437,7 @@ start the experiment!`
             startTime: 0,
             stageDuration: 60*20
         },
-        daphne_assistant: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'CommandsInformation',
-                'Details',
-                'BackgroundSearch'
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'CommandsInformation',
-            ],
-            restrictedQuestions: {
-                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
-                analyst: [],
-                explorer: [],
-                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
-                critic: [],
-            },
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*15
-        },
-        daphne_peer: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions'
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-            ],
-            restrictedQuestions: {
-                engineer: [],
-                analyst: [],
-                explorer: [],
-                historian: [],
-                critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
-            },
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*15
-        },
-        daphne_classic: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'Details',
-                'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions',
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-            ],
-            restrictedQuestions: {
-                engineer: [],
-                analyst: [],
-                explorer: [],
-                historian: [],
-                critic: [3000, 3005],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
-            },
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*15
-        },
-        daphne_dm: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'Details',
-                'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions',
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-            ],
-            restrictedQuestions: {
-                engineer: [],
-                analyst: [],
-                explorer: [],
-                historian: [],
-                critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
-            },
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*15
-        },
-        daphne_hypothesis: {
+        daphne_control: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
@@ -590,9 +448,6 @@ start the experiment!`
                 'FeatureApplication',
                 'Details',
                 'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions',
-                'HypothesisTester',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
@@ -622,7 +477,49 @@ start the experiment!`
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*15
+            stageDuration: 60*20
+        },
+        daphne_refinc: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+                'DataMining',
+                'EOSSFilter',
+                'FeatureApplication',
+                'Details',
+                'BackgroundSearch',
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'HypothesisTester',
+                'DataMining',
+                'EOSSFilter',
+                'FeatureApplication',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+            ],
+            restrictedQuestions: {
+                engineer: [],
+                analyst: [],
+                explorer: [],
+                historian: [],
+                critic: ['3000', '3005'],
+                engineer_instruments: [],
+                engineer_instrument_parameters: [],
+                engineer_measurements: [],
+                engineer_stakeholders: [],
+                engineer_objectives: [],
+                engineer_subobjectives: [],
+                historian_technologies: [],
+                historian_measurements: [],
+                historian_missions: [],
+                historian_space_agencies: []
+            },
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 60*10
         }
     }
 };
@@ -638,11 +535,12 @@ const actions = {
         try {
             let response = await fetchGet(API_URL + 'experiment/start-experiment');
             if (response.ok) {
-                let experimentStages = await response.json();
+                let experimentInformation = await response.json();
+                commit('setExperimentCondition', experimentInformation["condition"]);
                 // Start the experiment: set the order of the conditions after the tutorial
-                commit('setNextStage', { experimentStage: 'tutorial', nextStage: experimentStages[0] });
-                for (let i = 0; i < experimentStages.length - 1; ++i) {
-                    commit('setNextStage', { experimentStage: experimentStages[i], nextStage: experimentStages[i+1] });
+                commit('setNextStage', { experimentStage: 'tutorial', nextStage: experimentInformation["stages"][0] });
+                for (let i = 0; i < experimentInformation["stages"].length - 1; ++i) {
+                    commit('setNextStage', { experimentStage: experimentInformation["stages"][i], nextStage: experimentInformation["stages"][i+1] });
                 }
             }
             else {
@@ -771,6 +669,9 @@ const actions = {
 const mutations = {
     setInExperiment(state, inExperiment) {
         state.inExperiment = inExperiment;
+    },
+    setExperimentCondition(state, experimentCondition) {
+        state.experimentCondition = experimentCondition;
     },
     setExperimentStage(state, experimentStage) {
         state.experimentStage = experimentStage;
