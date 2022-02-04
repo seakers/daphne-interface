@@ -1,8 +1,15 @@
 <template>
     <v-app dark>
 
+<!--    LOGIN OVERLAY-->
+        <v-overlay v-model="login_overlay" opacity="0.8" z-index="1000">
+            <login-modal></login-modal>
+        </v-overlay>
 
 
+
+
+<!--    MAIN DRAWER-->
         <v-navigation-drawer v-model="drawer" app color="primary lighten-1">
 
 <!--        MENU HEADER-->
@@ -21,7 +28,6 @@
 <!--        MENU ITEMS-->
             <v-list dense nav>
 
-
 <!--            MASTERY-->
                 <v-list-item v-for="item in main_links" :key="item.name" :to="item.link" link active-class="bg-active">
                     <v-list-item-icon>
@@ -32,7 +38,6 @@
                         <v-list-item-title>{{ item.name }}</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-
 
 <!--            LEARNING MODULE LIST-->
                 <v-list-group :value="false">
@@ -59,8 +64,6 @@
                     </v-list-item>
                 </v-list-group>
 
-
-
 <!--            TESTING ITEM LIST-->
                 <v-list-group :value="false">
                     <v-icon slot="prependIcon" color="white">mdi-lead-pencil</v-icon>
@@ -78,27 +81,85 @@
                         </v-list-item-icon>
                     </v-list-item>
                 </v-list-group>
-
-
-
-
-
-
-
-
-
-
             </v-list>
-
-
-
         </v-navigation-drawer>
+
+
+
+<!--    CHAT-BOX DRAWER-->
+        <v-navigation-drawer v-model="chatbox"
+                             app
+                             absolute
+                             right
+                             color="analogous2"
+                             width="400"
+        >
+
+<!--        HEADER-->
+            <v-list-item class="white--text">
+                <v-list-item-content>
+                    <v-list-item-title class="text-h6">
+                        Virtual Assistant
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="white--text">
+                        Dialogue History
+                    </v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+
+            <v-divider class="white" style="margin-top: 5px;"></v-divider>
+
+<!--        MESSAGES-->
+            <v-container fluid style="padding-bottom: 75px;">
+                <v-row dense>
+                    <v-col v-for="(item, idx) in dialogue" :key="idx" cols="12">
+                        <v-card :style="get_message_style(item.from)">
+                            <v-card-title style="padding-top: 10px; padding-bottom: 4px;" class="text-subtitle-2">
+                                <div v-if="item.from === 'User'">{{username}}</div>
+                                <div v-if="item.from === 'Daphne'">{{ item.from }}</div>
+                            </v-card-title>
+                            <v-card-text style="padding-bottom: 10px;">
+                                {{ item.message }}
+                            </v-card-text>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
+
+            <v-footer fixed color="analogous2" height="90">
+                <v-container>
+                    <v-row no-gutters>
+                        <v-col class="text-center white--text" cols="12">
+                            <v-text-field
+                                v-model="user_message"
+                                outlined
+                                clearable
+                                append-icon="mdi-send"
+                                background-color="white"
+                                v-on:click:append="send_message()"
+                            ></v-text-field>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-footer>
+        </v-navigation-drawer>
+
+
+
+
+
+
 
 
         <v-app-bar app class="primary white--text">
             <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
-
             <v-toolbar-title>Daphne Academy</v-toolbar-title>
+
+            <v-spacer></v-spacer>
+
+            <v-btn color="primary lighten-1" @click="chatbox = !chatbox" :elevation="get_msg_btn_elevation()">
+                <v-icon color="white">mdi-message</v-icon>
+            </v-btn>
         </v-app-bar>
 
 
@@ -106,17 +167,19 @@
                 <router-view></router-view>
         </v-main>
 
+
     </v-app>
 </template>
 
 <script>
     import {mapState} from "vuex";
     import {ModuleLinkSubscription} from "../../testing_store/queries";
+    import LoginModal from "./LoginModal";
 
     export default {
         name: "adaptive-testing-page",
         components: {
-
+            LoginModal
         },
         data: function () {
             return {
@@ -142,6 +205,7 @@
                 user_id: state => state.user.user_id,
                 username: state => state.user.username,
                 email: state => state.user.email,
+                dialogue: state => state.user.dialogue,
             }),
             drawer: {
                 get() {
@@ -149,6 +213,30 @@
                 },
                 set(value) {
                     this.$store.commit('set_drawer_value', value);
+                }
+            },
+            chatbox: {
+                get() {
+                    return this.$store.state.user.chatbox;
+                },
+                set(value) {
+                    this.$store.commit('set_chatbox_value', value);
+                }
+            },
+            login_overlay: {
+                get() {
+                    return this.$store.state.user.login_overlay;
+                },
+                set(value) {
+                    this.$store.commit('set_login_overlay', value);
+                }
+            },
+            user_message: {
+                get() {
+                    return this.$store.state.user.user_message;
+                },
+                set(value) {
+                    this.$store.commit('set_user_message_value', value);
                 }
             }
         },
@@ -158,6 +246,21 @@
                     return "success";
                 }
                 return "white";
+            },
+            get_message_style(type){
+                if(type === 'User'){
+                    return 'border-radius: 20px 20px 20px 4px; margin-right: 40px;'
+                }
+                return 'border-radius: 20px 20px 4px 20px; margin-left: 40px;'
+            },
+            get_msg_btn_elevation(){
+                if(this.chatbox === true){
+                    return 0;
+                }
+                return 5;
+            },
+            send_message(){
+                console.log('--> SENDING', this.user_message);
             }
         },
         watch: {
@@ -212,8 +315,8 @@
                 },
             },
         },
-        async created() {
-            await this.$store.dispatch('get_user_info');
+        async mounted() {
+            await this.$store.dispatch('initialize');
         }
     }
 </script>

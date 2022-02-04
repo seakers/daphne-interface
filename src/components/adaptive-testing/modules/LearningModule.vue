@@ -227,7 +227,10 @@ export default {
         },
         toggle_overlay(val){
             if(val === true){
-                this.$store.commit('set_drawer_value', false);
+                this.$store.commit('open_slide');
+            }
+            else{
+                this.$store.commit('close_slide');
             }
             this.show_overlay = val;
         },
