@@ -214,7 +214,18 @@ const AbilityParameterMasterySub = gql`
 
 
 
+const MessageSubscription = gql`
 
+    subscription MessageSubscription($user_id: Int!) {
+        messages_db: Message(where: {user_id: {_eq: $user_id}, cleared: {_eq: false}}, order_by: {date: asc}) {
+            id
+            date
+            sender
+            text
+            cleared
+        }
+    }
+`;
 
 
 
@@ -314,6 +325,30 @@ const UpdateSlide = gql`
     }
 `;
 
+
+
+const InsertMessage = gql`
+    mutation InsertMessage($user_id: Int!, $text: String!, $sender: String!) {
+        insert_Message_one(object: {user_id: $user_id, text: $text, sender: $sender, date: "now()", cleared: false}) {
+            id
+        }
+    }
+`;
+
+
+
+const ClearMessage = gql`
+    mutation ClearMessage($message_id: Int!) {
+        update_Message_by_pk(pk_columns: {id: $message_id}, _set: {cleared: true}) {
+            id
+        }
+    }
+`;
+
+
+
+
+
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -347,5 +382,8 @@ export {
     ModuleLinkSubscription,
     ExcelMasterySub,
     TestHistoryMasterySub,
-    AbilityParameterMasterySub
+    AbilityParameterMasterySub,
+    MessageSubscription,
+    InsertMessage,
+    ClearMessage
 }

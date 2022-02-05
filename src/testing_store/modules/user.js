@@ -17,31 +17,15 @@ const state = {
     // --> Navigation Drawer State <--
     drawer: null,
     drawer_store: null,
+
+
+    // --> Chatbox Drawer State <--
     chatbox: null,
     chatbox_store: null,
 
 
     // --> Login Module State <--
     login_overlay: true,
-
-
-    // --> Chatbox State <--
-    user_message: '',
-    dialogue: [
-        {
-            message: 'What do you think of this design?',
-            from: 'User'
-        },
-        {
-            message: 'This design should not contain the instrument VIIRS',
-            from: 'Daphne'
-        },
-        {
-            message: 'Why does this design cost so much?',
-            from: 'User'
-        }
-
-    ]
 };
 
 const getters = {
@@ -88,11 +72,6 @@ const mutations = {
     },
     set_chatbox_value(state, chatbox){
         state.chatbox = chatbox;
-    },
-
-
-    set_user_message_value(state, user_message){
-        state.user_message = user_message;
     },
 
 
