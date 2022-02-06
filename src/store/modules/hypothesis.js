@@ -17,9 +17,9 @@ const getters = {
 // actions
 const actions = {
     async startHypothesisTesting({ state, commit, dispatch }, value) {
-        console.log("Starting the GA!!");
+        console.log("Applying a feature to the GA!!");
         wsTools.websocket.send(JSON.stringify({
-            msg_type: 'start_ga',
+            msg_type: 'apply_feature',
             featureExpression: state.featureExpression
         }));
     },
