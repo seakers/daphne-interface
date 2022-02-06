@@ -84,6 +84,7 @@
                 user_id: state => state.user.user_id,
                 username: state => state.user.username,
                 email: state => state.user.email,
+                chatbox: state => state.user.chatbox,
             }),
             user_message_object() {
                 return {
@@ -156,6 +157,17 @@
                       result(result){
                           console.log('--> MESSAGE:', result);
                           let messages = result.data.messages_db;
+
+                          // --> 1. Calculate number of new messages
+                          if(this.chatbox === false){
+                              let num_new = messages.length - this.messages.length;
+                              this.$store.commit('add_new_messages', num_new);
+                          }
+                          else{
+                              this.$store.commit('set_new_messages', 0);
+                          }
+
+                          // --> 2. Copy over messages
                           for(let x = 0; x < messages.length; x++){
                               messages[x].date = (new Date(Date.parse(messages[x].date))).toLocaleString();
                           }

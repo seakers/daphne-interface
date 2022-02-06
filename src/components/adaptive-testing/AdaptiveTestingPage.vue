@@ -110,8 +110,17 @@
 
             <v-spacer></v-spacer>
 
-            <v-btn color="primary lighten-1" @click="chatbox = !chatbox" :elevation="get_msg_btn_elevation()">
-                <v-icon color="white">mdi-message</v-icon>
+            <v-btn @click="chatbox = !chatbox" icon style="margin-right: 10px;">
+                <v-badge
+                    :content="new_messages"
+                    :value="new_messages"
+                    color="green"
+                    overlap
+                >
+                    <v-icon color="white" v-if="chatbox === false">mdi-chevron-left</v-icon>
+                    <v-icon color="white" v-if="chatbox === true">mdi-chevron-right</v-icon>
+                    <v-icon color="white">mdi-message</v-icon>
+                </v-badge>
             </v-btn>
         </v-app-bar>
 
@@ -160,6 +169,7 @@
                 user_id: state => state.user.user_id,
                 username: state => state.user.username,
                 email: state => state.user.email,
+                new_messages: state => state.user.new_messages,
             }),
             drawer: {
                 get() {
@@ -192,12 +202,6 @@
                     return "success";
                 }
                 return "white";
-            },
-            get_msg_btn_elevation(){
-                if(this.chatbox === true){
-                    return 0;
-                }
-                return 5;
             },
         },
         watch: {

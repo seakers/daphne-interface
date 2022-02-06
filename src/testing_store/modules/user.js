@@ -15,13 +15,14 @@ const state = {
 
 
     // --> Navigation Drawer State <--
-    drawer: null,
+    drawer: true,
     drawer_store: null,
 
 
     // --> Chatbox Drawer State <--
-    chatbox: null,
+    chatbox: false,
     chatbox_store: null,
+    new_messages: 0,
 
 
     // --> Login Module State <--
@@ -67,10 +68,21 @@ const mutations = {
     },
 
 
+    async set_new_messages(state, new_messages){
+        state.new_messages = new_messages;
+    },
+    async add_new_messages(state, new_messages){
+        state.new_messages += new_messages;
+    },
+
+
     set_drawer_value(state, drawer){
         state.drawer = drawer;
     },
     set_chatbox_value(state, chatbox){
+        if(chatbox === true){
+            state.new_messages = 0;
+        }
         state.chatbox = chatbox;
     },
 
