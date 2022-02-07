@@ -3,8 +3,7 @@ import Vuex from 'vuex';
 import {fetchPost} from "../scripts/fetch-helpers";
 
 import graph from './modules/graph';
-import table from './modules/table';
-import vassarPages from './modules/add-pages';
+import user from './modules/user';
 
 Vue.use(Vuex);
 
@@ -20,9 +19,8 @@ export default new Vuex.Store({
     actions: {
     },
     modules: {
+        user,
         graph,
-        table,
-        vassarPages
     },
     strict: debug
 });

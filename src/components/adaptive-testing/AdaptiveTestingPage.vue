@@ -1,18 +1,16 @@
 <template>
     <v-app dark>
 
-<!--    LOGIN OVERLAY-->
+        <!-- LOGIN OVERLAY -->
         <v-overlay v-model="login_overlay" opacity="0.8" z-index="1000">
             <login-modal></login-modal>
         </v-overlay>
 
 
-
-
-<!--    MAIN DRAWER-->
+        <!-- NAVIGATION -->
         <v-navigation-drawer v-model="drawer" app color="primary lighten-1">
 
-<!--        MENU HEADER-->
+            <!-- MENU HEADER -->
             <v-list-item class="white--text">
                 <v-list-item-content>
                     <v-list-item-title class="text-h6">
@@ -72,7 +70,7 @@
                         <v-list-item-title class="white--text">Testing</v-list-item-title>
                     </template>
 
-                    <!--                TESTING ITEMS-->
+                    <!-- ITEMS-->
                     <v-list-item v-for="item in test_links" :key="item.name" :to="item.link" link active-class="bg-active">
                         <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
 
@@ -85,8 +83,7 @@
         </v-navigation-drawer>
 
 
-
-<!--    CHAT-BOX DRAWER-->
+        <!-- CHAT BOX -->
         <v-navigation-drawer v-model="chatbox"
                              app
                              absolute
@@ -98,12 +95,7 @@
         </v-navigation-drawer>
 
 
-
-
-
-
-
-
+        <!-- APP BAR -->
         <v-app-bar app class="primary white--text">
             <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
             <v-toolbar-title>Daphne Academy</v-toolbar-title>
@@ -125,6 +117,7 @@
         </v-app-bar>
 
 
+        <!-- VUE ROUTER CONTENT -->
         <v-main class="secondary lighten-3">
                 <router-view></router-view>
         </v-main>

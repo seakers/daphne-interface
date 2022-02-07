@@ -1,27 +1,39 @@
 'use strict';
 
+
+// --> Vue
 import Vue from 'vue';
-import vuetify from './plugins/vuetify' // path to vuetify export
 import AdaptiveTestingPage from './components/adaptive-testing/AdaptiveTestingPage';
 import store from './testing_store';
 
+
+// --> VueRouter
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
-// Apollo
-import VueApollo from "vue-apollo";
-Vue.use(VueApollo);
 
+// --> Vuetify
+import vuetify from './plugins/vuetify' // path to vuetify export
+
+
+// --> Apollo
+import VueApollo from "vue-apollo";
 import { ApolloClient } from '@apollo/client/core';
 import { HttpLink } from "@apollo/client/core";
 import { InMemoryCache } from "@apollo/client/cache";
+Vue.use(VueApollo);
 
-// Styles
+
+
+
+// --> Styles
 import './styles/app.scss';
 import 'shepherd.js/dist/css/shepherd.css';
+import {WebSocketLink} from "@apollo/client/link/ws";
 
 
-// --- Vue Router ---
+
+// --> 1. Build routes
 import Mastery from './components/adaptive-testing/Mastery'
 // import Basics from './components/adaptive-testing/modules/Basics'
 // import AbstractModule from './components/adaptive-testing/modules/AbstractModule'
@@ -30,8 +42,6 @@ import LearningModule from './components/adaptive-testing/modules/LearningModule
 import AdaptiveTest from './components/adaptive-testing/tests/AdaptiveTest'
 import TargetedTest from './components/adaptive-testing/tests/TargetedTest'
 import Test from './components/adaptive-testing/tests/Test'
-import {WebSocketLink} from "@apollo/client/link/ws";
-
 const routes = [
 
     // Mastery
@@ -51,11 +61,7 @@ const router = new VueRouter({
 
 
 
-
-
-
-
-// APOLLO HEADERS
+// --> 2. Build apollo client
 const getHeaders = () => {
     const headers = {};
     const token = window.localStorage.getItem('apollo-token');
@@ -64,7 +70,6 @@ const getHeaders = () => {
     }
     return headers;
 };
-// HASURA URL
 const link = new WebSocketLink({
     uri: GRAPH_QL_WS_URL,
     options: {
@@ -76,7 +81,6 @@ const link = new WebSocketLink({
         },
     }
 });
-// APOLLO
 export const client = new ApolloClient({
     link: link,
     cache: new InMemoryCache({
@@ -90,9 +94,7 @@ const apolloProvider = new VueApollo({
 
 
 
-
-
-
+// --> 3. Build Vue instance
 let AdaptiveTesting = new Vue({
     el: '#AdaptiveTesting',
     store,

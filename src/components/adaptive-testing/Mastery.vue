@@ -166,227 +166,227 @@
 
 
 <script>
-import { mapState } from 'vuex';
-import {
-    ExcelMasterySub,
-    TestHistoryMasterySub,
-    AbilityParameterMasterySub,
-    ModuleLinkSubscription
-} from "../../testing_store/queries";
+    import { mapState } from 'vuex';
+    import {
+        ExcelMasterySub,
+        TestHistoryMasterySub,
+        AbilityParameterMasterySub,
+        ModuleLinkSubscription
+    } from "../../testing_store/queries";
 
-export default {
-    name: "mastery",
-    components: {
+    export default {
+        name: "mastery",
+        components: {
 
-    },
-    data: function () {
-        return {
-            loaded_exam: null,
-
-
-            excel_exercises_db: [],
-            excel_exercises: [],
-
-
-            learning_modules_db: [],
-            learning_modules: [],
-
-
-            test_history_db: [],
-            // test_history: [],
-            test_history: [
-                { type: 'Adaptive', score: '5/15', date: '1/4/2021', icon: 'mdi-brain', duration: 30, active:false},
-                { type: 'Adaptive', score: '12/20', date: '1/7/2021', icon: 'mdi-brain', duration: 60, active:false},
-                { type: 'Targeted', score: '20/22', date: '1/8/2021', icon: 'mdi-bullseye-arrow', duration: 120, active:false}
-            ],
-
-
-            ability_parameters_db: [],
-            ability_parameters: [],
-            // ability_parameters: [
-            //     { name: 'Lifecycle Cost', value: 0.25 }
-            // ],
-        }
-    },
-    computed: {
-        ...mapState({
-            user_id: state => state.user.user_id,
-            username: state => state.user.username,
-            email: state => state.user.email,
-        }),
-    },
-    methods: {
-        get_progress_color(progress){
-            if(progress === 1){
-                return "success";
-            }
-            return "primary lighten-1";
         },
-        load_test_results(exam){
-            if(this.loaded_exam === null){
-                exam.active = true;
-                this.loaded_exam = exam;
+        data: function () {
+            return {
+                loaded_exam: null,
+
+
+                excel_exercises_db: [],
+                excel_exercises: [],
+
+
+                learning_modules_db: [],
+                learning_modules: [],
+
+
+                test_history_db: [],
+                // test_history: [],
+                test_history: [
+                    { type: 'Adaptive', score: '5/15', date: '1/4/2021', icon: 'mdi-brain', duration: 30, active:false},
+                    { type: 'Adaptive', score: '12/20', date: '1/7/2021', icon: 'mdi-brain', duration: 60, active:false},
+                    { type: 'Targeted', score: '20/22', date: '1/8/2021', icon: 'mdi-bullseye-arrow', duration: 120, active:false}
+                ],
+
+
+                ability_parameters_db: [],
+                ability_parameters: [],
+                // ability_parameters: [
+                //     { name: 'Lifecycle Cost', value: 0.25 }
+                // ],
             }
-            else{
-                if(JSON.stringify(exam) === JSON.stringify(this.loaded_exam)){
-                    exam.active = false;
-                    this.loaded_exam = null;
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user.user_id,
+                username: state => state.user.username,
+                email: state => state.user.email,
+            }),
+        },
+        methods: {
+            get_progress_color(progress){
+                if(progress === 1){
+                    return "success";
+                }
+                return "primary lighten-1";
+            },
+            load_test_results(exam){
+                if(this.loaded_exam === null){
+                    exam.active = true;
+                    this.loaded_exam = exam;
                 }
                 else{
-                    this.loaded_exam.active = false;
-                    this.loaded_exam = exam;
-                    exam.active = true;
+                    if(JSON.stringify(exam) === JSON.stringify(this.loaded_exam)){
+                        exam.active = false;
+                        this.loaded_exam = null;
+                    }
+                    else{
+                        this.loaded_exam.active = false;
+                        this.loaded_exam = exam;
+                        exam.active = true;
+                    }
                 }
+            },
+            calculate_percent(score){
+                let substrings = score.split('/');
+                let result = parseInt(substrings[0]) / parseInt(substrings[1])
+                result = result * 100
+                console.log(result)
+                return result
             }
         },
-        calculate_percent(score){
-            let substrings = score.split('/');
-            let result = parseInt(substrings[0]) / parseInt(substrings[1])
-            result = result * 100
-            console.log(result)
-            return result
-        }
-    },
-    apollo: {
-        $subscribe: {
-            excel_exercises_db: {
-                deep: true,
-                query: ExcelMasterySub,
-                variables() {
-                    return {
-                        user_id: this.user_id
-                    }
+        apollo: {
+            $subscribe: {
+                excel_exercises_db: {
+                    deep: true,
+                    query: ExcelMasterySub,
+                    variables() {
+                        return {
+                            user_id: this.user_id
+                        }
+                    },
+                    skip() {
+                        return (this.user_id === null);
+                    },
+                    result(result) {
+                        let excel_exercises = result.data.excel_exercises_db;
+                        let exercise_list = []
+                        for(let x = 0; x < excel_exercises.length; x++){
+                            let exercise = excel_exercises[x];
+                            exercise_list.push({
+                                id: exercise.id,
+                                is_completed: exercise.is_completed,
+                                reason: exercise.reason,
+                                name: exercise.exercise.name
+                            });
+                        }
+                        this.excel_exercises = exercise_list;
+                    },
                 },
-                skip() {
-                    return (this.user_id === null);
-                },
-                result(result) {
-                    let excel_exercises = result.data.excel_exercises_db;
-                    let exercise_list = []
-                    for(let x = 0; x < excel_exercises.length; x++){
-                        let exercise = excel_exercises[x];
-                        exercise_list.push({
-                            id: exercise.id,
-                            is_completed: exercise.is_completed,
-                            reason: exercise.reason,
-                            name: exercise.exercise.name
-                        });
-                    }
-                    this.excel_exercises = exercise_list;
-                },
-            },
-            learning_modules_db: {
-                deep: true,
-                query: ModuleLinkSubscription,
-                variables() {
-                    return {
-                        user_id: this.user_id
-                    }
-                },
-                skip() {
-                    return (this.user_id === null);
-                },
-                result(result) {
-                    console.log(result);
-                    let modules = result.data.modules_db;
-                    let module_links = [];
-                    for(let x = 0; x < modules.length; x++){
-                        let module = modules[x];
+                learning_modules_db: {
+                    deep: true,
+                    query: ModuleLinkSubscription,
+                    variables() {
+                        return {
+                            user_id: this.user_id
+                        }
+                    },
+                    skip() {
+                        return (this.user_id === null);
+                    },
+                    result(result) {
+                        console.log(result);
+                        let modules = result.data.modules_db;
+                        let module_links = [];
+                        for(let x = 0; x < modules.length; x++){
+                            let module = modules[x];
 
-                        // --> Find module progress
-                        let progress = 0;
-                        let slide_questions = 0;
-                        let slide_questions_completed = 0;
-                        for(let y = 0; y < module.slides.length; y++){
-                            let slide = module.slides[y];
-                            if(slide.type === 'question'){
-                                slide_questions++;
-                                if(slide.answered === true){
-                                    slide_questions_completed++;
+                            // --> Find module progress
+                            let progress = 0;
+                            let slide_questions = 0;
+                            let slide_questions_completed = 0;
+                            for(let y = 0; y < module.slides.length; y++){
+                                let slide = module.slides[y];
+                                if(slide.type === 'question'){
+                                    slide_questions++;
+                                    if(slide.answered === true){
+                                        slide_questions_completed++;
+                                    }
                                 }
                             }
-                        }
-                        if(slide_questions !== 0){
-                            progress = (slide_questions_completed / slide_questions);
-                        }
+                            if(slide_questions !== 0){
+                                progress = (slide_questions_completed / slide_questions);
+                            }
 
-                        module_links.push({
-                            name: module.name,
-                            icon: module.icon,
-                            link: ('/LearningModule/' + module.name + '/' + module.id),
-                            progress: progress
-                        });
-                    }
-                    this.learning_modules = module_links;
-                },
-            },
-            test_history_db: {
-                deep: true,
-                query: TestHistoryMasterySub,
-                variables() {
-                    return {
-                        user_id: this.user_id
-                    }
-                },
-                skip() {
-                    return (this.user_id === null || this.test_history !== []);
-                },
-                result(result) {
-                    let tests = result.data.tests;
-                    let test_list = [];
-                    for(let x = 0; x < tests.length; x++){
-                        let test = tests[x];
-                        let icon = 'mdi-brain';
-                        if(test.type === 'Targeted'){
-                            icon = 'mdi-bullseye-arrow'
+                            module_links.push({
+                                name: module.name,
+                                icon: module.icon,
+                                link: ('/LearningModule/' + module.name + '/' + module.id),
+                                progress: progress
+                            });
                         }
-                        test_list.push({
-                            type: test.type,
-                            date: test.date,
-                            score: test.score,
-                            icon: icon,
-                            duration: test.duration,
-                            in_progress: test.in_progress,
-                            num_questions: test.questions.aggregate.count,
-                            active: false
-                        });
-                    }
-                    this.test_history = test_list;
+                        this.learning_modules = module_links;
+                    },
                 },
-            },
-            ability_parameters_db: {
-                deep: true,
-                query: AbilityParameterMasterySub,
-                variables() {
-                    return {
-                        user_id: this.user_id
-                    }
+                test_history_db: {
+                    deep: true,
+                    query: TestHistoryMasterySub,
+                    variables() {
+                        return {
+                            user_id: this.user_id
+                        }
+                    },
+                    skip() {
+                        return (this.user_id === null || this.test_history !== []);
+                    },
+                    result(result) {
+                        let tests = result.data.tests;
+                        let test_list = [];
+                        for(let x = 0; x < tests.length; x++){
+                            let test = tests[x];
+                            let icon = 'mdi-brain';
+                            if(test.type === 'Targeted'){
+                                icon = 'mdi-bullseye-arrow'
+                            }
+                            test_list.push({
+                                type: test.type,
+                                date: test.date,
+                                score: test.score,
+                                icon: icon,
+                                duration: test.duration,
+                                in_progress: test.in_progress,
+                                num_questions: test.questions.aggregate.count,
+                                active: false
+                            });
+                        }
+                        this.test_history = test_list;
+                    },
                 },
-                skip() {
-                    return (this.user_id === null);
-                },
-                result(result) {
-                    let parameters = result.data.parameters;
-                    let ability_list = [];
-                    for(let x = 0; x < parameters.length; x++){
-                        let parameter = parameters[x];
-                        ability_list.push({
-                            name: parameter.topic.name,
-                            value: parameter.value,
-                        });
-                    }
-                    this.ability_parameters = ability_list;
+                ability_parameters_db: {
+                    deep: true,
+                    query: AbilityParameterMasterySub,
+                    variables() {
+                        return {
+                            user_id: this.user_id
+                        }
+                    },
+                    skip() {
+                        return (this.user_id === null);
+                    },
+                    result(result) {
+                        let parameters = result.data.parameters;
+                        let ability_list = [];
+                        for(let x = 0; x < parameters.length; x++){
+                            let parameter = parameters[x];
+                            ability_list.push({
+                                name: parameter.topic.name,
+                                value: parameter.value,
+                            });
+                        }
+                        this.ability_parameters = ability_list;
+                    },
                 },
             },
         },
-    },
-    watch: {
+        watch: {
 
-    },
-    async mounted(){
+        },
+        async mounted(){
 
+        }
     }
-}
 </script>
 
 <style scoped>

@@ -1,198 +1,159 @@
 <template>
-    <div class="wrapper">
-        <div class="columns" style="max-width: 100vw;">
-
-            <!-- MENU -->
-            <aside class="column is-2 aside hero is-fullheight is-hidden-mobile" style="margin-right: 0px !important;">
-                <div class="aside-container">
-                    <add-menu></add-menu>
-                </div>
-            </aside>
+    <v-app dark>
 
 
-            <div class="column is-10 editor-background hero" v-bind:class="[ light_theme ? 'editor-background-light' : 'editor-background-dark' ]" style="justify-content: center;">
+        <!-- LOGIN OVERLAY-->
+        <v-overlay v-model="login_overlay" opacity="0.8" z-index="1000">
+            <login-modal></login-modal>
+        </v-overlay>
+
+
+        <!-- NAVIGATION -->
+        <v-navigation-drawer v-model="drawer" app color="primary lighten-1">
+
+            <!-- MENU HEADER -->
+            <v-list-item class="white--text">
+                <v-list-item-content>
+                    <v-list-item-title class="text-h6">
+                        {{ username }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle class="white--text">
+                        {{ email }}
+                    </v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+            <v-divider class="primary darken-1"></v-divider>
+
+            <!-- MENU ITEMS -->
+            <v-list dense nav>
+
+                <!-- PROBLEM LINKS -->
+                <v-list-group :value="false">
+                    <v-icon slot="prependIcon" color="white">mdi-folder</v-icon>
+                    <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
+                    <template v-slot:activator>
+                        <v-list-item-title class="white--text">Problems</v-list-item-title>
+                    </template>
+
+                    <!-- ITEMS-->
+                    <v-list-item v-for="item in problem_links" :key="item.name" :to="item.link" link active-class="bg-active">
+                        <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
+                        <v-list-item-icon>
+                            <v-icon v-text="item.icon" color="white"></v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+                </v-list-group>
+
+                <!-- FORMULATION LINKS -->
+                <v-list-group :value="false">
+                    <v-icon slot="prependIcon" color="white">mdi-folder</v-icon>
+                    <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
+                    <template v-slot:activator>
+                        <v-list-item-title class="white--text">Formulations</v-list-item-title>
+                    </template>
+
+                    <!-- ITEMS-->
+                    <v-list-item v-for="item in formulation_links" :key="item.name" :to="item.link" link active-class="bg-active">
+                        <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
+                        <v-list-item-icon>
+                            <v-icon v-text="item.icon" color="white"></v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+                </v-list-group>
+
+            </v-list>
+
+        </v-navigation-drawer>
+
+
+        <!-- APP BAR -->
+        <v-app-bar app class="primary white--text">
+            <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
+            <v-toolbar-title>ADD Builder</v-toolbar-title>
+        </v-app-bar>
+
+
+        <!-- VUE ROUTER CONTENT -->
+        <v-main class="secondary lighten-3">
+            <router-view></router-view>
+        </v-main>
 
 
 
-                <!-- PAGES -->
-                <template v-if="page_selected === 'groups'">
-                    <groups></groups>
-                </template>
-
-                <template v-if="page_selected === 'problems'">
-                    <problems></problems>
-                </template>
-
-                <template v-if="page_selected === 'graph'">
-                    <graph></graph>
-                </template>
-
-<!--                <template v-if="page_selected === 'orbits'">-->
-<!--                    <orbits attribute_header="Orbit Attribute Library"-->
-<!--                            dashboard_name="Orbit Dashboard"-->
-<!--                    ></orbits>-->
-<!--                </template>-->
-
-<!--                <template v-if="page_selected === 'launch vehicles'">-->
-<!--                    <launch-vehicles></launch-vehicles>-->
-<!--                </template>-->
-
-<!--                <template v-if="page_selected === 'measurements'">-->
-<!--                    <measurements></measurements>-->
-<!--                </template>-->
-
-<!--                <template v-if="problems__selected_id !== null">-->
-<!--                    <template v-if="page_selected === 'stakeholders'">-->
-<!--                        <stakeholders></stakeholders>-->
-<!--                    </template>-->
-
-<!--                    <template v-if="page_selected === 'requirements'">-->
-<!--                        <requirements></requirements>-->
-<!--                    </template>-->
-
-<!--                    <template v-if="page_selected === 'mission analysis'">-->
-<!--                        <mission-analysis></mission-analysis>-->
-<!--                    </template>-->
-
-<!--                    <template v-if="page_selected === 'attributes'">-->
-<!--                        <attributes></attributes>-->
-<!--                    </template>-->
-<!--                </template>-->
-
-
-
-
-            </div>
-        </div>
-    </div>
+    </v-app>
 </template>
 
 
 
 <script>
-import { mapState, mapGetters } from 'vuex';
-import { fetchGet, fetchPost} from '../scripts/fetch-helpers';
-
-import AddMenu from './add/AddMenu';
-import Graph  from "./add/Graph";
-
-import Groups  from "./problem_builder/Groups";
-import Problems  from "./problem_builder/Problems";
-import addPages from "../add_store/modules/add-pages";
+    import { mapState } from 'vuex';
+    import Graph  from "./add/Graph";
+    import LoginModal from "./add/LoginModal";
 
 
+    export default {
+        name: 'add-page',
+        components: {
+            Graph,
+            LoginModal
+        },
+        data: function () {
+            return {
+                // --> Main Links <--
+                main_links: [
+                    { name: 'Mastery', icon: 'mdi-school', link: '/mastery'},
+                ],
 
+                // --> Problem Links <--
+                problem_links: [
+                    { name: 'Decadal Survey', icon: 'mdi-pencil-ruler', link: '/problem'},
+                ],
 
+                // --> Formulation Links <--
+                formulation_links: [
+                    { name: 'Temp', icon: 'mdi-graph', link: '/formulation'},
+                ],
+            }
+        },
+        computed: {
+            ...mapState({
+                user_id: state => state.user.user_id,
+                username: state => state.user.username,
+                email: state => state.user.email,
+            }),
+            drawer: {
+                get() {
+                    return this.$store.state.user.drawer;
+                },
+                set(value) {
+                    this.$store.commit('set_drawer_value', value);
+                }
+            },
+            login_overlay: {
+                get() {
+                    return this.$store.state.user.login_overlay;
+                },
+                set(value) {
+                    this.$store.commit('set_login_overlay', value);
+                }
+            }
+        },
+        methods: {
 
-export default {
-    name: 'add-page',
-    data: function () {
-        return {
-        }
-    },
-    computed: {
-        ...mapState({
-            page_selected: state => state.vassarPages.page_selected,
-            light_theme: state => state.vassarPages.light_theme,
+        },
+        watch: {
 
-        }),
-        ...mapGetters({
-            // problems__selected_id: 'problems__problem_selection',
-        }),
-    },
-    methods: {
-        // async hide_notification() {
-        //     this.$store.commit('set_hide_message');
-        // },
+        },
+        apollo: {
 
-
-
-    },
-    components: {
-        // ScoreTree, CostColumn, DetailsTable
-        AddMenu,
-        Groups,
-        Problems,
-        Graph
-    },
-    async mounted() {
-
-        // Set user id
-        await this.$store.dispatch('get_user_id');
-        await this.$store.dispatch('query_groups');
-    },
-    watch: {
-    },
-    apollo: {
-    },
-}
+        },
+        async mounted() {
+            await this.$store.dispatch('initialize', this.$neo4j);
+        },
+    }
 </script>
 
 <style scoped>
-.wrapper {
-    display: grid;
-    grid-template-rows: repeat(2, 1fr);
-    min-height: 100vh;
-    max-width: 100vw;
-    padding: 10px;
-    width: 100vw;
-    height: 100vh;
-}
-</style>
-
-
-
-<style lang="scss">
-.aside-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
-
-.editor-background {
-    display: flex;
-}
-.editor-background-dark {
-    background-color: #28313e;
-    -webkit-box-shadow: inset 0px 0px 3px #14191f;
-    -moz-box-shadow: inset 0px 0px 3px #14191f;
-    box-shadow: inset 0px 0px 14px #14191f;
-
-    transition: background-color ease-out, box-shadow ease-out;
-    -webkit-transition: background-color 700ms linear, box-shadow 700ms linear;
-    -ms-transition: background-color 700ms linear, box-shadow 700ms linear;
-    transition: background-color 700ms linear, box-shadow 700ms linear;
-}
-.editor-background-light {
-    background-color: #f2f2f2;
-
-    transition: background-color ease-out, box-shadow ease-out;
-    -webkit-transition: background-color 700ms linear, box-shadow 700ms linear;
-    -ms-transition: background-color 700ms linear, box-shadow 700ms linear;
-    transition: background-color 700ms linear, box-shadow 700ms linear;
-}
-
-
-
-// Transitions
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

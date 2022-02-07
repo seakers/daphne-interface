@@ -1,26 +1,60 @@
 'use strict';
 
+
+// --> Vue
 import Vue from 'vue';
 import AddPage from './components/AddPage';
 import store from './add_store';
 
-// Apollo
+
+// --> VueRouter
+import VueRouter from 'vue-router'
+Vue.use(VueRouter)
+
+
+// --> Vuetify
+import vuetify from './plugins/vuetify' // path to vuetify export
+
+
+// --> Apollo
 import VueApollo from "vue-apollo";
 import { ApolloClient } from '@apollo/client/core';
 import { HttpLink } from "@apollo/client/core";
 import { InMemoryCache } from "@apollo/client/cache";
-
-// Styles
-import './styles/app.scss';
-import 'shepherd.js/dist/css/shepherd.css';
-import VueNeo4j from 'vue-neo4j'
-
-
-
 Vue.use(VueApollo);
+
+
+// --> Neo4j
+import VueNeo4j from 'vue-neo4j'
 Vue.use(VueNeo4j);
 
-// APOLLO HEADERS
+
+// --> Styles
+import './styles/app.scss';
+import 'shepherd.js/dist/css/shepherd.css';
+import {WebSocketLink} from "@apollo/client/link/ws";
+
+
+
+
+
+// --> 1. Build routes
+import ADDGraph from "./components/add/ADDGraph";
+const routes = [
+
+    // Problems
+    // { path: '/problem', component: Mastery },
+
+    // Formulations
+    { path: '/formulation/:name', component: ADDGraph },
+    // { path: '/LearningModule/:name/:id', component: LearningModule, props:true },
+]
+const router = new VueRouter({
+    routes // short for `routes: routes`
+})
+
+
+// --> 2. Create apolloProvider
 const getHeaders = () => {
     const headers = {};
     const token = window.localStorage.getItem('apollo-token');
@@ -29,15 +63,17 @@ const getHeaders = () => {
     }
     return headers;
 };
-
-// HASURA URL
-const link = new HttpLink({
-    uri: GRAPH_QL_URL,
-    fetch,
-    headers: getHeaders()
+const link = new WebSocketLink({
+    uri: GRAPH_QL_WS_URL,
+    options: {
+        reconnect: true,
+        lazy: true,
+        timeout: 30000,
+        connectionParams: () => {
+            return { headers: getHeaders() };
+        },
+    }
 });
-
-// APOLLO
 export const client = new ApolloClient({
     link: link,
     cache: new InMemoryCache({
@@ -55,6 +91,8 @@ const apolloProvider = new VueApollo({
 let add = new Vue({
     el: '#add',
     store,
+    router,
+    vuetify,
     apolloProvider,
     render: h => h(AddPage)
 });
