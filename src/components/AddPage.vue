@@ -29,7 +29,7 @@
 
                 <!-- PROBLEM LINKS -->
                 <v-list-group :value="false">
-                    <v-icon slot="prependIcon" color="white">mdi-folder</v-icon>
+                    <v-icon slot="prependIcon" color="white">mdi-pencil-ruler</v-icon>
                     <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
                     <template v-slot:activator>
                         <v-list-item-title class="white--text">Problems</v-list-item-title>
@@ -38,15 +38,15 @@
                     <!-- ITEMS-->
                     <v-list-item v-for="item in problem_links" :key="item.name" :to="item.link" link active-class="bg-active">
                         <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
-                        <v-list-item-icon>
-                            <v-icon v-text="item.icon" color="white"></v-icon>
-                        </v-list-item-icon>
+<!--                        <v-list-item-icon>-->
+<!--                            <v-icon v-text="item.icon" color="white"></v-icon>-->
+<!--                        </v-list-item-icon>-->
                     </v-list-item>
                 </v-list-group>
 
                 <!-- FORMULATION LINKS -->
                 <v-list-group :value="false">
-                    <v-icon slot="prependIcon" color="white">mdi-folder</v-icon>
+                    <v-icon slot="prependIcon" color="white">mdi-graph</v-icon>
                     <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
                     <template v-slot:activator>
                         <v-list-item-title class="white--text">Formulations</v-list-item-title>
@@ -55,9 +55,9 @@
                     <!-- ITEMS-->
                     <v-list-item v-for="item in formulation_links" :key="item.name" :to="item.link" link active-class="bg-active">
                         <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
-                        <v-list-item-icon>
-                            <v-icon v-text="item.icon" color="white"></v-icon>
-                        </v-list-item-icon>
+<!--                        <v-list-item-icon>-->
+<!--                            <v-icon v-text="item.icon" color="white"></v-icon>-->
+<!--                        </v-list-item-icon>-->
                     </v-list-item>
                 </v-list-group>
 
@@ -111,7 +111,7 @@
 
                 // --> Formulation Links <--
                 formulation_links: [
-                    { name: 'Temp', icon: 'mdi-graph', link: '/formulation'},
+                    { name: 'EOSS', icon: 'mdi-graph', link: '/formulation/EOSS'},
                 ],
             }
         },
@@ -146,6 +146,10 @@
         },
         apollo: {
 
+        },
+        beforeMount(){
+            this.$store.commit('set_neo', this.$neo4j);
+            this.$store.dispatch('connect_graph');
         },
         async mounted() {
             await this.$store.dispatch('initialize', this.$neo4j);

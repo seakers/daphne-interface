@@ -1,34 +1,20 @@
 import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
-import {get_node_color} from "../utils";
+import {parse_root_node, parse_design_node, parse_child_nodes, parse_decision_nodes} from "../utils";
 import Vue from 'vue';
-import {parse_root_node, parse_decision_nodes, parse_design_node, parse_child_nodes } from "../../scripts/graph-helpers";
 import D3Network from 'vue-d3-network';
 import * as _ from "lodash-es";
 
 const state = {
 
 
-    // --> OLD STUFF
-    user_id: null,
-    problem: 'ClimateCentric',
-
-    selected_node: null,
-    selected_edge: null,
-
-    nodes: null,
-
-    selected_design_id: 0,
 
 
 
+    formulation_name: '',
 
+    // --> NEO4J Client (experimental)
+    neo: null,
 
-
-
-    // -----------------------------------------------------------
-
-    formulation_name: 'Decadal',
-    problem_name: 'Decadal',
 
     // --> NEO4J Connection
     protocol: 'bolt',
@@ -38,10 +24,17 @@ const state = {
     password: 'test',
 
 
-    // --> NODES
+    // --> Query Nodes
     root_node: null,
     decision_nodes: null,
     design_node: null,
+
+    // --> Graph nodes / edges
+    nodes: [],
+    edges: [],
+
+    selected_node: null,
+    selected_edge: null,
 
 
 
@@ -59,71 +52,68 @@ const getters = {
 
 const actions = {
 
-    async connect({ state, commit }, neo4j){
-        console.log('--> CONNECTING NEO4J');
-        neo4j.connect(state.protocol, state.host, state.port, state.username, state.password).then(driver => {
-            // Update Context
+    connect_graph({ state, commit }){
+        state.neo.connect(state.protocol, state.host, state.port, state.username, state.password).then(driver => {
+            console.log('--> CONNECTING NEO4J');
         })
     },
 
 
-    async build_graph({ state, commit, dispatch }, neo4j){
+    // --> NEO4J QUERIES
+    async query_formulation({ state, commit, dispatch }, formulation_name){
 
+        await dispatch('query_root', formulation_name);
+        await dispatch('query_decisions', formulation_name);
+        await dispatch('query_design', formulation_name);
 
-        // --> 1. Query root node
-        await dispatch('query_root', neo4j);
-
-        // --> 2. Query decision nodes
-        await dispatch('query_decisions', neo4j);
-
-        // --> 3. Query final node
-        await dispatch('query_design', neo4j);
 
 
     },
 
-
-    async query_root({ state, commit }, neo4j){
-        let query = `MATCH (n:${state.formulation_name}:Root) RETURN n.name, n.type, n.initial_params`;
-        await neo4j.run(query, {})
+    async query_root({ state, commit, dispatch }, formulation_name){
+        let query = `MATCH (n:${formulation_name}:Root) RETURN n.name, n.type, n.initial_params`;
+        await state.neo.run(query, {})
             .then(res => {
-                let record = res.records[0];
-                let root = {
-                    id: 1,
-                    _color: 'green',
-                    name: record._fields[0],
-                    type: record._fields[1],
-                    initial_params: JSON.parse(record._fields[2])
+                console.log('--> ROOT QUERY:', res);
+                let result = null;
+                if(res.records.length > 0){
+                    result = _.cloneDeep(parse_root_node(res))
                 }
-                await commit('set_root_node', _.cloneDeep(root));
+
+                commit('set_root_node', result);
             }
         );
     },
 
-    async query_decisions({ state, commit }, neo4j){
-        let query = `MATCH (n:${state.formulation_name}:Decision) RETURN n.name, n.type, n.decisions, n.dependencies`;
-        await neo4j.run(query, {})
+    async query_decisions({ state, commit, dispatch }, formulation_name){
+        let query = `MATCH (n:${formulation_name}:Decision) RETURN n.name, n.type, n.decisions, n.dependencies`;
+        await state.neo.run(query, {})
             .then(res => {
-                let decisions = [];
-                let records = res.records;
-                for(let x=0;x<records.length;x++){
-                    let record = records[x];
-                    decisions.push({
-                        id: x + 2,
-                        _color: get_node_color(record._fields[1]),
-                        name: record._fields[0],
-                        type: record._fields[1],
-                        decisions: JSON.parse(record._fields[2]),
-                    });
+                console.log('--> DECISION QUERY:', res);
+                let result = null;
+                if(res.records.length > 0){
+                    result = _.cloneDeep(parse_decision_nodes(res))
                 }
-                await commit('set_decision_nodes', _.cloneDeep(decisions));
+
+                commit('set_decision_nodes', result);
+            }
+        );
+    },
+
+    async query_design({ state, commit, dispatch }, formulation_name){
+        let query = `MATCH (n:${formulation_name}:Design) RETURN n.name, n.type, n.designs`;
+        await state.neo.run(query, {})
+            .then(res => {
+                console.log('--> DESIGN QUERY:', res);
+                let result = null;
+                if(res.records.length > 0){
+                    result = _.cloneDeep(parse_design_node(res))
+                }
+
+                commit('set_design_node', result);
             });
     },
 
-    async query_design({ state, commit }, neo4j){
-        let query = `MATCH (n:${state.formulation_name}:Design) RETURN n.name, n.type, n.designs`;
-
-    },
 
 
 
@@ -132,61 +122,113 @@ const actions = {
 
 
 
+    async build_graph({ state, commit, dispatch }, neo4j){
 
-
-
-
-    async get_user_id({commit}){
-
-        let dataResponse = await fetchGet(API_URL + 'auth/check-status');
-        let auth_information = await dataResponse.json();
-        console.log("Login Status:", auth_information.is_logged_in);
-
-        // Get the user's private key
-        if(auth_information.is_logged_in){
-            dataResponse         = await fetchPost(API_URL + 'auth/get-user-pk');
-            let user_information = await dataResponse.json();
-            commit('set_user_id', user_information['user_id']);
-            commit('user__set_id', user_information['user_id']);
+        // --> 1. Check if graph can be built
+        if(state.root_node === null || state.decision_nodes === null || state.design_node === null){
+            console.log('--> COULD NOT BUILD GRAPH');
+            return 0;
         }
 
+        // --> 2. Build nodes
+        await dispatch('build_nodes', neo4j);
+
+        // --> 3. Build edges
+        await dispatch('build_edges', neo4j);
     },
+
+    async build_nodes({state, commit}, neo4j){
+        let nodes = []
+        nodes.push(state.root_node);
+        for(let x=0;x<state.decision_nodes.length;x++){
+            nodes.push(state.decision_nodes[x]);
+        }
+        commit('set_design_node_id', nodes.length + 1);
+        nodes.push(state.design_node);
+        await commit('set_nodes', nodes);
+    },
+
+    async build_edges({state, commit}, neo4j){
+        let edges = [];
+
+        // 1. Iterate over nodes
+        for(let x=0;x<state.nodes.length;x++){
+            let node = state.nodes[x];
+
+            // This should set this.child_data
+            let child_data = null;
+            await neo4j.run(`
+                    MATCH (m:${state.formulation_name}:${node.type})-->(dec)
+                    WHERE m.name = "${node.name}"
+                    RETURN dec.name, dec.type`,
+                {}
+            ).then(res => {
+                child_data = parse_child_nodes(res);
+            });
+
+            for(let y=0;y<child_data.length;y++){
+                let child = child_data[y];
+                let link = {
+                    sid: node.id,
+                    tid: this.nodes.find(item => item.name === child.name && item.type === child.type).id,
+                    _color: 'gray'
+                }
+                edges.push(link);
+            }
+        }
+
+        await commit('set_edges', edges);
+    },
+
+
 };
 
 const mutations = {
+    set_neo(state, neo){
+        state.neo = neo;
+    },
 
 
-    async set_root_node(state, root_node){
+
+    // --> Queries from Graph vue component
+    set_root_node(state, root_node){
         state.root_node = root_node;
         console.log("--> ROOT NODE", state.root_node);
     },
-    async set_decision_nodes(state, decision_nodes){
+    set_decision_nodes(state, decision_nodes){
         state.decision_nodes = decision_nodes;
         console.log("--> DECISION NODES", state.decision_nodes);
     },
-    async set_design_node(state, design_node){
+    set_design_node(state, design_node){
         state.design_node = design_node;
         console.log("--> DESIGN NODE", state.design_node);
     },
-
-
-
-
-    set_selected_node(state, selected_node){
-        state.selected_node = selected_node;
-    },
-    set_selected_edge(state, selected_edge){
-        state.selected_edge = selected_edge;
+    set_design_node_id(state, id){
+        state.design_node.id = id;
     },
 
-    set_nodes(state, nodes){
+
+
+    // --> Build graph
+    async set_nodes(state, nodes){
         state.nodes = nodes;
     },
-
-    set_selected_design_id(state, selected_desing_id){
-        state.selected_design_id = selected_desing_id;
+    async set_edges(state, edges){
+        state.edges = edges;
     },
 
+
+
+
+
+
+
+    async set_selected_node(state, selected_node){
+        state.selected_node = selected_node;
+    },
+    async set_selected_edge(state, selected_edge){
+        state.selected_edge = selected_edge;
+    },
 };
 
 export default {

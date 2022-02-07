@@ -74,7 +74,7 @@
                         await this.$store.commit('set_user_username', data['username']);
                         await this.$store.commit('set_user_email', data['email']);
                         await this.$store.commit('set_login_overlay', false);
-                        await this.$store.dispatch('connect', this.$neo4j);
+                        await this.$store.dispatch('connect_graph');
                     }
                     else {
                         this.error_noti = true;

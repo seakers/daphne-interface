@@ -1,36 +1,11 @@
 
 
-export function get_node_color(node_type){
-    let color = 'blue';
-    switch (node_type){
-        case 'DownSelecting':
-            color = '#21CCCC';
-            break;
-        case 'Assigning':
-            color = '#FFE330';
-            break;
-        case 'Connecting':
-            color = '#FF7D7B';
-            break;
-        case 'Partitioning':
-            color = '#C5FF2D';
-            break;
-        case 'Permuting':
-            color = '#5D94FF';
-            break;
-        case 'StandardForm':
-            color = '#FF9DEE';
-            break;
-    }
-    return color;
-}
-
 
 
 
 
 export function parse_root_node(query) {
-    // There should only be one root node
+
     let record = query.records[0];
     let root = {
         id: 1,
@@ -45,11 +20,9 @@ export function parse_root_node(query) {
 
 
 export function parse_decision_nodes(query) {
-    let decisions = [];
 
-    // There should only be one root node
     let records = query.records;
-
+    let decisions = [];
 
     for(let x=0;x<records.length;x++){
         let record = records[x];
@@ -94,7 +67,7 @@ export function parse_decision_nodes(query) {
 
 
 export function parse_design_node(query) {
-    // There should only be one root node
+
     let record = query.records[0];
     let design = {
         _color: 'red',

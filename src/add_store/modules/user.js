@@ -40,7 +40,6 @@ const actions = {
             await commit('set_user_username', auth_information.username);
             await commit('set_user_email', auth_information.email);
             await commit('set_login_overlay', false);
-            await dispatch('connect', neo4j);
         }
         else{
             // --> 3. If not logged in, open login overlay
