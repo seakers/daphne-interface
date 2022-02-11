@@ -111,7 +111,7 @@
 
                 // --> Formulation Links <--
                 formulation_links: [
-                    { name: 'EOSS', icon: 'mdi-graph', link: '/formulation/EOSS'},
+                    { name: 'Climate Centric', icon: 'mdi-graph', link: '/formulation/ClimateCentric'},
                 ],
             }
         },

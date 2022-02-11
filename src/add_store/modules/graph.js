@@ -8,18 +8,16 @@ const state = {
 
 
 
-
-
-    formulation_name: '',
-
     // --> NEO4J Client (experimental)
     neo: null,
+    nodes: [],
+    edges: [],
 
 
     // --> NEO4J Connection
     protocol: 'bolt',
     host: 'localhost',
-    port: 7688,
+    port: 7687,
     username: 'neo4j',
     password: 'test',
 
@@ -28,13 +26,6 @@ const state = {
     root_node: null,
     decision_nodes: null,
     design_node: null,
-
-    // --> Graph nodes / edges
-    nodes: [],
-    edges: [],
-
-    selected_node: null,
-    selected_edge: null,
 
 
 
@@ -67,7 +58,7 @@ const actions = {
         await dispatch('query_design', formulation_name);
 
 
-
+        await dispatch('build_graph', formulation_name);
     },
 
     async query_root({ state, commit, dispatch }, formulation_name){
@@ -116,49 +107,50 @@ const actions = {
 
 
 
+    // --> NEO4J --> vue-d3-network
+    async build_graph({ state, commit }, formulation_name){
+        let unique_idx = 1;
 
-
-
-
-
-
-    async build_graph({ state, commit, dispatch }, neo4j){
-
-        // --> 1. Check if graph can be built
         if(state.root_node === null || state.decision_nodes === null || state.design_node === null){
             console.log('--> COULD NOT BUILD GRAPH');
-            return 0;
+            return null;
         }
 
-        // --> 2. Build nodes
-        await dispatch('build_nodes', neo4j);
 
-        // --> 3. Build edges
-        await dispatch('build_edges', neo4j);
-    },
-
-    async build_nodes({state, commit}, neo4j){
+        // --> 1. Build nodes
+        console.log('--> vue-d3-network conversion - nodes');
         let nodes = []
-        nodes.push(state.root_node);
+        let temp_root = _.cloneDeep(state.root_node);
+        temp_root.obj_type = 'Node';
+        temp_root.unique_idx = unique_idx;
+        unique_idx += 1;
+        nodes.push(temp_root);
         for(let x=0;x<state.decision_nodes.length;x++){
-            nodes.push(state.decision_nodes[x]);
+            let temp_dec = _.cloneDeep(state.decision_nodes[x]);
+            temp_dec.obj_type = 'Node';
+            temp_dec.unique_idx = unique_idx;
+            unique_idx += 1;
+            nodes.push(temp_dec);
         }
-        commit('set_design_node_id', nodes.length + 1);
-        nodes.push(state.design_node);
+        let design_node = _.cloneDeep(state.design_node);
+        design_node.id = (nodes.length + 1);
+        design_node.obj_type = 'Node';
+        design_node.unique_idx = unique_idx;
+        unique_idx += 1;
+        nodes.push(design_node);
         await commit('set_nodes', nodes);
-    },
 
-    async build_edges({state, commit}, neo4j){
+
+        // --> 2. Build edges
+        console.log('--> vue-d3-network conversion - edges');
         let edges = [];
-
-        // 1. Iterate over nodes
         for(let x=0;x<state.nodes.length;x++){
-            let node = state.nodes[x];
+            let node = _.cloneDeep(state.nodes[x]);
 
             // This should set this.child_data
             let child_data = null;
-            await neo4j.run(`
-                    MATCH (m:${state.formulation_name}:${node.type})-->(dec)
+            await state.neo.run(`
+                    MATCH (m:${formulation_name}:${node.type})-->(dec)
                     WHERE m.name = "${node.name}"
                     RETURN dec.name, dec.type`,
                 {}
@@ -170,17 +162,17 @@ const actions = {
                 let child = child_data[y];
                 let link = {
                     sid: node.id,
-                    tid: this.nodes.find(item => item.name === child.name && item.type === child.type).id,
-                    _color: 'gray'
+                    tid: state.nodes.find(item => item.name === child.name && item.type === child.type).id,
+                    _color: '#877b67',
+                    obj_type: 'Edge',
+                    unique_idx: unique_idx,
                 }
+                unique_idx += 1;
                 edges.push(link);
             }
         }
-
         await commit('set_edges', edges);
-    },
-
-
+    }
 };
 
 const mutations = {
@@ -189,8 +181,7 @@ const mutations = {
     },
 
 
-
-    // --> Queries from Graph vue component
+    // --> NEO4J QUERY OBJECTS
     set_root_node(state, root_node){
         state.root_node = root_node;
         console.log("--> ROOT NODE", state.root_node);
@@ -203,31 +194,14 @@ const mutations = {
         state.design_node = design_node;
         console.log("--> DESIGN NODE", state.design_node);
     },
-    set_design_node_id(state, id){
-        state.design_node.id = id;
-    },
 
 
-
-    // --> Build graph
+    // --> VUE-D3-NETWORK OBJECTS
     async set_nodes(state, nodes){
         state.nodes = nodes;
     },
     async set_edges(state, edges){
         state.edges = edges;
-    },
-
-
-
-
-
-
-
-    async set_selected_node(state, selected_node){
-        state.selected_node = selected_node;
-    },
-    async set_selected_edge(state, selected_edge){
-        state.selected_edge = selected_edge;
     },
 };
 

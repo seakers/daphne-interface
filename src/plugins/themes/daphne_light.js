@@ -18,6 +18,9 @@ export default {
         lighten3: '#b2a48f',
         lighten4: '#d1c2ad',
         lighten5: '#f3e4cf',
+        lighten6: '#ffefd9',
+        lighten7: '#fff4de',
+        lighten8: '#fff9e3',
         darken1: '#2f2515',
     },
 

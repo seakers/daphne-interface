@@ -2,27 +2,114 @@
     <v-container>
 
 
-
+        <!--HEADER-->
         <v-row justify="center">
             <v-col>
-                <v-card elevation="0">
+                <v-card elevation="0" dark color="secondary lighten-2">
+                    <v-card-title>{{ formulation_name }}</v-card-title>
+                </v-card>
+            </v-col>
+        </v-row>
 
-                    <v-card-title>{{ formulation_name }} Formulation</v-card-title>
 
-                    <v-divider style="margin-top: 0;"></v-divider>
-
+        <!--GRAPH-->
+        <v-row justify="center">
+            <v-col cols="6">
+                <v-card elevation="0" color="secondary lighten-2" dark>
+                    <v-card-title>Decision Graph</v-card-title>
+                    <v-card-subtitle>select a node or edge</v-card-subtitle>
 
                     <d3-network ref='net'
                                 :net-nodes="nodes"
                                 :net-links="edges"
                                 :options="graph_options"
                                 :link-cb="lcb"
-                                @node-click="select_node"
-                                @link-click="select_edge"
+                                @node-click="select_component"
+                                @link-click="select_component"
+                                class="secondary lighten-7"
                     />
-
-
+                    <v-container style="margin-top: 18px;">
+                        <v-slider
+                            v-model="node_size"
+                            step="1"
+                            thumb-label
+                            ticks
+                            dense
+                            min="10"
+                            max="40"
+                            label="Node Size"
+                            dark
+                        ></v-slider>
+                        <v-slider
+                            v-model="force"
+                            step="100"
+                            thumb-label
+                            ticks
+                            dense
+                            min="6000"
+                            max="11000"
+                            label="Edge Force"
+                            dark
+                        ></v-slider>
+                    </v-container>
                 </v-card>
+            </v-col>
+
+
+            <!--COMPONENT SELECTOR-->
+            <v-col cols="6">
+                <v-slide-y-reverse-transition mode="out-in">
+                    <v-card class="d-flex flex-column secondary lighten-7" elevation="0" min-height="100%" :key="selected_component.unique_idx" dark>
+
+
+
+                        <!--INFO CARD TITLE-->
+                        <v-card-title v-if="('is_info' in selected_component)" class="secondary lighten-2">{{ selected_component.name }}</v-card-title>
+                        <v-card-subtitle v-if="('is_info' in selected_component)" class="secondary lighten-2">{{ selected_component.type }}</v-card-subtitle>
+
+
+                        <!--COMPONENT CARD TITLES-->
+                        <v-card-title v-if="selected_component.obj_type === 'Node'" class="secondary lighten-2">{{ selected_component.name }}</v-card-title>
+                        <v-card-subtitle v-if="selected_component.obj_type === 'Node'" class="secondary lighten-2">{{ selected_component.type }} Node</v-card-subtitle>
+
+                        <v-card-title v-if="selected_component.obj_type === 'Edge'" class="secondary lighten-2">Edge</v-card-title>
+                        <v-card-subtitle v-if="selected_component.obj_type === 'Edge'" class="secondary lighten-2">parents | children info</v-card-subtitle>
+
+
+                        <!--INFO CARD CONTENT-->
+
+
+
+
+                        <!--COMPONENT CARD CONTENT-->
+
+
+
+
+
+
+
+                        <v-spacer></v-spacer>
+                        <v-bottom-navigation
+                            :value="component_selector_tab"
+                            color="white"
+                            background-color="secondary lighten-2"
+                            class="elevation-0"
+                            grow
+                            mandatory
+                        >
+                            <v-btn>
+                                <span class="text-h6">Details</span>
+                            </v-btn>
+                            <v-btn>
+                                <span class="text-h6">Edit</span>
+                            </v-btn>
+                            <v-btn>
+                                <span class="text-h6">Connections</span>
+                            </v-btn>
+                        </v-bottom-navigation>
+                    </v-card>
+                </v-slide-y-reverse-transition>
             </v-col>
         </v-row>
 
@@ -38,6 +125,7 @@
     import { mapState } from 'vuex';
     import * as _ from "lodash-es";
     import {parse_child_nodes} from "../../add_store/utils";
+    import Vue from "vue";
     export default {
         name: "add-graph",
         components: {
@@ -46,15 +134,27 @@
         data: function () {
             return {
 
-                // --> Graph options
-                graph_options: {
-                    force: 3000,
-                    nodeSize: 20,
-                    nodeLabels: true,
-                    canvas: false,
-                    linkWidth:2
-                }
+                // --> Graph
+                nodes: [],
+                edges: [],
+                force: 7000,
+                node_size: 20,
 
+                // --> Component Selector
+                component_selector_tab: 0,
+                component_selector_tabs: [ 'View', 'Edit', 'Adjacency Matrix' ],
+                selected_component: {
+                    name: 'Decision Tool',
+                    type: 'no component selected',
+                    unique_idx: 0,
+                    is_info: true,
+                },
+                info_component: {
+                    name: 'Component Selection Tool',
+                    type: 'no component selected',
+                    unique_idx: 0,
+                    is_info: true,
+                },
 
 
 
@@ -67,9 +167,8 @@
                 email: state => state.user.email,
 
                 // --> Graph objects from Neo4j
-                root_node: state => state.graph.root_node,
-                decision_nodes: state => state.graph.decision_nodes,
-                design_node: state => state.graph.design_node,
+                db_nodes: state => state.graph.nodes,
+                db_edges: state => state.graph.edges,
             }),
 
             // --> FORMULATION
@@ -82,73 +181,61 @@
                 return this.$neo4j.getDriver();
             },
 
-            // --> Neo4j objects to vue-d3-network conversion
-            nodes() {
-                console.log('--> vue-d3-network conversion - nodes');
-                let nodes = []
-                if(this.root_node === null || this.decision_nodes === null || this.design_node === null){
-                    console.log('--> COULD NOT BUILD NODES');
-                    return nodes;
+            graph_options() {
+                return {
+                    force: this.force,
+                    nodeSize: this.node_size,
+                    fontSize: 15,
+                    nodeLabels: true,
+                    canvas: false,
+                    linkWidth:3
                 }
-
-
-
-
-                nodes.push(this.root_node);
-                for(let x=0;x<this.decision_nodes.length;x++){
-                    nodes.push(this.decision_nodes[x]);
-                }
-                let design_node = _.cloneDeep(this.design_node);
-                design_node.id = (nodes.length + 1);
-                nodes.push(design_node);
-                return nodes;
             },
-            edges() {
-                console.log('--> vue-d3-network conversion - edges');
-                let edges = [];
-                if(this.root_node === null || this.decision_nodes === null || this.design_node === null){
-                    console.log('--> COULD NOT BUILD EDGES');
-                    return edges;
-                }
-
-                // 1. Iterate over nodes
-                for(let x=0;x<this.nodes.length;x++){
-                    let node = this.nodes[x];
-
-                    // This should set this.child_data
-                    let child_data = null;
-                    this.$neo4j.run(`
-                    MATCH (m:${this.formulation_name}:${node.type})-->(dec)
-                    WHERE m.name = "${node.name}"
-                    RETURN dec.name, dec.type`,
-                        {}
-                    ).then(res => {
-                        child_data = parse_child_nodes(res);
-                    });
-
-                    for(let y=0;y<child_data.length;y++){
-                        let child = child_data[y];
-                        let link = {
-                            sid: node.id,
-                            tid: this.nodes.find(item => item.name === child.name && item.type === child.type).id,
-                            _color: 'gray'
-                        }
-                        edges.push(link);
-                    }
-                }
-                return edges;
-            }
         },
         methods: {
             lcb (link) {
                 link._svgAttrs = { 'marker-end': 'url(#m-end)'}
                 return link
             },
-            async select_node(event, node){
-                await this.$store.commit('set_selected_node', _.cloneDeep(node));
+            async select_component(event, object){
+                console.log('--> OBJECT SELECTED', object);
+                await this.reset_colors();
+                await this.reset_node_size();
+                if(this.selected_component === object){
+                    await this.clear_selection();
+                }
+                else{
+                    Vue.set(object, '_color', '#383552');
+                    if(object.obj_type === 'Node'){
+                        Vue.set(object, '_size', 30);
+                    }
+
+                    this.selected_component = object;
+                }
             },
-            async select_edge(event, node){
-                await this.$store.commit('set_selected_edge', _.cloneDeep(node));
+            async clear_selection(){
+                this.selected_component = _.cloneDeep(this.info_component);
+            },
+            async reset_colors(){
+                for(let x = 0; x < this.nodes.length; x++){
+                    this.nodes[x]._color = '#877b67';
+                }
+                for(let x = 0; x < this.edges.length; x++){
+                    this.edges[x]._color = '#877b67';
+                }
+            },
+            async reset_node_size(){
+                for(let x = 0; x < this.nodes.length; x++){
+                    Vue.set(this.nodes[x], '_size', this.node_size);
+                }
+            }
+        },
+        watch: {
+            db_nodes: function(val, oldVal) {
+                this.nodes = _.cloneDeep(this.db_nodes);
+            },
+            db_edges: function(val, oldVal) {
+                this.edges = _.cloneDeep(this.db_edges);
             },
         },
         async mounted(){
@@ -160,5 +247,7 @@
 </script>
 
 <style scoped>
-
+.node-label{
+    font-size: 10em !important;
+}
 </style>

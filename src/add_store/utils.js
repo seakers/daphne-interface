@@ -9,12 +9,12 @@ export function parse_root_node(query) {
     let record = query.records[0];
     let root = {
         id: 1,
-        _color: 'green',
+        _color: '#877b67',
         name: record._fields[0],
         type: record._fields[1],
+        _size: 20,
         initial_params: JSON.parse(record._fields[2])
     }
-    console.log("--> ROOT NODE", root);
     return root;
 }
 
@@ -27,32 +27,9 @@ export function parse_decision_nodes(query) {
     for(let x=0;x<records.length;x++){
         let record = records[x];
         let id = x + 2;
-        let color = 'blue';
-
-        switch (record._fields[1]){
-            case 'DownSelecting':
-                color = '#21CCCC';
-                break;
-            case 'Assigning':
-                color = '#FFE330';
-                break;
-            case 'Connecting':
-                color = '#FF7D7B';
-                break;
-            case 'Partitioning':
-                color = '#C5FF2D';
-                break;
-            case 'Permuting':
-                color = '#5D94FF';
-                break;
-            case 'StandardForm':
-                color = '#FF9DEE';
-                break;
-        }
-
         let decision = {
             id: id,
-            _color: color,
+            _color: '#877b67',
             name: record._fields[0],
             type: record._fields[1],
             decisions: JSON.parse(record._fields[2]),
@@ -61,7 +38,6 @@ export function parse_decision_nodes(query) {
         decisions.push(decision);
     }
 
-    console.log("--> DECISION NODES", decisions);
     return decisions;
 }
 
@@ -70,12 +46,11 @@ export function parse_design_node(query) {
 
     let record = query.records[0];
     let design = {
-        _color: 'red',
+        _color: '#877b67',
         name: record._fields[0],
         type: record._fields[1],
         designs: JSON.parse(record._fields[2])
     }
-    console.log("--> DESIGN NODE", design);
     return design;
 }
 
