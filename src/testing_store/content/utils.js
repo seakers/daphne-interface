@@ -55,6 +55,9 @@ import COSTD_7 from './CostDrivers/Slide7CA.png'
 import COSTD_8 from './CostDrivers/Slide8CA.png'
 import COSTD_9 from './CostDrivers/Slide9CA.png'
 import COSTD_10 from './CostDrivers/Slide10CA.png'
+import COSTD_11 from './CostDrivers/Slide11CA.png'
+import COSTD_12 from './CostDrivers/Slide12CA.png'
+import COSTD_13 from './CostDrivers/Slide13CA.png'
 
 
 
@@ -211,6 +214,15 @@ export function get_slide_src(src){
     }
     else if(src === 'COSTD_10'){
         return COSTD_10;
+    }
+    else if(src === 'COSTD_11'){
+        return COSTD_11;
+    }
+    else if(src === 'COSTD_12'){
+        return COSTD_12;
+    }
+    else if(src === 'COSTD_13'){
+        return COSTD_13;
     }
 
 
