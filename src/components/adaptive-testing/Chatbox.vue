@@ -69,6 +69,7 @@
 
     import {mapState} from "vuex";
     import {MessageSubscription, InsertMessage, ClearMessage} from "../../testing_store/queries";
+    import {fetchPost} from "../../scripts/fetch-helpers";
 
     export default {
         name: "chatbox",
@@ -105,20 +106,31 @@
 
                 // --> 1. Add message to current messages string
                 // this.messages.push(this.user_message_object);
-                await this.insert_message();
+                await this.insert_message(this.user_message_object.text, this.user_message_object.sender);
+
+                // --> 2. Send request to daphne_brain and get response
+                let reqData = new FormData();
+                reqData.append('command', this.user_message_object.text);
+                let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/command', reqData);
+                if (dataResponse.ok) {
+                    let data = await dataResponse.json();
+                    let text = data['response']['visual_message'][0];
+                    if(typeof text !== 'undefined'){
+                        await this.insert_message(text, 'Daphne');
+                    }
+                }
 
 
-
-                // --> Reset message field to empty
+                // --> 3. Reset message field to empty
                 this.user_message = '';
             },
-            async insert_message(){
+            async insert_message(text, sender){
                 let mutation = await this.$apollo.mutate({
                     mutation: InsertMessage,
                     variables: {
                         user_id: this.user_id,
-                        text: this.user_message_object.text,
-                        sender: this.user_message_object.sender,
+                        text: text,
+                        sender: sender,
                     },
                     update: (cache, { data: { result } }) => {},
                 });
