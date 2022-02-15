@@ -58,7 +58,20 @@ import COSTD_10 from './CostDrivers/Slide10CA.png'
 import COSTD_11 from './CostDrivers/Slide11CA.png'
 import COSTD_12 from './CostDrivers/Slide12CA.png'
 import COSTD_13 from './CostDrivers/Slide13CA.png'
-
+import COSTD_14 from './CostDrivers/Slide14CA.png'
+import COSTD_15 from './CostDrivers/Slide15CA.png'
+import COSTD_16 from './CostDrivers/Slide16CA.png'
+import COSTD_17 from './CostDrivers/Slide17CA.png'
+import COSTD_18 from './CostDrivers/Slide18CA.png'
+import COSTD_19 from './CostDrivers/Slide19CA.png'
+import COSTD_20 from './CostDrivers/Slide20CA.png'
+import COSTD_21 from './CostDrivers/Slide21CA.png'
+import COSTD_22 from './CostDrivers/Slide22CA.png'
+import COSTD_23 from './CostDrivers/Slide23CA.png'
+import COSTD_24 from './CostDrivers/Slide24CA.png'
+import COSTD_25 from './CostDrivers/Slide25CA.png'
+import COSTD_26 from './CostDrivers/Slide26CA.png'
+import COSTD_27 from './CostDrivers/Slide27CA.png'
 
 
 
@@ -223,6 +236,48 @@ export function get_slide_src(src){
     }
     else if(src === 'COSTD_13'){
         return COSTD_13;
+    }
+    else if(src === 'COSTD_14'){
+        return COSTD_14;
+    }
+    else if(src === 'COSTD_15'){
+        return COSTD_15;
+    }
+    else if(src === 'COSTD_16'){
+        return COSTD_16;
+    }
+    else if(src === 'COSTD_17'){
+        return COSTD_17;
+    }
+    else if(src === 'COSTD_18'){
+        return COSTD_18;
+    }
+    else if(src === 'COSTD_19'){
+        return COSTD_19;
+    }
+    else if(src === 'COSTD_20'){
+        return COSTD_20;
+    }
+    else if(src === 'COSTD_21'){
+        return COSTD_21;
+    }
+    else if(src === 'COSTD_22'){
+        return COSTD_22;
+    }
+    else if(src === 'COSTD_23'){
+        return COSTD_23;
+    }
+    else if(src === 'COSTD_24'){
+        return COSTD_24;
+    }
+    else if(src === 'COSTD_25'){
+        return COSTD_25;
+    }
+    else if(src === 'COSTD_26'){
+        return COSTD_26;
+    }
+    else if(src === 'COSTD_27'){
+        return COSTD_27;
     }
 
 
