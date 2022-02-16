@@ -13,6 +13,8 @@
 <script>
     import Stage1Modal from './Stage1Modal';
     import Stage2Modal from './Stage2Modal';
+    import ReflectionModal from './ReflectionModal';
+    import IncubationModal from './IncubationModal';
     import LoginModal from './LoginModal';
     import RegisterModal from './RegisterModal';
     import SaveDatasetModal from './SaveDatasetModal';
@@ -30,6 +32,8 @@
         components: {
             Stage1Modal,
             Stage2Modal,
+            ReflectionModal,
+            IncubationModal,
             LoginModal,
             RegisterModal,
             SaveDatasetModal,

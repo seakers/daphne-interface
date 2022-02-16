@@ -22,34 +22,20 @@ const state = {
         { name: 'experiment' },
         { name: 'experiment' }
     ],
-    problems: ["SMAP", "SMAP", "SMAP"],
+    problems: ["ClimateCentric-Experiment", "ClimateCentric-Experiment", "ClimateCentric-Experiment"],
     stageProblemName: "",
     stageDatasetName: "",
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'OrbitInstrInfo',
                 'AvailableCommands',
-                'CommandsInformation',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'Details',
-                'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions',
-                'HypothesisTester',
+                'OrbitInstrInfo',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'HypothesisTester',
-                'EOSSFilter',
-                'FeatureApplication',
-                'OrbitInstrInfo',
                 'AvailableCommands',
-                'CommandsInformation'
+                'OrbitInstrInfo',
             ],
             restrictedQuestions: {
                 engineer: [],
@@ -419,44 +405,16 @@ start the experiment!`
                 }
             ],
         },
-        no_daphne: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter'
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'DataMining',
-                'FeatureApplication',
-                'EOSSFilter'
-            ],
-            restrictedQuestions: null,
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*20
-        },
         daphne_control: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'OrbitInstrInfo',
                 'AvailableCommands',
-                'CommandsInformation',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'Details',
-                'BackgroundSearch',
+                'OrbitInstrInfo',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'HypothesisTester',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'OrbitInstrInfo',
                 'AvailableCommands',
+                'OrbitInstrInfo',
             ],
             restrictedQuestions: {
                 engineer: [],
@@ -482,23 +440,13 @@ start the experiment!`
         daphne_refinc: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'OrbitInstrInfo',
                 'AvailableCommands',
-                'CommandsInformation',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'Details',
-                'BackgroundSearch',
+                'OrbitInstrInfo',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'HypothesisTester',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'OrbitInstrInfo',
                 'AvailableCommands',
+                'OrbitInstrInfo',
             ],
             restrictedQuestions: {
                 engineer: [],

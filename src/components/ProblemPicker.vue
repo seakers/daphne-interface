@@ -193,7 +193,7 @@
 
                 // Clone the dataset
                 try {
-                    formData.append("filename", "experiment")
+                    formData.append("filename", "experiment_h")
                     let response = await fetchPost(API_URL + 'eoss/data/upload-data', formData);
                     if (response.ok) {
                         let data = await response.json();
