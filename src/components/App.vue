@@ -316,38 +316,47 @@
                                 });
                         });
                         // Add specific last step based on what will be available in the next stage
-                        let lastStepText = "";
-                        switch (this.stageInformation.tutorial.nextStage) {
-                            case 'daphne_control':
-                                lastStepText = `For the first stage, you have been assigned the Daphne with 
-                                design capabilities. You can design architectures, study their details, ask questions 
-                                about your designs to Daphne, and the background search will find good architectures 
-                                for you. On the other hand, neither the data mining nor the hypothesis tester are available to you.
-                                As a reminder, you may have to scroll down to see some of the features. 
-                                Press Next to start the first stage.`;
-                                break;
-                            case 'daphne_refinc':
-                                lastStepText = `For the first stage, you have been assigned the Daphne with 
-                                data mining capabilities. You can design architectures, study their details, ask questions 
-                                about your designs to Daphne, use the Data Mining capabilities, and the background search will 
-                                find good architectures for you. The hypothesis tester is not available to you. 
-                                As a reminder, you may have to scroll down to see some of the features. 
-                                Press Next to start the first stage.`;
-                                break;
-                        }
-                        this.tutorial.addStep({
-                            text: lastStepText,
-                            buttons: [
-                                        {
-                                            text: 'Previous',
-                                            action: this.tutorial.back
-                                        },
-                                        {
-                                            text: 'Next',
-                                            action: this.tutorial.next
-                                        }
-                                    ]
-                        })
+                        // let lastStepText = "";
+                        // switch (this.stageInformation.tutorial.nextStage) {
+                        //     case 'daphne_control':
+                        //         lastStepText = `For the first stage, you have been assigned the Daphne with 
+                        //         design capabilities. You can design architectures, study their details, ask questions 
+                        //         about your designs to Daphne, and the background search will find good architectures 
+                        //         for you. On the other hand, neither the data mining nor the hypothesis tester are available to you.
+                        //         As a reminder, you may have to scroll down to see some of the features. 
+                        //         Press Next to start the first stage.`;
+                        //         break;
+                        //     case 'daphne_refinc':
+                        //         lastStepText = `For the first stage, you have been assigned the Daphne with 
+                        //         data mining capabilities. You can design architectures, study their details, ask questions 
+                        //         about your designs to Daphne, use the Data Mining capabilities, and the background search will 
+                        //         find good architectures for you. The hypothesis tester is not available to you. 
+                        //         As a reminder, you may have to scroll down to see some of the features. 
+                        //         Press Next to start the first stage.`;
+                        //         break;
+                        //     case 'daphne_hypothesis':
+                        //         lastStepText = `For the first stage, you have been assigned the Daphne with 
+                        //         hypothesis testing capabilities. You can design architectures, study their details, ask questions 
+                        //         about your designs to Daphne, use the Data Mining capabilities, test hypotheses about the design set, 
+                        //         and the background search will find good architectures for you, including ones that help prove or 
+                        //         disprove your hypotheses. Additionally, Daphne may suggest features to be tested as hypotheses to you. 
+                        //         As a reminder, you may have to scroll down to see some of the features. 
+                        //         Press Next to start the first stage.`;
+                        //         break;
+                        // }
+                        // this.tutorial.addStep({
+                        //     text: lastStepText,
+                        //     buttons: [
+                        //                 {
+                        //                     text: 'Previous',
+                        //                     action: this.tutorial.back
+                        //                 },
+                        //                 {
+                        //                     text: 'Next',
+                        //                     action: this.tutorial.next
+                        //                 }
+                        //             ]
+                        // });
                         this.tutorial.on("complete", () => {
                             this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
                                 this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);

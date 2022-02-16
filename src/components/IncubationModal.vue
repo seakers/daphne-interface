@@ -1,6 +1,6 @@
 <template>
     <div class="message-body">
-        <p v-if="firstButton">That's it for the first stage of the experiment! Click the button to read an interesting article on thermodynamics. When you're done click on Continue to go to the second stage.</p>
+        <p v-if="firstButton">That's it for the first stage of the experiment! Click the button to proceed to the next stage of the experiment.</p>
         <p v-if="!firstButton">{{nextStageText}}</p>
         <a class="button" href="https://tamu.qualtrics.com/jfe/form/SV_bDSJ2DuCnqfntwW" target="_blank" rel="noopener noreferrer" v-on:click="changeButtons" v-show="firstButton">Read article</a>
         <a class="button" v-on:click.prevent="goToNextStage" v-if="!firstButton">Continue</a>
@@ -25,7 +25,8 @@
                 let nextStageText = "";
                 switch (nextStage) {
                     case 'daphne_refinc':
-                        nextStageText = `For the second stage, you will continue working on the same problem, with the same Daphne capabilities.`;
+                        nextStageText = `For the second stage, you will continue working on the same design problem. 
+                        Press Next to continue.`;
                         break;
                 }
                 return nextStageText;
