@@ -280,8 +280,7 @@ for these fields. If a part of a question is inside square brackets it means it 
 
                 {
                     text: `Now you know every tool available to you! As a final reminder, <b>the experiment will last for 20 minutes</b>.
-                    Depending on what condition you are in, you might be inter
-Remember, you have two objectives: <b>1. Find a range of designs with good science scores with a cost between [$800M]
+                    Remember, you have two objectives: <b>1. Find a range of designs with good science scores with a cost between [$800M]
 and [$4,000M]</b> and <b>2. Try to learn any patterns useful to discern between designs with high and low science benefit
 with similar costs, so you can do the short tests afterwards</b>. For example, you may try to find which
 instrument-orbits pairings appear most often in the best architectures you can find.
