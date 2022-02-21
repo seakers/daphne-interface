@@ -77,13 +77,11 @@ to different orbits and then evaluating your constellation design (e.g, the set 
 assigned to specific orbits) to see which constellations are the best for the task.`
                 },
                 {
-                    text: `Again, to reiterate: you have <b>two main
-objectives</b>: <b>FIRST</b>: You need to come up with a range of constellation designs (not just one constellation)
+                    text: `You have <b>two main objectives</b>: <b>FIRST</b>: You need to come up with a range of constellation designs (not just one constellation)
 that spans a wide range of costs (e.g., from $800M to $4,000M) with the best science score you can come up with
 (later we will describe how to get those designs). The science score is a measure (a number that ranges from 0 to 1)
-of how well you are satisfying a set of requirements which are decided by different stakeholders. The same constellation
-design can have different scores if different stakeholders are given more prominence, which is what happens in this
-experiment. Then, the <b>SECOND</b> objective: After 20 minutes working on the task, you will do two short tests
+of how well you are satisfying a set of requirements which are decided by different stakeholders. Then, the <b>SECOND</b> 
+objective: After 20 minutes working on the task, you will do two short tests
 consisting of 12 questions each asking you either say whether a design is on the set of best designs or not, or to
 choose the best constellation design out of a pair of designs with the same cost. With this out of the way, let's learn
 how to actually design new satellite constellations! It's important to try out the functions you are being shown now,
@@ -115,8 +113,7 @@ Instruments Information panel. <b>You should read about them now by clicking on 
                         on: 'bottom'
                     },
                     text: `Your first task in the experiment is, again, to come up with a range of constellation
-designs with the highest science benefit for a range of costs. To make things specific, we have set up lower and upper
-cost bounds at [$800M] and [$4,000M]. You can see some initial constellation designs here, but you will learn how to create
+designs with the highest science benefit for a range of costs. You can see some initial constellation designs here, but you will learn how to create
 new ones in a moment.`
                 },
                 {
@@ -177,8 +174,7 @@ on your keyboard.`
                     },
                     text: `For example, you can ask Daphne what she thinks about the current design. After thinking for
 a while, Daphne will give her thoughts on the design along with some suggestions on how to improve it.
-<b>Try writing or copying the following question into the Question Bar: "What do you think of this design?"</b>
-If you want to hear the output instead of just reading it, you can unmute Daphne by clicking on the speaker.`
+<b>Try writing or copying the following question into the Question Bar: "What do you think of this design?"</b>`
                 },
                 {
                     attachTo: {
@@ -194,13 +190,12 @@ is not inherently good or bad, but rather a trade-off between innovation and ris
 changes based on what the best constellation designs in the current dataset have in common. Take Daphne's advice with
 caution - as you would with any peer's advice. While it is likely to help you, it may in some cases not help you
 achieve your current goal. "What do you think of this design" is just one question Daphne can answer, but there are a
-few more. It is worth noting this will only be available on the Daphne Peer version.`
+few more.`
                 },
                 {
                     text: `Generally speaking, Daphne can answer WHY questions (e.g., about why a constellation design
 has a certain score), WHAT questions (e.g., information on past and planned Earth observing mission), and HOW questions
-(e.g., suggestions on HOW you can improve a constellation design). The first and second types will be answered by
- the Assistant Daphne, while the last one will be answered by Daphne Peer.`
+(e.g., suggestions on HOW you can improve a constellation design).`
                 },
                 {
                     attachTo: {
@@ -268,8 +263,7 @@ for these fields. If a part of a question is inside square brackets it means it 
                     text: `Now you know every tool available to you! As a final reminder, <b>the design activity will last for 20 minutes</b>.
                     But, depending on what what experimental condition you are in, you will be asked to work only on the design activity for 20 minutes or
                     you will be asked to work on the design activity for 10 minutes, do a different task, then come back to where you have left to finish it in 10 minutes.
-                    Remember, you have two objectives: <b>1. Find a range of designs with good science scores with a cost between [$800M]
-and [$4,000M]</b> and <b>2. Try to learn any patterns useful to discern between designs with high and low science benefit
+                    Remember, you have two objectives: <b>1. Find a range of designs with good science scores for the range of costs you see in the plot</b> and <b>2. Try to learn any patterns useful to discern between designs with high and low science benefit
 with similar costs, so you can do the short tests afterwards</b>. For example, you may try to find which
 instrument-orbits pairings appear most often in the best architectures you can find.
   You are also encouraged to take notes during each task, as this will probably be helpful to do well in the test.
@@ -282,28 +276,20 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'DesignBuilder',
                 'AvailableCommands',
                 'OrbitInstrInfo',
+                'CommandsInformation'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'AvailableCommands',
                 'OrbitInstrInfo',
+                'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: [],
-                analyst: [],
+                engineer: ['2000', '2012', '2017', '2001', '2002', '2008', '2010', '2013', '2014', '2016', '2015', '2008'],
+                analyst: ['1000'],
                 explorer: [],
-                historian: [],
-                critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                critic: ['3000', '3005']
             },
             nextStage: '',
             startTime: 0,
@@ -314,28 +300,20 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'DesignBuilder',
                 'AvailableCommands',
                 'OrbitInstrInfo',
+                'CommandsInformation'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'AvailableCommands',
                 'OrbitInstrInfo',
+                'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: [],
-                analyst: [],
+                engineer: ['2000', '2012', '2017', '2001', '2002', '2008', '2010', '2013', '2014', '2016', '2015', '2008'],
+                analyst: ['1000'],
                 explorer: [],
-                historian: [],
-                critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                critic: ['3000', '3005']
             },
             nextStage: '',
             startTime: 0,

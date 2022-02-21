@@ -12,7 +12,8 @@ const state = {
         mouseover: 'rgba(116,255,110,255)',
         hidden: 'rgba(110,110,110,22)',
         important: 'rgba(255,0,0,255)',
-        ga: 'rgba(0,0,255,255)'
+        ga: 'rgba(0,0,255,255)',
+        human: 'rgb(128,0,0)',
     },
     clickedArch: -1,
     clickedArchInputs: [],
@@ -23,6 +24,7 @@ const state = {
     highlightedArchs: [],
     hiddenArchs: [],
     gaArchs: [],
+    humanArchs: [],
     gaStatus: false,
     nextColor: 1
 };
@@ -40,7 +42,7 @@ const getters = {
     getClickedArch(state) {
         return state.clickedArch;
     },
-    getPointColor: (state) => (index, selectedArchsSet, highlightedArchsSet, gaArchsSet) => {
+    getPointColor: (state) => (index, selectedArchsSet, highlightedArchsSet, gaArchsSet, humanArchsSet) => {
         if (state.clickedArch === index) {
             return state.colorList.important;
         }
@@ -60,6 +62,9 @@ const getters = {
                 }
                 else if (gaArchsSet.has(index)) {
                     return state.colorList.ga;
+                }
+                else if (humanArchsSet.has(index)) {
+                    return state.colorList.human;
                 }
                 else {
                     return state.colorList.default;
@@ -93,6 +98,7 @@ const mutations = {
         state.highlightedArchs = [];
         state.hiddenArchs = [];
         state.gaArchs = [];
+        state.humanArchs = [];
 
         // Function to create new colours for the picking.
         function genColor() {
@@ -131,6 +137,25 @@ const mutations = {
         plotPoint.interactColor = genColor();
         state.colorMap[plotPoint.interactColor] = plotPoint.id;
         state.plotData.splice(plotPoint.id, 0, plotPoint);
+    },
+    addPlotDataFromHuman(state, problemData) {
+        // Function to create new colours for the picking.
+        function genColor() {
+            let ret = [];
+            if (state.nextColor < 16777215) {
+                ret.push(state.nextColor & 0xff); // R
+                ret.push((state.nextColor & 0xff00) >> 8); // G
+                ret.push((state.nextColor & 0xff0000) >> 16); // B
+                state.nextColor += 1;
+            }
+            return 'rgb(' + ret.join(',') + ')';
+        }
+
+        let plotPoint = JSON.parse(JSON.stringify(problemData));
+        plotPoint.interactColor = genColor();
+        state.colorMap[plotPoint.interactColor] = plotPoint.id;
+        state.plotData.splice(plotPoint.id, 0, plotPoint);
+        state.humanArchs.push(plotPoint.id);
     },
     addPlotDataFromGA(state, problemData) {
         // Function to create new colours for the picking.

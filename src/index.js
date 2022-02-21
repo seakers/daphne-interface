@@ -182,25 +182,25 @@ let app = new Vue({
 });
 
 // Voice recognition
-if (annyang) {
-    annyang.addCallback('result', phrases => {
-        if (window.speechSynthesis.speaking) {
-            return;
-        }
-        app.$store.commit('setCommand', phrases[0]);
-        app.$store.dispatch('executeCommand');
-    });
+// if (annyang) {
+//     annyang.addCallback('result', phrases => {
+//         if (window.speechSynthesis.speaking) {
+//             return;
+//         }
+//         app.$store.commit('setCommand', phrases[0]);
+//         app.$store.dispatch('executeCommand');
+//     });
 
-    annyang.debug();
+//     annyang.debug();
 
-    // Tell KITT to use annyang
-    SpeechKITT.annyang();
+//     // Tell KITT to use annyang
+//     SpeechKITT.annyang();
 
-    // Define a stylesheet for KITT to use
-    SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/themes/flat.css');
+//     // Define a stylesheet for KITT to use
+//     SpeechKITT.setStylesheet('//cdnjs.cloudflare.com/ajax/libs/SpeechKITT/0.3.0/themes/flat.css');
 
-    // Render KITT's interface
-    SpeechKITT.vroom();
+//     // Render KITT's interface
+//     SpeechKITT.vroom();
 
-    SpeechKITT.startRecognition();
-}
+//     SpeechKITT.startRecognition();
+// }

@@ -100,6 +100,7 @@
                 selectedArchs: state => state.tradespacePlot.selectedArchs,
                 highlightedArchs: state => state.tradespacePlot.highlightedArchs,
                 gaArchs: state => state.tradespacePlot.gaArchs,
+                humanArchs: state => state.tradespacePlot.humanArchs,
                 hiddenArchs: state => state.tradespacePlot.hiddenArchs,
                 status: state => state.problem.status,
                 problemId: state => state.problem.problemId,
@@ -286,6 +287,7 @@
                 let selectedArchsSet = new Set(this.selectedArchs);
                 let highlightedArchsSet = new Set(this.highlightedArchs);
                 let gaArchsSet = new Set(this.gaArchs);
+                let humanArchsSet = new Set(this.humanArchs);
 
                 this.plotData.forEach(point => {
                     let pointColor;
@@ -296,7 +298,8 @@
                         pointColor = this.$store.getters.getPointColor(point.id,
                                                                        selectedArchsSet,
                                                                        highlightedArchsSet,
-                                                                       gaArchsSet);
+                                                                       gaArchsSet,
+                                                                       humanArchsSet);
                     }
                     let pointShape = this.$store.getters.getPointShape(point.id);
                     let tx = this.transform.applyX(this.xMap(point));

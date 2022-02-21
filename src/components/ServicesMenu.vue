@@ -2,10 +2,10 @@
     <div class="active-menu" v-if="logged_in">
         <p class="has-text-weight-bold">VASSAR connection status: <a v-on:click="connectVassar">Reconnect</a></p>
         <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>
-        <p class="has-text-weight-bold">GA connection status: <a v-on:click="connectGa">Reconnect</a></p>
-        <p :class="connectionStatusToColor(gaServiceStatus)">{{connectionStatusToExplanation(gaServiceStatus)}}</p>
-        <p class="has-text-weight-bold">GA search status: <a v-on:click="startGa">Restart</a></p>
-        <p :class="gaStatusToColor(gaRunningStatus)">{{gaStatusToExplanation(gaRunningStatus)}}</p>
+        <p class="has-text-weight-bold" v-if="backgroundSearchExperimentCondition">GA connection status: <a v-on:click="connectGa">Reconnect</a></p>
+        <p :class="connectionStatusToColor(gaServiceStatus)" v-if="backgroundSearchExperimentCondition">{{connectionStatusToExplanation(gaServiceStatus)}}</p>
+        <p class="has-text-weight-bold" v-if="backgroundSearchExperimentCondition">GA search status: <a v-on:click="startGa">Restart</a></p>
+        <p :class="gaStatusToColor(gaRunningStatus)" v-if="backgroundSearchExperimentCondition">{{gaStatusToExplanation(gaRunningStatus)}}</p>
         <label class="checkbox" v-if="!inExperiment">
             <input type="checkbox" v-model="runDiversifier">
             Enable Diversifier
