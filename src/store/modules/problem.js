@@ -93,6 +93,11 @@ const actions = {
         commit('addProblemData', problemData[0]);
         commit('addPlotData', problemData[0]);
     },
+    async addNewDataFromHuman({ state, commit }, newData) {
+        let problemData = state.importCallback([newData], state.extra);
+        commit('addProblemData', problemData[0]);
+        commit('addPlotDataFromHuman', problemData[0]);
+    },
     // GENETIC
     async addNewDataFromGA({ state, commit }, newData) {
         // We can assume it's a new point as the server makes sure of that!

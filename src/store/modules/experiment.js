@@ -31,28 +31,20 @@ const state = {
                 'DesignBuilder',
                 'AvailableCommands',
                 'OrbitInstrInfo',
+                'CommandsInformation'
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'AvailableCommands',
                 'OrbitInstrInfo',
+                'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: [],
-                analyst: [],
+                engineer: ['2000', '2012', '2017', '2001', '2002', '2008', '2010', '2013', '2014', '2016', '2015', '2008'],
+                analyst: ['1000'],
                 explorer: [],
-                historian: [],
-                critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                critic: ['3000', '3005']
             },
             nextStage: '',
             steps: [

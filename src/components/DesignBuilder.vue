@@ -187,7 +187,7 @@
                                 };
 
                                 if(this.eval_request_inputs !== null && this.compareInputsBoolBit(this.eval_request_inputs, arch.input)){
-                                    this.isComputing = false
+                                    this.isComputing = false;
                                     this.$toast("Design " + new_obj.id + " has been evaluated.");
                                     this.$store.commit('setDataUpdateFrom', 'designBuilder');
                                 }
@@ -196,7 +196,12 @@
                                 }
                                 
                                 if (arch.ga === false) {
-                                    this.$store.dispatch('addNewData', new_obj);
+                                    if (this.$store.state.problem.dataUpdateFrom === 'designBuilder') {
+                                        this.$store.dispatch('addNewDataFromHuman', new_obj);
+                                    }
+                                    else {
+                                        this.$store.dispatch('addNewData', new_obj);
+                                    }
                                 }
                                 else {
                                     this.$store.dispatch('addNewDataFromGA', new_obj);
@@ -293,7 +298,9 @@
                         console.error('Networking error:', e);
                     }
                 }
-                // this.isComputing = false;
+                else {
+                    this.isComputing = false;
+                }
             }
         },
         watch: {

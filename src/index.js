@@ -131,44 +131,46 @@ store.subscribe(async (mutation, state) => {
         }
 
         // Live Recommender System
-        if (mutation.type === "updateClickedArchInputs") {
-            // TODO: Find a way to differentiate between binary and discrete problems
-            // Active Engineer
-            window.setTimeout(function() {
-                if (numberOfEngChanges > 0) {
-                    --numberOfEngChanges;
+        if (!state.experiment.inExperiment || state.experiment.stageInformation[state.experiment.experimentStage].availableFunctionalities.includes('LiveSuggestions')) {
+            if (mutation.type === "updateClickedArchInputs") {
+                // TODO: Find a way to differentiate between binary and discrete problems
+                // Active Engineer
+                window.setTimeout(function() {
+                    if (numberOfEngChanges > 0) {
+                        --numberOfEngChanges;
+                    }
+                },60*1000);
+                ++numberOfEngChanges;
+    
+                if (numberOfEngChanges >= 3) {
+                    numberOfEngChanges = 0;
+                    console.log(mutation);
+                    // Send a WS request for expert information on current arch
+                    wsTools.websocket.send(JSON.stringify({
+                        msg_type: 'active_engineer',
+                        type: 'binary', // TODO!
+                        genome: mutation.payload
+                    }));
                 }
-            },60*1000);
-            ++numberOfEngChanges;
-
-            if (numberOfEngChanges >= 3) {
-                numberOfEngChanges = 0;
-                console.log(mutation);
-                // Send a WS request for expert information on current arch
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: 'active_engineer',
-                    type: 'binary', // TODO!
-                    genome: mutation.payload
-                }));
-            }
-
-            // Active Historian
-            window.setTimeout(function() {
-                if (numberOfHistChanges > 0) {
-                    --numberOfHistChanges;
+    
+                // Active Historian
+                window.setTimeout(function() {
+                    if (numberOfHistChanges > 0) {
+                        --numberOfHistChanges;
+                    }
+                }, 60*1000);
+                ++numberOfHistChanges;
+    
+                if (numberOfHistChanges >= 3) {
+                    numberOfHistChanges = 0;
+                    // Send a WS request for historian information on current arch
+                    // TODO: Fix hisotrian critic with new architecture of database (includes NLP work)
+                    // wsTools.websocket.send(JSON.stringify({
+                    //     msg_type: 'active_historian',
+                    //     type: 'binary', // TODO!
+                    //     genome: mutation.payload
+                    // }));
                 }
-            }, 60*1000);
-            ++numberOfHistChanges;
-
-            if (numberOfHistChanges >= 3) {
-                numberOfHistChanges = 0;
-                // Send a WS request for historian information on current arch
-                // TODO: Fix hisotrian critic with new architecture of database (includes NLP work)
-                // wsTools.websocket.send(JSON.stringify({
-                //     msg_type: 'active_historian',
-                //     type: 'binary', // TODO!
-                //     genome: mutation.payload
-                // }));
             }
         }
     }
