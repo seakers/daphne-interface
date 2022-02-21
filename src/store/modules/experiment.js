@@ -59,7 +59,7 @@ const state = {
                 {
                     text: `<p>Thank you for participating in this experiment! You will be using Daphne, a virtual
 assistant and design tool for earth observation satellite system design. The task you will complete in the experiment
-is to explore and expand a dataset of designs for a new [climate centric] mission. You will consider missions ranging from
+is to explore and expand a dataset of designs for a new climate centric mission. You will consider missions ranging from
 small (a few hundred millions) to large (several billion $).</p>
 <p>You will solve a task related to this problem using Daphne. You will be considering a set of
 instruments developed at JPL (e.g., an L band radar) and a set of orbits (e.g., SSO dawn-dusk at 600km).
@@ -265,7 +265,9 @@ for these fields. If a part of a question is inside square brackets it means it 
 
 
                 {
-                    text: `Now you know every tool available to you! As a final reminder, <b>the experiment will last for 20 minutes</b>.
+                    text: `Now you know every tool available to you! As a final reminder, <b>the design activity will last for 20 minutes</b>.
+                    But, depending on what what experimental condition you are in, you will be asked to work only on the design activity for 20 minutes or
+                    you will be asked to work on the design activity for 10 minutes, do a different task, then come back to where you have left to finish it in 10 minutes.
                     Remember, you have two objectives: <b>1. Find a range of designs with good science scores with a cost between [$800M]
 and [$4,000M]</b> and <b>2. Try to learn any patterns useful to discern between designs with high and low science benefit
 with similar costs, so you can do the short tests afterwards</b>. For example, you may try to find which
