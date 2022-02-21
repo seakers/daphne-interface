@@ -706,7 +706,7 @@
                         }
                     }
                 }
-                if (mutation.type === 'addPlotData') {
+                if (mutation.type === 'addPlotDataFromHuman') {
                     let updateFrom = state.problem.dataUpdateFrom;
                     if (updateFrom === 'designBuilder') {
                         // Mark the last point added as the selected one
