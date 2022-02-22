@@ -9,10 +9,10 @@ export function parse_root_node(query) {
     let record = query.records[0];
     let root = {
         id: 1,
-        _color: '#877b67',
+        _color: '#4CAF50',
+        _size: 20,
         name: record._fields[0],
         type: record._fields[1],
-        _size: 20,
         initial_params: JSON.parse(record._fields[2])
     }
     return root;
@@ -46,7 +46,7 @@ export function parse_design_node(query) {
 
     let record = query.records[0];
     let design = {
-        _color: '#877b67',
+        _color: '#F44336',
         name: record._fields[0],
         type: record._fields[1],
         designs: JSON.parse(record._fields[2])

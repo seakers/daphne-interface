@@ -1,6 +1,14 @@
 <template>
     <v-container>
 
+        <svg style="height: 0; width: 0;">
+            <defs>
+                <marker id="m-end" markerWidth="10" markerHeight="10" refX="7" refY="2" orient="auto" markerUnits="strokeWidth" >
+                    <path d="M0,0 L0,4 L4,2 z"></path>
+                </marker>
+            </defs>
+        </svg>
+
 
         <!--HEADER-->
         <v-row justify="center">
@@ -26,27 +34,17 @@
                                 :link-cb="lcb"
                                 @node-click="select_component"
                                 @link-click="select_component"
-                                class="secondary lighten-7"
+                                class="white"
+                                id="add-graph"
                     />
                     <v-container style="margin-top: 18px;">
-                        <v-slider
-                            v-model="node_size"
-                            step="1"
-                            thumb-label
-                            ticks
-                            dense
-                            min="10"
-                            max="40"
-                            label="Node Size"
-                            dark
-                        ></v-slider>
                         <v-slider
                             v-model="force"
                             step="100"
                             thumb-label
                             ticks
                             dense
-                            min="6000"
+                            min="2000"
                             max="11000"
                             label="Edge Force"
                             dark
@@ -59,7 +57,7 @@
             <!--COMPONENT SELECTOR-->
             <v-col cols="6">
                 <v-slide-y-reverse-transition mode="out-in">
-                    <v-card class="d-flex flex-column secondary lighten-7" elevation="0" min-height="100%" :key="selected_component.unique_idx" dark>
+                    <v-card class="d-flex flex-column white" elevation="0" min-height="100%" :key="selected_component.unique_idx" dark>
 
 
 
@@ -116,7 +114,6 @@
 
 
 
-
     </v-container>
 </template>
 
@@ -137,8 +134,8 @@
                 // --> Graph
                 nodes: [],
                 edges: [],
-                force: 7000,
-                node_size: 20,
+                force: 6000,
+                nodeSize: 20,
 
                 // --> Component Selector
                 component_selector_tab: 0,
@@ -180,11 +177,10 @@
             driver(){
                 return this.$neo4j.getDriver();
             },
-
             graph_options() {
                 return {
                     force: this.force,
-                    nodeSize: this.node_size,
+                    nodeSize: this.nodeSize,
                     fontSize: 15,
                     nodeLabels: true,
                     canvas: false,
@@ -199,15 +195,15 @@
             },
             async select_component(event, object){
                 console.log('--> OBJECT SELECTED', object);
-                await this.reset_colors();
                 await this.reset_node_size();
+                await this.reset_node_color();
                 if(this.selected_component === object){
                     await this.clear_selection();
                 }
                 else{
-                    Vue.set(object, '_color', '#383552');
+                    Vue.set(object, '_color', '#EF6C00');
                     if(object.obj_type === 'Node'){
-                        Vue.set(object, '_size', 30);
+                        Vue.set(object, '_size', 25);
                     }
 
                     this.selected_component = object;
@@ -216,23 +212,55 @@
             async clear_selection(){
                 this.selected_component = _.cloneDeep(this.info_component);
             },
-            async reset_colors(){
-                for(let x = 0; x < this.nodes.length; x++){
-                    this.nodes[x]._color = '#877b67';
-                }
-                for(let x = 0; x < this.edges.length; x++){
-                    this.edges[x]._color = '#877b67';
-                }
-            },
             async reset_node_size(){
                 for(let x = 0; x < this.nodes.length; x++){
-                    Vue.set(this.nodes[x], '_size', this.node_size);
+                    Vue.set(this.nodes[x], '_size', this.nodeSize);
+                }
+            },
+            async reset_node_color(){
+                for(let x = 0; x < this.nodes.length; x++){
+                    let node = this.nodes[x];
+                    if(node.type === 'Root'){
+                        Vue.set(node, '_color', '#4CAF50');
+                    }
+                    else if(node.type === 'Design'){
+                        Vue.set(node, '_color', '#F44336');
+                    }
+                    else{
+                        Vue.set(node, '_color', '#877b67');
+                    }
+                }
+                for(let x = 0; x < this.edges.length; x++){
+                    let edge = this.edges[x];
+                    Vue.set(edge, '_color', '#877b67');
+                }
+            },
+            async reset_node_position(){
+                let height = document.getElementById('add-graph').clientHeight;
+                let width = document.getElementById('add-graph').clientWidth;
+                let y_displacement = 30;
+
+                let x_pos = width / 2;
+                let y_pos_root = y_displacement;
+                let y_pos_design = height - y_displacement;
+
+                for(let x = 0; x < this.nodes.length; x++){
+                    let node = this.nodes[x];
+                    if(node.type === 'Root'){
+                        node.fx = x_pos;
+                        node.fy = y_pos_root;
+                    }
+                    if(node.type === 'Design'){
+                        node.fx = x_pos;
+                        node.fy = y_pos_design;
+                    }
                 }
             }
         },
         watch: {
             db_nodes: function(val, oldVal) {
                 this.nodes = _.cloneDeep(this.db_nodes);
+                this.reset_node_position();
             },
             db_edges: function(val, oldVal) {
                 this.edges = _.cloneDeep(this.db_edges);
@@ -247,7 +275,7 @@
 </script>
 
 <style scoped>
-.node-label{
-    font-size: 10em !important;
-}
+    #m-end path {
+        fill: #000000;
+    }
 </style>

@@ -117,7 +117,7 @@ const actions = {
         }
 
 
-        // --> 1. Build nodes
+        // --> 1. Push all nodes into list (root node, decision nodes, design node)
         console.log('--> vue-d3-network conversion - nodes');
         let nodes = []
         let temp_root = _.cloneDeep(state.root_node);
@@ -147,7 +147,7 @@ const actions = {
         for(let x=0;x<state.nodes.length;x++){
             let node = _.cloneDeep(state.nodes[x]);
 
-            // This should set this.child_data
+            // Get all child nodes
             let child_data = null;
             await state.neo.run(`
                     MATCH (m:${formulation_name}:${node.type})-->(dec)
@@ -158,6 +158,7 @@ const actions = {
                 child_data = parse_child_nodes(res);
             });
 
+            // For each child node, create an edge
             for(let y=0;y<child_data.length;y++){
                 let child = child_data[y];
                 let link = {
