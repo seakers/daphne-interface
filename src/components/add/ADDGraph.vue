@@ -44,11 +44,12 @@
                             thumb-label
                             ticks
                             dense
-                            min="2000"
-                            max="11000"
+                            min="1000"
+                            max="10000"
                             label="Edge Force"
-                            dark
+                            thumb-color="secondary"
                         ></v-slider>
+                        <v-btn color="secondary" v-on:click="reset_graph">Reset Graph</v-btn>
                     </v-container>
                 </v-card>
             </v-col>
@@ -68,10 +69,10 @@
 
                         <!--COMPONENT CARD TITLES-->
                         <v-card-title v-if="selected_component.obj_type === 'Node'" class="secondary lighten-2">{{ selected_component.name }}</v-card-title>
-                        <v-card-subtitle v-if="selected_component.obj_type === 'Node'" class="secondary lighten-2">{{ selected_component.type }} Node</v-card-subtitle>
+                        <v-card-subtitle v-if="selected_component.obj_type === 'Node'" class="secondary lighten-2">{{ selected_component.type }}</v-card-subtitle>
 
                         <v-card-title v-if="selected_component.obj_type === 'Edge'" class="secondary lighten-2">Edge</v-card-title>
-                        <v-card-subtitle v-if="selected_component.obj_type === 'Edge'" class="secondary lighten-2">parents | children info</v-card-subtitle>
+                        <v-card-subtitle v-if="selected_component.obj_type === 'Edge'" class="secondary lighten-2">parent info | child info</v-card-subtitle>
 
 
                         <!--INFO CARD CONTENT-->
@@ -209,6 +210,12 @@
                     this.selected_component = object;
                 }
             },
+            async reset_graph(){
+                await this.reset_node_size();
+                await this.reset_node_color();
+                await this.reset_node_position();
+                await this.clear_selection();
+            },
             async clear_selection(){
                 this.selected_component = _.cloneDeep(this.info_component);
             },
@@ -238,7 +245,7 @@
             async reset_node_position(){
                 let height = document.getElementById('add-graph').clientHeight;
                 let width = document.getElementById('add-graph').clientWidth;
-                let y_displacement = 30;
+                let y_displacement = 40;
 
                 let x_pos = width / 2;
                 let y_pos_root = y_displacement;
@@ -255,7 +262,8 @@
                         node.fy = y_pos_design;
                     }
                 }
-            }
+            },
+            
         },
         watch: {
             db_nodes: function(val, oldVal) {
@@ -278,4 +286,9 @@
     #m-end path {
         fill: #000000;
     }
+
+    .node:hover{
+        cursor: pointer !important;
+    }
+
 </style>
