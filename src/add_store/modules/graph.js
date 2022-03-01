@@ -12,6 +12,7 @@ const state = {
     neo: null,
     nodes: [],
     edges: [],
+    matrix: [],
 
 
     // --> NEO4J Connection
@@ -62,7 +63,7 @@ const actions = {
     },
 
     async query_root({ state, commit, dispatch }, formulation_name){
-        let query = `MATCH (n:${formulation_name}:Root) RETURN n.name, n.type, n.initial_params`;
+        let query = `MATCH (n:${formulation_name}:Root) RETURN n.name, n.type, n.problems`;
         await state.neo.run(query, {})
             .then(res => {
                 console.log('--> ROOT QUERY:', res);
@@ -77,7 +78,7 @@ const actions = {
     },
 
     async query_decisions({ state, commit, dispatch }, formulation_name){
-        let query = `MATCH (n:${formulation_name}:Decision) RETURN n.name, n.type, n.decisions, n.dependencies`;
+        let query = `MATCH (n:${formulation_name}:Decision) RETURN n.name, n.type, n.problems`;
         await state.neo.run(query, {})
             .then(res => {
                 console.log('--> DECISION QUERY:', res);
@@ -92,7 +93,7 @@ const actions = {
     },
 
     async query_design({ state, commit, dispatch }, formulation_name){
-        let query = `MATCH (n:${formulation_name}:Design) RETURN n.name, n.type, n.designs`;
+        let query = `MATCH (n:${formulation_name}:Design) RETURN n.name, n.type, n.problems`;
         await state.neo.run(query, {})
             .then(res => {
                 console.log('--> DESIGN QUERY:', res);
@@ -106,10 +107,47 @@ const actions = {
     },
 
 
+    async add_edge({ state, commit, dispatch }, edge_info){
+        let parent_name = edge_info.parent;
+        let child_name = edge_info.child;
+        let dependency_name = edge_info.dependency;
+        let formulation_name = edge_info.formulation;
+
+        let parent_q = `MATCH  (parent:${formulation_name} {name: '${parent_name}'}) `;
+        let child_q = `MATCH  (child:${formulation_name} {name: '${child_name}'}) `;
+        let edge_q = `CREATE (parent)-[:${dependency_name} { type: ''}]->(child)`;
+        let query = parent_q + child_q + edge_q;
+        await state.neo.run(query, {})
+            .then(res => {
+                console.log('--> Adding Edge:', res);
+            });
+    },
+
+    async remove_edge({ state, commit, dispatch }, edge_info){
+        let parent_name = edge_info.parent;
+        let child_name = edge_info.child;
+        let formulation_name = edge_info.formulation;
+
+        let query = `MATCH (m:${formulation_name} { name: '${parent_name}'})-[r]->(n:${formulation_name} { name: '${child_name}'}) DELETE r`;
+        await state.neo.run(query, {})
+            .then(res => {
+                console.log('--> Removing Edge:', res);
+            });
+    },
+
+    async add_node({ state, commit, dispatch }, node_info){
+
+    },
+
+    async remove_node({ state, commit, dispatch }, node_info){
+
+    },
+
+
+
 
     // --> NEO4J --> vue-d3-network
     async build_graph({ state, commit }, formulation_name){
-        let unique_idx = 1;
 
         if(state.root_node === null || state.decision_nodes === null || state.design_node === null){
             console.log('--> COULD NOT BUILD GRAPH');
@@ -117,40 +155,52 @@ const actions = {
         }
 
 
-        // --> 1. Push all nodes into list (root node, decision nodes, design node)
+        // --> Push all nodes into list (root node, decision nodes, design node) <--
         console.log('--> vue-d3-network conversion - nodes');
         let nodes = []
+
+        // --> 1. Root node
         let temp_root = _.cloneDeep(state.root_node);
         temp_root.obj_type = 'Node';
-        temp_root.unique_idx = unique_idx;
-        unique_idx += 1;
         nodes.push(temp_root);
+
+        // --> 2. Decision nodes
         for(let x=0;x<state.decision_nodes.length;x++){
             let temp_dec = _.cloneDeep(state.decision_nodes[x]);
             temp_dec.obj_type = 'Node';
-            temp_dec.unique_idx = unique_idx;
-            unique_idx += 1;
             nodes.push(temp_dec);
         }
+
+        // --> 3. Design node
         let design_node = _.cloneDeep(state.design_node);
         design_node.id = (nodes.length + 1);
         design_node.obj_type = 'Node';
-        design_node.unique_idx = unique_idx;
-        unique_idx += 1;
         nodes.push(design_node);
         await commit('set_nodes', nodes);
 
+        console.log('-- NODES', nodes);
 
-        // --> 2. Build edges
+
+        // --> Build edges for each node + adjacency matrix <--
         console.log('--> vue-d3-network conversion - edges');
         let edges = [];
+        let matrix = [];
         for(let x=0;x<state.nodes.length;x++){
             let node = _.cloneDeep(state.nodes[x]);
 
-            // Get all child nodes
+            // Each node will have its own row in the adjacency matrix
+            let matrix_row = {
+                name: node.name
+            }
+            for(let y=0; y<state.nodes.length; y++){
+                matrix_row[state.nodes[y].name] = false;
+            }
+
+
+            // Get all child nodes (array of objects with attributes: name, type)
             let child_data = null;
             await state.neo.run(`
-                    MATCH (m:${formulation_name}:${node.type})-->(dec)
+                    MATCH (m:${formulation_name})-->(dec)
                     WHERE m.name = "${node.name}"
                     RETURN dec.name, dec.type`,
                 {}
@@ -158,20 +208,33 @@ const actions = {
                 child_data = parse_child_nodes(res);
             });
 
-            // For each child node, create an edge
+            // Iterate over child nodes and create an edge for each
             for(let y=0;y<child_data.length;y++){
                 let child = child_data[y];
+                matrix_row[child.name] = true;
                 let link = {
                     sid: node.id,
                     tid: state.nodes.find(item => item.name === child.name && item.type === child.type).id,
                     _color: '#877b67',
                     obj_type: 'Edge',
-                    unique_idx: unique_idx,
                 }
-                unique_idx += 1;
+
+                if(node.type === 'Root'){
+                    link.edge_type = 'ROOT_DEPENDENCY';
+                    // link._color = '#8BC34A';
+                }
+                else if(node.type === 'Design'){
+                    link.edge_type = 'DESIGN_DEPENDENCY';
+                }
+                else{
+                    link.edge_type = 'DECISION_DEPENDENCY';
+                }
+
                 edges.push(link);
             }
+            matrix.push(matrix_row);
         }
+        await commit('set_matrix', matrix);
         await commit('set_edges', edges);
     }
 };
@@ -203,6 +266,9 @@ const mutations = {
     },
     async set_edges(state, edges){
         state.edges = edges;
+    },
+    async set_matrix(state, matrix){
+        state.matrix = matrix;
     },
 };
 

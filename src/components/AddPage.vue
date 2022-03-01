@@ -9,7 +9,7 @@
 
 
         <!-- NAVIGATION -->
-        <v-navigation-drawer v-model="drawer" app color="primary lighten-1">
+        <v-navigation-drawer v-model="drawer" app color="primary lighten-1" dark>
 
             <!-- MENU HEADER -->
             <v-list-item class="white--text">
@@ -29,7 +29,7 @@
 
                 <!-- PROBLEM LINKS -->
                 <v-list-group :value="false">
-                    <v-icon slot="prependIcon" color="white">mdi-pencil-ruler</v-icon>
+                    <v-icon slot="prependIcon" color="white">mdi-satellite-variant</v-icon>
                     <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
                     <template v-slot:activator>
                         <v-list-item-title class="white--text">Problems</v-list-item-title>
@@ -38,15 +38,23 @@
                     <!-- ITEMS-->
                     <v-list-item v-for="item in problem_links" :key="item.name" :to="item.link" link active-class="bg-active">
                         <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
-<!--                        <v-list-item-icon>-->
-<!--                            <v-icon v-text="item.icon" color="white"></v-icon>-->
-<!--                        </v-list-item-icon>-->
+                        <v-list-item-icon>
+                            <v-icon color="white">mdi-puzzle</v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+
+                    <!--NEW PROBLEM-->
+                    <v-list-item link active-class="bg-active" v-on:click="new_problem">
+                        <v-list-item-title class="white--text">New Problem</v-list-item-title>
+                        <v-list-item-icon>
+                            <v-icon color="white">mdi-plus</v-icon>
+                        </v-list-item-icon>
                     </v-list-item>
                 </v-list-group>
 
                 <!-- FORMULATION LINKS -->
                 <v-list-group :value="false">
-                    <v-icon slot="prependIcon" color="white">mdi-graph</v-icon>
+                    <v-icon slot="prependIcon" color="white">mdi-graphql</v-icon>
                     <v-icon slot="appendIcon" color="white">mdi-chevron-down</v-icon>
                     <template v-slot:activator>
                         <v-list-item-title class="white--text">Formulations</v-list-item-title>
@@ -55,9 +63,17 @@
                     <!-- ITEMS-->
                     <v-list-item v-for="item in formulation_links" :key="item.name" :to="item.link" link active-class="bg-active">
                         <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
-<!--                        <v-list-item-icon>-->
-<!--                            <v-icon v-text="item.icon" color="white"></v-icon>-->
-<!--                        </v-list-item-icon>-->
+                        <v-list-item-icon>
+                            <v-icon color="white">mdi-graph</v-icon>
+                        </v-list-item-icon>
+                    </v-list-item>
+
+                    <!--NEW FORMULATION-->
+                    <v-list-item link active-class="bg-active" v-on:click="new_formulation">
+                        <v-list-item-title class="white--text">New Formulation</v-list-item-title>
+                        <v-list-item-icon>
+                            <v-icon color="white">mdi-plus</v-icon>
+                        </v-list-item-icon>
                     </v-list-item>
                 </v-list-group>
 
@@ -69,7 +85,7 @@
         <!-- APP BAR -->
         <v-app-bar app class="primary white--text">
             <v-app-bar-nav-icon @click="drawer = !drawer" color="white"></v-app-bar-nav-icon>
-            <v-toolbar-title>ADD Builder</v-toolbar-title>
+            <v-toolbar-title>ADG Tool</v-toolbar-title>
         </v-app-bar>
 
 
@@ -111,8 +127,9 @@
 
                 // --> Formulation Links <--
                 formulation_links: [
-                    { name: 'Climate Centric', icon: 'mdi-graph', link: '/formulation/ClimateCentric'},
+                    { name: 'EOSS', icon: 'mdi-graph', link: '/formulation/EOSS'},
                 ],
+
             }
         },
         computed: {
@@ -139,7 +156,12 @@
             }
         },
         methods: {
+            async new_problem(){
 
+            },
+            async new_formulation(){
+
+            },
         },
         watch: {
 

@@ -40,13 +40,15 @@ import {WebSocketLink} from "@apollo/client/link/ws";
 
 // --> 1. Build routes
 import ADDGraph from "./components/add/ADDGraph";
+import ADDProblem from "./components/add/ADDProblem";
+import ADDFormulation from "./components/add/ADDFormulation";
 const routes = [
 
     // Problems
     // { path: '/problem', component: Mastery },
 
     // Formulations
-    { path: '/formulation/:name', component: ADDGraph },
+    { path: '/formulation/:name', component: ADDFormulation },
     // { path: '/LearningModule/:name/:id', component: LearningModule, props:true },
 ]
 const router = new VueRouter({

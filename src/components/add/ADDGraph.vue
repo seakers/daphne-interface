@@ -58,7 +58,7 @@
             <!--COMPONENT SELECTOR-->
             <v-col cols="6">
                 <v-slide-y-reverse-transition mode="out-in">
-                    <v-card class="d-flex flex-column white" elevation="0" min-height="100%" :key="selected_component.unique_idx" dark>
+                    <v-card class="d-flex flex-column white" elevation="0" min-height="100%" :key="selected_component.id" dark>
 
 
 
@@ -144,13 +144,13 @@
                 selected_component: {
                     name: 'Decision Tool',
                     type: 'no component selected',
-                    unique_idx: 0,
+                    id: 0,
                     is_info: true,
                 },
                 info_component: {
                     name: 'Component Selection Tool',
                     type: 'no component selected',
-                    unique_idx: 0,
+                    id: 0,
                     is_info: true,
                 },
 
@@ -185,7 +185,7 @@
                     fontSize: 15,
                     nodeLabels: true,
                     canvas: false,
-                    linkWidth:3
+                    linkWidth: 3
                 }
             },
         },
@@ -263,7 +263,6 @@
                     }
                 }
             },
-            
         },
         watch: {
             db_nodes: function(val, oldVal) {
