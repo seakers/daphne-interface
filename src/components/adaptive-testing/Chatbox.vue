@@ -24,7 +24,7 @@
                         <v-card :style="get_message_style(item.sender)">
                             <v-card-title style="padding-top: 10px; padding-bottom: 4px;" class="text-subtitle-2">
                                 <div v-if="item.sender === 'User'">{{username}}</div>
-                                <div v-if="item.sender === 'Daphne'">{{ item.sender }} </div>
+                                <div v-if="item.sender === 'Daphne'">{{ item.sender }}</div>
                                 <v-btn icon right absolute x-small elevation="0" v-on:click="clear_message(item)">
                                     <v-icon color="analogous2">mdi-close</v-icon>
                                 </v-btn>
@@ -32,6 +32,28 @@
                             <v-card-text style="padding-bottom: 10px;">
                                 {{ item.text }}
                             </v-card-text>
+
+
+                            <v-divider v-if="item.more_info !== null" style="margin-top: 0; margin-bottom: 0;"></v-divider>
+                            <v-card-actions v-if="item.more_info !== null" style="padding-top: 8px; padding-left: 16px;">
+                                <span class="text-subtitle-2">Recommended Modules</span>
+                                <v-spacer></v-spacer>
+                                <v-btn icon @click="item.show = !item.show">
+                                    <v-icon>{{ item.show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                                </v-btn>
+                            </v-card-actions>
+
+                            <v-expand-transition v-if="item.more_info !== null">
+                                <div v-show="item.show">
+                                    <v-card-text style="padding-top: 0;">
+                                        <div v-for="(mod, idx) in item.more_info.modules">
+                                            {{ mod.name }} - slides {{ mod.slides }}
+                                        </div>
+                                    </v-card-text>
+                                </div>
+                            </v-expand-transition>
+
+
                         </v-card>
                     </v-col>
 
@@ -63,10 +85,6 @@
 </template>
 
 <script>
-
-
-
-
     import {mapState} from "vuex";
     import {MessageSubscription, InsertMessage, ClearMessage} from "../../testing_store/queries";
     import {fetchPost} from "../../scripts/fetch-helpers";
@@ -77,7 +95,7 @@
             return {
                 messages_db: null,
                 messages: [],
-                user_message: '',
+                user_message: ''
             }
         },
         computed: {
@@ -182,6 +200,10 @@
                           // --> 2. Copy over messages
                           for(let x = 0; x < messages.length; x++){
                               messages[x].date = (new Date(Date.parse(messages[x].date))).toLocaleString();
+                              if(messages[x].more_info !== null){
+                                  messages[x].more_info = JSON.parse(messages[x].more_info)
+                                  messages[x].show = false;
+                              }
                           }
                           this.messages = messages;
                       }

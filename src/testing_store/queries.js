@@ -223,6 +223,7 @@ const MessageSubscription = gql`
             sender
             text
             cleared
+            more_info
         }
     }
 `;
