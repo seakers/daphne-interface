@@ -45,22 +45,56 @@
                         <v-list-item-title class="white--text">Learning Modules</v-list-item-title>
                     </template>
 
+
 <!--                LEARNING MODULE ITEMS-->
-                    <v-list-item v-for="item in module_links" :key="item.name" :to="item.link" link active-class="bg-active">
-
-                        <v-list-item-content>
-                            <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
-                            <v-progress-linear :value="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px"></v-progress-linear>
-                        </v-list-item-content>
-
+<!--                    <v-list-item v-for="item in module_links" :key="item.name" :to="item.link" link active-class="bg-active">-->
+<!--                        <v-list-item-content>-->
+<!--                            <v-list-item-title v-text="item.name" class="white&#45;&#45;text"></v-list-item-title>-->
+<!--                            <v-progress-linear :value="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px"></v-progress-linear>-->
+<!--                        </v-list-item-content>-->
 
 
-                        <v-list-item-icon>
-                            <v-icon v-text="item.icon" color="white"></v-icon>
-                        </v-list-item-icon>
 
-                    </v-list-item>
+<!--                        <v-list-item-icon>-->
+<!--                            <v-icon v-text="item.icon" color="white"></v-icon>-->
+<!--                        </v-list-item-icon>-->
+<!--                    </v-list-item>-->
+
+
+                    <!--SUB GROUP - COURSES-->
+                    <v-list-group
+                        :value="false"
+                        no-action sub-group
+                        class="white--text" color="white" active-class="bg-active"
+                        v-for="(value, name, index) in module_links_2"
+                        :key="index"
+                    >
+                        <v-icon slot="prependIcon" color="white">mdi-chevron-down</v-icon>
+                        <template v-slot:activator>
+                            <v-list-item-content>
+                                <v-list-item-title class="white--text">{{ name }}</v-list-item-title>
+                            </v-list-item-content>
+                        </template>
+
+                        <!--COURSE LEARNING MODULES-->
+                        <v-list-item v-for="item in value" :key="item.name" :to="item.link" link active-class="bg-active" style="padding-left: 24px;">
+                            <v-list-item-content>
+                                <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
+                                <v-progress-linear :value="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px"></v-progress-linear>
+                            </v-list-item-content>
+
+                            <v-list-item-icon>
+                                <v-icon v-text="item.icon" color="white"></v-icon>
+                            </v-list-item-icon>
+                        </v-list-item>
+
+                    </v-list-group>
                 </v-list-group>
+
+
+
+
+
 
 <!--            TESTING ITEM LIST-->
                 <v-list-group :value="false">
@@ -155,6 +189,12 @@
 
                 // --> Module links <--
                 module_links: [],
+
+
+                // <div v-for="(value, name, index) in module_links_2">
+                // name: course
+                // value: learning module list
+                module_links_2: {},
             }
         },
         computed: {
@@ -196,6 +236,24 @@
                 }
                 return "white";
             },
+            get_module_progress(module){
+                let progress = 0;
+                let slide_questions = 0;
+                let slide_questions_completed = 0;
+                for(let y = 0; y < module.slides.length; y++){
+                    let slide = module.slides[y];
+                    if(slide.type === 'question'){
+                        slide_questions++;
+                        if(slide.answered === true){
+                            slide_questions_completed++;
+                        }
+                    }
+                }
+                if(slide_questions !== 0){
+                    progress = (slide_questions_completed / slide_questions);
+                }
+                return progress;
+            },
         },
         watch: {
 
@@ -214,37 +272,51 @@
                         return (this.user_id === null);
                     },
                     result(result) {
-                        console.log(result);
+                        console.log('MODULE LINKS SUB', result);
                         let modules = result.data.modules_db;
                         let module_links = [];
+                        let module_links_2 = {};
+
+                        // --> Iterate over learning modules
                         for(let x = 0; x < modules.length; x++){
                             let module = modules[x];
 
                             // --> Find module progress
-                            let progress = 0;
-                            let slide_questions = 0;
-                            let slide_questions_completed = 0;
-                            for(let y = 0; y < module.slides.length; y++){
-                                let slide = module.slides[y];
-                                if(slide.type === 'question'){
-                                    slide_questions++;
-                                    if(slide.answered === true){
-                                        slide_questions_completed++;
-                                    }
-                                }
-                            }
-                            if(slide_questions !== 0){
-                                progress = (slide_questions_completed / slide_questions);
-                            }
+                            let progress = this.get_module_progress(module);
 
-                            module_links.push({
+                            // --> Index module link
+                            let module_link = {
                                 name: module.name,
                                 icon: module.icon,
                                 link: ('/LearningModule/' + module.name + '/' + module.id),
                                 progress: progress
-                            });
+                            }
+
+                            module_links.push(module_link);
+
+
+
+                            if(module.course === null){
+                                if(!('General' in module_links_2)){
+                                    module_links_2['General'] = [module_link]
+                                }
+                                else{
+                                    module_links_2['General'].push(module_link)
+                                }
+                            }
+                            else{
+                                if(!(module.course in module_links_2)){
+                                    module_links_2[module.course] = [module_link]
+                                }
+                                else{
+                                    module_links_2[module.course].push(module_link)
+                                }
+                            }
                         }
+
+
                         this.module_links = module_links;
+                        this.module_links_2 = module_links_2;
                     },
                 },
             },

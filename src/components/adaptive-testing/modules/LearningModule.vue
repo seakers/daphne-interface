@@ -68,7 +68,8 @@
                                         <v-img
                                             v-if="slide.type === 'info'"
                                             :src="get_slide_image(slide.src)"
-                                            contain
+                                            max-width="960"
+                                            max-height="720"
                                             v-on:click="toggle_overlay(false)"
                                             style="cursor: zoom-out"
                                         ></v-img>

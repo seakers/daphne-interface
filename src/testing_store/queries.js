@@ -237,6 +237,7 @@ const ModuleLinkSubscription = gql`
             id
             name
             icon
+            course
             slides: Slides(where: {user_id: {_eq: $user_id}}, order_by: {idx: asc}) {
                 type
                 answered

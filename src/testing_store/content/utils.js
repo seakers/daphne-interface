@@ -75,6 +75,68 @@ import COSTD_27 from './CostDrivers/Slide27CA.png'
 
 
 
+import DODS_0 from './dod-slides/DODSlide0.png'
+import DODS_1 from './dod-slides/DODSlide1.png'
+import DODS_2 from './dod-slides/DODSlide2.png'
+import DODS_3 from './dod-slides/DODSlide3.png'
+import DODS_4 from './dod-slides/DODSlide4.png'
+import DODS_5 from './dod-slides/DODSlide5.png'
+import DODS_6 from './dod-slides/DODSlide6.png'
+import DODS_7 from './dod-slides/DODSlide7.png'
+import DODS_8 from './dod-slides/DODSlide8.png'
+import DODS_9 from './dod-slides/DODSlide9.png'
+import DODS_10 from './dod-slides/DODSlide10.png'
+import DODS_11 from './dod-slides/DODSlide11.png'
+import DODS_12 from './dod-slides/DODSlide12.png'
+import DODS_13 from './dod-slides/DODSlide13.png'
+import DODS_14 from './dod-slides/DODSlide14.png'
+import DODS_15 from './dod-slides/DODSlide15.png'
+import DODS_16 from './dod-slides/DODSlide16.png'
+import DODS_17 from './dod-slides/DODSlide17.png'
+import DODS_18 from './dod-slides/DODSlide18.png'
+import DODS_19 from './dod-slides/DODSlide19.png'
+import DODS_20 from './dod-slides/DODSlide20.png'
+import DODS_21 from './dod-slides/DODSlide21.png'
+import DODS_22 from './dod-slides/DODSlide22.png'
+import DODS_23 from './dod-slides/DODSlide23.png'
+import DODS_24 from './dod-slides/DODSlide24.png'
+import DODS_25 from './dod-slides/DODSlide25.png'
+import DODS_26 from './dod-slides/DODSlide26.png'
+import DODS_27 from './dod-slides/DODSlide27.png'
+import DODS_28 from './dod-slides/DODSlide28.png'
+import DODS_29 from './dod-slides/DODSlide29.png'
+import DODS_30 from './dod-slides/DODSlide30.png'
+import DODS_31 from './dod-slides/DODSlide31.png'
+import DODS_32 from './dod-slides/DODSlide32.png'
+import DODS_33 from './dod-slides/DODSlide33.png'
+import DODS_34 from './dod-slides/DODSlide34.png'
+import DODS_35 from './dod-slides/DODSlide35.png'
+import DODS_36 from './dod-slides/DODSlide36.png'
+import DODS_37 from './dod-slides/DODSlide37.png'
+import DODS_38 from './dod-slides/DODSlide38.png'
+import DODS_39 from './dod-slides/DODSlide39.png'
+import DODS_40 from './dod-slides/DODSlide40.png'
+import DODS_41 from './dod-slides/DODSlide41.png'
+import DODS_42 from './dod-slides/DODSlide42.png'
+import DODS_43 from './dod-slides/DODSlide43.png'
+import DODS_44 from './dod-slides/DODSlide44.png'
+import DODS_45 from './dod-slides/DODSlide45.png'
+import DODS_46 from './dod-slides/DODSlide46.png'
+import DODS_47 from './dod-slides/DODSlide47.png'
+import DODS_48 from './dod-slides/DODSlide48.png'
+import DODS_49 from './dod-slides/DODSlide49.png'
+import DODS_50 from './dod-slides/DODSlide50.png'
+import DODS_51 from './dod-slides/DODSlide51.png'
+import DODS_52 from './dod-slides/DODSlide52.png'
+import DODS_53 from './dod-slides/DODSlide53.png'
+import DODS_54 from './dod-slides/DODSlide54.png'
+import DODS_55 from './dod-slides/DODSlide55.png'
+import DODS_56 from './dod-slides/DODSlide56.png'
+import DODS_57 from './dod-slides/DODSlide57.png'
+
+
+
+
 
 export function get_slide_src(src){
     if(src === 'LifecycleCost'){
@@ -279,6 +341,182 @@ export function get_slide_src(src){
     else if(src === 'COSTD_27'){
         return COSTD_27;
     }
+
+
+    else if(src === 'DODS_0'){
+        return DODS_0;
+    }
+    else if(src === 'DODS_1'){
+        return DODS_1;
+    }
+    else if(src === 'DODS_2'){
+        return DODS_2;
+    }
+    else if(src === 'DODS_3'){
+        return DODS_3;
+    }
+    else if(src === 'DODS_4'){
+        return DODS_4;
+    }
+    else if(src === 'DODS_5'){
+        return DODS_5;
+    }
+    else if(src === 'DODS_6'){
+        return DODS_6;
+    }
+    else if(src === 'DODS_7'){
+        return DODS_7;
+    }
+    else if(src === 'DODS_8'){
+        return DODS_8;
+    }
+    else if(src === 'DODS_9'){
+        return DODS_9;
+    }
+    else if(src === 'DODS_10'){
+        return DODS_10;
+    }
+    else if(src === 'DODS_11'){
+        return DODS_11;
+    }
+    else if(src === 'DODS_12'){
+        return DODS_12;
+    }
+    else if(src === 'DODS_13'){
+        return DODS_13;
+    }
+    else if(src === 'DODS_14'){
+        return DODS_14;
+    }
+    else if(src === 'DODS_15'){
+        return DODS_15;
+    }
+    else if(src === 'DODS_16'){
+        return DODS_16;
+    }
+    else if(src === 'DODS_17'){
+        return DODS_17;
+    }
+    else if(src === 'DODS_18'){
+        return DODS_18;
+    }
+    else if(src === 'DODS_19'){
+        return DODS_19;
+    }
+    else if(src === 'DODS_20'){
+        return DODS_20;
+    }
+    else if(src === 'DODS_21'){
+        return DODS_21;
+    }
+    else if(src === 'DODS_22'){
+        return DODS_22;
+    }
+    else if(src === 'DODS_23'){
+        return DODS_23;
+    }
+    else if(src === 'DODS_24'){
+        return DODS_24;
+    }
+    else if(src === 'DODS_25'){
+        return DODS_25;
+    }
+    else if(src === 'DODS_26'){
+        return DODS_26;
+    }
+    else if(src === 'DODS_27'){
+        return DODS_27;
+    }
+    else if(src === 'DODS_28'){
+        return DODS_28;
+    }
+    else if(src === 'DODS_29'){
+        return DODS_29;
+    }
+    else if(src === 'DODS_30'){
+        return DODS_30;
+    }
+    else if(src === 'DODS_31'){
+        return DODS_31;
+    }
+    else if(src === 'DODS_32'){
+        return DODS_32;
+    }
+    else if(src === 'DODS_33'){
+        return DODS_33;
+    }
+    else if(src === 'DODS_34'){
+            return DODS_34;
+        }
+    else if(src === 'DODS_35'){
+            return DODS_35;
+        }
+    else if(src === 'DODS_36'){
+            return DODS_36;
+        }
+    else if(src === 'DODS_37'){
+            return DODS_37;
+        }
+    else if(src === 'DODS_38'){
+            return DODS_38;
+        }
+    else if(src === 'DODS_39'){
+            return DODS_39;
+        }
+    else if(src === 'DODS_40'){
+            return DODS_40;
+        }
+    else if(src === 'DODS_41'){
+            return DODS_41;
+        }
+    else if(src === 'DODS_42'){
+            return DODS_42;
+        }
+    else if(src === 'DODS_43'){
+            return DODS_43;
+        }
+    else if(src === 'DODS_44'){
+            return DODS_44;
+        }
+    else if(src === 'DODS_45'){
+            return DODS_45;
+        }
+    else if(src === 'DODS_46'){
+            return DODS_46;
+        }
+    else if(src === 'DODS_47'){
+            return DODS_47;
+        }
+    else if(src === 'DODS_48'){
+            return DODS_48;
+        }
+    else if(src === 'DODS_49'){
+            return DODS_49;
+        }
+    else if(src === 'DODS_50'){
+            return DODS_50;
+        }
+    else if(src === 'DODS_51'){
+            return DODS_51;
+        }
+    else if(src === 'DODS_52'){
+            return DODS_52;
+        }
+    else if(src === 'DODS_53'){
+            return DODS_53;
+        }
+    else if(src === 'DODS_54'){
+            return DODS_54;
+        }
+    else if(src === 'DODS_55'){
+            return DODS_55;
+        }
+    else if(src === 'DODS_56'){
+            return DODS_56;
+        }
+    else if(src === 'DODS_57'){
+            return DODS_57;
+        }
 
 
 }
