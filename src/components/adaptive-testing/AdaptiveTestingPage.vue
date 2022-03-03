@@ -79,7 +79,13 @@
                         <!--COURSE LEARNING MODULES-->
                         <v-list-item v-for="item in value" :key="item.name" :to="item.link" link active-class="bg-active" style="padding-left: 24px;">
                             <v-list-item-content>
-                                <v-list-item-title v-text="item.name" class="white--text"></v-list-item-title>
+                                <v-list-item-title class="white--text" v-if="item.status !== null">
+                                    <v-badge :color="item.status.color" :content="item.status.text">{{ item.name }}</v-badge>
+                                </v-list-item-title>
+
+                                <v-list-item-title class="white--text" v-text="item.name" v-if="item.status === null">
+                                </v-list-item-title>
+
                                 <v-progress-linear :value="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px"></v-progress-linear>
                             </v-list-item-content>
 
@@ -189,11 +195,6 @@
 
                 // --> Module links <--
                 module_links: [],
-
-
-                // <div v-for="(value, name, index) in module_links_2">
-                // name: course
-                // value: learning module list
                 module_links_2: {},
             }
         },
@@ -284,18 +285,26 @@
                             // --> Find module progress
                             let progress = this.get_module_progress(module);
 
-                            // --> Index module link
+                            // --> Get module status
+                            let status = null;
+                            if(module.status !== null){
+                                status = JSON.parse(module.status);
+                            }
+
+                            // --> Create module link
                             let module_link = {
                                 name: module.name,
                                 icon: module.icon,
                                 link: ('/LearningModule/' + module.name + '/' + module.id),
+                                status: status,
                                 progress: progress
                             }
 
+                            // --> push: module_links
                             module_links.push(module_link);
 
 
-
+                            // --> push: module_links_2
                             if(module.course === null){
                                 if(!('General' in module_links_2)){
                                     module_links_2['General'] = [module_link]
