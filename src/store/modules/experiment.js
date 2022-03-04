@@ -40,10 +40,10 @@ const state = {
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2012', '2017', '2001', '2002', '2008', '2010', '2013', '2014', '2016', '2015', '2008'],
+                engineer: ['2000', '2012', '2017'],
                 analyst: ['1000'],
                 explorer: [],
-                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                historian: [],
                 critic: ['3000', '3005']
             },
             nextStage: '',
@@ -277,10 +277,10 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2012', '2017', '2001', '2002', '2008', '2010', '2013', '2014', '2016', '2015', '2008'],
+                engineer: ['2000', '2012', '2017'],
                 analyst: ['1000'],
                 explorer: [],
-                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                historian: [],
                 critic: ['3000', '3005']
             },
             nextStage: '',
@@ -301,10 +301,10 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2012', '2017', '2001', '2002', '2008', '2010', '2013', '2014', '2016', '2015', '2008'],
+                engineer: ['2000', '2012', '2017'],
                 analyst: ['1000'],
                 explorer: [],
-                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                historian: [],
                 critic: ['3000', '3005']
             },
             nextStage: '',

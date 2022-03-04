@@ -61,6 +61,12 @@
                 </div>
             </div>
 
+            <div class="field">
+                <div class="control">
+                    <a class="button is-link" v-bind:href="downloadUrl">Download</a>
+                </div>
+            </div>
+
             <hr>
 
             <div class="field" v-if="isLoggedIn">
@@ -111,13 +117,7 @@
                 vassarRebuildStatus: state => state.services.vassarRebuildStatus,
             }),
             downloadUrl() {
-                let params = {
-                    filename: this.datasetInformation.filename
-                };
-                let queryString = Object.keys(params).map((key) => {
-                    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
-                }).join('&');
-                return API_URL + 'eoss/data/download-data?' + queryString;
+                return API_URL + 'eoss/data/download-data';
             },
             changedSelection() {
                 return this.groupId !== this.selectedGroupId || this.problemId !== this.selectedProblemId || this.datasetId !== this.selectedDatasetId;
