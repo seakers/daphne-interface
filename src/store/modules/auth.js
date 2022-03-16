@@ -28,6 +28,7 @@ const actions = {
             let reqData = new FormData();
             reqData.append("username", username);
             reqData.append("password", password);
+            reqData.append("daphneVersion", "EOSS");
             let dataResponse = await fetchPost(API_URL + 'auth/login', reqData);
 
             if (dataResponse.ok) {
