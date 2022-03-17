@@ -10,7 +10,9 @@
                     <!--SETTINGS-->
                     <v-menu bottom left>
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn dark icon v-bind="attrs" v-on="on" style="float: right" height="24">
+                            <v-btn dark icon v-bind="attrs" v-on="on" style="float: right" height="24"
+                                   :class="{ 'yellow--text': recommender_status }"
+                            >
                                 <v-icon>mdi-cog</v-icon>
                             </v-btn>
                         </template>
@@ -180,7 +182,7 @@
                 messages: [],
                 user_message: '',
 
-                settings: [],
+                settings: [0],
             }
         },
         computed: {
