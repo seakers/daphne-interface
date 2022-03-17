@@ -258,6 +258,22 @@ const SlideIdxQuery = gql`
     }
 `;
 
+const SlideIdxSub = gql`
+
+    subscription SlideIdxSub($user_id: Int!, $module_id: Int!) {
+        entry: Join__User_LearningModule(where: {user_id: {_eq: $user_id}, LearningModule: {id: {_eq: $module_id}}}) {
+            slide_idx
+        }
+    }
+`;
+
+
+
+
+
+
+
+
 const ModuleQuery = gql`
 
     query ModuleQuery($user_id: Int!, $module_id: Int!) {
@@ -279,6 +295,8 @@ const ModuleQuery = gql`
         }
     }
 `;
+
+
 
 const SlidesQuery = gql`
 
@@ -310,6 +328,19 @@ const SlidesQuery = gql`
     }
 `;
 
+const SlidesQueryFast = gql`
+
+    query SlidesQueryFast($user_id: Int!, $module_id: Int!) {
+        slides: Slide(where: {user_id: {_eq: $user_id}, module_id: {_eq: $module_id}, type: {_eq: "info"}}, order_by: {idx: asc}) {
+            type
+            idx
+        }
+    }
+`;
+
+
+
+
 const UpdateSlideIdx = gql`
 
     mutation UpdateSlideIdx($user_id: Int!, $module_id: Int!, $slide_idx: Int!) {
@@ -331,8 +362,8 @@ const UpdateSlide = gql`
 
 
 const InsertMessage = gql`
-    mutation InsertMessage($user_id: Int!, $text: String!, $sender: String!) {
-        insert_Message_one(object: {user_id: $user_id, text: $text, sender: $sender, date: "now()", cleared: false}) {
+    mutation InsertMessage($user_id: Int!, $text: String!, $sender: String!, $more_info: String) {
+        insert_Message_one(object: {user_id: $user_id, text: $text, sender: $sender, date: "now()", cleared: false, more_info: $more_info}) {
             id
         }
     }
@@ -388,5 +419,7 @@ export {
     AbilityParameterMasterySub,
     MessageSubscription,
     InsertMessage,
-    ClearMessage
+    ClearMessage,
+    SlideIdxSub,
+    SlidesQueryFast
 }

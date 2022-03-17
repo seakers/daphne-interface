@@ -154,7 +154,7 @@
 <script>
 import { mapState } from 'vuex';
 import * as _ from 'lodash-es';
-import {ModuleQuery, SlideIdxQuery, SlidesQuery, UpdateSlideIdx, UpdateSlide} from "../../../testing_store/queries";
+import {ModuleQuery, SlideIdxQuery, SlidesQuery, UpdateSlideIdx, UpdateSlide, SlideIdxSub} from "../../../testing_store/queries";
 import { get_slide_src } from "../../../testing_store/content/utils";
 
 
@@ -318,25 +318,25 @@ export default {
         }
     },
     apollo: {
-        slide_idx: {
-            query: SlideIdxQuery,
-            fetchPolicy: 'no-cache',
-            variables() {
-                return {
-                    user_id: this.user_id,
-                    module_id: this.module_id,
-                }
-            },
-            skip() {
-                return this.user_id === null;
-            },
-            update: data => {
-                let return_idx = data.entry[0].slide_idx;
-                console.log('--> SLIDE IDX QUERY:', return_idx);
-                // return 1;
-                return return_idx
-            }
-        },
+        // slide_idx: {
+        //     query: SlideIdxQuery,
+        //     fetchPolicy: 'no-cache',
+        //     variables() {
+        //         return {
+        //             user_id: this.user_id,
+        //             module_id: this.module_id,
+        //         }
+        //     },
+        //     skip() {
+        //         return this.user_id === null;
+        //     },
+        //     update: data => {
+        //         let return_idx = data.entry[0].slide_idx;
+        //         console.log('--> SLIDE IDX QUERY:', return_idx);
+        //         // return 1;
+        //         return return_idx
+        //     }
+        // },
         module: {
             query: ModuleQuery,
             fetchPolicy: 'no-cache',
@@ -391,6 +391,27 @@ export default {
                 return slides;
             }
         },
+        $subscribe: {
+            slide_idx: {
+                deep: true,
+                query: SlideIdxSub,
+                variables() {
+                    return {
+                        user_id: this.user_id,
+                        module_id: this.module_id,
+                    }
+                },
+                skip() {
+                    return this.user_id === null;
+                },
+                result(result) {
+                    console.log('--> SLIDE IDX SUB DATA:', result);
+                    let return_idx = result.data.entry[0].slide_idx;
+
+                    this.slide_idx = return_idx;
+                },
+            }
+        }
     },
     mounted() {
         this.slide_logic();

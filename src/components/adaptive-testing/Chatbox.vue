@@ -5,8 +5,33 @@
         <v-list-item class="white--text">
             <v-list-item-content>
                 <v-list-item-title class="text-h6">
-                    Virtual Assistant
+                    <span>Virtual Assistant</span>
+
+                    <!--SETTINGS-->
+                    <v-menu bottom left>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn dark icon v-bind="attrs" v-on="on" style="float: right" height="24">
+                                <v-icon>mdi-cog</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-list>
+                            <v-list-item-group v-model="settings" multiple active-class="">
+                                <v-list-item>
+                                    <template v-slot:default="{ active }">
+                                        <v-list-item-action>
+                                            <v-checkbox :input-value="active"></v-checkbox>
+                                        </v-list-item-action>
+
+                                        <v-list-item-content>
+                                            <v-list-item-title>Recommender</v-list-item-title>
+                                        </v-list-item-content>
+                                    </template>
+                                </v-list-item>
+                            </v-list-item-group>
+                        </v-list>
+                    </v-menu>
                 </v-list-item-title>
+
                 <v-list-item-subtitle class="white--text">
                     Dialogue History
                 </v-list-item-subtitle>
@@ -36,19 +61,77 @@
 
                             <v-divider v-if="item.more_info !== null" style="margin-top: 0; margin-bottom: 0;"></v-divider>
                             <v-card-actions v-if="item.more_info !== null" style="padding-top: 8px; padding-left: 16px;">
-                                <span class="text-subtitle-2">Recommended Modules</span>
+                                <span class="text-subtitle-2">Recommended Material</span>
                                 <v-spacer></v-spacer>
                                 <v-btn icon @click="item.show = !item.show">
                                     <v-icon>{{ item.show ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                                 </v-btn>
                             </v-card-actions>
 
+                            <!--RECOMMENDATION-->
                             <v-expand-transition v-if="item.more_info !== null">
                                 <div v-show="item.show">
-                                    <v-card-text style="padding-top: 0;">
-                                        <div v-for="(mod, idx) in item.more_info.modules">
-                                            {{ mod.name }} - slides {{ mod.slides }}
-                                        </div>
+                                    <v-divider style="margin: 0;"></v-divider>
+                                    <v-card-text style="padding-top: 0; padding-left: 0; padding-right: 0;">
+
+
+                                        <v-list dense>
+                                            <v-list-group v-for="(module, idx) in JSON.parse(JSON.stringify(item.more_info))" :key="idx"
+                                                :value="false"
+                                            >
+                                                <!--LEARNING MODULE-->
+                                                <template v-slot:activator>
+                                                    <v-list-item-content>
+                                                        <v-list-item-title>
+                                                            {{module.name}}
+                                                        </v-list-item-title>
+                                                        <v-list-item-subtitle>{{(module.confidence * 100).toFixed(1)}}%</v-list-item-subtitle>
+                                                    </v-list-item-content>
+                                                </template>
+
+                                                <!--SLIDE-->
+                                                <v-list-item v-for="(slide, idx_s) in module.slides" :key="idx_s">
+
+
+                                                    <v-container>
+                                                        <v-row>
+                                                            <v-col cols="10">
+                                                                <v-list-item-title>
+                                                                    Slide {{slide.id}}
+                                                                    <v-progress-linear :value="slide.confidence * 100" rounded color="analogous2"></v-progress-linear>
+                                                                </v-list-item-title>
+                                                            </v-col>
+                                                            <v-col cols="2">
+                                                                <v-tooltip bottom>
+                                                                    <template v-slot:activator="{ on, attrs }">
+                                                                        <v-btn icon small color="success" v-bind="attrs" v-on="on" @click="go_to_slide(module, slide)">
+                                                                            <v-icon>mdi-arrow-right-bold</v-icon>
+                                                                        </v-btn>
+                                                                    </template>
+                                                                    <span>Go to slide</span>
+                                                                </v-tooltip>
+                                                            </v-col>
+                                                        </v-row>
+                                                    </v-container>
+
+<!--                                                    <v-list-item-content>-->
+<!--                                                        <v-list-item-title>-->
+
+<!--                                                            Slide {{slide.id}}-->
+<!--                                                            <v-progress-linear :value="slide.confidence * 100" rounded></v-progress-linear>-->
+
+
+<!--                                                        </v-list-item-title>-->
+<!--                                                    </v-list-item-content>-->
+                                                </v-list-item>
+
+                                            </v-list-group>
+
+
+
+                                        </v-list>
+
+
                                     </v-card-text>
                                 </div>
                             </v-expand-transition>
@@ -70,7 +153,6 @@
                         <v-text-field
                             v-model="user_message"
                             outlined
-                            clearable
                             append-icon="mdi-send"
                             background-color="white"
                             v-on:click:append="send_message()"
@@ -86,8 +168,9 @@
 
 <script>
     import {mapState} from "vuex";
-    import {MessageSubscription, InsertMessage, ClearMessage} from "../../testing_store/queries";
+    import {MessageSubscription, InsertMessage, ClearMessage, SlidesQueryFast, UpdateSlideIdx} from "../../testing_store/queries";
     import {fetchPost} from "../../scripts/fetch-helpers";
+    import * as _ from "lodash-es";
 
     export default {
         name: "chatbox",
@@ -95,7 +178,9 @@
             return {
                 messages_db: null,
                 messages: [],
-                user_message: ''
+                user_message: '',
+
+                settings: [],
             }
         },
         computed: {
@@ -110,9 +195,51 @@
                     text: this.user_message,
                     sender: 'User'
                 }
+            },
+            recommender_status() {
+                return this.settings.includes(0);
             }
         },
         methods: {
+            async go_to_slide(module, slide){
+                console.log('--> GOING TO SLIDE:', module, slide);
+
+                // --> 1. Create link to learning module
+                let link = '/LearningModule/' + module.name + '/' + module.id;
+
+                // --> 2. Route to learning module
+                if (this.$route.path !== link) {
+                    await this.$router.push(link);
+                }
+
+                // --> 3. Calculate which slide to go to and set
+                let slide_idx = await this.get_slide_idx(module.id, slide.id);
+                console.log('--> SLIDE IDX', slide_idx);
+
+                let mutation = await this.$apollo.mutate({
+                    mutation: UpdateSlideIdx,
+                    variables: {
+                        user_id: this.user_id,
+                        module_id: module.id,
+                        slide_idx: slide_idx
+                    },
+                    update: (cache, { data: { result } }) => {},
+                });
+                console.log(mutation);
+            },
+            async get_slide_idx(module_id, slide_num){
+                let slide_query = await this.$apollo.query({
+                    deep: true,
+                    fetchPolicy: 'no-cache',
+                    query: SlidesQueryFast,
+                    variables: {
+                        user_id: this.user_id,
+                        module_id: module_id,
+                    }
+                });
+                let query_slides = slide_query['data']['slides'];
+                return query_slides[slide_num].idx;
+            },
             get_message_style(type){
                 if(type === 'User'){
                     return 'border-radius: 28px 28px 28px 4px; margin-right: 40px;'
@@ -127,28 +254,55 @@
                 await this.insert_message(this.user_message_object.text, this.user_message_object.sender);
 
                 // --> 2. Send request to daphne_brain and get response
-                let reqData = new FormData();
-                reqData.append('command', this.user_message_object.text);
-                let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/command', reqData);
-                if (dataResponse.ok) {
-                    let data = await dataResponse.json();
-                    let text = data['response']['visual_message'][0];
-                    if(typeof text !== 'undefined'){
-                        await this.insert_message(text, 'Daphne');
+                let reqData1 = new FormData();
+                let reqData2 = new FormData();
+                reqData1.append('command', this.user_message_object.text);
+                reqData2.append('command', this.user_message_object.text);
+
+                // let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/command', reqData);
+
+
+
+
+                // --> Find recommended learning modules
+                let more_info = null;
+                if(this.recommender_status){
+                    let dataResponse_lm = await fetchPost(API_URL + 'ca/dialogue/lmcommand',reqData1);
+                    if (dataResponse_lm.ok) {
+                        let data_lm = await dataResponse_lm.json();
+                        console.log('--> CONFIDENCE DATA',data_lm)
+                        if(data_lm['response'] !== 'empty'){
+                            more_info = data_lm['response'];
+                        }
                     }
+                }
+
+
+                // --> Get cognitive assistant response
+                // let dataResponse_ca = await fetchPost(API_URL + 'ca/dialogue/cacommand', reqData2);
+                let dataResponse_ca = await fetchPost(API_URL + 'eoss/dialogue/command', reqData2);
+                if (dataResponse_ca.ok) {
+                    let data_ca = await dataResponse_ca.json();
+                    console.log('--> ANSWER DATA',data_ca)
+                    let text = data_ca['response']['visual_message'][0];
+                    if(typeof text !== 'undefined'){
+                        await this.insert_message(text, 'Daphne', more_info);
+                    }
+
                 }
 
 
                 // --> 3. Reset message field to empty
                 this.user_message = '';
             },
-            async insert_message(text, sender){
+            async insert_message(text, sender, more_info){
                 let mutation = await this.$apollo.mutate({
                     mutation: InsertMessage,
                     variables: {
                         user_id: this.user_id,
                         text: text,
                         sender: sender,
+                        more_info: more_info
                     },
                     update: (cache, { data: { result } }) => {},
                 });
