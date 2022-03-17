@@ -290,7 +290,9 @@
                     if(typeof text !== 'undefined'){
                         await this.insert_message(text, 'Daphne', more_info);
                     }
-
+                }
+                else{
+                    await this.insert_message('There was an error processing the command', 'Daphne', more_info);
                 }
 
 
