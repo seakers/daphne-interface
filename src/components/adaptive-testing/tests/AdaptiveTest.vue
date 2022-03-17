@@ -12,7 +12,7 @@
                             <v-col>
                                 <v-slider
                                     v-model="exam_length"
-                                    min="1"
+                                    min="10"
                                     max="50"
                                     label="Questions"
                                     thumb-color="primary"
