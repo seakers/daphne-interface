@@ -40,11 +40,11 @@ const state = {
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2012', '2017'],
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
                 analyst: ['1000'],
                 explorer: [],
-                historian: [],
-                critic: ['3000', '3005']
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                critic: ['3000', '3005'],
             },
             nextStage: '',
             steps: [
@@ -277,15 +277,15 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2012', '2017'],
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
                 analyst: ['1000'],
                 explorer: [],
-                historian: [],
-                critic: ['3000', '3005']
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                critic: ['3000', '3005'],
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*20
+            stageDuration: 60*30
         },
         daphne_refinc: {
             availableFunctionalities: [
@@ -301,15 +301,15 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: ['2000', '2012', '2017'],
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
                 analyst: ['1000'],
                 explorer: [],
-                historian: [],
-                critic: ['3000', '3005']
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
+                critic: ['3000', '3005'],
             },
             nextStage: '',
             startTime: 0,
-            stageDuration: 60*10
+            stageDuration: 60*15
         }
     }
 };
