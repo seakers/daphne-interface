@@ -22,7 +22,7 @@ const state = {
         { name: 'experiment' },
         { name: 'experiment' }
     ],
-    problems: ["ClimateCentric-Experiment", "ClimateCentric-Experiment", "ClimateCentric-Experiment"],
+    problems: ["SMAP_Weather", "SMAP_Weather", "SMAP_Weather"],
     stageProblemName: "",
     stageDatasetName: "",
     stageInformation: {
