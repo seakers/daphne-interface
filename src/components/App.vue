@@ -88,6 +88,7 @@
                 user_pk: state => state.auth.user_pk,
                 gaServiceStatus: state => state.services.gaServiceStatus,
                 vassarRebuildStatus: state => state.services.vassarRebuildStatus,
+                analystSuggestionsFrequency: state => state.active.analystSuggestionsFrequency,
             }),
             timerExperimentCondition() {
                 if (!this.inExperiment) {
@@ -192,7 +193,7 @@
                 
                 // 6. Initialize user-only features
                 if (this.$store.state.auth.isLoggedIn) {
-                    this.$store.dispatch('retrieveActiveSettings');
+                    await this.$store.dispatch('retrieveActiveSettings');
                 }
 
                 // 7. Call backend to initialize data-mining
@@ -204,7 +205,7 @@
                         wsTools.websocket.send(JSON.stringify({
                             msg_type: 'active_analyst'
                         }));
-                    }, 60*1000);
+                    }, this.analystSuggestionsFrequency*1000);
                 }
 
                 // 9. Start-up has finished
@@ -555,7 +556,17 @@
 
                     // Continued after Vue Apollo queries are finished in continueStageInit()
                 }
-            }
+            },
+            analystSuggestionsFrequency: async function (val, oldVal) {
+                window.clearInterval(this.activeAnalystInterval);
+                this.activeAnalystInterval = window.setInterval(
+                    function() {
+                        wsTools.websocket.send(JSON.stringify({
+                            msg_type: 'active_analyst'
+                        }));
+                    },
+                    val*1000);
+            },
         }
     }
 </script>

@@ -2,18 +2,40 @@
     <div class="active-menu" v-if="logged_in">
         <p class="has-text-weight-bold">VASSAR connection status: <a v-on:click="connectVassar">Reconnect</a></p>
         <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>
-        <p class="has-text-weight-bold">GA connection status: <a v-on:click="connectGa">Reconnect</a></p>
-        <p :class="connectionStatusToColor(gaServiceStatus)">{{connectionStatusToExplanation(gaServiceStatus)}}</p>
-        <p class="has-text-weight-bold">GA search status: <a v-on:click="startGa">Restart</a></p>
-        <p :class="gaStatusToColor(gaRunningStatus)">{{gaStatusToExplanation(gaRunningStatus)}}</p>
+        <p class="has-text-weight-bold" v-if="backgroundSearchExperimentCondition">GA connection status: <a v-on:click="connectGa">Reconnect</a></p>
+        <p :class="connectionStatusToColor(gaServiceStatus)" v-if="backgroundSearchExperimentCondition">{{connectionStatusToExplanation(gaServiceStatus)}}</p>
+        <p class="has-text-weight-bold" v-if="backgroundSearchExperimentCondition">GA search status: <a v-on:click="startGa">Restart</a></p>
+        <p :class="gaStatusToColor(gaRunningStatus)" v-if="backgroundSearchExperimentCondition">{{gaStatusToExplanation(gaRunningStatus)}}</p>
+
         <label class="checkbox" v-if="!inExperiment">
             <input type="checkbox" v-model="runDiversifier">
             Enable Diversifier
         </label>
+
         <label class="checkbox" v-if="!inExperiment">
-            <input type="checkbox" v-model="showSuggestions">
-            Enable Suggestions
+            <input type="checkbox" v-model="showEngineerSuggestions">
+            Enable Engineer Suggestions
         </label>
+        <div class="control" v-if="showEngineerSuggestions">
+            Every <input class="input" type="number" v-model="engineerSuggestionsFrequency" min="1"> changes
+        </div>
+
+        <label class="checkbox" v-if="!inExperiment">
+            <input type="checkbox" v-model="showHistorianSuggestions">
+            Enable Historian Suggestions
+        </label>
+        <div class="control" v-if="showHistorianSuggestions">
+            Every <input class="input" type="number" v-model="historianSuggestionsFrequency" min="1"> changes
+        </div>
+        
+        <label class="checkbox" v-if="!inExperiment">
+            <input type="checkbox" v-model="showAnalystSuggestions">
+            Enable Analyst Suggestions
+        </label>
+        <div class="control" v-if="showAnalystSuggestions">
+            Every <input class="input" type="number" v-model="analystSuggestionsFrequency" min="15"> seconds
+        </div>
+        
         <button class="button" v-on:click="finishExperiment">Finish Experiment</button>
     </div>
 </template>
@@ -34,7 +56,7 @@
                 gaRunningStatus: state => state.services.gaRunningStatus
             }),
             runDiversifier: {
-                get () {
+                get() {
                     return this.$store.state.active.runDiversifier;
                 },
                 set (value) {
@@ -42,12 +64,57 @@
                     this.$store.dispatch("updateActiveSettings");
                 }
             },
-            showSuggestions: {
-                get () {
-                    return this.$store.state.active.showSuggestions;
+            showEngineerSuggestions: {
+                get() {
+                    return this.$store.state.active.showEngineerSuggestions;
                 },
                 set (value) {
-                    this.$store.commit('setShowSuggestions', value);
+                    this.$store.commit('setShowEngineerSuggestions', value);
+                    this.$store.dispatch("updateActiveSettings");
+                }
+            },
+            engineerSuggestionsFrequency: {
+                get() {
+                    return this.$store.state.active.engineerSuggestionsFrequency;
+                },
+                set (value) {
+                    this.$store.commit('setEngineerSuggestionsFrequency', value);
+                    this.$store.dispatch("updateActiveSettings");
+                }
+            },
+            showHistorianSuggestions: {
+                get() {
+                    return this.$store.state.active.showHistorianSuggestions;
+                },
+                set (value) {
+                    this.$store.commit('setShowHistorianSuggestions', value);
+                    this.$store.dispatch("updateActiveSettings");
+                }
+            },
+            historianSuggestionsFrequency: {
+                get() {
+                    return this.$store.state.active.historianSuggestionsFrequency;
+                },
+                set (value) {
+                    this.$store.commit('setHistorianSuggestionsFrequency', value);
+                    this.$store.dispatch("updateActiveSettings");
+                }
+            },
+            showAnalystSuggestions: {
+                get() {
+                    return this.$store.state.active.showAnalystSuggestions;
+                },
+                set (value) {
+                    this.$store.commit('setShowAnalystSuggestions', value);
+                    this.$store.dispatch("updateActiveSettings");
+                }
+            },
+            analystSuggestionsFrequency: {
+                get() {
+                    return this.$store.state.active.analystSuggestionsFrequency;
+                },
+                set (value) {
+                    this.$store.commit('setAnalystSuggestionsFrequency', value);
                     this.$store.dispatch("updateActiveSettings");
                 }
             },

@@ -141,7 +141,7 @@ store.subscribe(async (mutation, state) => {
             },60*1000);
             ++numberOfEngChanges;
 
-            if (numberOfEngChanges >= 3) {
+            if (numberOfEngChanges >= state.active.engineerSuggestionsFrequency) {
                 numberOfEngChanges = 0;
                 console.log(mutation);
                 // Send a WS request for expert information on current arch
@@ -160,7 +160,7 @@ store.subscribe(async (mutation, state) => {
             }, 60*1000);
             ++numberOfHistChanges;
 
-            if (numberOfHistChanges >= 3) {
+            if (numberOfHistChanges >= state.active.historianSuggestionsFrequency) {
                 numberOfHistChanges = 0;
                 // Send a WS request for historian information on current arch
                 // TODO: Fix hisotrian critic with new architecture of database (includes NLP work)
