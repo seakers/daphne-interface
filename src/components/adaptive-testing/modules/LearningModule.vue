@@ -76,6 +76,25 @@
                                 </v-overlay>
 
 
+<!--                            QUIZ START SLIDE-->
+                                <v-container v-if="slide.type === 'quiz_start'">
+                                    <v-card elevation="0" style="padding-left: 70px; padding-right: 70px; padding-top: 20px">
+                                        <v-card-title class="justify-center">You have completed the first section of this learning module</v-card-title>
+                                        <v-card-text class=" text-center text-body-1">The second section contains a short exam to gauge your understanding of the presented material. Continue to the next slide when you are ready to begin the exam.</v-card-text>
+                                    </v-card>
+                                </v-container>
+
+<!--                            QUIZ END SLIDE-->
+                                <v-container v-if="slide.type === 'quiz_end'">
+                                    <v-card elevation="0" style="padding-left: 70px; padding-right: 70px; padding-top: 20px">
+                                        <v-card-title class="justify-center">Learning Module Complete</v-card-title>
+                                        <v-card-text class="text-center text-body-1">Head to the Mastery page to view your estimated ability level for this topic.</v-card-text>
+                                        <v-card-actions class="justify-center">
+                                            <v-btn color="primary" v-on:click="go_to_mastery()" class="align-center">Mastery <v-icon right>mdi-arrow-right</v-icon></v-btn>
+                                        </v-card-actions>
+                                    </v-card>
+                                </v-container>
+
 
 
 <!--                            QUESTION SLIDE-->
@@ -265,6 +284,12 @@ export default {
                 }
             }
         },
+        async go_to_mastery(){
+            // --> 1. Route to mastery page
+            if (this.$route.path !== '/mastery') {
+                await this.$router.push('/mastery');
+            }
+        },
         async check_answer(slide){
             this.correct_noti = false;
             this.wrong_noti = false;
@@ -318,25 +343,6 @@ export default {
         }
     },
     apollo: {
-        // slide_idx: {
-        //     query: SlideIdxQuery,
-        //     fetchPolicy: 'no-cache',
-        //     variables() {
-        //         return {
-        //             user_id: this.user_id,
-        //             module_id: this.module_id,
-        //         }
-        //     },
-        //     skip() {
-        //         return this.user_id === null;
-        //     },
-        //     update: data => {
-        //         let return_idx = data.entry[0].slide_idx;
-        //         console.log('--> SLIDE IDX QUERY:', return_idx);
-        //         // return 1;
-        //         return return_idx
-        //     }
-        // },
         module: {
             query: ModuleQuery,
             fetchPolicy: 'no-cache',
