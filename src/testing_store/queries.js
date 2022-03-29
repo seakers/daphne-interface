@@ -310,6 +310,7 @@ const SlidesQuery = gql`
             choice_id
             attempts
             answered
+            graded
             question: Question {
                 id
                 text

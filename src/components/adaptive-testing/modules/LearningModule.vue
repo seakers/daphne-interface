@@ -80,7 +80,7 @@
                                 <v-container v-if="slide.type === 'quiz_start'">
                                     <v-card elevation="0" style="padding-left: 70px; padding-right: 70px; padding-top: 20px">
                                         <v-card-title class="justify-center">You have completed the first section of this learning module</v-card-title>
-                                        <v-card-text class=" text-center text-body-1">The second section contains a short exam to gauge your understanding of the presented material. Continue to the next slide when you are ready to begin the exam.</v-card-text>
+                                        <v-card-text class=" text-center text-body-1">The second section contains a short exam to gauge your understanding of the presented material. You will have one attempt per question. Continue to the next slide when you are ready to begin the exam.</v-card-text>
                                     </v-card>
                                 </v-container>
 
@@ -175,6 +175,7 @@ import { mapState } from 'vuex';
 import * as _ from 'lodash-es';
 import {ModuleQuery, SlideIdxQuery, SlidesQuery, UpdateSlideIdx, UpdateSlide, SlideIdxSub} from "../../../testing_store/queries";
 import { get_slide_src } from "../../../testing_store/content/utils";
+import {fetchPost} from "../../../scripts/fetch-helpers";
 
 
 export default {
@@ -297,10 +298,16 @@ export default {
             // --> 1. Determine if answer is correct
             let correct = slide.question.choices[slide.choice_id].correct;
 
-            // --> 2. Increment question attempts
+            // --> 2. Determine number of attempts based on whether the question is graded or not
+            let num_attempts = 2;
+            if(slide.graded === true){
+                num_attempts = 1
+            }
+
+            // --> 3. Increment question attempts
             slide.attempts++;
 
-            // --> 3. If CORRECT
+            // --> 4. If CORRECT
             if(correct === true){
                 this.correct_noti = true;
                 this.disable_next = false;
@@ -308,10 +315,10 @@ export default {
                 slide.answered = true;
             }
 
-            // --> 4. If WRONG
+            // --> 5. If WRONG
             if(correct === false){
                 this.wrong_noti = true;
-                if(slide.attempts === 2){
+                if(slide.attempts === num_attempts){
                     this.disable_next = false;
                     slide.correct = false;
                     slide.answered = true;
@@ -325,8 +332,15 @@ export default {
                 }
             }
 
-            // --> 5. Commit slide changes to database
+            // --> 6. Commit slide changes to database
             await this.update_slide(slide);
+
+            // --> 7. Send answer report to back-end if graded question
+            if(slide.graded === true){
+                let reqData = new FormData();
+                reqData.append('slide', JSON.stringify(slide));
+                let dataResponse = await fetchPost(API_URL + 'ca/stats/updatemodel',reqData);
+            }
         },
     },
     watch: {

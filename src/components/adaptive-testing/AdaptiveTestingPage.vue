@@ -189,8 +189,8 @@
 
                 // --> Test links <--
                 test_links: [
-                    { name: 'Adaptive Test', icon: 'mdi-brain', link: '/adaptive-test'},
-                    { name: 'Targeted Test', icon: 'mdi-bullseye-arrow', link: '/targeted-test'},
+                    { name: 'Test', icon: 'mdi-brain', link: '/adaptive-test'},
+                    { name: 'Practice Test', icon: 'mdi-bullseye-arrow', link: '/targeted-test'},
                 ],
 
                 // --> Module links <--

@@ -137,22 +137,19 @@
                     <v-container fluid>
                         <v-row dense>
                             <v-col v-for="(item, idx) in ability_parameters" :key="idx" cols="4">
-                                <v-card  elevation="8" color="primary lighten-1">
+                                <v-card  elevation="8" color="primary lighten-1" v-if="item.value !== null">
                                     <v-card-subtitle class="white--text" style="padding-bottom: 2px">{{ item.name }}</v-card-subtitle>
-
-                                    <v-card-title class="white--text" style="padding-top: 2px; padding-bottom: 4px">{{ item.value }} / 1</v-card-title>
+                                    <v-card-title class="white--text" style="padding-top: 2px; padding-bottom: 4px">{{ (item.value).toFixed(2) }} / 1</v-card-title>
                                     <v-container style="padding-top: 4px;">
                                         <v-row justify="center">
                                             <v-col>
                                                 <div class="text-center">
-                                                    <v-progress-linear :value="item.value * 100" color="secondary lighten-4" rounded height="8"></v-progress-linear>
+                                                    <v-progress-linear :value="item.value * 100" :color="get_progress_color_2(item.value)" rounded height="8"></v-progress-linear>
                                                 </div>
 
                                             </v-col>
                                         </v-row>
                                     </v-container>
-
-
                                 </v-card>
                             </v-col>
                         </v-row>
@@ -221,6 +218,15 @@
                     return "success";
                 }
                 return "primary lighten-1";
+            },
+            get_progress_color_2(progress){
+                if(progress < 0.2){
+                    return "danger"
+                }
+                if(progress < 0.5){
+                    return "warning"
+                }
+                return "success";
             },
             load_test_results(exam){
                 if(this.loaded_exam === null){
