@@ -134,7 +134,8 @@ import DODS_55 from './dod-slides/DODSlide55.png'
 import DODS_56 from './dod-slides/DODSlide56.png'
 import DODS_57 from './dod-slides/DODSlide57.png'
 
-
+import Slide1LCCD from './LCCD/Slide1LCCD.png'
+import Slide2LCCD from './LCCD/Slide2LCCD.png'
 
 
 
@@ -516,6 +517,15 @@ export function get_slide_src(src){
         }
     else if(src === 'DODS_57'){
             return DODS_57;
+        }
+
+
+
+    else if(src === 'Slide1LCCD'){
+            return Slide1LCCD;
+        }
+    else if(src === 'Slide2LCCD'){
+            return Slide2LCCD;
         }
 
 

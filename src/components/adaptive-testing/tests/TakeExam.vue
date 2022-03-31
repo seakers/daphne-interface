@@ -52,8 +52,8 @@
                                         </v-radio-group>
                                     </v-row>
                                     <v-row no-gutters>
-                                        <v-btn color="primary" v-on:click="next_question()" v-if="exam_length !== current_question">Continue</v-btn>
-                                        <v-btn color="primary" v-on:click="submit_exam()" v-if="exam_length === current_question">Submit</v-btn>
+                                        <v-btn color="primary" v-on:click="next_question()" v-if="exam_length !== current_question" :disabled="question.answer === -1">Continue</v-btn>
+                                        <v-btn color="primary" v-on:click="submit_exam()" v-if="exam_length === current_question" :disabled="question.answer === -1">Submit</v-btn>
                                     </v-row>
                                 </v-container>
                             </v-card>
