@@ -126,7 +126,6 @@
         <!-- CHAT BOX -->
         <v-navigation-drawer v-model="chatbox"
                              app
-                             absolute
                              right
                              color="analogous2"
                              width="400"

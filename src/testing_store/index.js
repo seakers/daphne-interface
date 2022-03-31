@@ -3,7 +3,6 @@ import Vuex from 'vuex';
 import {fetchPost} from "../scripts/fetch-helpers";
 
 import user from './modules/user';
-import testing from './modules/testing'
 
 Vue.use(Vuex);
 
@@ -19,8 +18,7 @@ export default new Vuex.Store({
     actions: {
     },
     modules: {
-        user,
-        testing,
+        user
     },
     strict: debug
 });

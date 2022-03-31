@@ -2,7 +2,7 @@
     <v-container style="padding: 0px 12px 0px 12px;">
 
 <!--    USER INFO-------------------------------------------------->
-        <v-row justify="center" style="padding-top: 12px;">
+        <v-row justify="center" style="padding-top: 16px;">
             <v-col>
                 <v-card elevation="0">
                     <v-card-title>{{ username }}</v-card-title>
@@ -12,46 +12,12 @@
         </v-row>
 
 
-
         <v-row justify="center">
-<!--        EXCEL EXERCISE PROGRESSION-------------------------------------------------->
-<!--            <v-col>-->
-<!--                <v-card elevation="0">-->
-<!--                    <v-card-title>Excel Exercise Progression</v-card-title>-->
-<!--                    <v-divider style="margin-top: 0px; margin-bottom: 15px;"></v-divider>-->
-<!--                    <v-simple-table height="236px">-->
-<!--                        <template v-slot:default>-->
-<!--                            <thead>-->
-<!--                            <tr>-->
-<!--                                <th style="height: 32px; font-size: 1rem;">File</th>-->
-<!--                                <th style="height: 32px; font-size: 1rem;">Completion</th>-->
-<!--                            </tr>-->
-<!--                            </thead>-->
-<!--                            <tbody>-->
-<!--                            <tr v-for="(item, idx) in excel_exercises" :key="idx">-->
-<!--                                <td style="vertical-align: middle">{{ item.name }}</td>-->
-<!--                                <td style="vertical-align: middle" v-if="item.is_completed === true">-->
-<!--                                    <v-icon color="success" style="margin-left: 28px;">mdi-check</v-icon>-->
-<!--                                </td>-->
-<!--                                <td style="vertical-align: middle" v-if="item.is_completed === false">-->
-<!--                                    <v-icon color="error" style="margin-left: 28px;">mdi-cancel</v-icon>-->
-<!--                                </td>-->
-<!--                            </tr>-->
-<!--                            </tbody>-->
-
-<!--                        </template>-->
-<!--                    </v-simple-table>-->
-<!--                </v-card>-->
-<!--            </v-col>-->
-
-
-
 
 <!--        TEST HISTORY-------------------------------------------------->
             <v-col>
                 <v-card elevation="0">
                     <v-card-title>Test History</v-card-title>
-                    <v-divider style="margin-top: 0px; margin-bottom: 15px;"></v-divider>
                     <v-container v-if="test_history.length > 0">
                         <v-row>
                             <v-col>
@@ -107,51 +73,60 @@
 
 
         <v-row justify="center">
+
 <!--        LEARNING MODULE PROGRESSION-------------------------------------------------->
             <v-col>
-                <v-card elevation="0">
+                <v-card elevation="0" min-height="350">
                     <v-card-title>Learning Module Progression</v-card-title>
-                    <v-data-table :headers="data_table_modules_headers" :items="data_table_modules" hide-default-footer hide-default-header>
 
-                        <!--TABLE HEADER-->
-                        <template v-slot:header="{ props: { headers } }">
-                            <thead>
-                            <tr>
-                                <th v-for="header in headers"
-                                    class="text-left"
-                                    style="vertical-align: middle;"
-                                >
-                                    <span class="text-subtitle-2" style="color: black">{{ header.text }}</span>
-                                </th>
-                            </tr>
-                            </thead>
-                        </template>
 
-                        <!--TABLE CONTENT-->
-                        <template v-slot:body="{ items }">
-                            <tbody name="fade" is="transition-group">
-                            <tr v-for="(row, r_idx) in items" :key="r_idx">
-                                <td v-for="(col, c_idx) in data_table_modules_headers"
-                                    class="text-left"
-                                    style="vertical-align: middle;"
-                                >
-                                    <span v-if="col.value === 'module'" class="text-subtitle-3" style="color: black">
-                                        {{ row[col.value] }}
-                                    </span>
-                                    <span v-if="col.value === 'completion'" class="text-subtitle-3" style="color: black">
-                                        {{ (row[col.value] * 100).toFixed(0) }}%
-                                        <v-progress-linear :value="row[col.value] * 100" :color="get_progress_color(row[col.value])" rounded style="margin-top: 2px" height="8" ></v-progress-linear>
-                                    </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </template>
-                    </v-data-table>
+                    <v-expand-transition>
+                        <div v-if="data_table_modules.length !== 0">
+                            <v-data-table :headers="data_table_modules_headers" :items="data_table_modules" hide-default-footer hide-default-header>
+
+                                <!--TABLE HEADER-->
+                                <template v-slot:header="{ props: { headers } }">
+                                    <thead>
+                                    <tr>
+                                        <th v-for="header in headers"
+                                            class="text-left"
+                                            style="vertical-align: middle;"
+                                        >
+                                            <span class="text-subtitle-2" style="color: black">{{ header.text }}</span>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                </template>
+
+                                <!--TABLE CONTENT-->
+                                <template v-slot:body="{ items }">
+                                    <tbody name="fade" is="transition-group">
+                                    <tr v-for="(row, r_idx) in items" :key="r_idx">
+                                        <td v-for="(col, c_idx) in data_table_modules_headers" class="text-left" style="vertical-align: middle;">
+
+                                            <span v-if="col.value === 'module'" class="text-subtitle-3" style="color: black">
+                                                {{ row[col.value] }}
+                                            </span>
+                                            <span v-if="col.value === 'completion'" class="text-subtitle-3" style="color: black">
+                                                {{ (row[col.value] * 100).toFixed(0) }}%
+                                                <v-progress-linear :value="row[col.value] * 100" :color="get_progress_color(row[col.value])" rounded style="margin-top: 2px" height="8" ></v-progress-linear>
+                                            </span>
+
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </template>
+
+                            </v-data-table>
+                        </div>
+                    </v-expand-transition>
+
+
                 </v-card>
             </v-col>
 <!--        ABILITY LEVELS-------------------------------------------------->
             <v-col>
-                <v-card elevation="0">
+                <v-card elevation="0" min-height="350">
                     <v-card-title>Ability Levels</v-card-title>
 
                         <v-data-table :headers="data_table_parameters_headers" :items="data_table_parameters" hide-default-footer hide-default-header>

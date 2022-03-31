@@ -417,8 +417,8 @@ const ExamQuery = gql`
 `;
 
 const SubmitExamQuery = gql`
-    mutation SubmitExamQuery($exam_id: Int!, $score: String!) {
-        update_Test_by_pk(pk_columns: {id: $exam_id}, _set: {in_progress: false, score: $score}) {
+    mutation SubmitExamQuery($exam_id: Int!, $score: String!, $duration: Int!) {
+        update_Test_by_pk(pk_columns: {id: $exam_id}, _set: {in_progress: false, score: $score, duration: $duration}) {
             id
         }
     }

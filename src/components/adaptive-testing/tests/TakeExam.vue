@@ -83,19 +83,12 @@ export default {
             exam: [
                 { answer: -1, step: 1, text: '', choices: [], topic_ids: [], question_id: null },
                 { answer: -1, step: 2, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 3, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 4, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 5, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 6, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 7, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 8, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 9, text: '', choices: [], topic_ids: [], question_id: null },
-                { answer: -1, step: 10, text: '', choices: [], topic_ids: [], question_id: null },
+                { answer: -1, step: 3, text: '', choices: [], topic_ids: [], question_id: null }
             ],
             exam_id: null,
 
 
-            exam_length: 10,
+            exam_length: 3,
             current_question: 0,
             in_progress: false,
         }
@@ -248,15 +241,20 @@ export default {
             }
 
             // --> 2. Calculate exam score
-            let score = await this.exam_score();
+            let score = await this.get_exam_score();
             console.log('--> SCORE:', score);
+
+            // --> 3. Get exam duration
+            let duration = await this.get_exam_duration();
+            console.log('--> DURATION', duration, typeof duration);
 
             // --> 3. Update exam in database
             let mutation = await this.$apollo.mutate({
                 mutation: SubmitExamQuery,
                 variables: {
                     exam_id: this.exam_id,
-                    score: score
+                    score: score,
+                    duration: duration
                 },
                 update: (cache, { data: { result } }) => {},
             });
@@ -265,11 +263,7 @@ export default {
             await this.reset_module();
 
         },
-        async exam_score(){
-            if(this.user_id === null){
-                return "0/0";
-            }
-
+        async query_current_exam(){
             // --> 1. Query exam
             let results = await this.$apollo.query({
                 deep: true,
@@ -280,6 +274,43 @@ export default {
                 }
             });
             let current_exam = results['data']['test'][0];
+            return current_exam;
+        },
+        async get_exam_duration(){
+
+            // --> 1. Query exam
+            let current_exam = await this.query_current_exam();
+
+            //      2022-03-31T01:20:02.571344
+            let start_date = await this.get_exam_date(current_exam['date']);
+            let end_date = Date.now();
+
+            console.log('--> START DATE:', start_date, current_exam['date']);
+            console.log('--> END DATE:', end_date);
+
+
+            let seconds = parseInt(Math.abs(end_date - start_date) / 1000);
+            return seconds;
+        },
+        async get_exam_date(exam_date){
+            // 2022-03-31T01:20:02.571344
+            let year = parseInt(exam_date.split('-')[0]);
+            let month = parseInt(exam_date.split('-')[1])-1;
+            let day = parseInt((exam_date.split('T')[0]).split('-')[2]);
+            let hour = parseInt((exam_date.split('T')[1]).split(':')[0]);
+            let minute = parseInt((exam_date.split('T')[1]).split(':')[1]);
+            let second = parseInt((exam_date.split('T')[1]).split(':')[2].substring(0, 2));
+
+            let date_obj = Date.UTC(year, month, day, hour, minute, second);
+            return date_obj;
+        },
+        async get_exam_score(){
+            if(this.user_id === null){
+                return "0/0";
+            }
+
+            // --> 1. Query exam
+            let current_exam = await this.query_current_exam();
 
             // --> 2. Calculate score
             let num_questions = current_exam['num_questions'];
@@ -296,7 +327,7 @@ export default {
             this.in_progress = false;
             this.exam_id = null;
             this.current_question = 0;
-            this.exam_length = 10;
+            this.exam_length = 3;
         },
     },
     watch: {

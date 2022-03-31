@@ -21,7 +21,7 @@
 
         <v-row justify="center" style="padding-top: 12px;">
             <v-col>
-                <v-card elevation="0">
+                <v-card elevation="0" min-height="700">
 
                     <v-card-title>{{ module_name }}</v-card-title>
 
