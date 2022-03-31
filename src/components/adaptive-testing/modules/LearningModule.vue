@@ -100,7 +100,7 @@
 <!--                            QUESTION SLIDE-->
                                 <v-container v-if="slide.type === 'question'">
                                     <v-card elevation="0" style="padding-left: 70px; padding-right: 70px; padding-top: 20px">
-                                        <v-card-title style="padding-bottom: 0">{{ slide.question.text }}</v-card-title>
+                                        <v-card-title style="padding-bottom: 0; word-break: break-word;">{{ slide.question.text }}</v-card-title>
                                         <v-container>
                                             <v-row no-gutters>
 

@@ -39,7 +39,7 @@
                         <v-stepper-step :complete="current_question > question.step" :step="question.step">Question {{question.step}}</v-stepper-step>
                         <v-stepper-content :step="question.step">
                             <v-card class="mb-12" elevation="0">
-                                <v-card-title style="padding-bottom: 0">{{ question.text }}</v-card-title>
+                                <v-card-title style="padding-bottom: 0; word-break: break-word;">{{ question.text }}</v-card-title>
                                 <v-container>
                                     <v-row no-gutters>
                                         <v-radio-group v-model="question.answer">
