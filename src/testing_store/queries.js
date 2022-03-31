@@ -175,7 +175,7 @@ const ExcelMasterySub = gql`
 const TestHistoryMasterySub = gql`
 
     subscription TestHistoryMasterySub($user_id: Int!) {
-        tests: Test(where: {user_id: {_eq: $user_id}}, order_by: {date: asc}) {
+        tests: Test(where: {user_id: {_eq: $user_id}, in_progress: {_eq: false}}, order_by: {date: asc}) {
             date
             duration
             id
@@ -194,7 +194,7 @@ const TestHistoryMasterySub = gql`
 const AbilityParameterMasterySub = gql`
 
     subscription AbilityParameterMasterySub($user_id: Int!) {
-        parameters: AbilityParameter(where: {user_id: {_eq: $user_id}}) {
+        parameters: AbilityParameter(where: {user_id: {_eq: $user_id}, value: {_is_null: false}}) {
             value
             topic: Topic {
                 name
@@ -371,6 +371,23 @@ const InsertMessage = gql`
 `;
 
 
+const InsertExam = gql`
+    mutation InsertExam($user_id: Int!, $type: String!, $num_questions: Int!) {
+        insert_Test_one(object: {date: "now()", user_id: $user_id, type: $type, score: null, num_questions: $num_questions, in_progress: true, duration: 10}) {
+            id
+        }
+    }
+`;
+
+const InsertExamQuestion = gql`
+    mutation InsertExamQuestion($choice_id: Int!, $correct: Boolean!, $question_id: Int!, $test_id: Int!) {
+        insert_TestQuestion_one(object: {choice_id: $choice_id, correct: $correct, question_id: $question_id, test_id: $test_id, answered: true}) {
+            id
+        }
+    }
+`;
+
+
 
 const ClearMessage = gql`
     mutation ClearMessage($message_id: Int!) {
@@ -381,6 +398,31 @@ const ClearMessage = gql`
 `;
 
 
+
+const ExamQuery = gql`
+
+    query ExamQuery($user_id: Int!) {
+        test: Test(where: {user_id: {_eq: $user_id}, in_progress: {_eq: true}}) {
+            id
+            date
+            in_progress
+            num_questions
+            type
+            questions: TestQuestions {
+                answered
+                correct
+            }
+        }
+    }
+`;
+
+const SubmitExamQuery = gql`
+    mutation SubmitExamQuery($exam_id: Int!, $score: String!) {
+        update_Test_by_pk(pk_columns: {id: $exam_id}, _set: {in_progress: false, score: $score}) {
+            id
+        }
+    }
+`;
 
 
 
@@ -422,5 +464,9 @@ export {
     InsertMessage,
     ClearMessage,
     SlideIdxSub,
-    SlidesQueryFast
+    SlidesQueryFast,
+    InsertExam,
+    InsertExamQuestion,
+    ExamQuery,
+    SubmitExamQuery,
 }

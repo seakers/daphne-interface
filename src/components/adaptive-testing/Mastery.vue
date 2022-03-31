@@ -1,8 +1,8 @@
 <template>
-    <v-container>
+    <v-container style="padding: 0px 12px 0px 12px;">
 
 <!--    USER INFO-------------------------------------------------->
-        <v-row justify="center">
+        <v-row justify="center" style="padding-top: 12px;">
             <v-col>
                 <v-card elevation="0">
                     <v-card-title>{{ username }}</v-card-title>
@@ -15,70 +15,44 @@
 
         <v-row justify="center">
 <!--        EXCEL EXERCISE PROGRESSION-------------------------------------------------->
-            <v-col>
-                <v-card elevation="0">
-                    <v-card-title>Excel Exercise Progression</v-card-title>
-                    <v-divider style="margin-top: 0px; margin-bottom: 15px;"></v-divider>
-                    <v-simple-table height="236px">
-                        <template v-slot:default>
-                            <thead>
-                            <tr>
-                                <th style="height: 32px; font-size: 1rem;">File</th>
-                                <th style="height: 32px; font-size: 1rem;">Completion</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="(item, idx) in excel_exercises" :key="idx">
-                                <td style="vertical-align: middle">{{ item.name }}</td>
-                                <td style="vertical-align: middle" v-if="item.is_completed === true">
-                                    <v-icon color="success" style="margin-left: 28px;">mdi-check</v-icon>
-                                </td>
-                                <td style="vertical-align: middle" v-if="item.is_completed === false">
-                                    <v-icon color="error" style="margin-left: 28px;">mdi-cancel</v-icon>
-                                </td>
-                            </tr>
-                            </tbody>
+<!--            <v-col>-->
+<!--                <v-card elevation="0">-->
+<!--                    <v-card-title>Excel Exercise Progression</v-card-title>-->
+<!--                    <v-divider style="margin-top: 0px; margin-bottom: 15px;"></v-divider>-->
+<!--                    <v-simple-table height="236px">-->
+<!--                        <template v-slot:default>-->
+<!--                            <thead>-->
+<!--                            <tr>-->
+<!--                                <th style="height: 32px; font-size: 1rem;">File</th>-->
+<!--                                <th style="height: 32px; font-size: 1rem;">Completion</th>-->
+<!--                            </tr>-->
+<!--                            </thead>-->
+<!--                            <tbody>-->
+<!--                            <tr v-for="(item, idx) in excel_exercises" :key="idx">-->
+<!--                                <td style="vertical-align: middle">{{ item.name }}</td>-->
+<!--                                <td style="vertical-align: middle" v-if="item.is_completed === true">-->
+<!--                                    <v-icon color="success" style="margin-left: 28px;">mdi-check</v-icon>-->
+<!--                                </td>-->
+<!--                                <td style="vertical-align: middle" v-if="item.is_completed === false">-->
+<!--                                    <v-icon color="error" style="margin-left: 28px;">mdi-cancel</v-icon>-->
+<!--                                </td>-->
+<!--                            </tr>-->
+<!--                            </tbody>-->
 
-                        </template>
-                    </v-simple-table>
-                </v-card>
-            </v-col>
-<!--        LEARNING MODULE PROGRESSION-------------------------------------------------->
-            <v-col>
-                <v-card elevation="0">
-                    <v-card-title>Learning Module Progression</v-card-title>
-                    <v-divider style="margin-top: 0px; margin-bottom: 15px;"></v-divider>
-                    <v-simple-table height="236px">
-                        <template v-slot:default>
-                            <thead>
-                                <tr>
-                                    <th style="height: 32px; font-size: 1rem;">Name</th>
-                                    <th style="height: 32px; font-size: 1rem;">Completion</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(item, idx) in learning_modules" :key="idx">
-                                    <td style="vertical-align: middle">{{ item.name }}</td>
-                                    <td style="vertical-align: middle">
-                                        {{item.progress * 100}}%
-                                        <v-progress-linear :value="item.progress * 100" :color="get_progress_color(item.progress)" rounded style="margin-top: 2px" height="8" ></v-progress-linear>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </template>
-                    </v-simple-table>
-                </v-card>
-            </v-col>
-        </v-row>
+<!--                        </template>-->
+<!--                    </v-simple-table>-->
+<!--                </v-card>-->
+<!--            </v-col>-->
 
-        <v-row justify="center">
+
+
+
 <!--        TEST HISTORY-------------------------------------------------->
             <v-col>
                 <v-card elevation="0">
                     <v-card-title>Test History</v-card-title>
                     <v-divider style="margin-top: 0px; margin-bottom: 15px;"></v-divider>
-
-                    <v-container>
+                    <v-container v-if="test_history.length > 0">
                         <v-row>
                             <v-col>
                                 <v-timeline dense style="overflow-x: hidden; overflow-y: auto;">
@@ -129,31 +103,94 @@
                     </v-container>
                 </v-card>
             </v-col>
+        </v-row>
+
+
+        <v-row justify="center">
+<!--        LEARNING MODULE PROGRESSION-------------------------------------------------->
+            <v-col>
+                <v-card elevation="0">
+                    <v-card-title>Learning Module Progression</v-card-title>
+                    <v-data-table :headers="data_table_modules_headers" :items="data_table_modules" hide-default-footer hide-default-header>
+
+                        <!--TABLE HEADER-->
+                        <template v-slot:header="{ props: { headers } }">
+                            <thead>
+                            <tr>
+                                <th v-for="header in headers"
+                                    class="text-left"
+                                    style="vertical-align: middle;"
+                                >
+                                    <span class="text-subtitle-2" style="color: black">{{ header.text }}</span>
+                                </th>
+                            </tr>
+                            </thead>
+                        </template>
+
+                        <!--TABLE CONTENT-->
+                        <template v-slot:body="{ items }">
+                            <tbody name="fade" is="transition-group">
+                            <tr v-for="(row, r_idx) in items" :key="r_idx">
+                                <td v-for="(col, c_idx) in data_table_modules_headers"
+                                    class="text-left"
+                                    style="vertical-align: middle;"
+                                >
+                                    <span v-if="col.value === 'module'" class="text-subtitle-3" style="color: black">
+                                        {{ row[col.value] }}
+                                    </span>
+                                    <span v-if="col.value === 'completion'" class="text-subtitle-3" style="color: black">
+                                        {{ (row[col.value] * 100).toFixed(0) }}%
+                                        <v-progress-linear :value="row[col.value] * 100" :color="get_progress_color(row[col.value])" rounded style="margin-top: 2px" height="8" ></v-progress-linear>
+                                    </span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </template>
+                    </v-data-table>
+                </v-card>
+            </v-col>
 <!--        ABILITY LEVELS-------------------------------------------------->
             <v-col>
                 <v-card elevation="0">
                     <v-card-title>Ability Levels</v-card-title>
-                    <v-divider style="margin-top: 0; margin-bottom: 15px;"></v-divider>
-                    <v-container fluid>
-                        <v-row dense>
-                            <v-col v-for="(item, idx) in ability_parameters" :key="idx" cols="4">
-                                <v-card  elevation="8" color="primary lighten-1" v-if="item.value !== null">
-                                    <v-card-subtitle class="white--text" style="padding-bottom: 2px">{{ item.name }}</v-card-subtitle>
-                                    <v-card-title class="white--text" style="padding-top: 2px; padding-bottom: 4px">{{ (item.value).toFixed(2) }} / 1</v-card-title>
-                                    <v-container style="padding-top: 4px;">
-                                        <v-row justify="center">
-                                            <v-col>
-                                                <div class="text-center">
-                                                    <v-progress-linear :value="item.value * 100" :color="get_progress_color_2(item.value)" rounded height="8"></v-progress-linear>
-                                                </div>
 
-                                            </v-col>
-                                        </v-row>
-                                    </v-container>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                    </v-container>
+                        <v-data-table :headers="data_table_parameters_headers" :items="data_table_parameters" hide-default-footer hide-default-header>
+
+                            <!--TABLE HEADER-->
+                            <template v-slot:header="{ props: { headers } }">
+                                <thead>
+                                    <tr>
+                                        <th v-for="header in headers"
+                                            class="text-left"
+                                            style="vertical-align: middle;"
+                                        >
+                                            <span class="text-subtitle-2" style="color: black">{{ header.text }}</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </template>
+
+                            <!--TABLE CONTENT-->
+                            <template v-slot:body="{ items }">
+                                <tbody name="fade" is="transition-group">
+                                    <tr v-for="(row, r_idx) in items" :key="r_idx">
+                                        <td v-for="(col, c_idx) in data_table_parameters_headers"
+                                            class="text-left"
+                                            style="vertical-align: middle;"
+                                        >
+                                            <span v-if="col.value === 'topic'" class="text-subtitle-3" style="color: black">
+                                                {{ row[col.value] }}
+                                            </span>
+                                            <span v-if="col.value === 'proficiency'" class="text-subtitle-3" style="color: black">
+                                                {{ (row[col.value] * 100).toFixed(0) }} / 100
+                                                <v-progress-linear :value="row[col.value] * 100" :color="get_progress_color_2(row[col.value])" rounded style="margin-top: 2px" height="8" ></v-progress-linear>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </template>
+                        </v-data-table>
+
                 </v-card>
             </v-col>
         </v-row>
@@ -183,26 +220,34 @@
 
                 excel_exercises_db: [],
                 excel_exercises: [],
-
-
-                learning_modules_db: [],
-                learning_modules: [],
-
-
-                test_history_db: [],
-                // test_history: [],
-                test_history: [
-                    { type: 'Adaptive', score: '5/15', date: '1/4/2021', icon: 'mdi-brain', duration: 30, active:false},
-                    { type: 'Adaptive', score: '12/20', date: '1/7/2021', icon: 'mdi-brain', duration: 60, active:false},
-                    { type: 'Targeted', score: '20/22', date: '1/8/2021', icon: 'mdi-bullseye-arrow', duration: 120, active:false}
+                data_table_excel: [],
+                data_table_excel_headers: [
+                    { text: 'File', value: 'file' },
+                    { text: 'Completion', value: 'completion' }
                 ],
 
 
+
+                learning_modules_db: [],
+                data_table_modules: [],
+                data_table_modules_headers: [
+                    { text: 'Module', value: 'module' },
+                    { text: 'Completion', value: 'completion' }
+                ],
+
+
+
+
+                test_history_db: [],
+                test_history: [],
+
+
                 ability_parameters_db: [],
-                ability_parameters: [],
-                // ability_parameters: [
-                //     { name: 'Lifecycle Cost', value: 0.25 }
-                // ],
+                data_table_parameters: [],
+                data_table_parameters_headers: [
+                    { text: 'Topic', value: 'topic' },
+                    { text: 'Proficiency', value: 'proficiency' }
+                ],
             }
         },
         computed: {
@@ -295,7 +340,11 @@
                     result(result) {
                         console.log(result);
                         let modules = result.data.modules_db;
-                        let module_links = [];
+
+
+
+
+                        this.data_table_modules = [];
                         for(let x = 0; x < modules.length; x++){
                             let module = modules[x];
 
@@ -315,15 +364,11 @@
                             if(slide_questions !== 0){
                                 progress = (slide_questions_completed / slide_questions);
                             }
-
-                            module_links.push({
-                                name: module.name,
-                                icon: module.icon,
-                                link: ('/LearningModule/' + module.name + '/' + module.id),
-                                progress: progress
-                            });
+                            this.data_table_modules.push({
+                                module: module.name,
+                                completion: progress
+                            })
                         }
-                        this.learning_modules = module_links;
                     },
                 },
                 test_history_db: {
@@ -335,20 +380,27 @@
                         }
                     },
                     skip() {
-                        return (this.user_id === null || this.test_history !== []);
+                        return (this.user_id === null);
                     },
                     result(result) {
                         let tests = result.data.tests;
                         let test_list = [];
                         for(let x = 0; x < tests.length; x++){
                             let test = tests[x];
+
+                            // --> 1. Get icon
                             let icon = 'mdi-brain';
                             if(test.type === 'Targeted'){
                                 icon = 'mdi-bullseye-arrow'
                             }
+
+                            // --> 2. Get date
+                            let test_date = test.date.split('T')[0];
+
+
                             test_list.push({
                                 type: test.type,
-                                date: test.date,
+                                date: test_date,
                                 score: test.score,
                                 icon: icon,
                                 duration: test.duration,
@@ -373,15 +425,15 @@
                     },
                     result(result) {
                         let parameters = result.data.parameters;
-                        let ability_list = [];
+
+                        this.data_table_parameters = [];
                         for(let x = 0; x < parameters.length; x++){
                             let parameter = parameters[x];
-                            ability_list.push({
-                                name: parameter.topic.name,
-                                value: parameter.value,
+                            this.data_table_parameters.push({
+                                topic: parameter.topic.name,
+                                proficiency: parameter.value,
                             });
                         }
-                        this.ability_parameters = ability_list;
                     },
                 },
             },
@@ -396,5 +448,13 @@
 </script>
 
 <style scoped>
+
+.fade-enter-active, .fade-leave-active {
+    transition: all 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
+
 
 </style>

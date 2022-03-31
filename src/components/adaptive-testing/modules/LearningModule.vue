@@ -1,5 +1,5 @@
 <template>
-    <v-container>
+    <v-container style="padding: 0px 12px 0px 12px;">
 
         <v-snackbar v-model="correct_noti" timeout="5000" color="success" elevation="24">
             Nice job!
@@ -19,7 +19,7 @@
             </template>
         </v-snackbar>
 
-        <v-row justify="center">
+        <v-row justify="center" style="padding-top: 12px;">
             <v-col>
                 <v-card elevation="0">
 

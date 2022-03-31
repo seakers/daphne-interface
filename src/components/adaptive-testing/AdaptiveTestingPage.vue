@@ -159,7 +159,11 @@
 
         <!-- VUE ROUTER CONTENT -->
         <v-main class="secondary lighten-3">
-                <router-view></router-view>
+            <transition name="fade">
+                <v-expand-transition mode="in-out">
+                    <router-view :key="this.$route.path"></router-view>
+                </v-expand-transition>
+            </transition>
         </v-main>
 
 
@@ -189,8 +193,9 @@
 
                 // --> Test links <--
                 test_links: [
-                    { name: 'Test', icon: 'mdi-brain', link: '/adaptive-test'},
-                    { name: 'Practice Test', icon: 'mdi-bullseye-arrow', link: '/targeted-test'},
+                    // { name: 'Take Exam', icon: 'mdi-brain', link: '/adaptive-test'},
+                    { name: 'Take Exam', icon: 'mdi-brain', link: '/take-exam'},
+                    // { name: 'Targeted', icon: 'mdi-bullseye-arrow', link: '/targeted-test'},
                 ],
 
                 // --> Module links <--

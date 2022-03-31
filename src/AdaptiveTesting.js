@@ -35,13 +35,8 @@ import {WebSocketLink} from "@apollo/client/link/ws";
 
 // --> 1. Build routes
 import Mastery from './components/adaptive-testing/Mastery'
-// import Basics from './components/adaptive-testing/modules/Basics'
-// import AbstractModule from './components/adaptive-testing/modules/AbstractModule'
-// import AbstractModule2 from './components/adaptive-testing/modules/AbstractModule2'
 import LearningModule from './components/adaptive-testing/modules/LearningModule'
-import AdaptiveTest from './components/adaptive-testing/tests/AdaptiveTest'
-import TargetedTest from './components/adaptive-testing/tests/TargetedTest'
-import Test from './components/adaptive-testing/tests/Test'
+import TakeExam from './components/adaptive-testing/tests/TakeExam'
 const routes = [
 
     // Mastery
@@ -51,9 +46,7 @@ const routes = [
     { path: '/LearningModule/:name/:id', component: LearningModule, props:true },
 
     // Testing
-    { path: '/adaptive-test', component: AdaptiveTest },
-    { path: '/targeted-test', component: TargetedTest },
-    { path: '/test', component: Test },
+    { path: '/take-exam', component: TakeExam },
 ]
 const router = new VueRouter({
     routes // short for `routes: routes`
