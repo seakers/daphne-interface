@@ -393,10 +393,12 @@
                 }
 
                 if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions')) {
-                    this.$store.commit('setShowSuggestions', true);
+                    this.$store.commit('setShowEngineerSuggestions', true);
+                    this.$store.commit('setShowHistorianSuggestions', true);
                 }
                 else {
-                    this.$store.commit('setShowSuggestions', false);
+                    this.$store.commit('setShowEngineerSuggestions', false);
+                    this.$store.commit('setShowHistorianSuggestions', false);
                 }
                 this.$store.dispatch("updateActiveSettings");
             }
