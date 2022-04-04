@@ -281,6 +281,7 @@
                         if (dataResponse.ok) {
                             let eval_status = await dataResponse.json();
                             if (eval_status["code"] == "arch_repeated") {
+                                this.isComputing = false;
                                 let newIndex = -1;
                                 this.problemData.forEach((d, i) => {
                                     if (d.db_id == eval_status["arch_id"]) {
