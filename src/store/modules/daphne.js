@@ -6,7 +6,8 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 const state = {
     command: '',
     dialogueHistory: [],
-    isLoading: false
+    isLoading: false,
+    expertiseLevel: 'novice'
 };
 
 const initialState = _.cloneDeep(state);
@@ -84,7 +85,25 @@ const actions = {
             console.error('Networking error:', e);
         }
         commit('setIsLoading', false);
-    }
+    },
+    async updateExpertiseLevel({ state, commit, rootState }, expertiseLevel) {
+        try {
+            let reqData = new FormData();
+            reqData.append('is_domain_expert', expertiseLevel == "expert");
+            let dataResponse = await fetchPost(API_URL + 'eoss/settings/expertise-settings', reqData);
+
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                commit('setExpertiseLevel', expertiseLevel);
+            }
+            else {
+                console.error('Error retrieving past conversation history.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
 };
 
 // mutations
@@ -101,6 +120,9 @@ const mutations = {
     setIsLoading(state, isLoading) {
         state.isLoading = isLoading;
     },
+    setExpertiseLevel(state, expertiseLevel) {
+        state.expertiseLevel = expertiseLevel;
+    },
     resetDaphne(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
     },
@@ -108,7 +130,7 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    }
+    },
 };
 
 export default {

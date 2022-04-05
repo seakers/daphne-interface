@@ -19,7 +19,7 @@ const state = {
         { name: 'experiment' },
         { name: 'experiment' }
     ],
-    problems: ["SMAP", "SMAP_W", "SMAP_C"],
+    problems: ["ClimateCentric-Experiment", "ClimateCentric-Experiment", "ClimateCentric-Experiment"],
     stageProblemName: "",
     stageDatasetName: "",
     stageInformation: {
@@ -49,28 +49,18 @@ const state = {
                 'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: [],
-                analyst: [],
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
+                analyst: ['1000'],
                 explorer: [],
-                historian: [],
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
             },
             nextStage: '',
             steps: [
                 {
                     text: `<p>Thank you for participating in this experiment! You will be using Daphne, a cognitive 
 assistant and design tool for Earth Observation Satellite Systems (EOSS from now on) design. During this experiment, you will
-help shape a new soil moisture measuring mission with multiple satellites and sensors involved. You will consider missions ranging from 
+help shape a space mission with multiple satellites and sensors involved. You will consider missions ranging from 
 small (a few hundred millions) to large (several billion $).</p>
 <p>Your role during the experiment is that of an <b>Engineering Designer</b>. Your job is two sided: on the one hand, you are expected to
 produce designs for EOSS. At the same time, and equally important, we want you to learn about the main drivers for each design's performance
@@ -78,10 +68,8 @@ in order to inform future missions and designs. An example of a performance driv
  on average".</p>`
                 },
                 {
-                    text: `<p>You will be solving two variations of the soil moisture design problem with the help of Daphne. In both tasks, 
-you will be considering a set of instruments developed at JPL (e.g., an L band radar) and a set of orbits (e.g., SSO dawn-dusk at 600km). 
-However, the emphasis is different in the two tasks. In the first task, the priority is to study surface water processes (runoff, evapotranspiration, etc),
-whereas in the second case the emphasis is on societal benefits and applications such as heat stress, drought, flood monitoring and wild fires prediction.</p>
+                    text: `<p>You will be a design problem with the help of Daphne. In both tasks, 
+you will be considering a set of instruments developed at NASA and a set of orbits (e.g., SSO dawn-dusk at 600km).</p>
 <p>We have models and datasets available to estimate the science/societal benefit of different combinations of instruments and orbits (e.g., 
 calculation of revisit time of a constellation and comparison to a requirement from the World Meteorological Organization). While these models
  are not perfect, they are assumed good enough for these purposes, so the focus should be on trying to get the best possible architectures given
@@ -91,30 +79,25 @@ calculation of revisit time of a constellation and comparison to a requirement f
                     text: `<p>Specifically, the task consists on designing different constellations of satellites for 
 Earth observation. This means you will be assigning different sets of instruments from a predefined pool of instruments 
 to different orbits and then evaluating your constellation design (e.g, the set of satellites with specific instruments 
-assigned to specific orbits) to see which constellations are the best for each of the two tasks. Note that a 
-constellation design that works well for one of the two problems might not work well at all for the next one, so simply
- copying designs from one stage to the next is unlikely to work well.</p>`
+assigned to specific orbits) to see which constellations are the best.</p>`
                 },
                 {
                     text: `<p>To help you with the task, Daphne comes with a set of features and skills to help you create 
-new designs and test hypotheses. You might be presented with one of three Daphne 
-versions during the experiment. The first of Daphne's versions only includes design capabilities. The second version includes
-a full suite of Data Mining modules, which you as the designer can use. Finally, the last version includes a module that helps
-with Hypothesis Testing, as well as Daphne giving out features that might be interesting to look at. Which version you get for
-each task is completely randomized.</p>`
+new designs and test hypotheses. You will be presented with two different versions of Daphne during the experiment. 
+The first of Daphne's versions is more catered towards novices. The second version is catered to expert designers. Which version you get first 
+is completely randomized.</p>`
                 },
                 {
-                    text: `<p>Again, to reiterate: for each focus (e.g, Water or Applications), you have <b>two main 
+                    text: `<p>Again, to reiterate: for each half of the experiment, you have <b>two main 
 objectives</b>: <b>FIRST</b>: You need to come up with a range of constellation designs (not just one constellation) 
 that spans a wide range of costs (e.g., from $800M to $4,000M) with the best science score you can come up with 
 (later we will describe how to get those designs). The science score is a measure (a number that ranges from 0 to 1) 
-of how well you are satisfying a set of requirements which are decided by different stakeholders. The same constellation 
-design can have different scores if different stakeholders are given more prominence, which is what happens in this 
-experiment. Then, the <b>SECOND</b> objective: learning about the performance drivers behind each task. After 15 minutes 
-working on either task, you will answer a test and a survey to evaluate this second objective. The test will contain questions
+of how well you are satisfying a set of requirements which are decided by different stakeholders. Then, the <b>SECOND</b> objective: 
+learning about the performance drivers behind each task. After 15 minutes 
+working, you will answer a test and a survey to evaluate this second objective. The test will contain questions
 on whether a feature is driving performance, whether a design has a good balance between science and cost (aka is close to
 the Pareto frontier if you are familiar with the term), and also comparisons between features and designs. You are encouraged to
-<b>take notes on the best driving features you find</b>. You will be asked these notes as part of the survey. With this out of 
+<b>take notes on the best driving features you find</b>. You will be asked about these notes at the end of the experiment. With this out of 
 the way, let's learn how to actually design new satellite constellations! It's important to try out the functions you are being
  shown now, as this will help you perform better during the experiment.</p>`
                 },
@@ -306,25 +289,25 @@ caution - as you would with any peer's advice. While it is likely to help you, i
 achieve your current goal. "What do you think of this design" is just one question Daphne can answer, but there are a 
 few more that are outside of scope for this experiment.`
                 },
-//                 {
-//                     text: `Generally speaking, Daphne can answer WHY questions (e.g., about why a constellation design 
-// has a certain score), WHAT questions (e.g., information on past and planned Earth observing mission), and HOW questions 
-// (e.g., suggestions on HOW you can improve a constellation design). The first and second types will be the answered by 
-//  the Assistant Daphne, while the last one will be answered by Daphne Peer.`
-//                 },
-//                 {
-//                     attachTo: {
-//                         element: 'body'
-//                     },
-//                     text: `You can now try choosing a question from those available at the Available Commands lists. 
-// There you will see the questions listed by role (Engineer, Analyst, Explorer, Historian, Critic). If you look at the 
-// Engineer list, you will see that there are terms between curly brackets such as $\{engineer_stakeholder}. You can look 
-// at the lists in Commands Information such as Stakeholders (Engineer) or Technologies (Historian) to know valid values 
-// for these fields. If a part of a question is inside square brackets it means it is optional. <b>For example, one way to
-//  use the Engineer is to first ask "Why does this design have this science benefit?" and then ask "Which instruments 
-//  improve the science score for stakeholder $\{engineer_stakeholder}?" with a stakeholder that has a low score. Another 
-//  example question (which you can try!) would be: "Which orbit is most common for radar altimeters?"</b>`
-//                 },
+                {
+                    text: `Generally speaking, Daphne can answer WHY questions (e.g., about why a constellation design 
+has a certain score), WHAT questions (e.g., information on past and planned Earth observing mission), and HOW questions 
+(e.g., suggestions on HOW you can improve a constellation design). The first and second types will be the answered by 
+ the Assistant Daphne, while the last one will be answered by Daphne Peer.`
+                },
+                {
+                    attachTo: {
+                        element: 'body'
+                    },
+                    text: `You can now try choosing a question from those available at the Available Commands lists. 
+There you will see the questions listed by role (Engineer, Analyst, Explorer, Historian, Critic). If you look at the 
+Engineer list, you will see that there are terms between curly brackets such as $\{engineer_stakeholder}. You can look 
+at the lists in Commands Information such as Stakeholders (Engineer) or Technologies (Historian) to know valid values 
+for these fields. If a part of a question is inside square brackets it means it is optional. <b>For example, one way to
+ use the Engineer is to first ask "Why does this design have this science benefit?" and then ask "Which instruments 
+ improve the science score for stakeholder $\{engineer_stakeholder}?" with a stakeholder that has a low score. Another 
+ example question (which you can try!) would be: "Which orbit is most common for radar altimeters?"</b>`
+                },
                 {
                     attachTo: {
                         element: '.chat-container',
@@ -356,24 +339,23 @@ behind the scenes, helping you find better designs. While all Daphne versions ha
 conjuction with the Hypothesis Tester in the third version of Daphne to help with the testing of hypotheses. The designs it finds will be 
 shown in blue to differentiate them from the ones already there that you found.`
                 },
-//                 {
-//                     attachTo: {
-//                         element: '.active-menu',
-//                         on: 'right'
-//                     },
-//                     text: `The Diversifier will track in real time which architectures you have been adding and will 
-// suggest areas of the datasets that you have left unexplored in case you want to change the area you're exploring. This 
-// will only be available for the Daphne Peer version.`
-//                 },
-//                 {
-//                     attachTo: {
-//                         element: '.active-menu',
-//                         on: 'right'
-//                     },
-//                     text: `The Suggestions will keep track of the changes you make in the Design Builder, and will give 
-// you real time advice on how that design can be improved without having to Evaluate it or ask the Critic what it thinks 
-// about it. Again, this will only be available on the Daphne Peer version.`
-//                 },
+                {
+                    attachTo: {
+                        element: '.active-menu',
+                        on: 'right'
+                    },
+                    text: `The Diversifier will track in real time which architectures you have been adding and will 
+suggest areas of the datasets that you have left unexplored in case you want to change the area you're exploring.`
+                },
+                {
+                    attachTo: {
+                        element: '.active-menu',
+                        on: 'right'
+                    },
+                    text: `The Suggestions will keep track of the changes you make in the Design Builder, and will give 
+you real time advice on how that design can be improved without having to Evaluate it or ask the Critic what it thinks 
+about it.`
+                },
                 {
                     attachTo: {
                         element: '.hypothesis-tester',
@@ -406,12 +388,10 @@ are available to you. In each of the tasks, you will get randomly assigned one o
                     text: `As a final reminder, <b>each stage of the experiment will last for 15 minutes</b>. 
 Remember, you have two objectives: <b>1. Find a range of designs with good science scores with a cost between $800M 
 and $4,000M</b> and <b>2. Learn what features are driving the performance of the designs for metrics such as cost, performance,
-and distance to the Pareto front.</b>. or example, you may try to find which instrument-orbits pairings appear most often 
+and distance to the Pareto front.</b>. For example, you may try to find which instrument-orbits pairings appear most often 
 in the best architectures you can find. You will be automatically evaluated for objective 1 and you will answer a test and survey for objective 2.
 <b>The Daphne versions you get are completely randomized</b>. You are also <b>HIGHLY encouraged</b> to take notes during each task, preferrably on
-a text editor so it's easy to copy and paste later. <b>You will be asked about them in the surveys and tests.</b> The first stage task will be 
-designing the Surface Water focused mission, and the second one will be for the Applications focused mission. And once again, <b>trying to reuse 
-good designs and driving features from the first task for the second task will likely not work!</b>. With all this being said, click on Next to
+a text editor so it's easy to copy and paste later. <b>You will be asked about them in the surveys and tests.</b> With all this being said, click on Next to
 start the experiment!`
                 }
             ],
@@ -434,152 +414,43 @@ start the experiment!`
             startTime: 0,
             stageDuration: 60*20
         },
-        daphne_assistant: {
+        daphne_expert: {
             availableFunctionalities: [
                 'DesignBuilder',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
+                'DataMining',
+                'EOSSFilter',
+                'FeatureApplication',
                 'Details',
-                'BackgroundSearch'
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions',
+                'HypothesisTester',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DataMining',
+                'HypothesisTester',
                 'EOSSFilter',
                 'FeatureApplication',
                 'OrbitInstrInfo',
                 'AvailableCommands',
-                'CommandsInformation',
+                'CommandsInformation'
             ],
             restrictedQuestions: {
                 engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
-                analyst: [],
+                analyst: ['1000'],
                 explorer: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
-                critic: [],
-            },
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*15
-        },
-        daphne_peer: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions'
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-            ],
-            restrictedQuestions: {
-                engineer: [],
-                analyst: [],
-                explorer: [],
-                historian: [],
                 critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
             },
             nextStage: '',
             startTime: 0,
             stageDuration: 60*15
         },
-        daphne_classic: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'Details',
-                'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions',
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-            ],
-            restrictedQuestions: {
-                engineer: [],
-                analyst: [],
-                explorer: [],
-                historian: [],
-                critic: [3000, 3005],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
-            },
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*15
-        },
-        daphne_dm: {
-            availableFunctionalities: [
-                'DesignBuilder',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'Details',
-                'BackgroundSearch',
-                'Diversifier',
-                'LiveSuggestions',
-            ],
-            shownFunctionalities: [
-                'DesignBuilder',
-                'DataMining',
-                'EOSSFilter',
-                'FeatureApplication',
-                'OrbitInstrInfo',
-                'AvailableCommands',
-            ],
-            restrictedQuestions: {
-                engineer: [],
-                analyst: [],
-                explorer: [],
-                historian: [],
-                critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
-            },
-            nextStage: '',
-            startTime: 0,
-            stageDuration: 60*15
-        },
-        daphne_hypothesis: {
+        daphne_novice: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
@@ -596,34 +467,25 @@ start the experiment!`
             ],
             shownFunctionalities: [
                 'DesignBuilder',
-                'HypothesisTester',
                 'DataMining',
+                'HypothesisTester',
                 'EOSSFilter',
                 'FeatureApplication',
                 'OrbitInstrInfo',
                 'AvailableCommands',
+                'CommandsInformation'
             ],
             restrictedQuestions: {
-                engineer: [],
-                analyst: [],
+                engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
+                analyst: ['1000'],
                 explorer: [],
-                historian: [],
+                historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
-                engineer_instruments: [],
-                engineer_instrument_parameters: [],
-                engineer_measurements: [],
-                engineer_stakeholders: [],
-                engineer_objectives: [],
-                engineer_subobjectives: [],
-                historian_technologies: [],
-                historian_measurements: [],
-                historian_missions: [],
-                historian_space_agencies: []
             },
             nextStage: '',
             startTime: 0,
             stageDuration: 60*15
-        }
+        },
     }
 };
 
