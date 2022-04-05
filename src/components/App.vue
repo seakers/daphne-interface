@@ -201,6 +201,7 @@
 
                 // 8. Init active Analyst
                 if (!startData["is_experiment_user"]) {
+                    window.clearInterval(this.activeAnalystInterval);
                     this.activeAnalystInterval = window.setInterval(function() {
                         wsTools.websocket.send(JSON.stringify({
                             msg_type: 'active_analyst'
