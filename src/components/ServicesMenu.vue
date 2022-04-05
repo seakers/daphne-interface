@@ -46,6 +46,13 @@
 
     export default {
         name: "ServicesMenu",
+        data: function() {
+            return {
+                analystFreqTimeout: null,
+                engineerFreqTimeout: null,
+                historianFreqTimeout: null,
+            }
+        },
         computed: {
             ...mapState({
                 inExperiment: state => state.experiment.inExperiment,
@@ -78,8 +85,13 @@
                     return this.$store.state.active.engineerSuggestionsFrequency;
                 },
                 set (value) {
-                    this.$store.commit('setEngineerSuggestionsFrequency', value);
-                    this.$store.dispatch("updateActiveSettings");
+                    if (this.engineerFreqTimeout) {
+                        clearTimeout(this.engineerFreqTimeout);
+                    }
+                    this.engineerFreqTimeout = setTimeout(() => {
+                        this.$store.commit('setEngineerSuggestionsFrequency', value);
+                        this.$store.dispatch("updateActiveSettings");
+                    }, 500);
                 }
             },
             showHistorianSuggestions: {
@@ -96,8 +108,13 @@
                     return this.$store.state.active.historianSuggestionsFrequency;
                 },
                 set (value) {
-                    this.$store.commit('setHistorianSuggestionsFrequency', value);
-                    this.$store.dispatch("updateActiveSettings");
+                    if (this.historianFreqTimeout) {
+                        clearTimeout(this.historianFreqTimeout);
+                    }
+                    this.historianFreqTimeout = setTimeout(() => {
+                        this.$store.commit('setHistorianSuggestionsFrequency', value);
+                        this.$store.dispatch("updateActiveSettings");
+                    }, 500);
                 }
             },
             showAnalystSuggestions: {
@@ -114,8 +131,13 @@
                     return this.$store.state.active.analystSuggestionsFrequency;
                 },
                 set (value) {
-                    this.$store.commit('setAnalystSuggestionsFrequency', value);
-                    this.$store.dispatch("updateActiveSettings");
+                    if (this.analystFreqTimeout) {
+                        clearTimeout(this.analystFreqTimeout);
+                    }
+                    this.analystFreqTimeout = setTimeout(() => {
+                        this.$store.commit('setAnalystSuggestionsFrequency', value);
+                        this.$store.dispatch("updateActiveSettings");
+                    }, 500);
                 }
             },
             logged_in() {
