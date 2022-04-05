@@ -16,7 +16,7 @@
             <input type="checkbox" v-model="showEngineerSuggestions">
             Enable Engineer Suggestions
         </label>
-        <div class="control" v-if="showEngineerSuggestions">
+        <div class="control" v-if="showEngineerSuggestions && !inExperiment">
             Every <input class="input" type="number" v-model="engineerSuggestionsFrequency" min="1"> changes
         </div>
 
@@ -24,7 +24,7 @@
             <input type="checkbox" v-model="showHistorianSuggestions">
             Enable Historian Suggestions
         </label>
-        <div class="control" v-if="showHistorianSuggestions">
+        <div class="control" v-if="showHistorianSuggestions && !inExperiment">
             Every <input class="input" type="number" v-model="historianSuggestionsFrequency" min="1"> changes
         </div>
         
@@ -32,7 +32,7 @@
             <input type="checkbox" v-model="showAnalystSuggestions">
             Enable Analyst Suggestions
         </label>
-        <div class="control" v-if="showAnalystSuggestions">
+        <div class="control" v-if="showAnalystSuggestions && !inExperiment">
             Every <input class="input" type="number" v-model="analystSuggestionsFrequency" min="15"> seconds
         </div>
         
