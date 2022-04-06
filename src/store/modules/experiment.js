@@ -19,7 +19,7 @@ const state = {
         { name: 'experiment' },
         { name: 'experiment' }
     ],
-    problems: ["ClimateCentric-Experiment", "ClimateCentric-Experiment", "ClimateCentric-Experiment"],
+    problems: ["ClimateCentric-Experiment", "ClimateCentric-Experiment", "ClimateCentric-Experiment2"],
     stageProblemName: "",
     stageDatasetName: "",
     stageInformation: {

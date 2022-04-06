@@ -366,6 +366,10 @@
                         console.log("Started tutorial!");
                         this.tutorial.start();
                         this.$store.dispatch('updateExpertiseLevel', "novice");
+                        this.$store.commit('setHistorianSuggestionsFrequency', 3);
+                        this.$store.commit('setExpertSuggestionsFrequency', 3);
+                        this.$store.commit('setAnalystSuggestionsFrequency', 90);
+                        this.$store.dispatch("updateActiveSettings");
                         break;
                     }
                     case 'no_daphne': {
@@ -373,10 +377,18 @@
                     }
                     case 'daphne_novice': {
                         this.$store.dispatch('updateExpertiseLevel', "novice");
+                        this.$store.commit('setHistorianSuggestionsFrequency', 3);
+                        this.$store.commit('setExpertSuggestionsFrequency', 3);
+                        this.$store.commit('setAnalystSuggestionsFrequency', 90);
+                        this.$store.dispatch("updateActiveSettings");
                         break;
                     }
                     case 'daphne_expert': {
                         this.$store.dispatch('updateExpertiseLevel', "expert");
+                        this.$store.commit('setHistorianSuggestionsFrequency', 6);
+                        this.$store.commit('setExpertSuggestionsFrequency', 6);
+                        this.$store.commit('setAnalystSuggestionsFrequency', 180);
+                        this.$store.dispatch("updateActiveSettings");
                         break;
                     }
                     default: {

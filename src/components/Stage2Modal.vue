@@ -1,7 +1,7 @@
 <template>
     <div class="message-body">
         <p>That's it for the experiment! Click Finish to go to the end survey.</p>
-        <a class="button" href="https://tamu.qualtrics.com/jfe/form/SV_dha666ce1y5lJEa" target="_blank" v-on:click="finishExperiment">Finish</a>
+        <a class="button" href="https://tamu.qualtrics.com/jfe/form/SV_cGQWIp7tOVXN3FA" target="_blank" v-on:click="finishExperiment">Finish</a>
     </div>
 </template>
 
