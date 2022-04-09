@@ -358,18 +358,12 @@
                         //             ]
                         // })
                         this.tutorial.on("complete", () => {
-                            this.$store.dispatch('startStage', this.stageInformation.tutorial.nextStage).then(() => {
-                                this.$store.commit('setExperimentStage', this.stageInformation.tutorial.nextStage);
-                            });
+                            this.$store.commit('activateModal', this.$store.state.experiment.modalContent[this.$store.state.experiment.currentStageNum]);
                         });
                         // TODO: Hijack next button action on tutorial
                         console.log("Started tutorial!");
                         this.tutorial.start();
-                        this.$store.dispatch('updateExpertiseLevel', "novice");
-                        this.$store.commit('setHistorianSuggestionsFrequency', 3);
-                        this.$store.commit('setExpertSuggestionsFrequency', 3);
-                        this.$store.commit('setAnalystSuggestionsFrequency', 90);
-                        this.$store.dispatch("updateActiveSettings");
+                        
                         break;
                     }
                     case 'no_daphne': {
@@ -396,7 +390,7 @@
                     }
                 }
 
-                // 6. Initialize user-only features
+                // 7. Initialize user-only features
                 await this.$store.dispatch("retrieveActiveSettings");
                 this.$store.commit('setShowFoundArchitectures', false);
 
@@ -413,6 +407,13 @@
                 else {
                     this.$store.commit('setShowSuggestions', false);
                 }
+                this.$store.dispatch("updateActiveSettings");
+
+                // 8. Expertise settings
+                this.$store.dispatch('updateExpertiseLevel', "novice");
+                this.$store.commit('setHistorianSuggestionsFrequency', this.stageInformation[this.experimentStage].activeSettings["historianFrequency"]);
+                this.$store.commit('setExpertSuggestionsFrequency', this.stageInformation[this.experimentStage].activeSettings["engineerFrequency"]);
+                this.$store.commit('setAnalystSuggestionsFrequency', this.stageInformation[this.experimentStage].activeSettings["analystFrequency"]);
                 this.$store.dispatch("updateActiveSettings");
             }
         },

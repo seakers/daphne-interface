@@ -11,6 +11,7 @@
 </template>
 
 <script>
+    import Stage0Modal from './Stage0Modal';
     import Stage1Modal from './Stage1Modal';
     import Stage2Modal from './Stage2Modal';
     import LoginModal from './LoginModal';
@@ -28,6 +29,7 @@
             }
         },
         components: {
+            Stage0Modal,
             Stage1Modal,
             Stage2Modal,
             LoginModal,

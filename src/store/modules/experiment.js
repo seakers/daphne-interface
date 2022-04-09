@@ -13,7 +13,7 @@ const state = {
     isRecoveringAsync: false,
     experimentStage: '',
     currentStageNum: -1,
-    modalContent: ['', 'Stage1Modal', 'Stage2Modal'],
+    modalContent: ['Stage0Modal', 'Stage1Modal', 'Stage2Modal'],
     datasetInformations: [
         { name: 'experiment_tutorial' },
         { name: 'experiment' },
@@ -22,6 +22,7 @@ const state = {
     problems: ["ClimateCentric-Experiment", "ClimateCentric-Experiment", "ClimateCentric-Experiment2"],
     stageProblemName: "",
     stageDatasetName: "",
+    stageOrder: [],
     stageInformation: {
         tutorial: {
             availableFunctionalities: [
@@ -55,51 +56,76 @@ const state = {
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
             },
+            activeSettings: {
+                "historianFrequency": 3,
+                "engineerFrequency": 3,
+                "analystFrequency": 90,
+            },
+            expertiseSettings: {
+                "domain": false,
+                "design": false,
+                "daphne": false
+            },
             nextStage: '',
             steps: [
                 {
-                    text: `<p>Thank you for participating in this experiment! You will be using Daphne, a cognitive 
-assistant and design tool for Earth Observation Satellite Systems (EOSS from now on) design. During this experiment, you will
-help shape a space mission with multiple satellites and sensors involved. You will consider missions ranging from 
-small (a few hundred millions) to large (several billion $).</p>
-<p>Your role during the experiment is that of an <b>Engineering Designer</b>. Your job is two sided: on the one hand, you are expected to
-produce designs for EOSS. At the same time, and equally important, we want you to learn about the main drivers for each design's performance
-in order to inform future missions and designs. An example of a performance driver would be "Designs with L-band radars produce better science
- on average".</p>`
+                    text:'Before we begin, please answer the following <a href="https://tamu.qualtrics.com/jfe/form/SV_8HaBa3B0JaMiHoW">survey</a>.'
                 },
                 {
-                    text: `<p>You will be a design problem with the help of Daphne. In both tasks, 
-you will be considering a set of instruments developed at NASA and a set of orbits (e.g., SSO dawn-dusk at 600km).</p>
-<p>We have models and datasets available to estimate the science/societal benefit of different combinations of instruments and orbits (e.g., 
-calculation of revisit time of a constellation and comparison to a requirement from the World Meteorological Organization). While these models
- are not perfect, they are assumed good enough for these purposes, so the focus should be on trying to get the best possible architectures given
-  these models, where best means those that maximize the science/societal benefit while minimizing lifecycle cost.</p>`
+                    text: `<p>Thank you for participating in this experiment! You will be using Daphne, an AI tool for designing Earth Observation 
+                    Satellite Systems (EOSS from now on) for climate monitoring. During the experiment, you will
+                    help design a space mission with multiple satellites, instruments, and orbits involved. You will consider missions ranging from 
+                    small (a few hundred million $) to large (several billion $).</p>
+                    <p>Your role during the experiment is that of a <b>Systems Engineer</b> analyzing the trade-offs between different design alternatives. 
+                    Your job is two sided: on the one hand, you are expected to produce designs for EOSS that are as good as possible 
+                    (lowest possible cost for a given science score). At the same time, and equally important, we want you to discover some 
+                    insights about the main drivers of science score and cost in this problem, to inform future missions and designs. 
+                    An example of a science score driver would be "Designs with L-band radars produce better science on average".</p>`
                 },
                 {
-                    text: `<p>Specifically, the task consists on designing different constellations of satellites for 
-Earth observation. This means you will be assigning different sets of instruments from a predefined pool of instruments 
-to different orbits and then evaluating your constellation design (e.g, the set of satellites with specific instruments 
-assigned to specific orbits) to see which constellations are the best.</p>`
+                    text: `<p>You will be working on two similar design problems with the help of Daphne. In both tasks, you will be 
+                    considering a set of instruments (e.g., radars, lidars) and a set of orbits (e.g., SSO dawn-dusk at 600km). 
+                    Different instruments are capable of measuring different climate variables (e.g., atmospheric temperature, CO2 concentration) </p>
+                    <p>Daphne uses models and simulations to estimate the capabilities of different combinations of instruments 
+                    and orbits (e.g., in terms of spatial resolution, accuracy, revisit time) and compares those to a set of requirements 
+                    from existing databases that represent scientific/societal needs to produce a science score between 0 and 1. 
+                    The more requirements are fully satisfied by the capabilities of a given design, the higher the science score. 
+                    The cost of a design is calculated as a sum of the costs of building, launching and operating the instruments and 
+                    satellites in that particular design. The cost of a spacecraft depends strongly on the instruments and orbit of the spacecraft. 
+                    More sophisticated instruments (e.g., high power, high resolution) often require larger satellite platforms. 
+                    More massive satellites are more expensive to build and launch. While these models are not perfect, they are
+                     assumed good enough for these purposes, so your focus should be on trying to get the best possible architectures given
+                     these models, where best means those that maximize the science/societal benefit while minimizing lifecycle cost. 
+                     You also want to find good designs across the entire range of mission sizes, from smallest to largest.</p>`
                 },
                 {
-                    text: `<p>To help you with the task, Daphne comes with a set of features and skills to help you create 
-new designs and test hypotheses. You will be presented with two different versions of Daphne during the experiment. 
-The first of Daphne's versions is more catered towards novices. The second version is catered to expert designers. Which version you get first 
-is completely randomized.</p>`
+                    text: `<p>More specifically, an EOSS design is created by assigning different sets of instruments from a 
+                    predefined pool of instruments to different orbits. You can calculate the science score and cost of a new
+                     design by clicking on the Evaluate button.</p>`
                 },
                 {
-                    text: `<p>Again, to reiterate: for each half of the experiment, you have <b>two main 
-objectives</b>: <b>FIRST</b>: You need to come up with a range of constellation designs (not just one constellation) 
-that spans a wide range of costs (e.g., from $800M to $4,000M) with the best science score you can come up with 
-(later we will describe how to get those designs). The science score is a measure (a number that ranges from 0 to 1) 
-of how well you are satisfying a set of requirements which are decided by different stakeholders. Then, the <b>SECOND</b> objective: 
-learning about the performance drivers behind each task. After 15 minutes 
-working, you will answer a test and a survey to evaluate this second objective. The test will contain questions
-on whether a feature is driving performance, whether a design has a good balance between science and cost (aka is close to
-the Pareto frontier if you are familiar with the term), and also comparisons between features and designs. You are encouraged to
-<b>take notes on the best driving features you find</b>. You will be asked about these notes at the end of the experiment. With this out of 
-the way, let's learn how to actually design new satellite constellations! It's important to try out the functions you are being
- shown now, as this will help you perform better during the experiment.</p>`
+                    text: `<p>To help you with the task, Daphne comes with a set of features and skills to help you find good 
+                    designs and extract some insights from the designs found so far. You will be presented with two different 
+                    versions of Daphne during the experiment. The two versions have some differences in the functionality available to you. </p>`
+                },
+                {
+                    text: `<p>Again, to reiterate: for each half of the experiment, you have <b>two main objectives</b>: 
+                    <b>FIRST</b>: You need to come up with a range of constellation designs (not just one constellation) 
+                    that spans a wide range of costs (e.g., from $800M to $4,000M) with the best science score you can 
+                    come up with for each level of cost (later we will describe how to get those designs). Then, the 
+                    <b>SECOND</b> objective: learning about the drivers of science score/cost-effectiveness in each task, 
+                    e.g., looking for design features that are common among the best designs you found. We call these 
+                    features that help us distinguish good from poor designs “driving features”. After 15 minutes working, 
+                    you will answer a test and a survey to evaluate this second objective. The test will contain questions
+                    on whether a certain feature is a driving feature, whether a design optimally trades cost and science 
+                    score (aka is close to the Pareto frontier if you are familiar with the term), and also comparisons 
+                    between pairs of features and pairs of designs. In case you are not familiar with the definition of a 
+                    Pareto frontier, it is defined as the set of all designs with the best tradeoff between cost and science 
+                    in the dataset (and therefore are the points in the lower right of the tradespace plot). You are encouraged 
+                    to <b>take notes on the best driving features you find</b>. You will be asked about these notes at the end 
+                    of the experiment. </p>
+                    <p>With this out of the way, let's learn how to actually design new satellite constellations! It's important 
+                    to try out the functions you are being shown now, as this will help you perform better during the experiment.</p>`
                 },
                 {
                     attachTo: {
@@ -107,13 +133,13 @@ the way, let's learn how to actually design new satellite constellations! It's i
                         on: 'bottom'
                     },
                     text: `First, let's do a quick tour of Daphne. This is the plot that shows the trade-space of 
-                    the constellation designs you come up with. This set of constellation designs comes from a different 
+                    the constellation designs you come up with. This set of designs comes from a different 
                     problem, so don't worry if you see something different when the experiment task begins. Each dot here 
                     is a single constellation design, and each design has an associated science/societal score and a cost. 
                     The science score, just as a reminder, is a measure (ranging from 0 to 1) of how well you are satisfying 
-                    a set of requirements which are decided by different stakeholders. Your first task in the experiment is, again, 
-                    to come up with a range of constellation designs with the highest science benefit for a range of costs. 
-                    You will learn how to create new ones in a moment.`
+                    a set of requirements from different stakeholders representing different scientific disciplines and 
+                    applications. Your first task in the experiment is, again, to come up with a range of constellation 
+                    designs with the highest science benefit for a range of costs. You will learn how to create new ones in a moment.`
                 },
                 {
                     attachTo: {
@@ -121,11 +147,13 @@ the way, let's learn how to actually design new satellite constellations! It's i
                         on: 'right'
                     },
                     text: `Each satellite constellation design is represented by a table as shown here. Each row 
-represents one spacecraft in the constellation. At the left side of each row in bold we have the orbit in which 
-spacecraft will fly, which is defined by various parameters, such as altitude, inclination and local time of the 
-ascending node for those which are sun-synchronous. Each of the small boxes in the right part of the row represent a 
-single instrument present in that spacecraft. If one orbit has no small boxes corresponding to any instrument, it means 
-there is no spacecraft flying in that orbit for this constellation.`
+                    represents one spacecraft in the constellation. At the left side of each row in bold we have 
+                    the orbit in which the spacecraft will fly, which is defined by 2 or 3 parameters: altitude 
+                    (400-800km), inclination (polar, equatorial, or SSO) and for sun-synchronous orbits 
+                    (SSO, a type of inclination), local time of the ascending node (Dawn-Dusk or DD, morning or AM, 
+                    afternoon or PM). Each of the small boxes in the right part of the row represent a single 
+                    instrument present in that spacecraft. If one orbit has no small boxes corresponding to any 
+                    instrument, it means there is no spacecraft flying in that orbit for this constellation.`
                 },
                 {
                     attachTo: {
@@ -141,23 +169,26 @@ Instruments Information panel. <b>You should read about them now by clicking on 
                         on: 'top right'
                     },
                     text: `As you hover over each dot on the scatter plot, you can see the corresponding information 
-being changed in the Design Builder space. If you click on a dot, it is replaced by a cross. The cross means you have 
-selected that constellation design. <b>Try selecting a design which has the highest science benefit for a certain cost 
-(so the one the furthest right for any cost).</b>`
+                    being changed in the Design Builder space. If you click on a dot, it is replaced by a cross. 
+                    The cross indicates the currently selected design. <b>Try selecting a design which has the 
+                    highest science benefit for a certain cost (so the one the furthest right for that level of cost). 
+                    This point is on the Pareto front. Other examples of designs on the Pareto front include the design 
+                    with the highest science score, and the design with the lowest cost. Note that if a new design is 
+                    discovered, that may change whether other designs are on the Pareto front or not.</b>`
                 },
                 {
                     attachTo: {
                         element: '.design-builder',
                         on: 'right'
                     },
-                    text: `You can move the instruments from one orbit to another, add new instruments, or remove them 
-using drag-and-drop. To remove an instrument from an orbit, drag it on the list of available instruments.
-After modifying the constellation design, you can evaluate it using the <b>"Evaluate Architecture"</b> button on the 
-top-right side. After the evaluation is finished, a new red cross will appear on the scatter plot with its location 
-determined by the new science score and cost of your constellation design. It is very important to evaluate the new 
-designs you make, as otherwise they won't get saved and you won't know how much you improved or worsened the design! 
-<b>Try coming up with a new constellation design before going forward with the tutorial.</b> You should see a notification
-as soon as it is evaluated`
+                    text: `To modify a design, you can move the instruments from one orbit to another, add new instruments, or remove them 
+                    using drag-and-drop. To remove an instrument from an orbit, drag it and drop it onto the list of available instruments.
+                    After modifying a design, you can evaluate it by clicking the <b>"Evaluate Architecture"</b> button on the 
+                    top-right side. After the evaluation is finished, the red cross will move to the location in the scatter plot determined 
+                    by the science score and cost of your new design. It is very important to evaluate the new 
+                    designs you make, as otherwise they won't get saved and you won't know how much you improved or worsened the design! 
+                    <b>Try coming up with a new constellation design before going forward with the tutorial.</b> You should see a notification
+                    as soon as it is evaluated`
                 },
                 {
                     attachTo: {
@@ -165,20 +196,22 @@ as soon as it is evaluated`
                         on: 'right'
                     },
                     text: `You will also notice how there is a Details button in this window. If you click on it 
-will open a new window with more information on this architecture. There you can see a detailed breakdown of the 
-science score and the lifecycle cost. Note that this might be too much information to process adequately in the 
-duration of the experiment, so we would advise to use with caution (perhaps a few times at the beginning and then 
-only when needed).`
+                    will open a new window with more information on this architecture. There you can see a detailed breakdown of the 
+                    science score and the lifecycle cost. The breakdown of the science score can help you understand which 
+                    requirements are not being satisfied by a design and why - i.e., what is/are the missing attribute(s) in the 
+                    capabilities of the architecture (e.g., insufficient spatial resolution). The breakdown of the cost can also 
+                    help you understand what the cost drivers are for the design (e.g., high spacecraft mass). Note that this might 
+                    be too much information to process adequately in the duration of the experiment, so we would advise to use it 
+                    sparingly (perhaps a few times at the beginning and then only when needed).`
                 },
                 {
                     attachTo: {
                         element: '.main',
                         on: 'right'
                     },
-                    text: `While this is the basic functionality for tradespace analysis, and what will be available 
-to you in the first version of Daphne, you have more tools available to you in this experiment. This menu shows all 
-the available ones to you them. To open an unopened feature, click on one of the features with a greyed out name. If there
-aren't any, don't worry, but remember this in case you close one accidentally.`
+                    text: `What we have covered so far is the basic functionality for tradespace analysis, that will be available 
+                    to you in all versions of Daphne. In addition to this, Daphne has more functionalities available to you in 
+                    this experiment. This menu shows all the available ones.`
                 },
                 {
                     attachTo: {
@@ -186,19 +219,20 @@ aren't any, don't worry, but remember this in case you close one accidentally.`
                         on: 'top'
                     },
                     text: `All of Daphne's functions will appear in this area. You have already seen the Design Builder, and we'll
-                    go through the rest in a second. If the current order is not to your liking, you can rearrange the functions to suit
-                    your workflow by dragging and dropping them on the area you want them to be. Some of them can also be made
-                    bigger or smaller with the icons on top, and all of them can be closed to free up space if you don't need them.`
+                    go through the rest in a second. You can rearrange the functions to suit your workflow by dragging and dropping 
+                    them on the area you want them to be. Some of them can also be made bigger or smaller with the icons on top, 
+                    and all of them can be closed to free up space if you don't need them. To open an unopened (grayed out) 
+                    functionality, you can always click on its name. The functionalities that are available to you may change in the two tasks.`
                 },
                 {
                     attachTo: {
                         element: '.data-mining',
                         on: 'left'
                     },
-                    text: `Moving on to the functions, let's talk about Data Mining. The Data Mining feature 
-allows you to select a set of points in the dataset either by drawing squares in the dataset or using filters. Then, 
-by pressing Run Data Mining, you obtain a set of driving "features". A feature is a set of characteristics shared by a 
-group of designs, such as having an L-band radar and an L-band radiometer in the same orbit. Let's see how it works step by step.`
+                    text: `Moving on to the functions, let's talk about Data Mining. The Data Mining functionality 
+                    allows you to select a set of points in the dataset either by drawing squares in the dataset or using filters. Then, 
+                    by pressing Run Data Mining, you obtain a set of driving "features". A feature is a set of characteristics shared by a 
+                    group of designs, such as having an L-band radar and an L-band radiometer in the same orbit. Let's see how it works step by step.`                    
                 },
                 {
                     attachTo: {
@@ -206,46 +240,48 @@ group of designs, such as having an L-band radar and an L-band radiometer in the
                         on: 'bottom'
                     },
                     text: `First of all, choose Drag-select in the Mouse Selection panel. This allows you to select a 
-subset of points from which you want to obtain relevant features. <b>Try making a selection.</b>`
+                    subset of designs from which you want to obtain the common “Driving” features. <b>Try making a selection.</b>`                    
                 },
                 {
                     attachTo: {
                         element: '.data-mining',
                         on: 'right'
                     },
-                    text: `With that done, <b>click on Run data mining</b> to see the features. They are represented 
-as triangles in this plot, where two important metrics for them are represented: Coverage and Specificity. Coverage 
-measures how many points in your selection are covered by this feature, while Specificity measures which percentage of 
-the points with the feature are inside your selection. An ideal feature would be the one with perfect Coverage (all your 
-selected points are inside it) and Specificity (no points outside your selection have this feature). To learn more about 
-a feature, we have the Feature Application window. <b>Before clicking on Next, click on one Feature</b>`
+                    text: `With that done, <b>click on Run data mining</b> to see the driving features. They are represented 
+                    as triangles in this plot, where two important metrics for them are represented: Coverage and Specificity. Coverage 
+                    measures the fraction of points from your selection that are covered by this feature, while Specificity measures the fraction of 
+                    points with the feature that are inside your selection. An ideal feature would be the one with perfect Coverage (all your 
+                    selected points have the feature) and Specificity (no points outside your selection have this feature), 
+                    but there is typically a trade-off between coverage and specificity so no real feature will satisfy that. To visualize a given
+                    feature, we use the Feature Application window. <b>Before clicking on Next, click on one Feature</b>`
                 },
                 {
                     attachTo: {
                         element: '.feature-application',
                         on: 'left'
                     },
-                    text: `In this window you can see how a feature is described. The tree you see is how the feature 
-explains itself. Thus, if you have found a feature you want your designs to have, this window here will tell you how to 
-ensure that. Now on to the last feature of the Data Mining functionality.`
+                    text: `In this window you can see the description of the feature in terms of instruments and orbits. 
+                    The tree you see represents the conditions that are satisfied by designs that share this feature
+                    (e.g., instrument i not assigned to orbit j, and orbit k is empty). Now on to the last feature of 
+                    the Data Mining functionality.`                   
                 },
                 {
                     attachTo: {
                         element: '.filter',
                         on: 'left'
                     },
-                    text: `This last window is the Filters window. Instead of selecting a group of features manually in 
-                    the dataset, you can use this window to select a set of designs that have something in common. You 
-                    can try using any of those, as they're pretty self explanatory.`
+                    text: `This last window is the Filters window. This window allows you to visualize where designs 
+                    that share a certain feature defined by the user (e.g., designs where a certain instrument is absent) 
+                    lie in the scatter plot. You can try using a filter now, they're pretty self-explanatory.`
                 },
                 {
                     attachTo: {
                         element: '#main-plot-block',
                         on: 'right'
                     },
-                    text: `Before we move on, if you want to run data mining on a different selection, click on Cancel
-                    All Selections and the Data Mining plot will reset to its default state, allowing you to run the 
-                    algorithm with a different selection.`
+                    text: `If you want to run data mining on a different selection, click on Cancel
+                    All Selections and the Data Mining plot will reset to its default state, allowing you to rerun the 
+                    algorithm with a different selection of points.`
                 },
                 {
                     attachTo: {
@@ -414,7 +450,85 @@ start the experiment!`
             startTime: 0,
             stageDuration: 60*20
         },
-        daphne_expert: {
+        daphne_total_novice: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions',
+                'HypothesisTester',
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'HypothesisTester',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
+            ],
+            restrictedQuestions: {
+                engineer: ['2000', '2012', '2013', '2014', '2015', '2016', '2017'],
+                analyst: ['1000'],
+                explorer: [],
+                historian: ['4006', '4007', '4010'],
+                critic: ['3000', '3005'],
+            },
+            activeSettings: {
+                "historianFrequency": 3,
+                "engineerFrequency": 3,
+                "analystFrequency": 90,
+            },
+            expertiseSettings: {
+                "domain": false,
+                "design": false,
+                "daphne": false
+            },
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 60*15
+        },
+        daphne_expert_designer: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions',
+                'HypothesisTester',
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'HypothesisTester',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
+            ],
+            restrictedQuestions: {
+                engineer: ['2000', '2012', '2013', '2014', '2015', '2016', '2017'],
+                analyst: ['1000'],
+                explorer: [],
+                historian: ['4006', '4007', '4010'],
+                critic: ['3000', '3005'],
+            },
+            activeSettings: {
+                "historianFrequency": 3,
+                "engineerFrequency": 3,
+                "analystFrequency": 90,
+            },
+            expertiseSettings: {
+                "domain": false,
+                "design": true,
+                "daphne": false
+            },
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 60*15
+        },
+        daphne_expert_designer_daphne: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
@@ -446,11 +560,99 @@ start the experiment!`
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
             },
+            activeSettings: {
+                "historianFrequency": 3,
+                "engineerFrequency": 3,
+                "analystFrequency": 90,
+            },
+            expertiseSettings: {
+                "domain": false,
+                "design": true,
+                "daphne": true
+            },
             nextStage: '',
             startTime: 0,
             stageDuration: 60*15
         },
-        daphne_novice: {
+        daphne_aerospace_engineer: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions',
+                'HypothesisTester',
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'HypothesisTester',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
+            ],
+            restrictedQuestions: {
+                engineer: ['2000', '2012', '2013', '2014', '2015', '2016', '2017'],
+                analyst: ['1000'],
+                explorer: [],
+                historian: ['4006', '4007', '4010'],
+                critic: ['3000', '3005'],
+            },
+            activeSettings: {
+                "historianFrequency": 6,
+                "engineerFrequency": 6,
+                "analystFrequency": 180,
+            },
+            expertiseSettings: {
+                "domain": true,
+                "design": false,
+                "daphne": false
+            },
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 60*15
+        },
+        daphne_aerospace_systems_engineer: {
+            availableFunctionalities: [
+                'DesignBuilder',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation',
+                'BackgroundSearch',
+                'Diversifier',
+                'LiveSuggestions',
+                'HypothesisTester',
+            ],
+            shownFunctionalities: [
+                'DesignBuilder',
+                'HypothesisTester',
+                'OrbitInstrInfo',
+                'AvailableCommands',
+                'CommandsInformation'
+            ],
+            restrictedQuestions: {
+                engineer: ['2000', '2012', '2013', '2014', '2015', '2016', '2017'],
+                analyst: ['1000'],
+                explorer: [],
+                historian: ['4006', '4007', '4010'],
+                critic: ['3000', '3005'],
+            },
+            activeSettings: {
+                "historianFrequency": 6,
+                "engineerFrequency": 6,
+                "analystFrequency": 180,
+            },
+            expertiseSettings: {
+                "domain": true,
+                "design": true,
+                "daphne": false
+            },
+            nextStage: '',
+            startTime: 0,
+            stageDuration: 60*15
+        },
+        daphne_total_expert: {
             availableFunctionalities: [
                 'DesignBuilder',
                 'OrbitInstrInfo',
@@ -481,6 +683,16 @@ start the experiment!`
                 explorer: [],
                 historian: ['4000', '4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009', '4010'],
                 critic: ['3000', '3005'],
+            },
+            activeSettings: {
+                "historianFrequency": 6,
+                "engineerFrequency": 6,
+                "analystFrequency": 180,
+            },
+            expertiseSettings: {
+                "domain": true,
+                "design": true,
+                "daphne": true
             },
             nextStage: '',
             startTime: 0,
@@ -502,10 +714,7 @@ const actions = {
             if (response.ok) {
                 let experimentStages = await response.json();
                 // Start the experiment: set the order of the conditions after the tutorial
-                commit('setNextStage', { experimentStage: 'tutorial', nextStage: experimentStages[0] });
-                for (let i = 0; i < experimentStages.length - 1; ++i) {
-                    commit('setNextStage', { experimentStage: experimentStages[i], nextStage: experimentStages[i+1] });
-                }
+                commit('setStageOrder', experimentStages[0]);
             }
             else {
                 console.error('Error starting the experiment.');
@@ -643,6 +852,9 @@ const mutations = {
     },
     setStageDatasetName(state, stageDatasetName) {
         state.stageDatasetName = stageDatasetName;
+    },
+    setStageOrder(state, stageOrder) {
+        state.stageOrder = stageOrder;
     },
     setNextStage(state, { experimentStage, nextStage }) {
         state.stageInformation[experimentStage].nextStage = nextStage;
