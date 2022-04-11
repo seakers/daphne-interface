@@ -48,7 +48,7 @@
                         break;
                 }
                 this.$store.commit('setNextStage', { experimentStage: 'tutorial', nextStage: realStages[this.$store.state.experiment.stageOrder[0]] });
-                for (let i = 0; i < experimentStages.length - 1; ++i) {
+                for (let i = 0; i < this.$store.state.experiment.stageOrder.length - 1; ++i) {
                     this.$store.commit('setNextStage', { experimentStage: realStages[this.$store.state.experiment.stageOrder[i]], nextStage: realStages[this.$store.state.experiment.stageOrder[i+1]] });
                 }
             },

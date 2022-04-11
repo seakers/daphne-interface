@@ -690,7 +690,7 @@ const actions = {
             if (response.ok) {
                 let experimentStages = await response.json();
                 // Start the experiment: set the order of the conditions after the tutorial
-                commit('setStageOrder', experimentStages[0]);
+                commit('setStageOrder', experimentStages);
             }
             else {
                 console.error('Error starting the experiment.');
