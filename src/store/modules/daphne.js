@@ -123,6 +123,9 @@ const mutations = {
     setExpertiseLevel(state, expertiseLevel) {
         state.expertiseLevel = expertiseLevel;
     },
+    setPieceFeedback(state, { pIndex, feedbackType }) {
+        state.dialogueHistory[pIndex].userFeedback = feedbackType;
+    },
     resetDaphne(state) {
         state = Object.assign(state, _.cloneDeep(initialState));
     },
