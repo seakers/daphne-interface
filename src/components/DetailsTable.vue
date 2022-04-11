@@ -8,7 +8,7 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th v-for="attributeName in Object.keys(subobjectiveDetails.rows[0].attribute_values)">{{ attributeName }}</th>
+                    <th v-for="header in subobjectiveHeaders">{{ header }}</th>
                     <th>Score</th>
                     <th>Taken By</th>
                     <th>Justification</th>
@@ -16,7 +16,7 @@
                 </thead>
                 <tbody>
                 <tr v-for="index in subobjectiveDetails.rows.length">
-                    <td v-for="attrValue in subobjectiveDetails.rows[index-1].attribute_values">{{ attrValue }}</td>
+                    <td v-for="header in subobjectiveHeaders">{{ subobjectiveDetails.rows[index-1].attribute_values[header] }}</td>
                     <td>{{ subobjectiveDetails.rows[index-1].score }}</td>
                     <td>{{ subobjectiveDetails.rows[index-1].taken_by }}</td>
                     <td class="content justification-cell">
@@ -38,6 +38,7 @@
         name: 'details-table',
         computed: {
             ...mapState({
+                subobjectiveHeaders: state => state.score.subobjectiveHeaders,
                 subobjectiveDetails: state => state.score.subobjectiveDetails
             }),
         },

@@ -4,6 +4,7 @@ import {fetchPost} from "../../scripts/fetch-helpers";
 
 const state = {
     scoreInfo: [],
+    subobjectiveHeaders: null,
     subobjectiveDetails: null
 };
 
@@ -42,23 +43,31 @@ const mutations = {
         state.scoreInfo = scoreInfo;
     },
     setSubobjectiveDetails(state, subobjectiveDetails) {
+        let existingProps = new Set();
         for (let row of subobjectiveDetails.rows) {
-            // Remove all unnecessary props
-            let allowed_props = ["Accuracy#", "orbit-inclination", "Temporal-resolution#", "Horizontal-Spatial-Resolution#"];
+            // Create a list of all important props
             for (let prop in row.attribute_values) {
                 if (row.attribute_values.hasOwnProperty(prop)) {
-                    if (!allowed_props.includes(prop)) {
-                        delete row.attribute_values[prop];
+                    if (!existingProps.has(prop)) {
+                        existingProps.add(prop);
                     }
                 }
             }
-            // Add all missing props
-            for (let prop of allowed_props) {
-                if (!row.attribute_values.hasOwnProperty(prop)) { 
-                    row.attribute_values[prop] = "N/A";
+        }
+        state.subobjectiveHeaders = [...existingProps];
+        // Add all missing props
+        for (let row of subobjectiveDetails.rows) {
+            let missingProps = new Set(existingProps);
+            for (let prop in row.attribute_values) {
+                if (row.attribute_values.hasOwnProperty(prop)) {
+                    missingProps.delete(prop);
                 }
             }
+            for (let prop of missingProps) {
+                row.attribute_values[prop] = "N/A";
+            }
         }
+        
         state.subobjectiveDetails = subobjectiveDetails;
     }
 };
