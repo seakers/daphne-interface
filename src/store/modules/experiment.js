@@ -85,8 +85,11 @@ const state = {
                 {
                     text: `<p>You will be working on two similar design problems with the help of Daphne. In both tasks, you will be 
                     considering a set of instruments (e.g., radars, lidars) and a set of orbits (e.g., SSO dawn-dusk at 600km). 
-                    Different instruments are capable of measuring different climate variables (e.g., atmospheric temperature, CO2 concentration) </p>
-                    <p>Daphne uses models and simulations to estimate the capabilities of different combinations of instruments 
+                    Different instruments are capable of measuring different climate variables (e.g., atmospheric temperature, CO2 concentration).</p>`
+                    
+                },
+                {
+                    text: `<p>Daphne uses models and simulations to estimate the capabilities of different combinations of instruments 
                     and orbits (e.g., in terms of spatial resolution, accuracy, revisit time) and compares those to a set of requirements 
                     from existing databases that represent scientific/societal needs to produce a science score between 0 and 1. 
                     The more requirements are fully satisfied by the capabilities of a given design, the higher the science score. 

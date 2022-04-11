@@ -499,7 +499,7 @@
             // Tutorial
             this.tutorial = new Shepherd.Tour({
                 defaultStepOptions: {
-                    classes: 'shadow-md bg-purple-dark',
+                    classes: 'shadow-md bg-purple-dark wider-tutorial',
                     scrollTo: true
                 },
                 useModalOverlay: true,
@@ -611,5 +611,9 @@
     .vertical-divider {
         background: $grey-light;
         width: 1px;
+    }
+
+    .wider-tutorial {
+        max-width: 600px;
     }
 </style>
