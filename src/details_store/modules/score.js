@@ -44,7 +44,7 @@ const mutations = {
     setSubobjectiveDetails(state, subobjectiveDetails) {
         for (let row of subobjectiveDetails.rows) {
             // Remove all unnecessary props
-            allowed_props = ["Accuracy#", "orbit-inclination", "Temporal-resolution#", "Horizontal-Spatial-Resolution#"];
+            let allowed_props = ["Accuracy#", "orbit-inclination", "Temporal-resolution#", "Horizontal-Spatial-Resolution#"];
             for (let prop in row.attribute_values) {
                 if (row.attribute_values.hasOwnProperty(prop)) {
                     if (!allowed_props.includes(prop)) {
