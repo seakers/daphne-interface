@@ -4,7 +4,7 @@
             <section ref="chatArea" class="chat-area">
                 <div v-for="(piece, p_index) in dialogueHistory" class="chat-message content" :class="{ 'chat-message-user': piece.writer === 'user', 'chat-message-daphne': piece.writer === 'daphne' }" :key="p_index">
                     <component v-for="(response, index) in piece['visual_message']" v-bind:is="responseTypes[piece['visual_message_type'][index]]" :response="response" :key="index"></component>
-                    <p style="padding-left: 0.5em; padding-top: 0.5em;"><a v-on:click="setPieceFeedback(p_index, 'positive')"><span class="fas fa-thumbs-up"  style="font-size: 1.25em;"></span></a>
+                    <p style="padding-left: 0.5em; padding-top: 0.5em;" v-if="piece.writer === 'daphne'"><a v-on:click="setPieceFeedback(p_index, 'positive')"><span class="fas fa-thumbs-up"  style="font-size: 1.25em;"></span></a>
                     <a v-on:click="setPieceFeedback(p_index, 'negative')"><span class="fas fa-thumbs-down" style="position:relative; top: 0.3em; font-size: 1.25em;"></span></a></p>
                 </div>
                 <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="64" width="64" v-if="isLoading" alt="Loading spinner">
