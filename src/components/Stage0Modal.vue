@@ -47,9 +47,9 @@
                         realStages["daphne_group"] = "daphne_total_expert";
                         break;
                 }
-                commit('setNextStage', { experimentStage: 'tutorial', nextStage: realStages[this.$store.state.experiment.stageOrder[0]] });
+                this.$store.commit('setNextStage', { experimentStage: 'tutorial', nextStage: realStages[this.$store.state.experiment.stageOrder[0]] });
                 for (let i = 0; i < experimentStages.length - 1; ++i) {
-                    commit('setNextStage', { experimentStage: realStages[this.$store.state.experiment.stageOrder[i]], nextStage: realStages[this.$store.state.experiment.stageOrder[i+1]] });
+                    this.$store.commit('setNextStage', { experimentStage: realStages[this.$store.state.experiment.stageOrder[i]], nextStage: realStages[this.$store.state.experiment.stageOrder[i+1]] });
                 }
             },
             goToNextStage() {
