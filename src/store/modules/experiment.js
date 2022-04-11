@@ -69,7 +69,7 @@ const state = {
             nextStage: '',
             steps: [
                 {
-                    text:'Before we begin, please answer the following <a href="https://tamu.qualtrics.com/jfe/form/SV_8HaBa3B0JaMiHoW">survey</a>.'
+                    text:'Before we begin, please answer the following <a href="https://tamu.qualtrics.com/jfe/form/SV_8HaBa3B0JaMiHoW" target="_blank" rel="noopener noreferrer">survey</a>.'
                 },
                 {
                     text: `<p>Thank you for participating in this experiment! You will be using Daphne, an AI tool for designing Earth Observation 
