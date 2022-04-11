@@ -43,6 +43,23 @@ const mutations = {
     },
     setSubobjectiveDetails(state, subobjectiveDetails) {
         state.subobjectiveDetails = subobjectiveDetails;
+        for (let row of subobjectiveDetails.rows) {
+            // Remove all unnecessary props
+            allowed_props = ["Accuracy#", "orbit-inclination", "Temporal-resolution#", "Horizontal-Spatial-Resolution#"];
+            for (let prop in row.attribute_values) {
+                if (row.attribute_values.hasOwnProperty(prop)) {
+                    if (!allowed_props.includes(prop)) {
+                        delete row.attribute_values[prop];
+                    }
+                }
+            }
+            // Add all missing props
+            for (let prop in allowed_props) {
+                if (!row.attribute_values.hasOwnProperty(prop)) { 
+                    row.attribute_values[prop] = "N/A";
+                }
+            }
+        }
     }
 };
 
