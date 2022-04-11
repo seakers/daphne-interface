@@ -42,7 +42,6 @@ const mutations = {
         state.scoreInfo = scoreInfo;
     },
     setSubobjectiveDetails(state, subobjectiveDetails) {
-        state.subobjectiveDetails = subobjectiveDetails;
         for (let row of subobjectiveDetails.rows) {
             // Remove all unnecessary props
             allowed_props = ["Accuracy#", "orbit-inclination", "Temporal-resolution#", "Horizontal-Spatial-Resolution#"];
@@ -60,6 +59,7 @@ const mutations = {
                 }
             }
         }
+        state.subobjectiveDetails = subobjectiveDetails;
     }
 };
 
