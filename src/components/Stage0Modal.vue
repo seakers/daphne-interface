@@ -28,22 +28,22 @@
                     "daphne_group": ""
                 };
                 switch(this.expertiseGroup) {
-                    case 1: // Total novice
+                    case "1": // Total novice
                         realStages["daphne_group"] = "daphne_total_novice";
                         break;
-                    case 2: // Expert designer
+                    case "2": // Expert designer
                         realStages["daphne_group"] = "daphne_expert_designer";
                         break;
-                    case 3: // Expert designer w/ Daphne experience
+                    case "3": // Expert designer w/ Daphne experience
                         realStages["daphne_group"] = "daphne_expert_designer_daphne";
                         break;
-                    case 4: // Aerospace Engineer
+                    case "4": // Aerospace Engineer
                         realStages["daphne_group"] = "daphne_aerospace_engineer";
                         break;
-                    case 5: // Aerospace Systems Engineer
+                    case "5": // Aerospace Systems Engineer
                         realStages["daphne_group"] = "daphne_aerospace_systems_engineer";
                         break;
-                    case 6: // Total expert
+                    case "6": // Total expert
                         realStages["daphne_group"] = "daphne_total_expert";
                         break;
                 }
