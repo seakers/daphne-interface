@@ -88,6 +88,7 @@
                 user_pk: state => state.auth.user_pk,
                 gaServiceStatus: state => state.services.gaServiceStatus,
                 vassarRebuildStatus: state => state.services.vassarRebuildStatus,
+                showAnalystSuggestions: state => state.active.showAnalystSuggestions,
                 analystSuggestionsFrequency: state => state.active.analystSuggestionsFrequency,
             }),
             timerExperimentCondition() {
@@ -202,11 +203,13 @@
                 // 8. Init active Analyst
                 if (!startData["is_experiment_user"]) {
                     window.clearInterval(this.activeAnalystInterval);
-                    this.activeAnalystInterval = window.setInterval(function() {
-                        wsTools.websocket.send(JSON.stringify({
-                            msg_type: 'active_analyst'
-                        }));
-                    }, this.analystSuggestionsFrequency*1000);
+                    if (this.showAnalystSuggestions) {
+                        this.activeAnalystInterval = window.setInterval(function() {
+                            wsTools.websocket.send(JSON.stringify({
+                                msg_type: 'active_analyst'
+                            }));
+                        }, this.analystSuggestionsFrequency*1000);
+                    }
                 }
 
                 // 9. Start-up has finished
@@ -255,14 +258,6 @@
                         }
                         // 7. Data Mining initialization
                         this.$store.dispatch('setProblemParameters');
-                        // 8. Active Analyst init (if supposed to)
-                        if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('HypothesisTester')) {
-                            this.activeAnalystInterval = window.setInterval(function() {
-                                wsTools.websocket.send(JSON.stringify({
-                                    msg_type: 'active_analyst'
-                                }));
-                            }, 60*1000);
-                        }
                         stopVassarRebuildWatch();
                     }
                     else {
@@ -370,19 +365,9 @@
                         break;
                     }
                     case 'daphne_novice': {
-                        this.$store.dispatch('updateExpertiseLevel', "novice");
-                        this.$store.commit('setHistorianSuggestionsFrequency', 3);
-                        this.$store.commit('setExpertSuggestionsFrequency', 3);
-                        this.$store.commit('setAnalystSuggestionsFrequency', 90);
-                        this.$store.dispatch("updateActiveSettings");
                         break;
                     }
                     case 'daphne_expert': {
-                        this.$store.dispatch('updateExpertiseLevel', "expert");
-                        this.$store.commit('setHistorianSuggestionsFrequency', 6);
-                        this.$store.commit('setExpertSuggestionsFrequency', 6);
-                        this.$store.commit('setAnalystSuggestionsFrequency', 180);
-                        this.$store.dispatch("updateActiveSettings");
                         break;
                     }
                     default: {
@@ -392,7 +377,6 @@
 
                 // 7. Initialize user-only features
                 await this.$store.dispatch("retrieveActiveSettings");
-                this.$store.commit('setShowFoundArchitectures', false);
 
                 if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('Diversifier')) {
                     this.$store.commit('setRunDiversifier', true);
@@ -402,15 +386,18 @@
                 }
 
                 if (this.stageInformation[this.experimentStage].availableFunctionalities.includes('LiveSuggestions')) {
-                    this.$store.commit('setShowSuggestions', true);
+                    this.$store.commit('setShowEngineerSuggestions', true);
+                    this.$store.commit('setShowHistorianSuggestions', true);
+                    this.$store.commit('setShowAnalystSuggestions', true);
                 }
                 else {
-                    this.$store.commit('setShowSuggestions', false);
+                    this.$store.commit('setShowEngineerSuggestions', false);
+                    this.$store.commit('setShowHistorianSuggestions', false);
+                    this.$store.commit('setShowAnalystSuggestions', false);
                 }
-                this.$store.dispatch("updateActiveSettings");
 
                 // 8. Expertise settings
-                this.$store.dispatch('updateExpertiseLevel', "novice");
+                this.$store.dispatch('updateExpertiseLevel', this.stageInformation[this.experimentStage].expertiseSettings["domain"] ? "expert" : "novice");
                 this.$store.commit('setHistorianSuggestionsFrequency', this.stageInformation[this.experimentStage].activeSettings["historianFrequency"]);
                 this.$store.commit('setExpertSuggestionsFrequency', this.stageInformation[this.experimentStage].activeSettings["engineerFrequency"]);
                 this.$store.commit('setAnalystSuggestionsFrequency', this.stageInformation[this.experimentStage].activeSettings["analystFrequency"]);
@@ -576,13 +563,28 @@
             },
             analystSuggestionsFrequency: async function (val, oldVal) {
                 window.clearInterval(this.activeAnalystInterval);
-                this.activeAnalystInterval = window.setInterval(
+                if (this.showAnalystSuggestions) {
+                    this.activeAnalystInterval = window.setInterval(
                     function() {
                         wsTools.websocket.send(JSON.stringify({
                             msg_type: 'active_analyst'
                         }));
                     },
                     val*1000);
+                }
+                
+            },
+            showAnalystSuggestions: async function (val, oldVal) {
+                window.clearInterval(this.activeAnalystInterval);
+                if (val) {
+                    this.activeAnalystInterval = window.setInterval(
+                    function() {
+                        wsTools.websocket.send(JSON.stringify({
+                            msg_type: 'active_analyst'
+                        }));
+                    },
+                    this.analystSuggestionsFrequency*1000);
+                }
             },
         }
     }
