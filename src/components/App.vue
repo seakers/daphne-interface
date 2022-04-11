@@ -614,6 +614,6 @@
     }
 
     .wider-tutorial {
-        max-width: 600px;
+        max-width: 600px !important;
     }
 </style>
