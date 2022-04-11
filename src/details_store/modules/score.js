@@ -53,7 +53,7 @@ const mutations = {
                 }
             }
             // Add all missing props
-            for (let prop in allowed_props) {
+            for (let prop of allowed_props) {
                 if (!row.attribute_values.hasOwnProperty(prop)) { 
                     row.attribute_values[prop] = "N/A";
                 }
