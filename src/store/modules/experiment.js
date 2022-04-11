@@ -320,16 +320,15 @@ thumb about how to design Earth observing systems (e.g., don't put a visible lig
 the Explorer Critic will use brute force search around the current design to see if it finds a way to improve it; the 
 Historian Critic will compare your constellation design to past missions and tell you if it finds any similarity (which 
 is not inherently good or bad, but rather a trade-off between innovation and risk); and the Analyst Critic will suggest 
-changes based on what the best constellation designs in the current dataset have in common. Take Daphne's advice with 
-caution - as you would with any peer's advice. While it is likely to help you, it may in some cases not help you 
-achieve your current goal. "What do you think of this design" is just one question Daphne can answer, but there are a 
-few more that are outside of scope for this experiment.`
+changes based on what the best constellation designs in the current dataset have in common. <b>Take Daphne's advice with 
+caution - as you would with any peer's advice.</b> While it is likely to help you, it may in some cases not help you 
+achieve your current goal. "What do you think of this design" is just one question Daphne can answer, and we will go through 
+some others in the next steps.`
                 },
                 {
                     text: `Generally speaking, Daphne can answer WHY questions (e.g., about why a constellation design 
 has a certain score), WHAT questions (e.g., information on past and planned Earth observing mission), and HOW questions 
-(e.g., suggestions on HOW you can improve a constellation design). The first and second types will be the answered by 
- the Assistant Daphne, while the last one will be answered by Daphne Peer.`
+(e.g., suggestions on HOW you can improve a constellation design).`
                 },
                 {
                     attachTo: {
@@ -350,59 +349,31 @@ for these fields. If a part of a question is inside square brackets it means it 
                         on: 'left'
                     },
                     text: `You might have already seen some messages from Daphne that appear without you asking a question.
-This is one feature only available in the third Daphne configuration. Daphne (Analyst) will explicitely tell you features that
-drive performance and bring designs closer to the Pareto front.`
-// `One of them will talk about a Background Search. This is a search algorithm that is running behind the scenes, trying to
-//  help you find better designs. If you accept its suggestion you may see a few blue points appear on your dataset. The 
-//  designs it finds will be shown in blue to differentiate them from the ones already there that you found. This feature 
-//  will always be active for you.`
+Daphne (and more specifically the Analyst role) will explicitely give you features that drive performance and bring designs 
+closer to the Pareto front. When you are designing a new constellation you might also see Daphne give suggestions related to 
+that. Finally, you might also see Daphne recommending new spots to explore in the tradespace after evaluating a few architectures.`
                 },
-//                 {
-//                     attachTo: {
-//                         element: '.active-menu',
-//                         on: 'right'
-//                     },
-//                     text: `You can activate or deactivate this background search here, as well as choose whether you want 
-// to see the new results it finds or not. You will also notice how there are two other options in this same menu.`
-//                 },
                 {
                     attachTo: {
                         element: '#main-plot-block',
                         on: 'bottom'
                     },
                     text: `You might also have already seen some blue dots appearing here. There is a search algorithm that is running 
-behind the scenes, helping you find better designs. While all Daphne versions have this, a different version of this algorithm will run in
-conjuction with the Hypothesis Tester in the third version of Daphne to help with the testing of hypotheses. The designs it finds will be 
-shown in blue to differentiate them from the ones already there that you found.`
-                },
-                {
-                    attachTo: {
-                        element: '.active-menu',
-                        on: 'right'
-                    },
-                    text: `The Diversifier will track in real time which architectures you have been adding and will 
-suggest areas of the datasets that you have left unexplored in case you want to change the area you're exploring.`
-                },
-                {
-                    attachTo: {
-                        element: '.active-menu',
-                        on: 'right'
-                    },
-                    text: `The Suggestions will keep track of the changes you make in the Design Builder, and will give 
-you real time advice on how that design can be improved without having to Evaluate it or ask the Critic what it thinks 
-about it.`
+behind the scenes, helping you find better designs. While all Daphne versions have this, a different version of this algorithm will run 
+if you with the Hypothesis Tester to help with the testing of hypotheses. All the designs found by the background search will be 
+marked in navy blue to differentiate them from the ones that you find.`
                 },
                 {
                     attachTo: {
                         element: '.hypothesis-tester',
                         on: 'left'
                     },
-                    text: `Last but not least, the Hypothesis Tester. This feature, only available to you if you get the third 
-version of Daphne, helps you test simple hypothesis on whether a feature is driving the performance of designs both in science
-, cost, and distance to the Pareto front. The way it works is simple: you select a type of hypothesis, fill the blanks, and press Test.
-This will modify the Background search to look for designs with this feature close to the Pareto front, and a set of metrics will be
-computed for you about the feature. These metrics include the p-values of t-tests performed on all designs that have the feature vs not, 
-as well as coverage and specificity, similar to the Data Mining module. Remember, the smaller the p-value is the better!`
+                    text: `Last but not least, the Hypothesis Tester. This feature helps you test simple hypothesis on whether a feature 
+                    is driving the performance of designs both in science, cost, and distance to the Pareto front. The way it works is 
+                    simple: you select a type of hypothesis, fill the blanks, and press Test. This will modify the Background search to 
+                    look for designs with this feature close to the Pareto front, and a set of metrics will be computed for you about the 
+                    feature. These metrics include statistical tests performed on all designs that have the feature vs not, as well 
+                    as coverage and specificity, similar to the Data Mining module.`
                 },
                 {
                     attachTo: {
@@ -417,8 +388,8 @@ as well as coverage and specificity, similar to the Data Mining module. Remember
                 },
                 {
                     text: `Now you know every tool available to you! The experiment, just as a reminder, will have two 
-stages. Apart from the different tasks with different focus, the main difference between them will be what functions 
-are available to you. In each of the tasks, you will get randomly assigned one of the three Daphnes we described.`
+stages. The main difference between them will be what functions are available to you, and taht will depend on your levels of expertise. In each of 
+the tasks, you will get assigned either a baseline condition or a special Daphne catered to your expertise.`
                 },
                 {
                     text: `As a final reminder, <b>each stage of the experiment will last for 15 minutes</b>. 
@@ -427,8 +398,10 @@ and $4,000M</b> and <b>2. Learn what features are driving the performance of the
 and distance to the Pareto front.</b>. For example, you may try to find which instrument-orbits pairings appear most often 
 in the best architectures you can find. You will be automatically evaluated for objective 1 and you will answer a test and survey for objective 2.
 <b>The Daphne versions you get are completely randomized</b>. You are also <b>HIGHLY encouraged</b> to take notes during each task, preferrably on
-a text editor so it's easy to copy and paste later. <b>You will be asked about them in the surveys and tests.</b> With all this being said, click on Next to
-start the experiment!`
+a text editor so it's easy to copy and paste later. <b>You will be asked about them in the surveys and tests.</b> With all this being said, before 
+starting the experiment, you will answer a knowledge test to assess your expertise in different fields related to the experiment. The answers you give 
+determine what condition you get, and you will be tested on these after the experiment as well. You are encouraged to copy the questions and use Daphne 
+to find all the answers you can!`
                 }
             ],
         },
