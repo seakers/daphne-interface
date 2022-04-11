@@ -45,6 +45,7 @@ functionalityTypes.set('CommandsInformation', {
         {name: "Instruments (Engineer)", value: "engineer_instruments"},
         {name: "Instrument Parameters (Engineer)", value: "engineer_instrument_parameters"},
         {name: "Measurements (Engineer)", value: "engineer_measurements"},
+        {name: "Measurement Parameters (Engineer)", value: "engineer_measurement_parameters"},
         {name: "Stakeholders (Engineer)", value: "engineer_stakeholders"},
         {name: "Objectives (Engineer)", value: "engineer_objectives"},
         {name: "Subobjectives (Engineer)", value: "engineer_subobjectives"},
