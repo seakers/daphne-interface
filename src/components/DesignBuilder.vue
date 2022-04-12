@@ -87,7 +87,7 @@
                 }
             },
             canEvaluate() {
-                return this.isLoggedIn && this.vassarStatus == "ready" && !this.readOnlyDataset;
+                return this.isLoggedIn && (this.vassarStatus == "ready" || this.vassarStatus == "missed_ping") && !this.readOnlyDataset;
             },
             readOnlyDataset() {
                 if (this.currentDatasetInfo) {
