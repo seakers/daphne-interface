@@ -92,7 +92,7 @@
                                                 </template>
 
                                                 <!--SLIDE-->
-                                                <v-list-item v-for="(slide, idx_s) in module.slides" :key="idx_s">
+                                                <v-list-item v-for="(slide, idx_s) in module.slides.slice(0, 5)" :key="idx_s">
 
 
                                                     <v-container>
