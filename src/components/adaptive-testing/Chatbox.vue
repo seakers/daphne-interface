@@ -252,21 +252,13 @@
                 console.log('--> SENDING MESSAGE');
 
                 // --> 1. Add message to current messages string
-                // this.messages.push(this.user_message_object);
                 await this.insert_message(this.user_message_object.text, this.user_message_object.sender);
-
-                // --> 2. Send request to daphne_brain and get response
                 let reqData1 = new FormData();
                 let reqData2 = new FormData();
                 reqData1.append('command', this.user_message_object.text);
                 reqData2.append('command', this.user_message_object.text);
 
-                // let dataResponse = await fetchPost(API_URL + 'eoss/dialogue/command', reqData);
-
-
-
-
-                // --> Find recommended learning modules
+                // --> 2. Get recommended material response from Q&A System
                 let more_info = null;
                 if(this.recommender_status){
                     let dataResponse_lm = await fetchPost(API_URL + 'ca/dialogue/lmcommand',reqData1);
@@ -279,9 +271,8 @@
                     }
                 }
 
+                // --> 3. Get textual response from Q&A System
 
-                // --> Get cognitive assistant response
-                // let dataResponse_ca = await fetchPost(API_URL + 'ca/dialogue/cacommand', reqData2);
                 let dataResponse_ca = await fetchPost(API_URL + 'eoss/dialogue/command', reqData2);
                 if (dataResponse_ca.ok) {
                     let data_ca = await dataResponse_ca.json();
@@ -295,8 +286,7 @@
                     await this.insert_message('There was an error processing the command', 'Daphne', more_info);
                 }
 
-
-                // --> 3. Reset message field to empty
+                // --> 4. Reset message field to empty
                 this.user_message = '';
             },
             async insert_message(text, sender, more_info){
