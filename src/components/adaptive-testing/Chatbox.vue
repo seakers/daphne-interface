@@ -264,7 +264,7 @@
                     let dataResponse_lm = await fetchPost(API_URL + 'ca/dialogue/lmcommand',reqData1);
                     if (dataResponse_lm.ok) {
                         let data_lm = await dataResponse_lm.json();
-                        console.log('--> CONFIDENCE DATA',data_lm)
+                        // console.log('--> CONFIDENCE DATA',data_lm)
                         if(data_lm['response'] !== 'empty'){
                             more_info = data_lm['response'];
                         }
