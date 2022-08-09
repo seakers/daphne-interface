@@ -1,18 +1,18 @@
 import store from '../store';
-import {fetchGet, fetchPost} from "./fetch-helpers";
+import { client } from '../index';
+import { LocalOrbitQuery, LocalInstrumentQuery } from "./apollo-queries";
 
 
 class Architecture {
-    constructor(id, inputs, outputs) {
+    constructor(id, inputs, outputs, db_id) {
         this.id = id;
         this.inputs = inputs;
         this.outputs = outputs;
+        this.db_id = db_id;
     }
 }
 
 export default {
-    problemName: 'SMAP',
-    vassarPort: 9090,
     inputNum: 1,
     outputNum: 2,
     inputList: [],
@@ -25,9 +25,11 @@ export default {
         'DataMining',
         'EOSSFilter',
         'FeatureApplication',
+        'HypothesisTester',
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',
+        'Mycroft',
     ],
     shownFunctionalities: [
         'DesignBuilder',
@@ -35,18 +37,25 @@ export default {
         'AvailableCommands',
         'CommandsInformation'
     ],
-    async initFunction(problemName) {
+
+    async initFunction(problem_id) {
         let extra = {};
-        [extra.orbitList, extra.instrumentList] = await Promise.all([getOrbitList(problemName), getInstrumentList(problemName)]);
-        extra.orbitNum = extra.orbitList.length;
-        extra.instrumentNum = extra.instrumentList.length;
+
+        // Orbit / Instrument info
+        extra.orbitList      = await getOrbitList(problem_id);
+        extra.orbitNum       = extra.orbitList.length;
+        extra.instrumentList = await getInstrumentList(problem_id);
+        extra.instrumentNum  = extra.instrumentList.length;
 
         // Add alias for instruments and orbits
         extra.labelingEnabled = true;
-        //let orbitAliasArray = [['LEO-600-polar-NA', '1'], ['SSO-600-SSO-AM', '2'], ['SSO-600-SSO-DD', '3'], ['SSO-800-SSO-DD', '4'], ['SSO-800-SSO-PM', '5']];
-        let orbitAliasArray = [['LEO-600-polar-NA', 'LEO-600-polar-NA'], ['SSO-600-SSO-AM', 'SSO-600-SSO-AM'],
-            ['SSO-600-SSO-DD', 'SSO-600-SSO-DD'], ['SSO-800-SSO-AM', 'SSO-800-SSO-AM'],
-            ['SSO-800-SSO-DD', 'SSO-800-SSO-DD']];
+
+
+        // --> ORBIT ALIAS
+        let orbitAliasArray = [];
+        for (let i = 0; i < extra.orbitList.length; i++){
+            orbitAliasArray.push([extra.orbitList[i], extra.orbitList[i]]);
+        }
         extra.orbitAlias = {};
         extra.orbitInvAlias = {};
         orbitAliasArray.forEach((element) => {
@@ -54,9 +63,11 @@ export default {
             extra.orbitInvAlias[element[1]] = element[0];
         });
 
-        //let instrumentAliasArray = [['ACE_ORCA', 'A'], ['ACE_POL', 'B'], ['ACE_LID', 'C'], ['CLAR_ERB', 'D'], ['ACE_CPR', 'E'], ['DESD_SAR', 'F'], ['DESD_LID', 'G'], ['GACM_VIS', 'H'], ['GACM_SWIR', 'I'], ['HYSP_TIR', 'J'], ['POSTEPS_IRS', 'K'],['CNES_KaRIN', 'L']];
-        let instrumentAliasArray = [['BIOMASS', 'BIOMASS'], ['SMAP_RAD', 'SMAP_RAD'], ['SMAP_MWR', 'SMAP_MWR'],
-            ['CMIS', 'CMIS'], ['VIIRS', 'VIIRS']];
+        // --> INSTRUMENT ALIAS
+        let instrumentAliasArray = [];
+        for (let i = 0; i < extra.instrumentList.length; i++){
+            instrumentAliasArray.push([extra.instrumentList[i], extra.instrumentList[i]]);
+        }
         extra.instrumentAlias = {};
         extra.instrumentInvAlias = {};
         instrumentAliasArray.forEach((element) => {
@@ -221,18 +232,26 @@ export default {
     Returns the list of orbits
     @return orbitList: a string list containing the names of orbits
     */
-async function getOrbitList(problemName) {
+async function getOrbitList(problemId) {
     try {
-        let reqData = new FormData();
-        reqData.append('problem_name', problemName);
+        // 1. Get orbit list from direct query
 
-        let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-orbit-list', reqData);
-        if (dataResponse.ok) {
-            return dataResponse.json();
+        let response = await client.query({
+            deep: true,
+            fetchPolicy: 'no-cache',
+            query: LocalOrbitQuery,
+            variables: {
+                problem_id: problemId,
+            }
+        });
+
+        let orbits = response['data']['Join__Problem_Orbit'];
+
+        let orb_list = [];
+        for(let x=0;x<orbits.length;x++){
+            orb_list.push(orbits[x]['Orbit']['name'])
         }
-        else {
-            console.error('Error getting the orbit list');
-        }
+        return orb_list;
     }
     catch(e) {
         console.error('Networking error:', e);
@@ -243,18 +262,25 @@ async function getOrbitList(problemName) {
     Returns the list of instruments
     @return instrumentList: a string list containing the names of instruments
     */
-async function getInstrumentList(problemName) {
+async function getInstrumentList(problemId) {
     try {
-        let reqData = new FormData();
-        reqData.append('problem_name', problemName);
 
-        let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-instrument-list', reqData);
-        if (dataResponse.ok) {
-            return dataResponse.json();
+
+        let response = await client.query({
+            deep: true,
+            fetchPolicy: 'no-cache',
+            query: LocalInstrumentQuery,
+            variables: {
+                problem_id: problemId,
+            }
+        });
+        let instruments = response['data']['Join__Problem_Instrument'];
+
+        let inst_list = [];
+        for(let x=0;x<instruments.length;x++){
+            inst_list.push(instruments[x]['Instrument']['name'])
         }
-        else {
-            console.error('Error getting the instrument list');
-        }
+        return inst_list;
     }
     catch(e) {
         console.error('Networking error:', e);
@@ -263,10 +289,18 @@ async function getInstrumentList(problemName) {
 
 function preprocessing(data, extra) {
     let output = [];
-    if (data.length === 0 || data[0].inputs.length !== extra.orbitNum*extra.instrumentNum) {
+    if (data.length === 0) {
         let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
         let arch = new Architecture(0, inputs, [0, 0]);
         output.push(arch);
+    }
+    else if (data[0].inputs.length !== extra.orbitNum*extra.instrumentNum){
+
+        //---> Change is num instruments or orbits??
+        let inputs = new Array(extra.orbitNum*extra.instrumentNum).fill(0);
+        let arch = new Architecture(0, inputs, [0, 0]);
+        output.push(arch);
+
     }
     else {
         data.forEach(d => {
@@ -281,7 +315,7 @@ function preprocessing(data, extra) {
             let inputs = d.inputs;
             let id = +d.id;
 
-            let arch = new Architecture(id, inputs, outputs);
+            let arch = new Architecture(id, inputs, outputs, d.db_id);
 
             output.push(arch);
         });

@@ -2,9 +2,9 @@
     <div class="panel-block functionality">
         <div id="feature_expression_panel" class="container is-fluid">
             <div class="buttons has-addons is-centered">
-                <a id="conjunctive_local_search" class="button" v-on:click="conjunctive_local_search">Improve Specificity</a>
-                <a id="disjunctive_local_search" class="button" v-on:click="disjunctive_local_search">Improve Coverage</a>
-                <a id="clear_all_features" class="button">Clear</a>
+                <a id="conjunctive_local_search" class="button" v-on:click="conjunctive_local_search" v-if="!inExperiment">Improve Specificity</a>
+                <a id="disjunctive_local_search" class="button" v-on:click="disjunctive_local_search" v-if="!inExperiment">Improve Coverage</a>
+                <a id="clear_all_features" class="button" v-if="!inExperiment">Clear</a>
             </div>
         </div>
         <div id="feature-application-panel" style="max-width: 100%"></div>
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
+    import { mapGetters, mapMutations, mapState } from 'vuex';
     import * as d3 from 'd3';
     import { removeOuterParentheses, getNestedParenthesisDepth, collapseParenIntoSymbol } from '../scripts/utils';
     import * as _ from 'lodash-es';
@@ -49,6 +49,9 @@
             ...mapGetters({
                 hoveredExpression: 'getHoveredExpression',
                 clickedExpression: 'getClickedExpression'
+            }),
+            ...mapState({
+                inExperiment: state => state.experiment.inExperiment,
             }),
             shownExpression() {
                 if (this.hoveredExpression !== '') {
@@ -194,7 +197,13 @@
                     return;
                 }
 
-                let duration = d3.event && d3.event.altKey ? 5000 : 500;
+                let duration = 500;
+
+                d3.select('#feature-application-panel').on('keydown', (event, d) => {
+                    if (event.altKey) {
+                        duration = 5000;
+                    }
+                })
 
                 let root = d3.hierarchy(this.expressionTree, d => d.children);
                 root.x0 = this.height / 2;

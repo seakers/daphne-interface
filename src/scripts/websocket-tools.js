@@ -34,19 +34,19 @@ class WebsocketTools {
     }
 
     async experimentWsConnect() {
-        this.experimentWebsocket = new WebSocket(WS_URL + 'experiment');
+        this.experimentWebsocket = new ReconnectingWebSocket(WS_URL + 'experiment');
         this.experimentWebsocket.onopen = function() {
             console.log('Experiment Web Socket Connection Made');
         };
         this.experimentWebsocket.onmessage = function (data) {};
     }
 
-    async wsRefresh() {
-        this.websocket.refresh();
+    async wsReconnect() {
+        this.websocket.reconnect();
     }
 
-    async experimentWsRefresh() {
-        this.experimentWebsocket.refresh();
+    async experimentWsReconnect() {
+        this.experimentWebsocket.reconnect();
     }
 }
 

@@ -123,7 +123,7 @@
                 }
                 return bitString;
             },
-
+            //                event.to, event.item
             getBoolArrayIndex(list, element) {
                 let tableInstrumentRows = document.getElementsByClassName('instruments-list');
                 for (let i = 0; i < tableInstrumentRows.length; ++i) {
@@ -188,7 +188,13 @@
     }
 
     #instrument-adder-list {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
         margin-left: 40px;
-        max-width: 25%;
+        padding: 20px;
+        max-width: 35%;
+        border: 1px solid $grey;
+        border-radius: 4px;
     }
 </style>

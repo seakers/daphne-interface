@@ -6,6 +6,8 @@ functionalityTypes.set('DesignBuilder', { title: 'Design Builder', component: 'D
 functionalityTypes.set('DataMining', { title: 'Data Mining', component: 'DataMining', class: 'data-mining', minSize: 'half', maxRepeat: 1});
 functionalityTypes.set('EOSSFilter', { title: 'Filter', component: 'EOSSFilter', class: 'filter', minSize: 'half', maxRepeat: 1});
 functionalityTypes.set('FeatureApplication', { title: 'Feature Application', component: 'FeatureApplication', class: 'feature-application', minSize: 'half', maxRepeat: 1});
+functionalityTypes.set('HypothesisTester', { title: 'Hypothesis Tester', component: 'HypothesisTester', class: 'hypothesis-tester', minSize: 'half', maxRepeat: 1});
+functionalityTypes.set('Mycroft', { title: 'Mycroft', component: 'Mycroft', class: 'Mycroft', minSize: 'half', maxRepeat: 1});
 functionalityTypes.set('OrbitInstrInfo', {
     title: 'Orbits and Instruments Information',
     component: 'Cheatsheet',
@@ -43,6 +45,7 @@ functionalityTypes.set('CommandsInformation', {
         {name: "Instruments (Engineer)", value: "engineer_instruments"},
         {name: "Instrument Parameters (Engineer)", value: "engineer_instrument_parameters"},
         {name: "Measurements (Engineer)", value: "engineer_measurements"},
+        {name: "Measurement Parameters (Engineer)", value: "engineer_measurement_parameters"},
         {name: "Stakeholders (Engineer)", value: "engineer_stakeholders"},
         {name: "Objectives (Engineer)", value: "engineer_objectives"},
         {name: "Subobjectives (Engineer)", value: "engineer_subobjectives"},
@@ -71,9 +74,11 @@ const state = {
         { name: 'DataMining', title: 'Data Mining', icon: 'fa-chart-bar' },
         { name: 'EOSSFilter', title: 'Filter', icon: 'fa-filter' },
         { name: 'FeatureApplication', title: 'Feature Application', icon: 'fa-sitemap' },
+        { name: 'HypothesisTester', title: 'Hypothesis Tester', icon: 'fa-lightbulb' },
         { name: 'OrbitInstrInfo', title: 'Orbits and Instruments Information', icon: 'fa-book' },
         { name: 'AvailableCommands', title: 'Available Commands', icon: 'fa-book' },
-        { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' }
+        { name: 'CommandsInformation', title: 'Commands Information', icon: 'fa-book' },
+        { name: 'Mycroft', title: 'Mycroft', icon: 'fa-robot' }
     ],
     functionalities: [],
     functionalityCount: {
@@ -82,10 +87,12 @@ const state = {
         'DataMining': 0,
         'EOSSFilter': 0,
         'FeatureApplication': 0,
+        'HypothesisTester': 0,
         'OrbitInstrInfo': 0,
         'AvailableCommands': 0,
         'CommandsInformation': 0,
-        'TimelinePlot': 0
+        'TimelinePlot': 0,
+        'Mycroft': 0,
     }
 };
 

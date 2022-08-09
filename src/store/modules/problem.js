@@ -1,25 +1,18 @@
 import { calculateParetoRanking } from '../../scripts/utils';
 import * as _ from 'lodash-es';
 import {fetchPost} from "../../scripts/fetch-helpers";
+import {parse} from "graphql";
 
 // initial state
 const state = {
-    problemList: [
-        'ClimateCentric',
-        'SMAP',
-        'SMAP_JPL1',
-        'SMAP_JPL2',
-        'Decadal2017Aerosols'
-    ],
-    problemName: '',
-    vassarPort: 9090,
+    groupId: null,
+    problemId: null,
+    // eslint-disable-next-line no-undef
+    datasetId: null,
+    status: false,
+    ignoreQuery: true,
     problemData: [],
     dataUpdateFrom: '',
-    datasetList: [],
-    datasetInformation: {
-        filename: 'EOSS_data_recalculated.csv',
-        user: false
-    },
     inputNum: 0,
     outputNum: 0,
     inputList: [],
@@ -48,22 +41,36 @@ const getters = {
     },
     getExtraInfo(state) {
         return state.extra;
+    },
+    getProblemId(state) {
+        return state.problemId;
+    },
+    getProblemStatus(state) {
+        return state.status;
     }
 };
 
 // actions
 const actions = {
-    async loadNewData({ state, commit }, datasetInformation) {
-        console.log('Importing data...');
+    async loadData({ state, commit }, parameters) {
+        console.log('Importing data from the database...');
 
         try {
             let reqData = new FormData();
-            reqData.append('problem', state.problemName);
-            reqData.append('filename', datasetInformation.filename);
-            reqData.append('load_user_files', datasetInformation.user);
-            reqData.append('input_num', state.inputNum);
-            reqData.append('input_type', state.inputType);
-            reqData.append('output_num', state.outputNum);
+
+            let problemId = parameters['problem_id'];
+            let groupId   = parameters['group_id'];
+            let datasetId = parameters['dataset_id'];
+
+            commit('setProblemId', problemId);
+            commit('setGroupId', groupId);
+            commit('setDatasetId', datasetId);
+
+            reqData.append('problem_id', problemId);
+            reqData.append('group_id', groupId);
+            reqData.append('dataset_id', datasetId);
+
+            // GET PROBLEM DATA
             let dataResponse = await fetchPost(API_URL + 'eoss/data/import-data', reqData);
 
             if (dataResponse.ok) {
@@ -81,104 +88,33 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
-    async reloadOldData({ state, commit }, oldData) {
-        let problemData = state.importCallback(oldData, state.extra);
-        calculateParetoRanking(problemData);
-        commit('updateProblemData', problemData);
-        commit('setDataUpdateFrom', 'reloadOldData');
-    },
     async addNewData({ state, commit }, newData) {
-        let dataAlreadyThere = false;
-        let newIndex = -1;
-        state.problemData.forEach((d, i) => {
-            if (d.outputs[0] === newData.outputs[0] && d.outputs[1] === newData.outputs[1]) {
-                dataAlreadyThere = true;
-                newIndex = i;
-            }
-        });
-
-        if (!dataAlreadyThere) {
-            let problemData = state.importCallback([newData], state.extra);
-            commit('addProblemData', problemData[0]);
-            commit('addPlotData', problemData[0]);
-        }
-        else {
-            commit('updateClickedArch', newIndex);
-        }
+        let problemData = state.importCallback([newData], state.extra);
+        commit('addProblemData', problemData[0]);
+        commit('addPlotData', problemData[0]);
     },
+    // GENETIC
     async addNewDataFromGA({ state, commit }, newData) {
         // We can assume it's a new point as the server makes sure of that!
         let problemData = state.importCallback([newData], state.extra);
         commit('addProblemData', problemData[0]);
         commit('addPlotDataFromGA', problemData[0]);
     },
-    async changeVassarPort({ state, commit }, port) {
-        try {
-            let reqData = new FormData();
-            let vassarPort = state.vassarPort;
-            if (port !== undefined) {
-                vassarPort = port;
-            }
-            reqData.append('port', vassarPort);
-            let dataResponse = await fetchPost(API_URL + 'eoss/settings/change-port', reqData);
-
-            if (dataResponse.ok) {
-                let data = await dataResponse.json();
-            }
-            else {
-                console.error('Error changing VASSAR port.');
-            }
-        }
-        catch(e) {
-            console.error('Networking error:', e);
-        }
+    async addNewArchitecture({ state, commit }, arch) {
+        // New architecture is pushed to front-end from graphql
+        let reqData = new FormData();
+        reqData.append('design', JSON.stringify(arch));
+        let dataResponse = await fetchPost(API_URL + 'eoss/data/add-design', reqData);
     },
-    async setProblemName({ state, commit, rootState }, problemName) {
-        try {
-            commit('setProblemName', problemName);
-            let reqData = new FormData();
-            reqData.append('problem', problemName);
-            let dataResponse = await fetchPost(API_URL + 'eoss/data/dataset-list', reqData);
-
-            if (dataResponse.ok) {
-                let data = await dataResponse.json();
-                let datasetList = [];
-                data['default'].forEach((dataset) => {
-                    datasetList.push({
-                        name: dataset,
-                        value: dataset,
-                        user: false
-                    });
-                });
-                datasetList.push({
-                    name: '---',
-                    value: ''
-                });
-                data['user'].forEach((dataset) => {
-                    datasetList.push({
-                        name: dataset,
-                        value: dataset,
-                        user: true
-                    });
-                });
-                commit('setDatasetList', datasetList);
-            }
-            else {
-                console.error('Error loading the new datasets.');
-            }
-        }
-        catch(e) {
-            console.error('Networking error:', e);
-        }
-    }
 };
 
 // mutations
 const mutations = {
+    setProblemStatus(state, status) {
+        state.status = status;
+    },
     setProblem(state, problemInfo) {
         // Set the problem instance
-        state.problemName = problemInfo.problemName;
-        state.vassarPort = problemInfo.vassarPort;
         state.inputNum = problemInfo.inputNum;
         state.outputNum = problemInfo.outputNum;
         state.inputList = problemInfo.inputList;
@@ -205,14 +141,17 @@ const mutations = {
         state.index2DisplayName = problemInfo.index2DisplayName;
         state.ppFeatureSingle = problemInfo.ppFeatureSingle;
     },
-    setProblemName(state, problemName) {
-        state.problemName = problemName;
+    setGroupId(state, groupId){
+        state.groupId = groupId;
     },
-    setDatasetList(state, datasetList) {
-        state.datasetList = datasetList;
+    setProblemId(state, problemId) {
+        state.problemId = problemId;
     },
-    setDatasetInformation(state, datasetInformation) {
-        state.datasetInformation = datasetInformation;
+    setDatasetId(state, datasetId) {
+        state.datasetId = datasetId;
+    },
+    setIgnoreQuery(state, ignoreQuery) {
+        state.ignoreQuery = ignoreQuery;
     },
     updateExtra(state, extra) {
         state.extra = extra;
@@ -222,6 +161,7 @@ const mutations = {
     },
     addProblemData(state, newData) {
         state.problemData.splice(newData.id, 0, newData);
+        calculateParetoRanking(state.problemData);
     },
     setDataUpdateFrom(state, dataUpdateFrom) {
         state.dataUpdateFrom = dataUpdateFrom;
@@ -233,7 +173,8 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    }
+        state.ignoreQuery = true;
+    },
 };
 
 export default {

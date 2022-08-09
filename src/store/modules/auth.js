@@ -10,7 +10,9 @@ const state = {
     loginError: '',
     hasRegistrationError: false,
     registrationError: '',
-    resetPasswordSent: false
+    resetPasswordSent: false,
+
+    user_pk: null,
 };
 
 const initialState = _.cloneDeep(state);
@@ -26,6 +28,7 @@ const actions = {
             let reqData = new FormData();
             reqData.append("username", username);
             reqData.append("password", password);
+            reqData.append("daphneVersion", "EOSS");
             let dataResponse = await fetchPost(API_URL + 'auth/login', reqData);
 
             if (dataResponse.ok) {
@@ -106,7 +109,11 @@ const actions = {
         catch(e) {
             console.error('Networking error:', e);
         }
-    }
+    },
+
+    async setGroupId({ state, commit }, new_id) {
+        commit('setGroupId', new_id);
+    },
 };
 
 // mutations
@@ -116,6 +123,8 @@ const mutations = {
         state.hasLoginError = false;
         state.username = userInfo['username'];
         state.permissions = userInfo['permissions'];
+        state.user_pk = userInfo['pk'];
+
     },
     logUserOut(state) {
         state.isLoggedIn = false;
@@ -140,7 +149,7 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    }
+    },
 };
 
 export default {

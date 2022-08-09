@@ -11,13 +11,18 @@
 </template>
 
 <script>
+    import Stage0Modal from './Stage0Modal';
     import Stage1Modal from './Stage1Modal';
     import Stage2Modal from './Stage2Modal';
     import LoginModal from './LoginModal';
     import RegisterModal from './RegisterModal';
     import SaveDatasetModal from './SaveDatasetModal';
     import ResetPasswordModal from './ResetPasswordModal';
+    import ReloadModal from './ReloadModal';
+    import CopyDatasetModal from './CopyDatasetModal';
+
     import {fetchPost} from "../scripts/fetch-helpers";
+
 
     export default {
         name: 'modal',
@@ -27,12 +32,15 @@
             }
         },
         components: {
+            Stage0Modal,
             Stage1Modal,
             Stage2Modal,
             LoginModal,
             RegisterModal,
             SaveDatasetModal,
-            ResetPasswordModal
+            ResetPasswordModal,
+            ReloadModal,
+            CopyDatasetModal
         },
         methods: {
             onCloseModal() {

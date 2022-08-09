@@ -4,10 +4,14 @@ import {fetchGet, fetchPost} from "../../scripts/fetch-helpers";
 import Vue from 'vue';
 
 const state = {
-    runBackgroundSearch: true,
-    showFoundArchitectures: false,
-    runDiversifier: true,
-    showSuggestions: true,
+    runBackgroundSearch: false,
+    runDiversifier: false,
+    showEngineerSuggestions: false,
+    showHistorianSuggestions: false,
+    showAnalystSuggestions: false,
+    engineerSuggestionsFrequency: 0,
+    historianSuggestionsFrequency: 0,
+    analystSuggestionsFrequency: 0,
     notificationTitle: "",
     notificationBody: "",
     notificationSetting: "",
@@ -50,9 +54,13 @@ const actions = {
         // Get the settings from the server to have them synced
         try {
             let reqData = new FormData();
-            reqData.append('show_background_search_feedback', state.showFoundArchitectures);
             reqData.append('check_for_diversity', state.runDiversifier);
-            reqData.append('show_arch_suggestions', state.showSuggestions);
+            reqData.append('show_engineer_suggestions', state.showEngineerSuggestions);
+            reqData.append('engineer_suggestions_frequency', state.engineerSuggestionsFrequency);
+            reqData.append('show_historian_suggestions', state.showHistorianSuggestions);
+            reqData.append('historian_suggestions_frequency', state.historianSuggestionsFrequency);
+            reqData.append('show_analyst_suggestions', state.showAnalystSuggestions);
+            reqData.append('analyst_suggestions_frequency', state.analystSuggestionsFrequency);
 
             let url = API_URL + 'eoss/settings/active-feedback-settings';
             let dataResponse = await fetchPost(url, reqData);
@@ -78,9 +86,13 @@ const actions = {
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                commit("setShowFoundArchitectures", data["show_background_search_feedback"]);
                 commit("setRunDiversifier", data["check_for_diversity"]);
-                commit("setShowSuggestions", data["show_arch_suggestions"]);
+                commit("setShowEngineerSuggestions", data["show_engineer_suggestions"]);
+                commit("setShowHistorianSuggestions", data["show_historian_suggestions"]);
+                commit("setShowAnalystSuggestions", data["show_analyst_suggestions"]);
+                commit("setEngineerSuggestionsFrequency", data["engineer_suggestions_frequency"]);
+                commit("setHistorianSuggestionsFrequency", data["historian_suggestions_frequency"]);
+                commit("setAnalystSuggestionsFrequency", data["analyst_suggestions_frequency"]);
                 console.log(data);
             }
             else {
@@ -101,14 +113,26 @@ const mutations = {
             state.showFoundArchitectures = false;
         }
     },
-    setShowFoundArchitectures(state, value) {
-        state.showFoundArchitectures = value;
-    },
     setRunDiversifier(state, value) {
         state.runDiversifier = value;
     },
-    setShowSuggestions(state, value) {
-        state.showSuggestions = value;
+    setShowEngineerSuggestions(state, value) {
+        state.showEngineerSuggestions = value;
+    },
+    setShowHistorianSuggestions(state, value) {
+        state.showHistorianSuggestions = value;
+    },
+    setShowAnalystSuggestions(state, value) {
+        state.showAnalystSuggestions = value;
+    },
+    setEngineerSuggestionsFrequency(state, value) {
+        state.engineerSuggestionsFrequency = value;
+    },
+    setHistorianSuggestionsFrequency(state, value) {
+        state.historianSuggestionsFrequency = value;
+    },
+    setAnalystSuggestionsFrequency(state, value) {
+        state.analystSuggestionsFrequency = value;
     },
     setNotificationTitle(state, notificationTitle) {
         state.notificationTitle = notificationTitle;

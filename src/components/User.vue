@@ -7,6 +7,7 @@
 
 <script>
     import { mapState } from 'vuex';
+    import {wsTools} from "../scripts/websocket-tools";
 
     export default {
         name: 'User',
@@ -23,7 +24,7 @@
             logout() {
                 this.$store.dispatch('logoutUser').then(async () => {
                     // Start the Websocket
-                    await wsTools.wsRefresh();
+                    await wsTools.wsReconnect();
                 });
             }
         }

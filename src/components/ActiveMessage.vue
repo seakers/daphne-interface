@@ -34,7 +34,7 @@
                 }
                 else if (this.response.setting === "modification") {
                     if (this.response.modification["type"] === "set_diversifier_id") {
-                         this.$store.commit("updateClickedArch", this.response.modification["arch_id"])
+                         this.$store.commit("updateClickedArch_DB", this.response.modification["arch_id"])
                     }
                 }
 

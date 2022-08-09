@@ -32,6 +32,7 @@
 
 <script>
     import { mapState } from 'vuex';
+    import {wsTools} from "../scripts/websocket-tools";
     import {fetchPost} from '../scripts/fetch-helpers';
 
     export default {
@@ -52,7 +53,7 @@
                     password: formData.get("password")
                 }).then(async () => {
                     // Start the Websocket
-                    await wsTools.wsRefresh();
+                    await wsTools.wsReconnect();
                 });
             },
             openRegisterForm() {

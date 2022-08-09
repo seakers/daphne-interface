@@ -6,10 +6,20 @@ import App from './components/App';
 import store from './store';
 import {wsTools} from "./scripts/websocket-tools";
 
+// Apollo
+import VueApollo from "vue-apollo";
+import { ApolloClient } from '@apollo/client/core';
+import { WebSocketLink } from '@apollo/client/link/ws';
+import { InMemoryCache } from "@apollo/client/cache";
+
+// Toastification
+import Toast, { POSITION } from "vue-toastification";
+// Import the CSS or use your own!
+import "vue-toastification/dist/index.css";
+
 // Non ES-modularized libraries
 let annyang = require('annyang');
 let SpeechKITT = window.SpeechKITT;
-let responsiveVoice = window.responsiveVoice;
 
 // Styles
 import './styles/app.scss';
@@ -28,8 +38,55 @@ let updatesContextList = ['updateClickedArch', 'updateClickedArchInputs'];
 let numberOfEngChanges = 0;
 let numberOfHistChanges = 0;
 
-// Experiment Websocket connection
+// APOLLO HEADERS
+Vue.use(VueApollo);
+const getHeaders = () => {
+    const headers = {};
+    const token = window.localStorage.getItem('apollo-token');
+    if (token) {
+        headers.authorization = `Bearer ${token}`;
+    }
+    return headers;
+};
+
+// HASURA URL
+const link = new WebSocketLink({
+    uri: GRAPH_QL_WS_URL,
+    options: {
+        reconnect: true,
+        lazy: true,
+        timeout: 30000,
+        connectionParams: () => {
+            return { headers: getHeaders() };
+        },
+    }
+});
+
+// APOLLO
+export const client = new ApolloClient({
+    link: link,
+    cache: new InMemoryCache({
+        addTypename: true
+    })
+});
+const apolloProvider = new VueApollo({
+    defaultClient: client,
+})
+
+// Vue toastification
+const toastOptions = {
+    // You can set your default options here
+    position: POSITION.BOTTOM_LEFT,
+    transition: "Vue-Toastification__fade",
+};
+
+Vue.use(Toast, toastOptions);
+
+
+
+// Websockets functions
 store.subscribe(async (mutation, state) => {
+    
     // Only update if inside experiment
     if (state.experiment.inExperiment) {
         // Only update mutations if after tutorial (currentStageNum > 0)
@@ -49,7 +106,7 @@ store.subscribe(async (mutation, state) => {
                     msg_type: 'update_state',
                     state: state
                 }));
-            }, 10000);
+            }, 5000);
         }
     }
     else {
@@ -84,7 +141,7 @@ store.subscribe(async (mutation, state) => {
             },60*1000);
             ++numberOfEngChanges;
 
-            if (numberOfEngChanges >= 3) {
+            if (numberOfEngChanges >= state.active.engineerSuggestionsFrequency) {
                 numberOfEngChanges = 0;
                 console.log(mutation);
                 // Send a WS request for expert information on current arch
@@ -103,14 +160,15 @@ store.subscribe(async (mutation, state) => {
             }, 60*1000);
             ++numberOfHistChanges;
 
-            if (numberOfHistChanges >= 3) {
+            if (numberOfHistChanges >= state.active.historianSuggestionsFrequency) {
                 numberOfHistChanges = 0;
                 // Send a WS request for historian information on current arch
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: 'active_historian',
-                    type: 'binary', // TODO!
-                    genome: mutation.payload
-                }));
+                // TODO: Fix hisotrian critic with new architecture of database (includes NLP work)
+                // wsTools.websocket.send(JSON.stringify({
+                //     msg_type: 'active_historian',
+                //     type: 'binary', // TODO!
+                //     genome: mutation.payload
+                // }));
             }
         }
     }
@@ -119,13 +177,14 @@ store.subscribe(async (mutation, state) => {
 let app = new Vue({
     el: '#app',
     store,
+    apolloProvider,
     render: h => h(App)
 });
 
 // Voice recognition
 if (annyang) {
     annyang.addCallback('result', phrases => {
-        if (responsiveVoice.isPlaying()) {
+        if (window.speechSynthesis.speaking) {
             return;
         }
         app.$store.commit('setCommand', phrases[0]);

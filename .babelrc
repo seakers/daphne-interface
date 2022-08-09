@@ -1,12 +1,11 @@
 {
-  "plugins": [
-    ["@babel/plugin-proposal-object-rest-spread", { "useBuiltIns": true }]
-  ],
   "presets": [
     ["@babel/preset-env", {
       "targets": ["last 2 Firefox versions", "last 2 Chrome versions"],
       "exclude": [],
-      "debug": true,
+      "debug": false,
+      "useBuiltIns": "usage",
+      "corejs": 3,
       "modules": false
     }]
   ]

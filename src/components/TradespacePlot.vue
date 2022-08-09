@@ -3,7 +3,11 @@
         <section class="panel">
             <p class="panel-heading">
                 Tradespace exploration |
-                Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}
+                Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }} <br>
+                Designs requiring re-evaluation: {{ arch_to_eval }}
+                <button class="button is-info is-small" v-on:click="eval_designs()" v-if="!inExperiment">
+                    evaluate all
+                </button>
             </p>
             <div class="panel-block" id="main-plot-block">
                 <div id="main-plot"></div>
@@ -54,12 +58,13 @@
 </template>
 
 <script>
+
     import { mapGetters, mapMutations, mapState } from 'vuex';
     import * as _ from 'lodash-es';
     import * as d3 from 'd3';
     import 'd3-selection-multi';
     import {fetchGet, fetchPost} from "../scripts/fetch-helpers";
-
+    import { ArchitectureEvalCount } from "../scripts/apollo-queries";
 
     export default {
         name: 'tradespace-plot',
@@ -76,7 +81,13 @@
                 xMap: {},
                 yMap: {},
                 context: {},
-                hiddenContext: {}
+                hiddenContext: {},
+                Architecture: [],
+                arch_placeholder: 0,
+                Architecture_aggregate: {},
+                arch_to_eval: 0,
+                arch_loaded: 0,
+                updateTargetSelection_debounce: 0,
             }
         },
         computed: {
@@ -90,6 +101,11 @@
                 highlightedArchs: state => state.tradespacePlot.highlightedArchs,
                 gaArchs: state => state.tradespacePlot.gaArchs,
                 hiddenArchs: state => state.tradespacePlot.hiddenArchs,
+                status: state => state.problem.status,
+                problemId: state => state.problem.problemId,
+                datasetId: state => state.problem.datasetId,
+                groupId: state => state.problem.groupId,
+                inExperiment: state => state.experiment.inExperiment,
             }),
             ...mapGetters({
                 numPoints: 'getNumPoints',
@@ -123,13 +139,28 @@
                 'updateClickedArch',
                 'updateHoveredArch',
             ]),
+            async eval_designs(){
+                console.log("---> re-evaluating designs");
+                let reqData = new FormData();
+                reqData.append('problem_id', this.problemId);
+                reqData.append('dataset_id', this.datasetId);
+                let dataResponse = await fetchPost(API_URL + 'eoss/engineer/evaluate-false-architectures', reqData);
+
+                if (dataResponse.ok) {
+                    console.log('Target selection updated');
+                }
+                else {
+                    console.error('Error obtaining the driving features.');
+                }
+            },
+
+
             resetMainPlot() {
                 //Resets the main plot
                 d3.select('#main-plot').select('svg').remove();
                 d3.select('#main-plot').selectAll('canvas').remove();
                 d3.select('#main-plot').style('width', 0 + 'px');
             },
-            
             updatePlot(xIndex, yIndex) {
                 this.resetMainPlot();
 
@@ -165,8 +196,8 @@
 
                 this.zoom = d3.zoom()
                     .scaleExtent([0.4, 25])
-                    .on('zoom', d => {
-                        this.transform = d3.event.transform;
+                    .on('zoom', (event, d) => {
+                        this.transform = event.transform;
                         gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
                         gY.call(yAxis.scale(this.transform.rescaleY(yScale)));
                         this.drawPoints(this.context, false);
@@ -243,8 +274,8 @@
                 // Canvas interaction
                 let self = this;
 
-                canvas.on('mousemove.inspection', function() { self.canvasMousemove(); });
-                canvas.on('click.inspection', function() { self.canvasClick(); });
+                canvas.on('mousemove.inspection', function(event, d) { self.canvasMousemove(event); });
+                canvas.on('click.inspection', function(event, d) { self.canvasClick(event); });
             },
 
             drawPoints(context, hidden) {
@@ -285,12 +316,12 @@
                 context.restore();
             },
 
-            getPointUnderMouse() {
+            getPointUnderMouse(event) {
                 // Draw the hidden canvas.
                 this.drawPoints(this.hiddenContext, true);
 
                 // Get mouse positions from the main canvas.
-                let mousePos = d3.mouse(d3.select('#main-plot').select('canvas').node());
+                let mousePos = d3.pointer(event, d3.select('#main-plot').select('canvas').node());
                 let mouseX = mousePos[0];
                 let mouseY = mousePos[1];
 
@@ -320,8 +351,8 @@
                 return maxcolor;
             },
 
-            canvasMousemove() {
-                let pointColor = this.getPointUnderMouse();
+            canvasMousemove(event) {
+                let pointColor = this.getPointUnderMouse(event);
 
                 // Get the data from our map!
                 if (pointColor in this.colorMap) {
@@ -339,8 +370,8 @@
                 }
             },
 
-            canvasClick() {
-                let pointColor = this.getPointUnderMouse();
+            canvasClick(event) {
+                let pointColor = this.getPointUnderMouse(event);
 
                 // Get the data from our map!
                 if (pointColor in this.colorMap) {
@@ -366,12 +397,16 @@
                 let selectedArchsSet = new Set(this.selectedArchs);
                 let selectedIds = [];
                 let nonSelectedIds = [];
+                let selectedIds_db = [];
+                let nonSelectedIds_db = [];
                 this.plotData.forEach(point => {
                     if (selectedArchsSet.has(point.id)) {
                         selectedIds.push(point.id);
+                        selectedIds_db.push(point.db_id);
                     }
                     else {
                         nonSelectedIds.push(point.id);
+                        nonSelectedIds_db.push(point.db_id);
                     }
                 });
 
@@ -379,6 +414,8 @@
                     let reqData = new FormData();
                     reqData.append('selected', JSON.stringify(selectedIds));
                     reqData.append('non_selected', JSON.stringify(nonSelectedIds));
+                    reqData.append('selected_db', JSON.stringify(selectedIds_db));
+                    reqData.append('non_selected_db', JSON.stringify(nonSelectedIds_db));
                     let dataResponse = await fetchPost(API_URL + 'ifeed/set-target', reqData);
 
                     if (dataResponse.ok) {
@@ -394,9 +431,61 @@
             }
         },
 
+        apollo: {
+            $subscribe: {
+                //--> Number of designs requiring re-evaluation
+                Architecture_aggregate: {
+                    query: ArchitectureEvalCount,
+                    variables() {
+                        return {
+                            problem_id: this.problemId,
+                            dataset_id: this.datasetId,
+                        }
+                    },
+                    result ({ data }) {
+                        this.arch_to_eval = data.Architecture_aggregate.aggregate.count;
+                    },
+                    skip() {
+                        return this.problemId === null || this.datasetId === null;
+                    }
+                },
+            },
+        },
+
         watch: {
+            status: function(val, oldVal){
+                if(this.status === true){
+                    console.log("--> Resetting banned inputs");
+                    this.inputs_list = [];
+                }
+            },
+
             plotData: function(val, oldVal) {
                 this.updatePlot(0, 1);
+                this.arch_loaded = this.plotData.length;
+
+                if(this.plotData.length == 0){
+                    return;
+                }
+
+
+                if(this.skip_sub === true) {
+                    this.inputs_list = [];
+                    for (let x = 0; x < this.plotData.length; x++) {
+                        let bool_ary = this.plotData[x].inputs;
+                        let input_str = '';
+                        for (let y = 0; y < bool_ary.length; y++) {
+                            let single_bool = bool_ary[y];
+                            if (single_bool) {
+                                input_str = input_str + '1';
+                            } else {
+                                input_str = input_str + '0';
+                            }
+                        }
+                        this.inputs_list.push(input_str);
+                    }
+                }
+                this.skip_sub = false;
             },
 
             hoveredArch: function(val, oldVal) {
@@ -435,32 +524,29 @@
                     let self = this;
                     let justSelectedArchs = new Set();
 
-                    function selectMousedown() {
-                        let mousePos = d3.mouse(this);
+                    function selectMousedown(event) {
+                        let mousePos = d3.pointer(event);
                         svg.append('rect')
-                            .attrs(
-                                {
-                                    rx     : 0,
-                                    ry     : 0,
-                                    class  : 'selection',
-                                    x      : mousePos[0],
-                                    y      : mousePos[1],
-                                    width  : 0,
-                                    height : 0,
-                                    x0     : mousePos[0],
-                                    y0     : mousePos[1]
-                                })
+                            .attr("rx", 0)
+                            .attr("ry", 0)
+                            .attr("class", 'selection')
+                            .attr("x", mousePos[0])
+                            .attr("y", mousePos[1])
+                            .attr("width", 0)
+                            .attr("height", 0)
+                            .attr("x0", mousePos[0])
+                            .attr("y0", mousePos[1])
                             .style('background-color', '#EEEEEE')
                             .style('opacity', 0.18)
                             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
                         justSelectedArchs = new Set();
                     }
 
-                    function selectMousemove() {
+                    function selectMousemove(event) {
                         let selection = svg.select('rect.selection');
                         if (!selection.empty()) {
                             let selectionUpdated = false;
-                            let mousePos = d3.mouse(this);
+                            let mousePos = d3.pointer(event);
 
                             let box = {
                                 x      : parseInt(selection.attr('x'), 10),
@@ -493,7 +579,12 @@
                             box.width = Math.abs(move.x);
                             box.height = Math.abs(move.y);
 
-                            selection.attrs(box);
+                            selection.attr("x", box.x)
+                                     .attr("y", box.y)
+                                     .attr("x0", box.x0)
+                                     .attr("y0", box.y0)
+                                     .attr("width", box.width)
+                                     .attr("height", box.height);
 
                             let hiddenArchsSet = new Set(self.hiddenArchs);
                             let selectedArchsSet = new Set(self.selectedArchs);
@@ -554,25 +645,25 @@
                         }
                     }
 
-                    function selectMouseup() {
+                    function selectMouseup(event) {
                         // remove selection frame
                         svg.selectAll('rect.selection').remove();
                         justSelectedArchs.clear();
                     }
 
-                    svg.on('mousedown.modes', selectMousedown)
-                        .on('mousemove.modes', selectMousemove)
-                        .on('mouseup.modes', selectMouseup);
+                    svg.on('mousedown.modes', (event) => selectMousedown(event))
+                        .on('mousemove.modes', (event) => selectMousemove(event))
+                        .on('mouseup.modes', (event) => selectMouseup(event));
 
-                    canvases.on('mousedown.modes', selectMousedown)
-                        .on('mousemove.modes', selectMousemove)
-                        .on('mouseup.modes', selectMouseup);
+                    canvases.on('mousedown.modes', (event) => selectMousedown(event))
+                        .on('mousemove.modes', (event) => selectMousemove(event))
+                        .on('mouseup.modes', (event) => selectMouseup(event));
                 }
             },
 
             selectedArchs: function(val, oldVal) {
                 this.drawPoints(this.context, false);
-                _.debounce(this.updateTargetSelection, 1000);
+                this.updateTargetSelection_debounce();
             },
 
             highlightedArchs: function(val, oldVal) {
@@ -612,7 +703,19 @@
                         }
                     }
                 }
+                if (mutation.type === 'addPlotData') {
+                    let updateFrom = state.problem.dataUpdateFrom;
+                    if (updateFrom === 'designBuilder') {
+                        // Mark the last point added as the selected one
+                        if (this.plotData.length > 0) {
+                            this.$store.commit('updateClickedArch', this.plotData.length - 1);
+                        }
+                    }
+                }
             });
+
+            console.log('--> CREATING DEBOUNCE FUNC');
+            this.updateTargetSelection_debounce = _.debounce(this.updateTargetSelection, 1000);
         }
     }
 </script>

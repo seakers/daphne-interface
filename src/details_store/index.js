@@ -11,7 +11,8 @@ const debug = process.env.NODE_ENV !== 'production';
 export default new Vuex.Store({
     state: {
         archID: null,
-        problem: null
+        problemId: null,
+        datasetId: null,
     },
     getters: {
     },
@@ -19,8 +20,11 @@ export default new Vuex.Store({
         setArchID(state, archID) {
             state.archID = archID;
         },
-        setProblem(state, problem) {
-            state.problem = problem;
+        setProblemId(state, problemId) {
+            state.problemId = problemId;
+        },
+        setDatasetId(state, datasetId) {
+            state.datasetId = datasetId;
         },
     },
     actions: {
@@ -28,7 +32,8 @@ export default new Vuex.Store({
             try {
                 let reqData = new FormData();
                 reqData.append('arch_id', state.archID);
-                reqData.append('problem', state.problem);
+                reqData.append('problem_id', state.problemId);
+                reqData.append('dataset_id', state.datasetId);
                 let dataResponse = await fetchPost(API_URL + 'eoss/engineer/get-arch-details', reqData);
 
                 if (dataResponse.ok) {
