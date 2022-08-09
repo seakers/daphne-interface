@@ -138,6 +138,16 @@ import Slide1LCCD from './LCCD/Slide1LCCD.png'
 import Slide2LCCD from './LCCD/Slide2LCCD.png'
 
 
+import LC_1 from './lifecycle-cost-learning-module/Slide1LC.png'
+import LC_2 from './lifecycle-cost-learning-module/Slide2LC.png'
+import LC_3 from './lifecycle-cost-learning-module/Slide3LC.png'
+import LC_4 from './lifecycle-cost-learning-module/Slide4LC.png'
+import LC_5 from './lifecycle-cost-learning-module/Slide5LC.png'
+import LC_6 from './lifecycle-cost-learning-module/Slide6LC.png'
+import LC_7 from './lifecycle-cost-learning-module/Slide7LC.png'
+import LC_8 from './lifecycle-cost-learning-module/Slide8LC.png'
+
+
 
 export function get_slide_src(src){
     if(src === 'LifecycleCost'){
@@ -526,6 +536,31 @@ export function get_slide_src(src){
         }
     else if(src === 'Slide2LCCD'){
             return Slide2LCCD;
+        }
+
+    else if(src === 'LC_1'){
+            return LC_1;
+        }
+    else if(src === 'LC_2'){
+            return LC_2;
+        }
+    else if(src === 'LC_3'){
+            return LC_3;
+        }
+    else if(src === 'LC_4'){
+            return LC_4;
+        }
+    else if(src === 'LC_5'){
+            return LC_5;
+        }
+    else if(src === 'LC_6'){
+            return LC_6;
+        }
+    else if(src === 'LC_7'){
+            return LC_7;
+        }
+    else if(src === 'LC_8'){
+            return LC_8;
         }
 
 
