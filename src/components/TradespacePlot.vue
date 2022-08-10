@@ -413,8 +413,9 @@
                 try {
                     let reqData = new FormData();
                     reqData.append('selected', JSON.stringify(selectedIds));
-                    reqData.append('non_selected', JSON.stringify(nonSelectedIds));
                     reqData.append('selected_db', JSON.stringify(selectedIds_db));
+
+                    reqData.append('non_selected', JSON.stringify(nonSelectedIds));
                     reqData.append('non_selected_db', JSON.stringify(nonSelectedIds_db));
                     let dataResponse = await fetchPost(API_URL + 'ifeed/set-target', reqData);
 

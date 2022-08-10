@@ -77,13 +77,13 @@ export default new Vuex.Store({
                 });
             }
 
-            
             if (received_info['type'] === 'active.notification') {
                 commit('setNotificationTitle', received_info["notification"]["title"]);
                 commit('setNotificationBody', received_info["notification"]["message"]);
                 commit('setNotificationSetting', received_info["notification"]["setting"]);
                 commit('setShowNotification', true);
             }
+
             if (received_info['type'] === 'active.modification') {
                 commit('setNotificationTitle', received_info["notification"]["title"]);
                 commit('setNotificationBody', received_info["notification"]["message"]);
@@ -91,6 +91,7 @@ export default new Vuex.Store({
                 commit('setNotificationSetting', "modification");
                 commit('setShowNotification', true);
             }
+
             if (received_info['type'] === 'active.live_suggestion') {
                 if (received_info['agent'] === 'engineer') {
                     commit('addSuggestionListType', {
@@ -113,10 +114,10 @@ export default new Vuex.Store({
                 };
                 commit('setResponse', daphneResponse);
             }
+
             if (received_info['type'] === 'active.message') {
                 commit('addDialoguePiece', received_info['message']);
             }
-
 
             if (received_info['type'] === 'mycroft.message') {
                 //--> Connection Information
@@ -138,7 +139,6 @@ export default new Vuex.Store({
                     dispatch('executeCommand');
                 }
             }
-
 
             if (received_info['type'] === 'services.vassar_status') {
                 commit('setVassarServiceStatus', received_info['status']);
@@ -178,25 +178,24 @@ export default new Vuex.Store({
                 commit('setGARunningPingId', pingId);
             }
 
-
-            
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");
             }
 
-
-
         },
+
         async stopBackgroundTasks({ dispatch }) {
             // Stop all background tasks
             await Promise.all([dispatch("stopBackgroundSearch")]);
         },
+
         async startBackgroundSearch({ rootState }) {
             console.log("Starting the GA!!");
             wsTools.websocket.send(JSON.stringify({
                 msg_type: 'start_ga'
             }));
         },
+
         async stopBackgroundSearch({ rootState }) {
             // Stop the GA
             wsTools.websocket.send(JSON.stringify({

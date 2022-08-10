@@ -14,7 +14,8 @@ import { InMemoryCache } from "@apollo/client/cache";
 
 // Toastification
 import Toast, { POSITION } from "vue-toastification";
-// Import the CSS or use your own!
+
+
 import "vue-toastification/dist/index.css";
 
 // Non ES-modularized libraries
@@ -49,7 +50,7 @@ const getHeaders = () => {
     return headers;
 };
 
-// HASURA URL
+// HASURA WEBSOCKET LINK
 const link = new WebSocketLink({
     uri: GRAPH_QL_WS_URL,
     options: {
@@ -62,7 +63,7 @@ const link = new WebSocketLink({
     }
 });
 
-// APOLLO
+// APOLLO CLIENT
 export const client = new ApolloClient({
     link: link,
     cache: new InMemoryCache({
@@ -79,14 +80,13 @@ const toastOptions = {
     position: POSITION.BOTTOM_LEFT,
     transition: "Vue-Toastification__fade",
 };
-
 Vue.use(Toast, toastOptions);
 
 
 
 // Websockets functions
 store.subscribe(async (mutation, state) => {
-    
+
     // Only update if inside experiment
     if (state.experiment.inExperiment) {
         // Only update mutations if after tutorial (currentStageNum > 0)

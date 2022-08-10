@@ -24,6 +24,7 @@
             <div class="vertical-divider"></div>
             <chat-window class="column is-3" ref="chatWindow"></chat-window>
         </div>
+
         <footer class="footer">
             <div class="container">
                 <div class="has-text-centered">
@@ -44,6 +45,7 @@
     import {wsTools} from "../scripts/websocket-tools";
     import Shepherd from 'shepherd.js';
 
+    // --> Components
     import MainMenu from './MainMenu';
     import Timer from './Timer';
     import QuestionBar from './QuestionBar';
@@ -56,8 +58,8 @@
     import ServicesMenu from "./ServicesMenu";
     import ChatWindow from "./ChatWindow";
 
+    // --> Queries
     import { ProblemReload, ProblemByNameQuery, DatasetByNameQuery } from "../scripts/apollo-queries";
-
 
     export default {
         name: 'app',
@@ -142,11 +144,10 @@
                     this.init();
                 }
             },
+
             async init(startData) {
-                console.log("--> INIT DATA", startData);
 
                 // 0.1 Get problem_id for loading
-                // let problem_id = parseInt(PROBLEM__ID);
                 let groupId   = startData['group_id'];
                 let problemId = startData['problem_id'];
                 let datasetId = startData['dataset_id'];
@@ -182,7 +183,8 @@
                         }
                     });
                 }
-                // Initialize services
+
+                // 4.1 Try to connect vassar then ga from backend
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: "connect_services"
                 }));
@@ -235,6 +237,7 @@
                     }
                 });
             },
+
             async continueStageInit() {
                 // Wait on the Vue apollo queries before proceeding!!!
                 console.log("Stage Problem ID: ", this.stageProblemId, "Stage Dataset ID:", this.stageDatasetId);
@@ -496,7 +499,8 @@
             ProblemPicker
         },
         async mounted() {
-            // Tutorial
+
+            // --> Init Tutorial
             this.tutorial = new Shepherd.Tour({
                 defaultStepOptions: {
                     classes: 'shadow-md bg-purple-dark wider-tutorial',
@@ -506,29 +510,27 @@
                 exitOnEsc: false
             });
 
-            // Generate the session
+            // --> 1. Generate session
             await fetchPost(API_URL + 'auth/generate-session', new FormData());
 
-            // Start the Websocket
+            // --> 2. Connect websocket
             await wsTools.wsConnect(this.$store);
 
             // Check if user is logged in before putting prompt
             try {
                 fetchGet(API_URL + 'auth/check-status').then(async (response) => {
                     if (response.ok) {
+
+                        // --> Get data on user
                         let data = await response.json();
+                        console.log("--> auth/check-status:", data);
 
-                        // LOGIN DATA
-                        let groupId   = data['group_id'];
-                        let problemId = data['problem_id'];
-                        let datasetId = data['dataset_id'];
+                        // --> Commit EOSS user parameters
+                        this.$store.commit('setGroupId', data['group_id']);
+                        this.$store.commit('setProblemId', data['problem_id']);
+                        this.$store.commit('setDatasetId', data['dataset_id']);
 
-                        // Put problem id in store
-                        this.$store.commit('setGroupId', groupId);
-                        this.$store.commit('setProblemId', problemId);
-                        this.$store.commit('setDatasetId', datasetId);
-
-                        // If the user is already logged in, just proceed with loading as usual; if not, show login screen
+                        // --> If logged in, continue. If not, show login modal
                         if (data['is_logged_in'] === true) {
                             this.$store.commit('logUserIn', data);
                             await this.init(data);

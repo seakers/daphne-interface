@@ -15,20 +15,22 @@ class WebsocketTools {
             websocket.onopen = () => {
                 console.log('Web Socket Connection Made');
 
-                // Start ping routine
+                // --> Start pinging brain api
                 pingIntervalId = setInterval(() => {
                     console.log("Ping sent!");
                     websocket.send(JSON.stringify({'msg_type': 'ping'}));
                 }, 30000);
 
-                // Resolve the promise
+                // --> Resolve promise
                 this.websocket = websocket;
                 resolve();
             };
+
             websocket.onclose = (event) => {
                 console.log("Websockets closed", event);
                 clearInterval(pingIntervalId);
             };
+
             websocket.onmessage = (event) => store.dispatch("onWebsocketsMessage", event);
         });
     }
