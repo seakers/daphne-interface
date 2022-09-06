@@ -13,12 +13,12 @@ import { InMemoryCache } from "@apollo/client/cache";
 // Styles
 import './styles/app.scss';
 import 'shepherd.js/dist/css/shepherd.css';
-import VueNeo4j from 'vue-neo4j'
+// import VueNeo4j from 'vue-neo4j'
 
 
 
 Vue.use(VueApollo);
-Vue.use(VueNeo4j);
+// Vue.use(VueNeo4j);
 
 // APOLLO HEADERS
 const getHeaders = () => {

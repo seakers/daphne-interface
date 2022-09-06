@@ -179,37 +179,37 @@ export default {
             return link
         },
         connect() {
-            return this.$neo4j.connect(this.protocol, this.host, this.port, this.username, this.password)
-                .then(driver => {
-                    // Update Context
-                })
+            // return this.$neo4j.connect(this.protocol, this.host, this.port, this.username, this.password)
+            //     .then(driver => {
+            //         // Update Context
+            //     })
         },
         driver() {
             return this.$neo4j.getDriver()
         },
         async rootQuery() {
             let params = {};
-            await this.$neo4j.run(this.root_query, params)
-                .then(res => {
-                    this.root_node = parse_root_node(res);
-                    this.$store.commit('set_root_node', _.cloneDeep(this.root_node));
-                });
+            // await this.$neo4j.run(this.root_query, params)
+            //     .then(res => {
+            //         this.root_node = parse_root_node(res);
+            //         this.$store.commit('set_root_node', _.cloneDeep(this.root_node));
+            //     });
         },
         async decisionQuery() {
             let params = {};
-            await this.$neo4j.run(this.decision_query, params)
-                .then(res => {
-                    this.decision_nodes = parse_decision_nodes(res);
-                    this.$store.commit('set_decision_nodes', _.cloneDeep(this.decision_nodes));
-                });
+            // await this.$neo4j.run(this.decision_query, params)
+            //     .then(res => {
+            //         this.decision_nodes = parse_decision_nodes(res);
+            //         this.$store.commit('set_decision_nodes', _.cloneDeep(this.decision_nodes));
+            //     });
         },
         async designQuery() {
             let params = {};
-            await this.$neo4j.run(this.design_query, params)
-                .then(res => {
-                    this.design_node = parse_design_node(res);
-                    this.$store.commit('set_design_node', _.cloneDeep(this.design_node));
-                });
+            // await this.$neo4j.run(this.design_query, params)
+            //     .then(res => {
+            //         this.design_node = parse_design_node(res);
+            //         this.$store.commit('set_design_node', _.cloneDeep(this.design_node));
+            //     });
         },
         async buildGraph() {
 
@@ -250,14 +250,14 @@ export default {
 
                 // This should set this.child_data
                 let params = {};
-                await this.$neo4j.run(`
-                    MATCH (m:${this.problem}:${node.type})-->(dec)
-                    WHERE m.name = "${node.name}"
-                    RETURN dec.name, dec.type`,
-                    params
-                ).then(res => {
-                    this.child_data = parse_child_nodes(res);
-                });
+                // await this.$neo4j.run(`
+                //     MATCH (m:${this.problem}:${node.type})-->(dec)
+                //     WHERE m.name = "${node.name}"
+                //     RETURN dec.name, dec.type`,
+                //     params
+                // ).then(res => {
+                //     this.child_data = parse_child_nodes(res);
+                // });
 
                 for(let y=0;y<this.child_data.length;y++){
                     let child = this.child_data[y];
