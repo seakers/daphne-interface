@@ -69,7 +69,7 @@ const link = new WebSocketLink({
         connectionParams: () => {
             return {
                 headers: {
-                    'X-Hasura-Admin-Secret': 'daphne',
+                    'X-Hasura-Admin-Secret': ADMIN_SECRET,
                 },
             };
         },

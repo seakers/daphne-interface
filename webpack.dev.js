@@ -14,6 +14,7 @@ module.exports = merge(common, {
             'GRAPH_QL_WS_URL': JSON.stringify('ws://52.15.172.32:8080/v1/graphql'),
             'GRAPH_QL_WS_URL_SUB': JSON.stringify('ws://52.15.172.32:8080/subscriptions'),
             'PROBLEM__ID': JSON.stringify('6'),
+            'ADMIN_SECRET': JSON.stringify('daphne'),
         })
     ],
     devtool: 'eval-source-map',
