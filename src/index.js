@@ -11,6 +11,8 @@ import VueApollo from "vue-apollo";
 import { ApolloClient } from '@apollo/client/core';
 import { WebSocketLink } from '@apollo/client/link/ws';
 import { InMemoryCache } from "@apollo/client/cache";
+import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { createClient } from "graphql-ws";
 
 // Toastification
 import Toast, { POSITION } from "vue-toastification";
@@ -50,6 +52,13 @@ const getHeaders = () => {
     return headers;
 };
 
+// HASURA WEBSOCKET SUB LINK
+const sub_link = new GraphQLWsLink(
+    createClient({
+        url: GRAPH_QL_WS_URL_SUB,
+    }),
+);
+
 // HASURA WEBSOCKET LINK
 const link = new WebSocketLink({
     uri: GRAPH_QL_WS_URL,
@@ -58,7 +67,11 @@ const link = new WebSocketLink({
         lazy: true,
         timeout: 30000,
         connectionParams: () => {
-            return { headers: getHeaders() };
+            return {
+                headers: {
+                    'X-Hasura-Admin-Secret': 'daphne',
+                },
+            };
         },
     }
 });
