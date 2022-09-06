@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  interface:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 8080:8080
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    environment:
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    tty: true
+    container_name: interface
+    command: bash
+networks:
+  default:
+    name: daphne-network
+    external: true

@@ -10,8 +10,8 @@ module.exports = merge(common, {
         new webpack.DefinePlugin({
             'API_URL': JSON.stringify('http://localhost:8080/api/'),
             'WS_URL': JSON.stringify('ws://localhost:8080/api/'),
-            'GRAPH_QL_URL': JSON.stringify('http://localhost:6002/v1/graphql'),
-            'GRAPH_QL_WS_URL': JSON.stringify('ws://localhost:6002/v1/graphql'),
+            'GRAPH_QL_URL': JSON.stringify('http://3.16.50.181:6002/v1/graphql'),
+            'GRAPH_QL_WS_URL': JSON.stringify('ws://3.16.50.181:6002/v1/graphql'),
             'PROBLEM__ID': JSON.stringify('6'),
         })
     ],
@@ -25,17 +25,17 @@ module.exports = merge(common, {
         ],
         proxy: {
             '/api': {
-                target: 'http://localhost:8000/',
+                target: 'http://brain:8000/',
                 changeOrigin: true,
                 ws: true
             },
             '/server': {
-                target: 'http://localhost:8000/',
+                target: 'http://brain:8000/',
                 changeOrigin: true,
                 ws: true
             },
             '/static': {
-                target: 'http://localhost:8000/',
+                target: 'http://brain:8000/',
                 changeOrigin: true,
                 ws: true
             },
