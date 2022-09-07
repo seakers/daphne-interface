@@ -152,7 +152,7 @@
                 let problemId = startData['problem_id'];
                 let datasetId = startData['dataset_id'];
 
-                // 1. Stop all running background tasks
+                // 1. Stop all running background tasks (ws msg: stop_ga)
                 await this.$store.dispatch('stopBackgroundTasks');
 
                 // 2. Initialize the new problem
