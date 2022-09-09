@@ -43,6 +43,7 @@
                 </div>
             </div>
 
+
             <div class="field">
                 <div class="control">
                     <button class="button is-link" v-on:click.prevent="changeProblem" v-bind:disabled="!changedSelection">Load</button>
@@ -55,25 +56,24 @@
                 </div>
             </div>
 
-            <div class="field">
-                <div class="control">
-                    <button class="button is-link" v-on:click.prevent="uploadDataset">Upload</button>
-                </div>
-            </div>
+<!--            <div class="field">-->
+<!--                <div class="control">-->
+<!--                    <button class="button is-link" v-on:click.prevent="uploadDataset">Upload</button>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <hr>
 
-            <div class="field" v-if="isLoggedIn">
-                <div class="control">
-                    <a class="button is-link" target="_blank" href="vassar.html">Problem Builder</a>
-                </div>
-            </div>
+<!--            <div class="field" v-if="isLoggedIn">-->
+<!--                <div class="control">-->
+<!--                    <a class="button is-link" target="_blank" href="vassar.html">Problem Builder</a>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <div class="field" v-if="isLoggedIn">
-                <div class="control">
-                    <a class="button is-link" target="_blank" href="adds.html">Decision Graph</a>
-                </div>
-            </div>
+<!--            <div class="field" v-if="isLoggedIn">-->
+<!--                <div class="control">-->
+<!--                    <a class="button is-link" target="_blank" href="adds.html">Decision Graph</a>-->
+<!--                </div>-->
+<!--            </div>-->
 
             
 

@@ -177,11 +177,12 @@ export default new Vuex.Store({
                 }, 45*1000);
                 commit('setGARunningPingId', pingId);
             }
-
             if (received_info['type'] === 'ping') {
                 console.log("Ping back!");
+                if('status' in received_info){
+                    commit('setServiceStatus', received_info['status']);
+                }
             }
-
         },
 
         async stopBackgroundTasks({ dispatch }) {

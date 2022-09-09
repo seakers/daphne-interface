@@ -11,12 +11,21 @@ const state = {
     vassarRebuildStatus: '',
     gaRunningStatus: 'stopped',
     gaRunningPingId: -1,
+
+    // --> Services (ping results)
+    serviceStatus: {
+        'vassar_containers': [],
+        'ga_containers': []
+    },
 };
 
 const initialState = _.cloneDeep(state);
 
 // getters
 const getters = {
+    getServiceStatus(state){
+        return state.serviceStatus;
+    }
 };
 
 // actions
@@ -53,7 +62,13 @@ const mutations = {
         Object.keys(recoveredState).forEach((key) => {
             state[key] = recoveredState[key];
         });
-    }
+    },
+
+    // --> Services
+    setServiceStatus(state, serviceStatus){
+        console.log('--> SETTING SERVICE STATUS:', serviceStatus);
+        state.serviceStatus = serviceStatus;
+    },
 };
 
 export default {

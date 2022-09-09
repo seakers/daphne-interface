@@ -115,6 +115,16 @@ query MyQuery($selected_orbit_id: Int, $selected_group_id: Int) {
   }
 `;
 
+
+const AllProblemsQuery = gql`
+    query MyQuery {
+        Problem {
+            id
+            name
+        }
+    }
+`;
+
 const ProblemQuery = gql`
 query MyQuery($selected_group_id: Int) {
     Problem(where: {group_id: {_eq: $selected_group_id}}) {
@@ -359,5 +369,6 @@ export {
     ProblemReload,
     SetProblemReload,
     UserGroups,
-    DaphneUsers
+    DaphneUsers,
+    AllProblemsQuery
 }
