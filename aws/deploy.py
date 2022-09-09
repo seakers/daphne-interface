@@ -2,6 +2,9 @@ import os
 import json
 import boto3
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv('/app/.env')
 
 
 """
