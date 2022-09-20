@@ -1,6 +1,7 @@
 // initial state
 import * as _ from 'lodash-es';
 import {fetchPost} from '../../scripts/fetch-helpers';
+import {wsTools} from "../../scripts/websocket-tools";
 
 const state = {
     isLoggedIn: false,
@@ -23,6 +24,34 @@ const getters = {
 
 // actions
 const actions = {
+    async registerUser({ state, commit }, form) {
+        try {
+
+            // --> 1. Send register request to back-end
+            let reqData = new FormData(form);
+            let dataResponse = await fetchPost(API_URL + 'auth/register', reqData);
+            if (dataResponse.ok) {
+                let data = await dataResponse.json();
+                if (data['status'] === 'registered') {
+
+                    // --> 2. If registered, start websocket connection
+                    commit('activateModal', 'InitResourcesModal');
+
+
+                    // commit('activateModal', 'LoginModal');
+                }
+                else {
+                    commit('setRegistrationError', data);
+                }
+            }
+            else {
+                console.error('Error registering.');
+            }
+        }
+        catch(e) {
+            console.error('Networking error:', e);
+        }
+    },
     async loginUser({ state, commit, rootState }, { username, password }) {
         try {
             let reqData = new FormData();
@@ -66,31 +95,6 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
-    async registerUser({ state, commit }, form) {
-        try {
-            let reqData = new FormData(form);
-            let dataResponse = await fetchPost(API_URL + 'auth/register', reqData);
-
-            if (dataResponse.ok) {
-                let data = await dataResponse.json();
-                if (data['status'] === 'registered') {
-
-                    // --> If registered, send request 
-
-                    commit('activateModal', 'LoginModal');
-                }
-                else {
-                    commit('setRegistrationError', data);
-                }
-            }
-            else {
-                console.error('Error registering.');
-            }
-        }
-        catch(e) {
-            console.error('Networking error:', e);
-        }
-    },
     async resetPasswordEmail({ state, commit }, form) {
         try {
             let reqData = new FormData(form);
@@ -113,7 +117,6 @@ const actions = {
             console.error('Networking error:', e);
         }
     },
-
     async setGroupId({ state, commit }, new_id) {
         commit('setGroupId', new_id);
     },

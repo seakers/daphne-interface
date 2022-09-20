@@ -32,6 +32,7 @@
     import ReloadModal from './ReloadModal';
     import CopyDatasetModal from './CopyDatasetModal';
     import ControlPanelModal from "./ControlPanelModal";
+    import InitResourcesModal from "./InitResourcesModal";
 
 
     import {fetchPost} from "../scripts/fetch-helpers";
@@ -54,7 +55,8 @@
             ResetPasswordModal,
             ReloadModal,
             CopyDatasetModal,
-            ControlPanelModal
+            ControlPanelModal,
+            InitResourcesModal
         },
         methods: {
             onCloseModal() {

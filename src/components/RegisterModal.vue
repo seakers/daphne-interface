@@ -59,8 +59,13 @@
         },
         methods: {
             register() {
+
+
                 let form = document.getElementById('register-form');
                 this.$store.dispatch('registerUser', form);
+
+
+
             },
             openLoginForm() {
                 this.$store.commit('activateModal', 'LoginModal');
