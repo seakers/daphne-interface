@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <button class="modal-close is-large" aria-label="close"  v-on:click.prevent="guestLogin"></button>
+<!--        <button class="modal-close is-large" aria-label="close"  v-on:click.prevent="guestLogin"></button>-->
     </div>
 </template>
 
