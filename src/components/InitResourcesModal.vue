@@ -1,7 +1,18 @@
 <template>
     <div class="message-body">
+        <div style="font-weight: bold; font-size: larger">
+            Initializing Cloud Services
+        </div>
 
+        <div style="padding-top: 15px;">
+            <div>Design Evaluator</div>
+            <progress v-if="is_initializing === true" class="progress is-small is-warning" max="100">50%</progress>
+            <progress v-if="is_initializing === false" class="progress is-small is-success" value="100" max="100"></progress>
 
+            <div>Genetic Algorithm</div>
+            <progress v-if="is_initializing === true" class="progress is-small is-warning" max="100">50%</progress>
+            <progress v-if="is_initializing === false" class="progress is-small is-success" value="100" max="100"></progress>
+        </div>
 
     </div>
 </template>
@@ -14,23 +25,19 @@
         name: "InitResourcesModal",
         data: function () {
             return {
-                test: false,
             }
+        },
+        computed: {
+            ...mapState({
+                is_initializing: state => state.auth.is_initializing,
+            })
         },
         methods: {
-
+            async delay(time){
+                return new Promise(resolve => setTimeout(resolve, time));
+            }
         },
         async mounted() {
-            // --> 1. Reconnect WebSocket
-            await wsTools.wsReconnect();
-
-            // --> 2. Send request to create services
-            let reqData = new FormData();
-            let dataResponse = await fetchPost(API_URL + 'auth/init-services', reqData);
-            if (dataResponse.ok) {
-                let data = await dataResponse.json();
-                console.log('--> SERVICES INITIALIZED');
-            }
 
         }
     }

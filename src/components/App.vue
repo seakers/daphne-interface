@@ -119,26 +119,28 @@
             },
             onCloseModal() {
                 this.$store.commit('closeModal');
-                if (this.modalContent === 'LoginModal' && this.isStartup) {
-                    fetchGet(API_URL + 'auth/check-status').then(async (response) => {
-                        if (response.ok) {
-                            let data = await response.json();
+                if (this.modalContent === 'LoginModal' || this.modalContent === 'RegisterModal'){
+                    if (this.isStartup) {
+                        fetchGet(API_URL + 'auth/check-status').then(async (response) => {
+                            if (response.ok) {
+                                let data = await response.json();
 
-                            // LOGIN DATA
-                            let problemId = data['problem_id'];
-                            let groupId   = data['group_id'];
-                            let datasetId = data['dataset_id'];
+                                // LOGIN DATA
+                                let problemId = data['problem_id'];
+                                let groupId   = data['group_id'];
+                                let datasetId = data['dataset_id'];
 
-                            // Put problem id in store
-                            this.$store.commit('setProblemId', problemId);
-                            this.$store.commit('setGroupId', groupId);
-                            this.$store.commit('setDatasetId', datasetId);
-                            await this.init(data);
-                            if (data["is_experiment_user"] === true) {
-                                this.initExperiment(data);
+                                // Put problem id in store
+                                this.$store.commit('setProblemId', problemId);
+                                this.$store.commit('setGroupId', groupId);
+                                this.$store.commit('setDatasetId', datasetId);
+                                await this.init(data);
+                                if (data["is_experiment_user"] === true) {
+                                    this.initExperiment(data);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
                 else if (this.modalContent === 'ReloadModal') {
                     this.init();
@@ -544,6 +546,7 @@
                             }
                             else {
                                 this.$store.commit('activateModal', 'LoginModal');
+                                // this.$store.commit('activateModal', 'InitResourcesModal');
                             }
                         }
                     }

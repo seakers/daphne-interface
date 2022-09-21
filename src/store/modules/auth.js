@@ -5,6 +5,7 @@ import {wsTools} from "../../scripts/websocket-tools";
 
 const state = {
     isLoggedIn: false,
+    is_initializing: false,
     username: '',
     permissions: [],
     hasLoginError: false,
@@ -26,19 +27,38 @@ const getters = {
 const actions = {
     async registerUser({ state, commit }, form) {
         try {
+            commit('setIsInitializing', true);
 
             // --> 1. Send register request to back-end
             let reqData = new FormData(form);
+            reqData.append('daphneVersion', 'EOSS');
             let dataResponse = await fetchPost(API_URL + 'auth/register', reqData);
+            console.log('--> RESPONSE', dataResponse);
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
-                if (data['status'] === 'registered') {
+                console.log('--> RESPONSE2', data);
+                if (data['status'] === 'logged_in') {
 
-                    // --> 2. If registered, start websocket connection
-                    commit('activateModal', 'InitResourcesModal');
+                    // --> Log in user after initialization
+                    console.log('--> LOGGING USER IN', data)
+                    commit('logUserIn', data);
 
-
-                    // commit('activateModal', 'LoginModal');
+                    // --> Initialize AWS Resources
+                    // commit('setIsInitializing', true);
+                    // commit('activateModal', 'InitResourcesModal');
+                    // let dataResponse = await fetchPost(API_URL + 'auth/init-user-services', reqData);
+                    // if (dataResponse.ok) {
+                    //     let data = await dataResponse.json();
+                    //     console.log('--> SERVICES INITIALIZED, LOGGING IN USER');
+                    //     if (data['status'] === 'logged_in') {
+                    //         commit('logUserIn', data);
+                    //     }
+                    //     commit('closeModal');
+                    //     await wsTools.wsReconnect();
+                    // }
+                    // else{
+                    //     console.log('--> ERROR INITIALIZING SERVICES')
+                    // }
                 }
                 else {
                     commit('setRegistrationError', data);
@@ -47,9 +67,12 @@ const actions = {
             else {
                 console.error('Error registering.');
             }
+
+            commit('setIsInitializing', false);
         }
         catch(e) {
             console.error('Networking error:', e);
+            commit('setIsInitializing', false);
         }
     },
     async loginUser({ state, commit, rootState }, { username, password }) {
@@ -150,6 +173,9 @@ const mutations = {
     },
     setResetPasswordSent(state, resetPasswordSent) {
         state.resetPasswordSent = true;
+    },
+    setIsInitializing(state, is_initializing){
+        state.is_initializing = is_initializing;
     },
     restoreAuth(state, recoveredState) {
         Object.keys(recoveredState).forEach((key) => {
