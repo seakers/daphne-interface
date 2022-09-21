@@ -178,7 +178,7 @@ export default new Vuex.Store({
                 commit('setGARunningPingId', pingId);
             }
             if (received_info['type'] === 'ping') {
-                console.log("Ping back!");
+                console.log("Ping back!", received_info);
                 if('status' in received_info){
                     commit('setServiceStatus', received_info['status']);
                 }

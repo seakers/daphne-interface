@@ -1,8 +1,6 @@
 <template>
     <div class="message-body">
 
-
-
         <div class="tabs" style="min-height: 41px;">
             <ul>
                 <li :class="{ 'is-active': selected_tab === 'vassar'}" v-on:click="show_vassar_page"><a style="text-decoration: none; font-weight: bold;">Evaluators</a></li>
@@ -33,7 +31,7 @@
                     <tbody>
                     <tr v-for="(container, idx) in currentStatus['vassar_containers']">
                         <td>{{ idx }}</td>
-                        <td>{{ container['labels']['IDENTIFIER'] }}</td>
+                        <td>{{ container['IDENTIFIER'] }}</td>
                         <td>{{ container['status']['StringValue'] }}</td>
                         <td>{{ get_problem_name(container['PROBLEM_ID']['StringValue']) }}</td>
                     </tr>
@@ -84,7 +82,6 @@
             <button class="button is-success" v-on:click="send_ping">Refresh</button>
         </div>
 
-
     </div>
 </template>
 
@@ -103,8 +100,8 @@
                     'ga_containers': []
                 },
                 selected_tab: 'vassar',
-                allowable_vassar_containers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                allowable_ga_containers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                allowable_vassar_containers: [0, 1, 2, 3],
+                allowable_ga_containers: [0, 1, 2, 3],
                 req_eval_containers: 0,
                 req_ga_containers: 0,
                 Problem: [],
@@ -137,10 +134,10 @@
                 let ga_containers = _.cloneDeep(this.serviceStatus['ga_containers']);
                 // --> Compare function
                 function compare(a, b) {
-                    if ( a['labels']['IDENTIFIER'] < b['labels']['IDENTIFIER'] ){
+                    if ( a['IDENTIFIER'] < b['IDENTIFIER'] ){
                         return -1;
                     }
-                    if ( a['labels']['IDENTIFIER'] > b['labels']['IDENTIFIER'] ){
+                    if ( a['IDENTIFIER'] > b['IDENTIFIER'] ){
                         return 1;
                     }
                     return 0;
@@ -151,6 +148,8 @@
                     'vassar_containers': vassar_containers,
                     'ga_containers': ga_containers
                 };
+                this.req_eval_containers = vassar_containers.length;
+                this.req_ga_containers = ga_containers.length;
             },
             show_vassar_page(){
                 this.selected_tab = 'vassar';
@@ -164,7 +163,7 @@
             commit_requests(){
                 // --> Send regulation message
                 wsTools.websocket.send(JSON.stringify({
-                    msg_type: "regulate_services",
+                    msg_type: "connect_services",
                     num_eval: this.req_eval_containers,
                     num_ga: this.req_ga_containers
                 }));
