@@ -281,14 +281,16 @@
                         }
                     },
                     result ({ data }) {
+                        console.log('--> DATASET QUERY:', this.selectedDatasetId, data.user_datasets)
                         this.userDatasets = data.user_datasets;
-                        if (this.selectedDatasetId === null) {
-                            this.selectedDatasetId = 1;
+                        if (this.selectedDatasetId === null || this.selectedDatasetId === -1) {
                             if (this.userDatasets.length > 0) {
                                 this.selectedDatasetId = this.userDatasets[0].id;
+                                console.log('--> SETTING DATASET ID:', this.selectedDatasetId)
                                 for (let dataset of this.userDatasets) {
                                     if (dataset.user_id === this.userPk) {
                                         this.selectedDatasetId = dataset.id;
+                                        console.log('--> SETTING DATASET ID 2:', this.selectedDatasetId)
                                     }
                                 }
                             }
