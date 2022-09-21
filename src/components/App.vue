@@ -546,7 +546,6 @@
                             }
                             else {
                                 this.$store.commit('activateModal', 'LoginModal');
-                                // this.$store.commit('activateModal', 'InitResourcesModal');
                             }
                         }
                     }

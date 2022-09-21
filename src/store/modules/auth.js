@@ -33,32 +33,16 @@ const actions = {
             let reqData = new FormData(form);
             reqData.append('daphneVersion', 'EOSS');
             let dataResponse = await fetchPost(API_URL + 'auth/register', reqData);
-            console.log('--> RESPONSE', dataResponse);
             if (dataResponse.ok) {
+
+                // --> 2. Login on front-end
                 let data = await dataResponse.json();
-                console.log('--> RESPONSE2', data);
                 if (data['status'] === 'logged_in') {
 
                     // --> Log in user after initialization
                     console.log('--> LOGGING USER IN', data)
                     commit('logUserIn', data);
 
-                    // --> Initialize AWS Resources
-                    // commit('setIsInitializing', true);
-                    // commit('activateModal', 'InitResourcesModal');
-                    // let dataResponse = await fetchPost(API_URL + 'auth/init-user-services', reqData);
-                    // if (dataResponse.ok) {
-                    //     let data = await dataResponse.json();
-                    //     console.log('--> SERVICES INITIALIZED, LOGGING IN USER');
-                    //     if (data['status'] === 'logged_in') {
-                    //         commit('logUserIn', data);
-                    //     }
-                    //     commit('closeModal');
-                    //     await wsTools.wsReconnect();
-                    // }
-                    // else{
-                    //     console.log('--> ERROR INITIALIZING SERVICES')
-                    // }
                 }
                 else {
                     commit('setRegistrationError', data);
