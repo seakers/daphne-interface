@@ -11,15 +11,22 @@ class WebsocketTools {
             // Websocket connection
             let websocket = new ReconnectingWebSocket(WS_URL + 'eoss/ws');
             let pingIntervalId = null;
+            let servicePingIntervalId = null;
 
             websocket.onopen = () => {
                 console.log('Web Socket Connection Made');
 
                 // --> Start pinging brain api
                 pingIntervalId = setInterval(() => {
-                    console.log("Ping sent!");
+                    console.log("Pinging Server!");
                     websocket.send(JSON.stringify({'msg_type': 'ping'}));
                 }, 30000);
+
+                // --> Start pinging brain api
+                servicePingIntervalId = setInterval(() => {
+                    console.log("Pinging Services!");
+                    websocket.send(JSON.stringify({'msg_type': 'ping_services'}));
+                }, 60000);
 
                 // --> Resolve promise
                 this.websocket = websocket;
@@ -29,6 +36,7 @@ class WebsocketTools {
             websocket.onclose = (event) => {
                 console.log("Websockets closed", event);
                 clearInterval(pingIntervalId);
+                clearInterval(servicePingIntervalId);
             };
 
             websocket.onmessage = (event) => store.dispatch("onWebsocketsMessage", event);

@@ -158,7 +158,7 @@
                 this.selected_tab = 'ga';
             },
             send_ping(){
-                wsTools.websocket.send(JSON.stringify({msg_type: "ping"}));
+                wsTools.websocket.send(JSON.stringify({msg_type: "ping_services"}));
             },
             commit_requests(){
                 // --> Send regulation message

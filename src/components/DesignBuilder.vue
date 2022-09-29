@@ -69,6 +69,9 @@
                 isLoggedIn: state => state.auth.isLoggedIn,
                 vassarStatus: state => state.services.vassarServiceStatus,
             }),
+            ...mapGetters({
+                serviceStatus: 'getServiceStatus',
+            }),
             // ...mapGetters({
             //     problem_id: 'getProblemModuleId'
             // }),
@@ -87,7 +90,9 @@
                 }
             },
             canEvaluate() {
-                return this.isLoggedIn && (this.vassarStatus == "ready" || this.vassarStatus == "missed_ping") && !this.readOnlyDataset;
+                let evaluator_available = this.serviceStatus['vassar_containers'].length > 0;
+
+                return this.isLoggedIn && evaluator_available && !this.readOnlyDataset;
             },
             readOnlyDataset() {
                 if (this.currentDatasetInfo) {
@@ -293,7 +298,7 @@
                         console.error('Networking error:', e);
                     }
                 }
-                // this.isComputing = false;
+                this.isComputing = false;
             }
         },
         watch: {
