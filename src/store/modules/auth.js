@@ -35,14 +35,11 @@ const actions = {
             let dataResponse = await fetchPost(API_URL + 'auth/register', reqData);
             if (dataResponse.ok) {
 
-                // --> 2. Login on front-end
+                // --> 2. Correct registration automatically logs in
                 let data = await dataResponse.json();
                 if (data['status'] === 'logged_in') {
-
-                    // --> Log in user after initialization
-                    console.log('--> LOGGING USER IN', data)
+                    console.log('--> LOGGING IN', data)
                     commit('logUserIn', data);
-
                 }
                 else {
                     commit('setRegistrationError', data);
