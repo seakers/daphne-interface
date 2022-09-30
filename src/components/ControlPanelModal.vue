@@ -384,24 +384,27 @@
             
             // --> AWS Methods
             start_instance(){
-                
+                this.resource_msg('start_instance', 15);
             },
             stop_instance(){
-                this.timeout_action(15);
-                console.log('--> STOPPING INSTANCES', this.selected_instance_ids);
-                wsTools.websocket.send(JSON.stringify({msg_type: "resource_msg", command: "stop_instance", instance_ids: this.selected_instance_ids}));
+                this.resource_msg('stop_instance', 15);
             },
             start_container(){
-
+                this.resource_msg('start_container', 15);
             },
             stop_container(){
-
+                this.resource_msg('stop_container', 15);
             },
             pull_container(){
-
+                this.resource_msg('pull_container', 15);
             },
             build_container(){
-
+                this.resource_msg('build_container', 15);
+            },
+            resource_msg(command, timeout){
+                this.timeout_action(timeout);
+                console.log('--> ', command, this.selected_instance_ids);
+                wsTools.websocket.send(JSON.stringify({msg_type: "resource_msg", command: command, instance_ids: this.selected_instance_ids}));
             },
 
 
