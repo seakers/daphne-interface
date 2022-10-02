@@ -25,8 +25,8 @@ class WebsocketTools {
                 // --> Start pinging brain api
                 servicePingIntervalId = setInterval(() => {
                     console.log("Pinging Services!");
-                    websocket.send(JSON.stringify({'msg_type': 'ping_services'}));
-                }, 60000);
+                    // websocket.send(JSON.stringify({'msg_type': 'ping_services'}));
+                }, 300000);
 
                 // --> Resolve promise
                 this.websocket = websocket;

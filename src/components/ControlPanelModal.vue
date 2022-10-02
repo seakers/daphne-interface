@@ -7,21 +7,14 @@
                 <li :class="{ 'is-active': selected_tab === 'ga'}" v-on:click="show_ga_page"><a style="text-decoration: none; font-weight: bold;">GAs</a></li>
             </ul>
         </div>
-
         <div class="evaluator-body" v-show="selected_tab === 'vassar'">
-
-<!--            <div class="box" style="font-weight: bold">-->
-<!--                Desired Count-->
-<!--                <select v-model="req_eval_containers">-->
-<!--                    <option v-for="num in allowable_vassar_containers" :value="num" :key="num">{{ num }}</option>-->
-<!--                </select>-->
-<!--                <button class="button is-link is-small" style="float: right;" v-on:click="commit_requests">request</button>-->
-<!--            </div>-->
-
             <div class="box">
-
                 <nav class="level">
-                    <span style="font-size: large; font-weight: bold; color: black">Design Evaluator Instances ({{currentStatus['vassar_containers'].length}})</span>
+                    <div>
+                        <span style="font-size: large; font-weight: bold; color: black">Design Evaluator Instances ({{currentStatus['vassar_containers'].length}})</span>
+                        <br>
+                        <span style="font-size: small">Info Age: {{36000 - lastUpdateCount}} sec</span>
+                    </div>
                     <div class="dropdown level-right is-right" v-bind:class="{ 'is-active': isDropdownActive }">
                         <div class="dropdown-trigger">
                             <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" @click="isDropdownActive=!isDropdownActive" :disabled="actionCount !== 0">
@@ -46,8 +39,6 @@
                     </div>
 
                 </nav>
-
-
                 <table class='table is-fullwidth'>
                     <thead>
 
@@ -85,12 +76,6 @@
         </div>
 
 
-
-
-
-
-
-
         <div class="ga-body"  v-show="selected_tab === 'ga'">
 
             <div class="box" style="font-weight: bold">
@@ -126,7 +111,6 @@
             </div>
 
         </div>
-
         <div style="padding-top: 20px;">
             <button class="button is-link" v-on:click="close_modal">Close</button>
             <button class="button is-link" v-on:click="send_ping" :disabled="timerCount !== 0">
@@ -157,6 +141,7 @@
                 allowable_ga_containers: [0, 1, 2, 3],
                 req_eval_containers: 0,
                 req_ga_containers: 0,
+                lastUpdateCount: 36000,
                 timerCount: 5,
                 actionCount: 0,
                 Problem: [],
@@ -415,7 +400,18 @@
         },
         watch: {
             serviceStatus() {
+                this.lastUpdateCount = 36000;
                 this.reload_module()
+            },
+            lastUpdateCount: {
+                handler(value) {
+                    if (value > 0) {
+                        setTimeout(() => {
+                            this.lastUpdateCount--;
+                        }, 1000);
+                    }
+                },
+                immediate: true // This ensures the watcher is triggered upon creation
             },
             timerCount: {
                 handler(value) {
@@ -444,7 +440,7 @@
             },
         },
         mounted() {
-            this.send_ping();
+            // this.send_ping();
             this.reload_module();
             this.req_eval_containers = this.currentStatus['vassar_containers'].length;
             this.req_ga_containers = this.currentStatus['ga_containers'].length;
