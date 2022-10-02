@@ -1,19 +1,24 @@
 <template>
     <div class="message-body">
 
+
+        <!--TABS-->
         <div class="tabs" style="min-height: 41px;">
             <ul>
                 <li :class="{ 'is-active': selected_tab === 'vassar'}" v-on:click="show_vassar_page"><a style="text-decoration: none; font-weight: bold;">Evaluators</a></li>
                 <li :class="{ 'is-active': selected_tab === 'ga'}" v-on:click="show_ga_page"><a style="text-decoration: none; font-weight: bold;">GAs</a></li>
             </ul>
         </div>
+
+
+        <!--DESIGN EVALUATORS-->
         <div class="evaluator-body" v-show="selected_tab === 'vassar'">
             <div class="box">
                 <nav class="level">
                     <div>
                         <span style="font-size: large; font-weight: bold; color: black">Design Evaluator Instances ({{currentStatus['vassar_containers'].length}})</span>
                         <br>
-                        <span style="font-size: small">Info Age: {{36000 - lastUpdateCount}} sec</span>
+                        <span style="font-size: small">Last Ping: {{get_time_elapsed()}}</span>
                     </div>
                     <div class="dropdown level-right is-right" v-bind:class="{ 'is-active': isDropdownActive }">
                         <div class="dropdown-trigger">
@@ -60,7 +65,16 @@
                     </thead>
                     <tbody>
                     <tr v-for="(container, idx) in currentStatus['vassar_containers']">
-                        <td><input type="checkbox" v-model="container['selected']"></td>
+
+
+                        <td>
+                            <input type="checkbox" v-model="container['selected']" v-if="container['busy'] === false">
+                            <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" v-if="container['busy'] === true" alt="Loading...">
+                        </td>
+
+
+
+
                         <td>{{ container['instance']['IDENTIFIER'] }}</td>
                         <td>{{ container['instance']['State'] }}</td>
                         <td>{{ container['instance']['Status'] }}</td>
@@ -72,20 +86,11 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
 
 
+        <!--GENETIC ALGORITHMS-->
         <div class="ga-body"  v-show="selected_tab === 'ga'">
-
-            <div class="box" style="font-weight: bold">
-                Desired Count
-                <select v-model="req_ga_containers">
-                    <option v-for="num in allowable_ga_containers" :value="num" :key="num">{{ num }}</option>
-                </select>
-                <button class="button is-link is-small" style="float: right;" v-on:click="commit_requests">request</button>
-            </div>
-
             <div class="box">
                 <table class='table'>
                     <thead>
@@ -103,19 +108,19 @@
                         <td>{{ container['labels']['IDENTIFIER'] }}</td>
                         <td>{{ container['status']['StringValue'] }}</td>
                         <td>{{ get_problem_name(container['PROBLEM_ID']['StringValue']) }}</td>
-                        <td v-if="container['status']['StringValue'] === 'READY'"><button class="button is-success is-small" v-on:click="start_ga(container['labels']['IDENTIFIER'])">start</button></td>
-                        <td v-if="container['status']['StringValue'] === 'RUNNING'"><button class="button is-danger is-small" v-on:click="stop_ga(container['labels']['IDENTIFIER'])">stop</button></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
-
         </div>
+
+
+        <!--BUTTONS: CLOSE / RELOAD -->
         <div style="padding-top: 20px;">
             <button class="button is-link" v-on:click="close_modal">Close</button>
-            <button class="button is-link" v-on:click="send_ping" :disabled="timerCount !== 0">
-                <div v-if="timerCount !== 0">{{timerCount}}</div>
-                <div v-if="timerCount === 0">Refresh</div>
+            <button class="button is-link" v-on:click="send_ping" :disabled="refreshCount !== 0">
+                <div v-if="refreshCount !== 0">{{ refreshCount }}</div>
+                <div v-if="refreshCount === 0">Refresh</div>
             </button>
         </div>
 
@@ -131,33 +136,40 @@
         name: "control-panel-modal",
         data: function () {
             return {
-                test: false,
+                // --> Tabs
+                selected_tab: 'vassar',
+
+                // --> Resource Info
                 currentStatus: {
                     'vassar_containers': [],
                     'ga_containers': []
                 },
-                selected_tab: 'vassar',
-                allowable_vassar_containers: [0, 1, 2, 3],
-                allowable_ga_containers: [0, 1, 2, 3],
-                req_eval_containers: 0,
-                req_ga_containers: 0,
-                lastUpdateCount: 36000,
-                timerCount: 5,
-                actionCount: 0,
+
+                // --> Queries
                 Problem: [],
+
+                // --> Action Dropdown
                 isDropdownActive: false,
+
+                // --> Timers
+                lastUpdateCountMax: 36000,
+                lastUpdateCount: 36000,
+                lastUpdateCountTimer: null,
+
+                refreshCount: 0,
+                refreshCountTimer: null,
+
+                actionCount: 0,
+                actionCountTimer: null,
             }
         },
         computed: {
-            ...mapState({
-                userPk: state => state.auth.user_pk,
-                objective_objs: state => state.problem.objective_objs,
-            }),
             ...mapGetters({
                 serviceStatus: 'getServiceStatus',
             }),
+
+            // --> Action Logic
             cant_start_container(){
-                // --- Rules
                 // 1. A selection must be made
                 // 2. SSM Status must be 'Online' for each selection
                 // 3. Container ping obj must be empty
@@ -177,7 +189,6 @@
                 return false;
             },
             cant_stop_container(){
-                // --- Rules
                 // 1. A selection must be made
                 // 2. SSM Status must be 'Online' for each selection
                 // 3. Container ping obj must not be empty
@@ -197,7 +208,6 @@
                 return false;
             },
             cant_stop_instances(){
-                // --- Rules
                 // 1. A selection must be made
                 // 2. Every selection must be in the 'running' state
                 if(this.selected_instances.length === 0){
@@ -213,10 +223,8 @@
                 return false
             },
             cant_start_instances(){
-                // --- Rules
                 // 1. A selection must be made
                 // 2. Every selection must be in the 'stopped' state
-
                 if(this.selected_instances.length === 0){
                     return true;
                 }
@@ -229,6 +237,8 @@
                 }
                 return false
             },
+
+            // --> Selected Instances
             selected_instances(){
                 let instances = [];
                 for(let x = 0; x < this.currentStatus['vassar_containers'].length; x++){
@@ -265,6 +275,59 @@
             }
         },
         methods: {
+
+            
+            // --> Modal Navigation
+            close_modal(){
+                this.$emit('close-modal');
+            },
+            show_vassar_page(){
+                this.selected_tab = 'vassar';
+            },
+            show_ga_page(){
+                this.selected_tab = 'ga';
+            },
+
+
+            // --> Modal Control
+            send_ping(){
+                this.set_refresh_counter(5);
+                wsTools.websocket.send(JSON.stringify({msg_type: "ping_services"}));
+            },
+            reload_module(){
+                console.log("--> RELOAD", this.serviceStatus);
+                this.$apollo.queries.Problem.refetch();
+                let vassar_containers = _.cloneDeep(this.serviceStatus['vassar_containers']);
+                let ga_containers = _.cloneDeep(this.serviceStatus['ga_containers']);
+                // --> Compare function
+                function compare(a, b) {
+                    if ( a['instance']['IDENTIFIER'] < b['instance']['IDENTIFIER'] ){
+                        return -1;
+                    }
+                    if ( a['instance']['IDENTIFIER'] > b['instance']['IDENTIFIER'] ){
+                        return 1;
+                    }
+                    return 0;
+                }
+                vassar_containers.sort(compare);
+                ga_containers.sort(compare);
+                for(let x = 0; x < vassar_containers.length; x++){
+                    vassar_containers[x]['selected'] = false;
+                    vassar_containers[x]['busy'] = false;
+                }
+                for(let x = 0; x < ga_containers.length; x++){
+                    ga_containers[x]['selected'] = false;
+                    ga_containers[x]['busy'] = false;
+                }
+
+                this.currentStatus = {
+                    'vassar_containers': vassar_containers,
+                    'ga_containers': ga_containers
+                };
+            },
+
+
+            // --> Modal Content
             get_container_status(container){
                 if(container === 'empty'){
                     return 'Stopped';
@@ -291,88 +354,22 @@
                 }
                 return "-----";
             },
-            reload_module(){
-                console.log("--> RELOAD", this.serviceStatus);
-                this.$apollo.queries.Problem.refetch();
-                let vassar_containers = _.cloneDeep(this.serviceStatus['vassar_containers']);
-                let ga_containers = _.cloneDeep(this.serviceStatus['ga_containers']);
-                // --> Compare function
-                function compare(a, b) {
-                    if ( a['instance']['IDENTIFIER'] < b['instance']['IDENTIFIER'] ){
-                        return -1;
-                    }
-                    if ( a['instance']['IDENTIFIER'] > b['instance']['IDENTIFIER'] ){
-                        return 1;
-                    }
-                    return 0;
-                }
-                vassar_containers.sort(compare);
-                ga_containers.sort(compare);
-                for(let x = 0; x < vassar_containers.length; x++){
-                    vassar_containers[x]['selected'] = false;
-                }
-                for(let x = 0; x < ga_containers.length; x++){
-                    ga_containers[x]['selected'] = false;
-                }
+            get_time_elapsed(){
+                let time = 36000 - this.lastUpdateCount;
+                let hours = Math.floor(time / 3600);
+                let minutes = Math.floor(time / 60);
+                let seconds = time - minutes * 60;
+                return (hours + " (hr) - " + minutes + " (min) - " + seconds + " (sec)");
+            },
 
 
-                this.currentStatus = {
-                    'vassar_containers': vassar_containers,
-                    'ga_containers': ga_containers
-                };
-                this.req_eval_containers = vassar_containers.length;
-                this.req_ga_containers = ga_containers.length;
-            },
-            show_vassar_page(){
-                this.selected_tab = 'vassar';
-            },
-            show_ga_page(){
-                this.selected_tab = 'ga';
-            },
-            send_ping(){
-                wsTools.websocket.send(JSON.stringify({msg_type: "ping_services"}));
-                this.timerCount = 5;
-            },
-            commit_requests(){
-                // --> Send regulation message
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: "connect_services",
-                    num_eval: this.req_eval_containers,
-                    num_ga: this.req_ga_containers
-                }));
-            },
-            start_ga(identifier){
-                let objective_str = "";
-                for(let x = 0; x < this.objective_objs.length; x++){
-                    if(this.objective_objs[x].active === true){
-                        objective_str = objective_str + this.objective_objs[x].key + ",";
-                    }
-                }
-                let trimmed_obj_string = objective_str.slice(0, -1);
-                console.log("--> SENDING START GA MESSAGE");
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: "start_ga",
-                    objectives: trimmed_obj_string,
-                    identifier: identifier,
-                }));
-            },
-            stop_ga(identifier){
-                console.log("--> SENDING STOP GA MESSAGE");
-                wsTools.websocket.send(JSON.stringify({
-                    msg_type: "stop_ga",
-                    identifier: identifier,
-                }));
-            },
-            close_modal(){
-                this.$emit('close-modal');
-            },
-            
-            // --> AWS Methods
+            // --> Action Methods
             start_instance(){
                 this.resource_msg('start_instance', 15);
             },
             stop_instance(){
-                this.resource_msg('stop_instance', 15);
+                // this.resource_msg('stop_instance', 15);
+                this.set_selected_containers_loading();
             },
             start_container(){
                 this.resource_msg('start_container', 15);
@@ -386,38 +383,69 @@
             build_container(){
                 this.resource_msg('build_container', 15);
             },
+
+
+            // --> Action Methods Helpers
             resource_msg(command, timeout){
-                this.timeout_action(timeout);
+                this.set_action_counter(timeout);
                 console.log('--> ', command, this.selected_instance_ids);
                 wsTools.websocket.send(JSON.stringify({msg_type: "resource_msg", command: command, instance_ids: this.selected_instance_ids}));
             },
+            set_selected_containers_loading(){
+                let instances = this.selected_instances;
+                for(let x = 0; x < instances.length; instances++){
+                    instances[x]['busy'] = true;
+                    instances[x]['selected'] = false;
+                }
+            },
 
 
-            timeout_action(time) {
+            // --> Timers
+            set_update_counter(){
+                if(this.lastUpdateCountTimer !== null){
+                    clearTimeout(this.lastUpdateCountTimer);
+                }
+                this.lastUpdateCount = this.lastUpdateCountMax;
+            },
+            set_refresh_counter(time){
+                if(this.refreshCountTimer !== null){
+                    clearTimeout(this.refreshCountTimer);
+                }
+                this.refreshCount = time;
+            },
+            set_action_counter(time) {
+                if(this.actionCountTimer !== null){
+                    clearTimeout(this.actionCountTimer);
+                }
                 this.actionCount = time;
                 this.isDropdownActive = false;
-            }
+            },
+
         },
         watch: {
+
+            // --> Triggered by service ping
             serviceStatus() {
-                this.lastUpdateCount = 36000;
+                this.set_update_counter()
                 this.reload_module()
             },
+
+            // --> Timers
             lastUpdateCount: {
                 handler(value) {
                     if (value > 0) {
-                        setTimeout(() => {
+                        this.lastUpdateCountTimer = setTimeout(() => {
                             this.lastUpdateCount--;
                         }, 1000);
                     }
                 },
                 immediate: true // This ensures the watcher is triggered upon creation
             },
-            timerCount: {
+            refreshCount: {
                 handler(value) {
                     if (value > 0) {
-                        setTimeout(() => {
-                            this.timerCount--;
+                        this.refreshCountTimer = setTimeout(() => {
+                            this.refreshCount--;
                         }, 1000);
                     }
                 },
@@ -426,7 +454,7 @@
             actionCount: {
                 handler(value) {
                     if (value > 0) {
-                        setTimeout(() => {
+                        this.actionCount = setTimeout(() => {
                             this.actionCount--;
                         }, 1000);
                     }
@@ -440,10 +468,7 @@
             },
         },
         mounted() {
-            // this.send_ping();
             this.reload_module();
-            this.req_eval_containers = this.currentStatus['vassar_containers'].length;
-            this.req_ga_containers = this.currentStatus['ga_containers'].length;
         }
     }
 </script>
