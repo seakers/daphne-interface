@@ -95,7 +95,7 @@
                 return this.isLoggedIn && evaluator_available && !this.readOnlyDataset;
             },
             readOnlyDataset() {
-                if (this.currentDatasetInfo) {
+                if (this.currentDatasetInfo && this.currentDatasetInfo.length > 0) {
                     if (this.currentDatasetInfo[0].user_id === null && this.currentDatasetInfo[0].Group === null) {
                         return true;
                     }

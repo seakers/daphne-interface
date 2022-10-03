@@ -10,12 +10,16 @@ RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs
 
 
-# --> 1. Copy Interface
+# --> 1. Install dependencies
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# --> 2. Copy Interface
 WORKDIR /app
 COPY ./. /app
 
-RUN npm install
-
+# --> 3. Run container
 CMD npm run dev
 
 

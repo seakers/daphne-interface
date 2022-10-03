@@ -255,6 +255,7 @@
                         instances.push(resource)
                     }
                 }
+                console.log('--> SELECTED INSTANCES', instances.length);
                 return instances;
             },
             selected_instance_ids(){
@@ -330,7 +331,7 @@
             // --> Modal Content
             get_container_status(container){
                 if(container === 'empty'){
-                    return 'Stopped';
+                    return 'Offline';
                 }
                 else{
                     return container['status']['StringValue'];
@@ -338,7 +339,7 @@
             },
             get_container_problem(container){
                 if(container === 'empty'){
-                    return 'None';
+                    return 'Offline';
                 }
                 else{
                     return this.get_problem_name(container['PROBLEM_ID']['StringValue']);
@@ -366,22 +367,27 @@
             // --> Action Methods
             start_instance(){
                 this.resource_msg('start_instance', 15);
+                this.set_selected_containers_loading();
             },
             stop_instance(){
-                // this.resource_msg('stop_instance', 15);
+                this.resource_msg('stop_instance', 15);
                 this.set_selected_containers_loading();
             },
             start_container(){
                 this.resource_msg('start_container', 15);
+                this.set_selected_containers_loading();
             },
             stop_container(){
                 this.resource_msg('stop_container', 15);
+                this.set_selected_containers_loading();
             },
             pull_container(){
                 this.resource_msg('pull_container', 15);
+                this.set_selected_containers_loading();
             },
             build_container(){
                 this.resource_msg('build_container', 15);
+                this.set_selected_containers_loading();
             },
 
 
@@ -454,7 +460,7 @@
             actionCount: {
                 handler(value) {
                     if (value > 0) {
-                        this.actionCount = setTimeout(() => {
+                        this.actionCountTimer = setTimeout(() => {
                             this.actionCount--;
                         }, 1000);
                     }
@@ -468,6 +474,7 @@
             },
         },
         mounted() {
+            this.send_ping();
             this.reload_module();
         }
     }
