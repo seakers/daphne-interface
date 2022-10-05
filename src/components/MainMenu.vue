@@ -1,5 +1,5 @@
 <template>
-    <div class="main">
+    <div class="main" style="padding-bottom: 0px;">
         <h1 class="title is-size-4">Daphne</h1>
         <main-menu-item
                 v-for="(functionality, index) in availableFunctionalities"

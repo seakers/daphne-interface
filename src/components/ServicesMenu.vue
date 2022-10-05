@@ -1,12 +1,39 @@
 <template>
-    <div class="active-menu" v-if="logged_in">
-
+    <div class="active-menu" style="padding-top: 0px;" v-if="logged_in">
+        <hr>
 
 
 <!--        SERVICE INTERFACE-->
-        <div class="control">
-            <button class="button is-link" v-on:click="activateControlPanel">Service Panel</button>
+
+
+        <div class="box" style="margin-top: 24px; padding: 10px;">
+            <p class="has-text-weight-bold">Design Evaluators</p>
+            <p>Available: {{available_design_evaluators}}</p>
         </div>
+
+        <div class="box" style="padding: 10px;">
+            <p class="has-text-weight-bold">Genetic Algorithms</p>
+            <p>Running: {{running_genetic_algorithms}}</p>
+        </div>
+
+        <div class="field has-addons">
+            <div class="control">
+                <button class="button is-link" v-on:click="activateControlPanel">Service Panel</button>
+            </div>
+            <div class="control">
+                <button class="button is-link" v-on:click="send_ping" :disabled="!canPing">
+                    <span class="icon is-small" v-if="canPing">
+                        <i class="fas fa-redo-alt"></i>
+                    </span>
+                    <span class="icon is-small" v-if="!canPing">
+                        <i class="fas fa-hourglass" style="color: white"></i>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+
+
 
 <!--        <p class="has-text-weight-bold">VASSAR connection status: <a v-on:click="connectVassar">Reconnect</a></p>-->
 <!--        <p :class="connectionStatusToColor(vassarStatus)">{{connectionStatusToExplanation(vassarStatus)}}</p>-->
@@ -54,12 +81,15 @@
         </div>
         
         <button v-if="inExperiment" class="button" v-on:click="finishExperiment">Finish Experiment</button>
+
+        <hr>
     </div>
 </template>
 
 <script>
-    import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
     import {wsTools} from "../scripts/websocket-tools";
+import * as _ from "lodash-es";
 
     export default {
         name: "ServicesMenu",
@@ -68,6 +98,8 @@
                 analystFreqTimeout: null,
                 engineerFreqTimeout: null,
                 historianFreqTimeout: null,
+                lastPingId: null,
+                canPing: true,
             }
         },
         computed: {
@@ -77,8 +109,30 @@
                 stageInformation: state => state.experiment.stageInformation,
                 vassarStatus: state => state.services.vassarServiceStatus,
                 gaServiceStatus: state => state.services.gaServiceStatus,
-                gaRunningStatus: state => state.services.gaRunningStatus
+                gaRunningStatus: state => state.services.gaRunningStatus,
+                problemId: state => state.problem.problemId,
             }),
+            ...mapGetters({
+                serviceStatus: 'getServiceStatus',
+                pingId: 'getPingId'
+            }),
+            available_design_evaluators(){
+                let count = 0;
+                let vassar_containers = this.serviceStatus['vassar_containers'];
+                for(let x = 0; x < vassar_containers.length; x++){
+                    let container = vassar_containers[x];
+                    let vassar_status = container['container']['VassarStatus'];
+                    let problem_id = container['container']['PROBLEM_ID'];
+                    if(vassar_status === 'RUNNING' && parseInt(problem_id) === this.problemId){
+                        count += 1;
+                    }
+                }
+                return count;
+            },
+            running_genetic_algorithms(){
+                return 0
+            },
+
             runDiversifier: {
                 get() {
                     return this.$store.state.active.runDiversifier;
@@ -189,6 +243,23 @@
             activateControlPanel() {
                 this.$store.commit('activateModal', 'ControlPanelModal');
             },
+            send_ping(){
+                this.canPing = false;
+                this.lastPingId = this.generate_msg_id();
+                wsTools.websocket.send(JSON.stringify({msg_type: "ping_services", ping_id: this.lastPingId}));
+                setTimeout(() => {this.canPing = true;}, 30000);
+            },
+            generate_msg_id(){
+                let length = 15;
+                let result           = '';
+                let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let charactersLength = characters.length;
+                for ( let i = 0; i < length; i++ ) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+            },
+
             async connectVassar() {
                 wsTools.websocket.send(JSON.stringify({
                     msg_type: 'connect_vassar',
@@ -198,6 +269,16 @@
                 this.$store.dispatch('finishExperiment');
             }
         },
+        watch: {
+            pingId() {
+                if(this.pingId === null){
+                    this.canPing = true;
+                }
+                if(this.pingId === this.lastPingId){
+                    this.canPing = true;
+                }
+            }
+        }
     }
 </script>
 

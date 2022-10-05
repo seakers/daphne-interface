@@ -35,53 +35,55 @@
                                 <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_instances" v-on:click="stop_instance()">Stop Instance</button>
                                 <button class="button dropdown-item" style="border: none;" :disabled="cant_start_instances" v-on:click="start_instance()">Start Instance</button>
                                 <hr class="dropdown-divider">
-                                <button class="button dropdown-item" style="border: none;" :disabled="cant_start_container" v-on:click="pull_container()">Pull Container</button>
-                                <button class="button dropdown-item" style="border: none;" :disabled="cant_start_container" v-on:click="start_container()">Start Container</button>
+                                <button class="button dropdown-item" style="border: none;" :disabled="cant_run_container" v-on:click="run_container()">Run Container</button>
                                 <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="stop_container()">Stop Container</button>
-                                <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="build_container()">Build Container</button>
+                                <button class="button dropdown-item" style="border: none;" :disabled="cant_run_container" v-on:click="update_container()">Update Container</button>
+                                <hr class="dropdown-divider">
+                                <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="build_container()">Build Vassar</button>
                             </div>
                         </div>
                     </div>
-
                 </nav>
-                <table class='table is-fullwidth'>
+
+                <table class='table is-fullwidth is-bordered'>
                     <thead>
-
                     <tr>
-                        <th colspan="5" scope="colgroup" style="text-align: center; border-right-width: 2px;">EC2 Instance</th>
-                        <th colspan="3" scope="colgroup" style="text-align: center; border-left-width: 2px;">Docker Container</th>
+                        <th colspan="5" scope="colgroup" style="text-align: center; font-weight: normal; font-size: 17px;">EC2 Instance</th>
+                        <th colspan="3" scope="colgroup" style="text-align: center; font-weight: normal; font-size: 17px;">Docker Container</th>
                     </tr>
-
                     <tr>
-                        <th></th>
-                        <th style="text-align: center;">Identifier</th>
-                        <th style="text-align: center;">State</th>
-                        <th style="text-align: center;">Status</th>
-                        <th style="text-align: center; border-right-width: 2px;">SSM Status</th>
+                        <th><input type="checkbox" v-model="selectAll" :disabled="cant_select_all"></th>
+                        <th>Identifier</th>
+                        <th>State</th>
+                        <th>Status</th>
+                        <th>SSM Status</th>
 
-                        <th style="text-align: center; border-left-width: 2px;">Status</th>
-                        <th style="text-align: center;">Problem</th>
+                        <th>Status</th>
+                        <th>Vassar</th>
+                        <th>Problem</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(container, idx) in currentStatus['vassar_containers']">
 
-
                         <td>
-                            <input type="checkbox" v-model="container['selected']" v-if="container['busy'] === false">
-                            <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" v-if="container['busy'] === true" alt="Loading...">
+                            <div v-if="container['init_status'] === 'INITIALIZING'">
+                                <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" alt="Loading...">
+                            </div>
+                            <div v-if="container['init_status'] !== 'INITIALIZING'">
+                                <input type="checkbox" v-model="container['selected']" v-if="container['busy'] === false">
+                                <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" v-if="container['busy'] === true" alt="Loading...">
+                            </div>
                         </td>
-
-
-
 
                         <td>{{ container['instance']['IDENTIFIER'] }}</td>
                         <td>{{ container['instance']['State'] }}</td>
                         <td>{{ container['instance']['Status'] }}</td>
-                        <td style="border-right-width: 2px;">{{ container['instance']['SSMStatus'] }}</td>
+                        <td>{{ container['instance']['SSMStatus'] }}</td>
 
-                        <td style="border-left-width: 2px;">{{get_container_status(container['container'])}}</td>
-                        <td>{{get_container_problem(container['container'])}}</td>
+                        <td>{{container['container']['Status']}}</td>
+                        <td>{{container['container']['VassarStatus']}}</td>
+                        <td>{{get_container_problem(container['container']['PROBLEM_ID'])}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -132,6 +134,7 @@
     import {AllProblemsQuery} from "../scripts/apollo-queries";
     import {wsTools} from "../scripts/websocket-tools";
     import * as _ from "lodash-es";
+    import Vue from "vue";
     export default {
         name: "control-panel-modal",
         data: function () {
@@ -145,10 +148,14 @@
                     'ga_containers': []
                 },
 
+                // --> Request Ledger
+                request_ledger: {},
+
                 // --> Queries
                 Problem: [],
 
                 // --> Action Dropdown
+                selectAll: false,
                 isDropdownActive: false,
 
                 // --> Timers
@@ -166,10 +173,49 @@
         computed: {
             ...mapGetters({
                 serviceStatus: 'getServiceStatus',
+                requestId: 'getRequestId',
+                requestResults: 'getRequestResults'
             }),
 
+
             // --> Action Logic
-            cant_start_container(){
+            cant_start_instances(){
+                // 1. A selection must be made
+                // 2. Every selection must be in the 'stopped' state
+                if(this.selected_instances.length === 0){
+                    return true;
+                }
+                for(let x = 0; x < this.selected_instances.length; x++) {
+                    let resource = this.selected_instances[x];
+                    let state = resource['instance']['State'];
+                    if(state !== 'stopped'){
+                        return true;
+                    }
+                    if(resource['busy'] === true){
+                        return true;
+                    }
+                }
+                return false
+            },
+            cant_stop_instances(){
+                // 1. A selection must be made
+                // 2. Every selection must be in the 'running' state
+                if(this.selected_instances.length === 0){
+                    return true;
+                }
+                for(let x = 0; x < this.selected_instances.length; x++) {
+                    let resource = this.selected_instances[x];
+                    let state = resource['instance']['State'];
+                    if(state !== 'running'){
+                        return true;
+                    }
+                    if(resource['busy'] === true){
+                        return true;
+                    }
+                }
+                return false
+            },
+            cant_run_container(){
                 // 1. A selection must be made
                 // 2. SSM Status must be 'Online' for each selection
                 // 3. Container ping obj must be empty
@@ -178,11 +224,13 @@
                 }
                 for(let x = 0; x < this.selected_instances.length; x++) {
                     let resource = this.selected_instances[x];
-                    let ssm_status = resource['instance']['SSMStatus'];
-                    if(ssm_status !== 'Online'){
+                    if(resource['instance']['SSMStatus'] !== 'Online'){
                         return true;
                     }
-                    if(resource['container'] !== 'empty'){
+                    if(resource['container']['Status'] === 'Running'){
+                        return true;
+                    }
+                    if(resource['busy'] === true){
                         return true;
                     }
                 }
@@ -201,61 +249,35 @@
                     if(ssm_status !== 'Online'){
                         return true;
                     }
-                    if(resource['container'] === 'empty'){
+                    if(resource['container']['Status'] !== 'Running'){
+                        return true;
+                    }
+                    if(resource['busy'] === true){
                         return true;
                     }
                 }
                 return false;
             },
-            cant_stop_instances(){
-                // 1. A selection must be made
-                // 2. Every selection must be in the 'running' state
-                if(this.selected_instances.length === 0){
-                    return true;
-                }
-                for(let x = 0; x < this.selected_instances.length; x++) {
-                    let resource = this.selected_instances[x];
-                    let state = resource['instance']['State'];
-                    if(state !== 'running'){
-                        return true;
-                    }
-                }
-                return false
-            },
-            cant_start_instances(){
-                // 1. A selection must be made
-                // 2. Every selection must be in the 'stopped' state
-                if(this.selected_instances.length === 0){
-                    return true;
-                }
-                for(let x = 0; x < this.selected_instances.length; x++) {
-                    let resource = this.selected_instances[x];
-                    let state = resource['instance']['State'];
-                    if(state !== 'stopped'){
-                        return true;
-                    }
-                }
-                return false
+            cant_select_all(){
+                let numKeys = Object.keys(this.request_ledger).length;
+                return numKeys !== 0;
             },
 
-            // --> Selected Instances
+
+            // --> All / Selected Instances
+            all_instances(){
+                let vassar_containers = this.currentStatus['vassar_containers'];
+                let ga_containers = this.currentStatus['ga_containers'];
+                return vassar_containers.concat(ga_containers)
+            },
             selected_instances(){
                 let instances = [];
-                for(let x = 0; x < this.currentStatus['vassar_containers'].length; x++){
-                    let resource = this.currentStatus['vassar_containers'][x];
-                    resource['type'] = 'vassar';
-                    if(resource['selected'] === true){
-                        instances.push(resource)
+                for(let x = 0; x < this.all_instances.length; x++){
+                    let instance = this.all_instances[x];
+                    if(instance['selected'] === true){
+                        instances.push(instance)
                     }
                 }
-                for(let x = 0; x < this.currentStatus['ga_containers'].length; x++){
-                    let resource = this.currentStatus['ga_containers'][x];
-                    resource['type'] = 'ga';
-                    if(resource['selected'] === true){
-                        instances.push(resource)
-                    }
-                }
-                console.log('--> SELECTED INSTANCES', instances.length);
                 return instances;
             },
             selected_instance_ids(){
@@ -273,9 +295,44 @@
                     }
                 }
                 return selections;
-            }
+            },
+
         },
         methods: {
+            // --> Getters
+            get_all_instances(){
+                let vassar_containers = this.currentStatus['vassar_containers'];
+                let ga_containers = this.currentStatus['ga_containers'];
+                return vassar_containers.concat(ga_containers)
+            },
+            get_selected_instances(){
+                let all_instances = this.get_all_instances();
+                let selected_instances = [];
+                for(let x = 0; x < all_instances.length; x++){
+                    let instance = all_instances[x];
+                    if(instance['selected'] === true){
+                        selected_instances.push(instance)
+                    }
+                }
+                return selected_instances;
+            },
+            get_selected_instance_ids(){
+                let selections = {
+                    'vassar': [],
+                    'ga': []
+                };
+                let selected_instances = this.get_selected_instances();
+                for(let x = 0; x < selected_instances.length; x++){
+                    let resource = selected_instances[x];
+                    if(resource['type'] === 'vassar'){
+                        selections['vassar'].push(resource['instance']['IDENTIFIER']);
+                    }
+                    else{
+                        selections['ga'].push(resource['instance']['IDENTIFIER']);
+                    }
+                }
+                return selections;
+            },
 
             
             // --> Modal Navigation
@@ -312,46 +369,84 @@
                 }
                 vassar_containers.sort(compare);
                 ga_containers.sort(compare);
+
+
                 for(let x = 0; x < vassar_containers.length; x++){
-                    vassar_containers[x]['selected'] = false;
-                    vassar_containers[x]['busy'] = false;
+                    let resource = vassar_containers[x]
+                    let identifier = resource['instance']['IDENTIFIER']
+                    resource['type'] = 'vassar'
+                    resource['selected'] = false;
+                    resource['busy'] = this.is_instance_busy(identifier);
                 }
+
+
                 for(let x = 0; x < ga_containers.length; x++){
+                    ga_containers[x]['type'] = 'ga'
                     ga_containers[x]['selected'] = false;
-                    ga_containers[x]['busy'] = false;
+                    ga_containers[x]['busy'] = this.is_instance_busy(identifier);
                 }
 
                 this.currentStatus = {
                     'vassar_containers': vassar_containers,
                     'ga_containers': ga_containers
                 };
+
+                this.selectAll = false;
+            },
+            get_instance(identifier){
+                let vassar_containers = this.currentStatus['vassar_containers'];
+                for(let x = 0; x < vassar_containers.length; x++){
+                    if(vassar_containers[x]['instance']['IDENTIFIER'] === identifier){
+                        return vassar_containers[x]
+                    }
+                }
+                let ga_containers = this.currentStatus['ga_containers'];
+                for(let x = 0; x < ga_containers.length; x++){
+                    if(ga_containers[x]['instance']['IDENTIFIER'] === identifier){
+                        return ga_containers[x]
+                    }
+                }
+                return null;
+            },
+            is_instance_busy(identifier){
+                let instance = this.get_instance(identifier)
+                if(instance === null){
+                    return false;
+                }
+                else{
+                    return instance['busy'];
+                }
+            },
+            is_instance_initializing(identifier){
+                let instance = this.get_instance(identifier)
+                if(instance === null){
+                    return false;
+                }
+                else{
+                    return instance['init_status'] === 'INITIALIZING';
+                }
             },
 
 
             // --> Modal Content
-            get_container_status(container){
-                if(container === 'empty'){
+            get_container_problem(problem_id){
+                if(problem_id === 'error'){
                     return 'Offline';
                 }
                 else{
-                    return container['status']['StringValue'];
-                }
-            },
-            get_container_problem(container){
-                if(container === 'empty'){
-                    return 'Offline';
-                }
-                else{
-                    return this.get_problem_name(container['PROBLEM_ID']['StringValue']);
+                    return this.get_problem_name(problem_id);
                 }
             },
             get_problem_name(problem_id){
-                if(problem_id !== ""){
+                if(problem_id !== "Booting" && problem_id !== "Offline"){
                     for(let x = 0; x < this.Problem.length; x++){
                         if(this.Problem[x].id === parseInt(problem_id)){
                             return this.Problem[x].name;
                         }
                     }
+                }
+                else{
+                    return problem_id;
                 }
                 return "-----";
             },
@@ -367,47 +462,111 @@
             // --> Action Methods
             start_instance(){
                 this.resource_msg('start_instance', 15);
-                this.set_selected_containers_loading();
+                this.set_selected_instances_busy();
             },
             stop_instance(){
                 this.resource_msg('stop_instance', 15);
-                this.set_selected_containers_loading();
+                this.set_selected_instances_busy();
             },
-            start_container(){
-                this.resource_msg('start_container', 15);
-                this.set_selected_containers_loading();
+            run_container(){
+                this.resource_msg('run_container', 15);
+                this.set_selected_instances_busy();
             },
             stop_container(){
                 this.resource_msg('stop_container', 15);
-                this.set_selected_containers_loading();
+                this.set_selected_instances_busy();
             },
-            pull_container(){
-                this.resource_msg('pull_container', 15);
-                this.set_selected_containers_loading();
+            update_container(){
+                this.resource_msg('update_container', 15);
+                this.set_selected_instances_busy();
             },
             build_container(){
                 this.resource_msg('build_container', 15);
-                this.set_selected_containers_loading();
+                this.set_selected_instances_busy();
             },
 
 
             // --> Action Methods Helpers
             resource_msg(command, timeout){
+
+                // --> Set action timeout
                 this.set_action_counter(timeout);
-                console.log('--> ', command, this.selected_instance_ids);
-                wsTools.websocket.send(JSON.stringify({msg_type: "resource_msg", command: command, instance_ids: this.selected_instance_ids}));
+
+                // --> 1. Generate request
+                let request_id = this.generate_msg_id();
+                let instance_ids = _.cloneDeep(this.selected_instance_ids);
+
+                // --> 2. Send request
+                console.log('--> RESOURCE REQUEST', request_id);
+                wsTools.websocket.send(JSON.stringify({msg_type: "resource_msg", command: command, instance_ids: instance_ids, request_id: request_id}));
+
+                // --> 3. Store in ledger
+                Vue.set(this.request_ledger, request_id, {
+                    exec_time: new Date().getTime() / 1000,
+                    instance_ids: instance_ids,
+                    command: command
+                });
+
+                // --> Clear all selections
+                this.selectAll = false;
             },
-            set_selected_containers_loading(){
-                let instances = this.selected_instances;
-                for(let x = 0; x < instances.length; instances++){
+            generate_msg_id(){
+                let length = 15;
+                let result           = '';
+                let characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let charactersLength = characters.length;
+                for ( let i = 0; i < length; i++ ) {
+                    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                }
+                return result;
+            },
+            set_selected_instances_busy(){
+                let instances = this.get_selected_instances();
+                for(let x = 0; x < instances.length; x++){
                     instances[x]['busy'] = true;
                     instances[x]['selected'] = false;
                 }
             },
+            set_instances_ready(identifiers){
+                let vassar_containers = this.currentStatus['vassar_containers'];
+                for(let x = 0; x < vassar_containers.length; x++){
+                    if(identifiers.includes(vassar_containers[x]['instance']['IDENTIFIER'])){
+                        vassar_containers[x]['busy'] = false;
+                    }
+                }
+                let ga_containers = this.currentStatus['ga_containers'];
+                for(let x = 0; x < ga_containers.length; x++){
+                    if(identifiers.includes(ga_containers[x]['instance']['IDENTIFIER'])){
+                        ga_containers[x]['busy'] = false;
+                    }
+                }
+            },
+            resource_msg_response(request_id, result) {
+
+                // --> 1. Set Instances Ready
+                let vassar_containers = result['vassar'];
+                let ga_containers = result['ga'];
+                let all_instances = vassar_containers.concat(ga_containers);
+                let all_identifiers = []
+                for(let x = 0; x < all_instances.length; x++){
+                    let result = all_instances[x]['result'];
+                    all_identifiers.push(all_instances[x]['identifier']);
+                }
+                this.set_instances_ready(all_identifiers);
+
+                // --> 2. Remove request from ledger
+                if(request_id in this.request_ledger){
+                    // delete this.request_ledger[request_id];
+                    Vue.delete(this.request_ledger, request_id);
+                }
+
+                // --> 3. Send ping
+                this.send_ping();
+            },
 
 
             // --> Timers
-            set_update_counter(){
+            reset_update_counter(){
                 if(this.lastUpdateCountTimer !== null){
                     clearTimeout(this.lastUpdateCountTimer);
                 }
@@ -426,15 +585,39 @@
                 this.actionCount = time;
                 this.isDropdownActive = false;
             },
-
         },
         watch: {
 
-            // --> Triggered by service ping
+            // --> Triggered by service ping, resource_msg
             serviceStatus() {
-                this.set_update_counter()
-                this.reload_module()
+                this.reset_update_counter();
+                this.set_refresh_counter(0);
+                this.reload_module();
             },
+            requestId(){
+                if(this.requestId === null){
+                    return;
+                }
+                console.log('--> RESOURCE RESPONSE', this.requestId);
+                console.log(this.requestResults);
+
+                // --> Handle response on a 3 sec timeout
+                let request_id = _.cloneDeep(this.requestId);
+                let results = _.cloneDeep(this.requestResults);
+                setTimeout(() => this.resource_msg_response(request_id, results), 5000);
+            },
+
+            // --> Select All
+            selectAll(){
+                let instances = this.get_all_instances()
+                for(let x = 0; x < instances.length; x++){
+                    let instance = instances[x];
+                    if(instance['busy'] === false){
+                        instance['selected'] = this.selectAll;
+                    }
+                }
+            },
+
 
             // --> Timers
             lastUpdateCount: {
@@ -442,7 +625,7 @@
                     if (value > 0) {
                         this.lastUpdateCountTimer = setTimeout(() => {
                             this.lastUpdateCount--;
-                        }, 1000);
+                        }, 1300);
                     }
                 },
                 immediate: true // This ensures the watcher is triggered upon creation
@@ -452,7 +635,7 @@
                     if (value > 0) {
                         this.refreshCountTimer = setTimeout(() => {
                             this.refreshCount--;
-                        }, 1000);
+                        }, 1300);
                     }
                 },
                 immediate: true // This ensures the watcher is triggered upon creation
@@ -462,7 +645,7 @@
                     if (value > 0) {
                         this.actionCountTimer = setTimeout(() => {
                             this.actionCount--;
-                        }, 1000);
+                        }, 1300);
                     }
                 },
                 immediate: true

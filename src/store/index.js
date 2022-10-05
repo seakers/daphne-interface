@@ -177,12 +177,29 @@ export default new Vuex.Store({
                 }, 45*1000);
                 commit('setGARunningPingId', pingId);
             }
+
+
+
+
+            if (received_info['type'] === 'resource_msg_response') {
+                console.log("Resource Response!", received_info);
+                commit('setRequestResults', received_info['results']);
+                commit('setRequestId', received_info['request_id']);
+            }
             if (received_info['type'] === 'ping') {
-                console.log("Ping back!", received_info);
                 if('status' in received_info){
+                    console.log("Service Ping back!", received_info);
                     commit('setServiceStatus', received_info['status']);
+                    if('ping_id' in received_info){
+                        commit('setPingId', received_info['ping_id']);
+                    }
+                }
+                else{
+                    console.log("Ping back!", received_info);
                 }
             }
+
+
         },
 
         async stopBackgroundTasks({ dispatch }) {

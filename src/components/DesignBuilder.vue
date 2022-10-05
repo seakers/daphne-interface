@@ -90,9 +90,19 @@
                 }
             },
             canEvaluate() {
-                let evaluator_available = this.serviceStatus['vassar_containers'].length > 0;
+                let containers_available = false;
+                let vassar_containers = this.serviceStatus['vassar_containers'];
+                for(let x = 0; x < vassar_containers.length; x++){
+                    let container = vassar_containers[x];
+                    let vassar_status = container['container']['VassarStatus'];
+                    let problem_id = container['container']['PROBLEM_ID'];
+                    if(vassar_status === 'RUNNING' && parseInt(problem_id) === this.problemId){
+                        containers_available = true;
+                        break;
+                    }
+                }
 
-                return this.isLoggedIn && evaluator_available && !this.readOnlyDataset;
+                return this.isLoggedIn && containers_available && !this.readOnlyDataset;
             },
             readOnlyDataset() {
                 if (this.currentDatasetInfo && this.currentDatasetInfo.length > 0) {

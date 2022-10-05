@@ -1,5 +1,6 @@
 <template>
-    <div class="problem-picker">
+    <div class="problem-picker" style="padding-bottom: 0px; padding-top: 0px;">
+        <hr>
         <form>
             <!-- GROUP -->
             <div class="problem">
@@ -43,18 +44,17 @@
                 </div>
             </div>
 
+            <nav class="level">
+                <button class="button is-link" style="width: 48%" v-on:click.prevent="changeProblem" v-bind:disabled="!changedSelection">Load</button>
+                <button class="button is-link is-right" style="width: 48%" v-on:click.prevent="cloneDataset">Copy</button>
+            </nav>
 
-            <div class="field">
-                <div class="control">
-                    <button class="button is-link" v-on:click.prevent="changeProblem" v-bind:disabled="!changedSelection">Load</button>
-                </div>
-            </div>
-
-            <div class="field">
-                <div class="control">
-                    <button class="button is-link" v-on:click.prevent="cloneDataset">Copy</button>
-                </div>
-            </div>
+<!--            <div class="field">-->
+<!--                <div class="control">-->
+<!--                    <button class="button is-link" v-on:click.prevent="changeProblem" v-bind:disabled="!changedSelection">Load</button>-->
+<!--                    <button class="button is-link" v-on:click.prevent="cloneDataset">Copy</button>-->
+<!--                </div>-->
+<!--            </div>-->
 
 <!--            <div class="field">-->
 <!--                <div class="control">-->

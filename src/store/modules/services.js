@@ -17,6 +17,10 @@ const state = {
         'vassar_containers': [],
         'ga_containers': []
     },
+
+    requestId: null,
+    pingId: null,
+    requestResults: { 'ga': [], 'vassar': [] }
 };
 
 const initialState = _.cloneDeep(state);
@@ -25,6 +29,15 @@ const initialState = _.cloneDeep(state);
 const getters = {
     getServiceStatus(state){
         return state.serviceStatus;
+    },
+    getPingId(state){
+        return state.pingId;
+    },
+    getRequestId(state){
+        return state.requestId;
+    },
+    getRequestResults(state){
+        return state.requestResults;
     }
 };
 
@@ -66,8 +79,16 @@ const mutations = {
 
     // --> Services
     setServiceStatus(state, serviceStatus){
-        console.log('--> SETTING SERVICE STATUS:', serviceStatus);
         state.serviceStatus = serviceStatus;
+    },
+    setPingId(state, pingId){
+        state.pingId = pingId;
+    },
+    setRequestId(state, requestId){
+        state.requestId = requestId;
+    },
+    setRequestResults(state, requestResults){
+        state.requestResults = requestResults;
     },
 };
 
