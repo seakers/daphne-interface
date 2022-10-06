@@ -39,7 +39,7 @@
                                 <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="stop_container()">Stop Container</button>
                                 <button class="button dropdown-item" style="border: none;" :disabled="cant_run_container" v-on:click="update_container()">Update Container</button>
                                 <hr class="dropdown-divider">
-                                <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="build_container()">Build Vassar</button>
+                                <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="build_vassar()">Build Vassar</button>
                             </div>
                         </div>
                     </div>
@@ -480,8 +480,8 @@
                 this.resource_msg('update_container', 15);
                 this.set_selected_instances_busy();
             },
-            build_container(){
-                this.resource_msg('build_container', 15);
+            build_vassar(){
+                this.resource_msg('build_vassar', 15);
                 this.set_selected_instances_busy();
             },
 
