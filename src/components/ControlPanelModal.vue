@@ -1,7 +1,6 @@
 <template>
     <div class="message-body">
 
-
         <!--TABS-->
         <div class="tabs" style="min-height: 41px;">
             <ul>
@@ -10,13 +9,12 @@
             </ul>
         </div>
 
-
-        <!--DESIGN EVALUATORS-->
-        <div class="evaluator-body" v-show="selected_tab === 'vassar'">
+        <!--COMBINED-->
+        <div class="evaluator-body">
             <div class="box">
                 <nav class="level">
                     <div>
-                        <span style="font-size: large; font-weight: bold; color: black">Design Evaluator Instances ({{currentStatus['vassar_containers'].length}})</span>
+                        <span style="font-size: large; font-weight: bold; color: black">{{get_display_title()}} ({{tab_instances.length}})</span>
                         <br>
                         <span style="font-size: small">Last Ping: {{get_time_elapsed()}}</span>
                     </div>
@@ -39,83 +37,60 @@
                                 <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="stop_container()">Stop Container</button>
                                 <button class="button dropdown-item" style="border: none;" :disabled="cant_run_container" v-on:click="update_container()">Update Container</button>
                                 <hr class="dropdown-divider">
-                                <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_container" v-on:click="build_vassar()">Build Vassar</button>
+                                <div v-if="selected_tab === 'vassar'">
+                                    <button class="button dropdown-item" style="border: none;" :disabled="cant_msg_vassar" v-on:click="build_vassar()">Build Vassar</button>
+                                </div>
+                                <div v-if="selected_tab === 'ga'">
+                                    <button class="button dropdown-item" style="border: none;" :disabled="cant_start_ga" v-on:click="start_ga()">Start GA</button>
+                                    <button class="button dropdown-item" style="border: none;" :disabled="cant_stop_ga" v-on:click="stop_ga()">Stop GA</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </nav>
-
                 <table class='table is-fullwidth is-bordered'>
                     <thead>
-                    <tr>
-                        <th colspan="5" scope="colgroup" style="text-align: center; font-weight: normal; font-size: 17px;">EC2 Instance</th>
-                        <th colspan="3" scope="colgroup" style="text-align: center; font-weight: normal; font-size: 17px;">Docker Container</th>
-                    </tr>
-                    <tr>
-                        <th><input type="checkbox" v-model="selectAll" :disabled="cant_select_all"></th>
-                        <th>Identifier</th>
-                        <th>State</th>
-                        <th>Status</th>
-                        <th>SSM Status</th>
+                        <tr>
+                            <th colspan="6" scope="colgroup" style="text-align: center; font-weight: normal; font-size: 17px;">EC2 Instance</th>
+                            <th colspan="3" scope="colgroup" style="text-align: center; font-weight: normal; font-size: 17px;">Docker Container</th>
+                        </tr>
+                        <tr>
+                            <th><input type="checkbox" v-model="selectAll" :disabled="cant_select_all"></th>
+                            <th>Identifier</th>
+                            <th>Ipv4</th>
+                            <th>State</th>
+                            <th>Status</th>
+                            <th>SSM Status</th>
 
-                        <th>Status</th>
-                        <th>Vassar</th>
-                        <th>Problem</th>
-                    </tr>
+                            <th>Status</th>
+                            <th>Algorithm</th>
+                            <th>Problem</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="(container, idx) in currentStatus['vassar_containers']">
-
-                        <td>
-                            <div v-if="container['init_status'] === 'INITIALIZING'">
-                                <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" alt="Loading...">
-                            </div>
-                            <div v-if="container['init_status'] !== 'INITIALIZING'">
-                                <input type="checkbox" v-model="container['selected']" v-if="container['busy'] === false">
-                                <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" v-if="container['busy'] === true" alt="Loading...">
-                            </div>
-                        </td>
-
-                        <td>{{ container['instance']['IDENTIFIER'] }}</td>
-                        <td>{{ container['instance']['State'] }}</td>
-                        <td>{{ container['instance']['Status'] }}</td>
-                        <td>{{ container['instance']['SSMStatus'] }}</td>
-
-                        <td>{{container['container']['Status']}}</td>
-                        <td>{{container['container']['VassarStatus']}}</td>
-                        <td>{{get_container_problem(container['container']['PROBLEM_ID'])}}</td>
-                    </tr>
+                        <tr v-for="(container, idx) in tab_instances">
+                            <td>
+                                <div v-if="container['init_status'] === 'INITIALIZING'">
+                                    <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" alt="Loading...">
+                                </div>
+                                <div v-if="container['init_status'] !== 'INITIALIZING'">
+                                    <input type="checkbox" v-model="container['selected']" v-if="container['busy'] === false">
+                                    <img src="assets/img/loader.svg" style="display: block; margin: auto;" height="25" width="25" v-if="container['busy'] === true" alt="Loading...">
+                                </div>
+                            </td>
+                            <td>{{ container['instance']['IDENTIFIER'] }}</td>
+                            <td>{{ container['instance']['Ipv4'] }}</td>
+                            <td>{{ container['instance']['State'] }}</td>
+                            <td>{{ container['instance']['Status'] }}</td>
+                            <td>{{ container['instance']['SSMStatus'] }}</td>
+                            <td>{{container['container']['Status']}}</td>
+                            <td>{{container['container']['VassarStatus']}}</td>
+                            <td>{{get_container_problem(container['container']['PROBLEM_ID'])}}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
-
-        <!--GENETIC ALGORITHMS-->
-        <div class="ga-body"  v-show="selected_tab === 'ga'">
-            <div class="box">
-                <table class='table'>
-                    <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>Identifier</th>
-                        <th>Status</th>
-                        <th>Problem</th>
-                        <th>Control</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(container, idx) in currentStatus['ga_containers']">
-                        <td>{{ idx }}</td>
-                        <td>{{ container['labels']['IDENTIFIER'] }}</td>
-                        <td>{{ container['status']['StringValue'] }}</td>
-                        <td>{{ get_problem_name(container['PROBLEM_ID']['StringValue']) }}</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
 
         <!--BUTTONS: CLOSE / RELOAD -->
         <div style="padding-top: 20px;">
@@ -144,8 +119,8 @@
 
                 // --> Resource Info
                 currentStatus: {
-                    'vassar_containers': [],
-                    'ga_containers': []
+                    'vassar': [],
+                    'ga': []
                 },
 
                 // --> Request Ledger
@@ -239,7 +214,6 @@
             cant_stop_container(){
                 // 1. A selection must be made
                 // 2. SSM Status must be 'Online' for each selection
-                // 3. Container ping obj must not be empty
                 if(this.selected_instances.length === 0){
                     return true;
                 }
@@ -258,22 +232,75 @@
                 }
                 return false;
             },
+            cant_msg_vassar(){
+                return this.cant_stop_container;
+            },
+            cant_start_ga(){
+                if(this.selected_instances.length === 0){
+                    return true;
+                }
+                for(let x = 0; x < this.selected_instances.length; x++) {
+                    let resource = this.selected_instances[x];
+                    let ssm_status = resource['instance']['SSMStatus'];
+                    if(ssm_status !== 'Online'){
+                        return true;
+                    }
+                    if(resource['container']['Status'] !== 'Running'){
+                        return true;
+                    }
+                    if(resource['container']['VassarStatus'] !== 'READY'){
+                        return true;
+                    }
+                    if(resource['busy'] === true){
+                        return true;
+                    }
+                }
+                return false;
+            },
+            cant_stop_ga(){
+                if(this.selected_instances.length === 0){
+                    return true;
+                }
+                for(let x = 0; x < this.selected_instances.length; x++) {
+                    let resource = this.selected_instances[x];
+                    let ssm_status = resource['instance']['SSMStatus'];
+                    if(ssm_status !== 'Online'){
+                        return true;
+                    }
+                    if(resource['container']['Status'] !== 'Running'){
+                        return true;
+                    }
+                    if(resource['container']['VassarStatus'] !== 'RUNNING'){
+                        return true;
+                    }
+                    if(resource['busy'] === true){
+                        return true;
+                    }
+                }
+                return false;
+            },
             cant_select_all(){
                 let numKeys = Object.keys(this.request_ledger).length;
                 return numKeys !== 0;
             },
 
 
-            // --> All / Selected Instances
+            // --> All / Selected Instances Computed
             all_instances(){
-                let vassar_containers = this.currentStatus['vassar_containers'];
-                let ga_containers = this.currentStatus['ga_containers'];
+                let vassar_containers = this.currentStatus['vassar'];
+                let ga_containers = this.currentStatus['ga'];
+                if(vassar_containers.length === 0 && ga_containers.length === 0){
+                    return [];
+                }
                 return vassar_containers.concat(ga_containers)
+            },
+            tab_instances(){
+                return this.currentStatus[this.selected_tab];
             },
             selected_instances(){
                 let instances = [];
-                for(let x = 0; x < this.all_instances.length; x++){
-                    let instance = this.all_instances[x];
+                for(let x = 0; x < this.tab_instances.length; x++){
+                    let instance = this.tab_instances[x];
                     if(instance['selected'] === true){
                         instances.push(instance)
                     }
@@ -296,13 +323,12 @@
                 }
                 return selections;
             },
-
         },
         methods: {
-            // --> Getters
+            // --> All / Selected Instances Getters
             get_all_instances(){
-                let vassar_containers = this.currentStatus['vassar_containers'];
-                let ga_containers = this.currentStatus['ga_containers'];
+                let vassar_containers = this.currentStatus['vassar'];
+                let ga_containers = this.currentStatus['ga'];
                 return vassar_containers.concat(ga_containers)
             },
             get_selected_instances(){
@@ -333,6 +359,15 @@
                 }
                 return selections;
             },
+            get_display_title(){
+                if(this.selected_tab === 'vassar'){
+                    return 'Design Evaluator Instances';
+                }
+                else if(this.selected_tab === 'ga'){
+                    return 'Genetic Algorithm Instances';
+                }
+                return '';
+            },
 
             
             // --> Modal Navigation
@@ -355,8 +390,8 @@
             reload_module(){
                 console.log("--> RELOAD", this.serviceStatus);
                 this.$apollo.queries.Problem.refetch();
-                let vassar_containers = _.cloneDeep(this.serviceStatus['vassar_containers']);
-                let ga_containers = _.cloneDeep(this.serviceStatus['ga_containers']);
+                let vassar_containers = _.cloneDeep(this.serviceStatus['vassar']);
+                let ga_containers = _.cloneDeep(this.serviceStatus['ga']);
                 // --> Compare function
                 function compare(a, b) {
                     if ( a['instance']['IDENTIFIER'] < b['instance']['IDENTIFIER'] ){
@@ -381,26 +416,27 @@
 
 
                 for(let x = 0; x < ga_containers.length; x++){
-                    ga_containers[x]['type'] = 'ga'
-                    ga_containers[x]['selected'] = false;
-                    ga_containers[x]['busy'] = this.is_instance_busy(identifier);
+                    let resource = ga_containers[x]
+                    let identifier = resource['instance']['IDENTIFIER']
+                    resource['type'] = 'ga'
+                    resource['selected'] = false;
+                    resource['busy'] = this.is_instance_busy(identifier);
                 }
 
                 this.currentStatus = {
-                    'vassar_containers': vassar_containers,
-                    'ga_containers': ga_containers
+                    'vassar': vassar_containers,
+                    'ga': ga_containers
                 };
-
                 this.selectAll = false;
             },
             get_instance(identifier){
-                let vassar_containers = this.currentStatus['vassar_containers'];
+                let vassar_containers = this.currentStatus['vassar'];
                 for(let x = 0; x < vassar_containers.length; x++){
                     if(vassar_containers[x]['instance']['IDENTIFIER'] === identifier){
                         return vassar_containers[x]
                     }
                 }
-                let ga_containers = this.currentStatus['ga_containers'];
+                let ga_containers = this.currentStatus['ga'];
                 for(let x = 0; x < ga_containers.length; x++){
                     if(ga_containers[x]['instance']['IDENTIFIER'] === identifier){
                         return ga_containers[x]
@@ -484,6 +520,14 @@
                 this.resource_msg('build_vassar', 15);
                 this.set_selected_instances_busy();
             },
+            start_ga(){
+                this.resource_msg('start_ga', 15);
+                this.set_selected_instances_busy();
+            },
+            stop_ga(){
+                this.resource_msg('stop_ga', 15);
+                this.set_selected_instances_busy();
+            },
 
 
             // --> Action Methods Helpers
@@ -528,13 +572,13 @@
                 }
             },
             set_instances_ready(identifiers){
-                let vassar_containers = this.currentStatus['vassar_containers'];
+                let vassar_containers = this.currentStatus['vassar'];
                 for(let x = 0; x < vassar_containers.length; x++){
                     if(identifiers.includes(vassar_containers[x]['instance']['IDENTIFIER'])){
                         vassar_containers[x]['busy'] = false;
                     }
                 }
-                let ga_containers = this.currentStatus['ga_containers'];
+                let ga_containers = this.currentStatus['ga'];
                 for(let x = 0; x < ga_containers.length; x++){
                     if(identifiers.includes(ga_containers[x]['instance']['IDENTIFIER'])){
                         ga_containers[x]['busy'] = false;
@@ -608,8 +652,22 @@
             },
 
             // --> Select All
+            selected_tab(){
+                this.selectAll = false;
+                let instances = this.get_all_instances();
+                for(let x = 0; x < instances.length; x++){
+                    let instance = instances[x];
+                    instance['selected'] = false;
+                }
+            },
             selectAll(){
-                let instances = this.get_all_instances()
+                let instances = [];
+                if(this.selected_tab === 'vassar'){
+                    instances = this.currentStatus['vassar']
+                }
+                else if(this.selected_tab === 'ga'){
+                    instances = this.currentStatus['ga']
+                }
                 for(let x = 0; x < instances.length; x++){
                     let instance = instances[x];
                     if(instance['busy'] === false){

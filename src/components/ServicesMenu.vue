@@ -118,7 +118,7 @@ import * as _ from "lodash-es";
             }),
             available_design_evaluators(){
                 let count = 0;
-                let vassar_containers = this.serviceStatus['vassar_containers'];
+                let vassar_containers = this.serviceStatus['vassar'];
                 for(let x = 0; x < vassar_containers.length; x++){
                     let container = vassar_containers[x];
                     let vassar_status = container['container']['VassarStatus'];
@@ -130,7 +130,17 @@ import * as _ from "lodash-es";
                 return count;
             },
             running_genetic_algorithms(){
-                return 0
+                let count = 0;
+                let containers = this.serviceStatus['ga'];
+                for(let x = 0; x < containers.length; x++){
+                    let container = containers[x];
+                    let container_status = container['container']['VassarStatus'];
+                    let problem_id = container['container']['PROBLEM_ID'];
+                    if(container_status === 'RUNNING' && parseInt(problem_id) === this.problemId){
+                        count += 1;
+                    }
+                }
+                return count;
             },
 
             runDiversifier: {

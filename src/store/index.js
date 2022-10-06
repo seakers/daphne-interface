@@ -186,7 +186,9 @@ export default new Vuex.Store({
                 commit('setRequestResults', received_info['results']);
                 commit('setRequestId', received_info['request_id']);
             }
+
             if (received_info['type'] === 'ping') {
+
                 if('status' in received_info){
                     console.log("Service Ping back!", received_info);
                     commit('setServiceStatus', received_info['status']);
@@ -194,6 +196,7 @@ export default new Vuex.Store({
                         commit('setPingId', received_info['ping_id']);
                     }
                 }
+
                 else{
                     console.log("Ping back!", received_info);
                 }

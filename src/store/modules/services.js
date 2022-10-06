@@ -14,8 +14,8 @@ const state = {
 
     // --> Services (ping results)
     serviceStatus: {
-        'vassar_containers': [],
-        'ga_containers': []
+        'vassar': [],
+        'ga': []
     },
 
     requestId: null,

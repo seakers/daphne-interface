@@ -91,7 +91,7 @@
             },
             canEvaluate() {
                 let containers_available = false;
-                let vassar_containers = this.serviceStatus['vassar_containers'];
+                let vassar_containers = this.serviceStatus['vassar'];
                 for(let x = 0; x < vassar_containers.length; x++){
                     let container = vassar_containers[x];
                     let vassar_status = container['container']['VassarStatus'];

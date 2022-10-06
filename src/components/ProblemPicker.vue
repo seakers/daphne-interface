@@ -210,7 +210,7 @@
                 this.$store.commit('activateModal', 'SaveDatasetModal');
             },
             fullDatasetName(dataset) {
-                let fullName = dataset.name;
+                let fullName = dataset.name + ':' + dataset.id;
                 if (dataset.user_id === null) {
                     if (dataset.Group === null) {
                         fullName += " - Global (read only)";
