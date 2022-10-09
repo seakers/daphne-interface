@@ -1,3 +1,23 @@
 # Daphne Interface
 
-This is a static project with the only objective of serving as an integrated interface for Daphne, so it can be deployed directly to the same server in which the Daphne Brain is running
+
+
+## AWS Deployment
+
+This static site is hosted on an AWS S3 bucket...
+
+
+### Commands
+
+
+##### Deploy
+
+`docker-compose up -d`
+
+`dshell interface`
+
+`npm run build:prod`
+
+`cd aws`
+
+`python3 deploy.py`
