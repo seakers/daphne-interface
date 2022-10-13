@@ -38,7 +38,8 @@ def commit():
                 content_type = 'image/svg'
 
             print('--> COPY:', remote_path, content_type)
-            client.upload_file(local_path, 'daphne-dev-bucket', remote_path, ExtraArgs={"ContentType": content_type})
+            # client.upload_file(local_path, 'daphne-dev-bucket', remote_path, ExtraArgs={"ContentType": content_type})
+            client.upload_file(local_path, 'daphne-dev-bucket.selva-research.com', remote_path, ExtraArgs={"ContentType": content_type})
 
     return 0
 
