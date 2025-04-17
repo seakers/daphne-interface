@@ -37,7 +37,7 @@
                     let reqData = new FormData(form);
                     let dataResponse = await fetchPost(API_URL + 'eoss/data/save-data', reqData);
                     if (dataResponse.ok) {
-                        this.$store.dispatch('setProblemName', this.$store.problem.problemName);
+                        this.$store.dispatch('setProblemName', this.$store.state.problem.problemName);
                         this.$emit('close-modal');
                     }
                     else {

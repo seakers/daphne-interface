@@ -21,6 +21,7 @@
     import DataMining from './DataMining';
     import EOSSFilter from './EOSSFilter';
     import FeatureApplication from './FeatureApplication';
+    import HypothesisTester from './HypothesisTester';
     import TimelinePlot from "./TimelinePlot";
 
     let sizeScale = [
@@ -44,6 +45,7 @@
             DataMining,
             EOSSFilter,
             FeatureApplication,
+            HypothesisTester,
             TimelinePlot
         },
         computed: {

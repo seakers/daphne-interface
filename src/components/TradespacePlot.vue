@@ -2,7 +2,7 @@
     <div class="column">
         <section class="panel">
             <p class="panel-heading">
-                Tradespace exploration |
+                Tradespace explorationn |
                 Number of designs: {{ numPoints }} | Number of targeted designs: {{ numSelectedPoints }}
             </p>
             <div class="panel-block" id="main-plot-block">
@@ -90,6 +90,7 @@
                 highlightedArchs: state => state.tradespacePlot.highlightedArchs,
                 gaArchs: state => state.tradespacePlot.gaArchs,
                 hiddenArchs: state => state.tradespacePlot.hiddenArchs,
+                newlyEvaluatedArchs: state => state.tradespacePlot.newlyEvaluatedArchs || [],
             }),
             ...mapGetters({
                 numPoints: 'getNumPoints',
@@ -235,6 +236,7 @@
 
                 // Canvas related functions
                 this.drawPoints(this.context, false);
+                this.createLegend(svg);
 
                 // Restore old zoom values if they are there
                 gX.call(xAxis.scale(this.transform.rescaleX(xScale)));
@@ -391,6 +393,74 @@
                 catch(e) {
                     console.error('Networking error:', e);
                 }
+            },
+
+            createLegend(svg) {
+                svg.select('.plot-legend').remove();
+
+                let legendDiv = document.getElementById('legend-container');
+                
+                if (!legendDiv) {
+                    legendDiv = document.createElement('div');
+                    legendDiv.id = 'legend-container';
+                    legendDiv.className = 'card';
+                    legendDiv.style.marginTop = '10px';
+                    
+                    const selectionsBlock = document.getElementById('selections-block');
+                    selectionsBlock.appendChild(legendDiv);
+                }
+                
+                // Clear any existing content
+                legendDiv.innerHTML = '';
+                
+                // Create the header
+                const header = document.createElement('header');
+                header.className = 'card-header';
+                const title = document.createElement('p');
+                title.className = 'card-header-title';
+                title.textContent = 'Designs Legend';
+                header.appendChild(title);
+                legendDiv.appendChild(header);
+                
+                // Create the content area
+                const content = document.createElement('div');
+                content.className = 'card-content is-small';
+                legendDiv.appendChild(content);
+                
+                // Define legend items
+                const legendItems = [
+                    { color: 'rgba(110,110,110,255)', label: 'Designs' },
+                    { color: 'rgba(25,186,215,255)', label: 'Selected Designs' },
+                    { color: 'rgba(248,101,145,255)', label: 'Filtered Designs' },
+                    { color: 'rgba(163,64,240,255)', label: 'Overlapping Designs' },
+                    { color: 'rgba(116,255,110,255)', label: 'Hovered Designs' },
+                    { color: 'rgba(255,0,0,255)', label: 'Current Selected Design' },
+                    { color: 'rgba(0,0,255,255)', label: 'GA' }
+                ];
+                
+                // Add items to legend
+                legendItems.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.style.display = 'flex';
+                    itemDiv.style.alignItems = 'center';
+                    itemDiv.style.marginBottom = '5px';
+                    
+                    const colorBox = document.createElement('span');
+                    colorBox.style.display = 'inline-block';
+                    colorBox.style.width = '15px';
+                    colorBox.style.height = '15px';
+                    colorBox.style.backgroundColor = item.color;
+                    colorBox.style.borderRadius = '50%';
+                    colorBox.style.marginRight = '8px';
+                    
+                    const label = document.createElement('span');
+                    label.textContent = item.label;
+                    label.style.fontSize = '12px';
+                    
+                    itemDiv.appendChild(colorBox);
+                    itemDiv.appendChild(label);
+                    content.appendChild(itemDiv);
+                });
             }
         },
 
@@ -548,7 +618,9 @@
                                 });
                             }
 
+
                             if (selectionUpdated) {
+                                // console.log('Selected archs:', Array.from(newSelectedArchs));
                                 self.$store.commit('updateSelectedArchs', Array.from(newSelectedArchs));
                             }
                         }
@@ -580,12 +652,16 @@
             },
 
             currentExpression: function(val, oldVal) {
+                console.log('Current expression:', val);
                 let featureExpression = val;
                 this.$store.commit('clearHighlightedArchs');
 
                 // If filter expression is not empty, do something
                 let highlightedArchsSet = new Set();
                 if (featureExpression !== '' || featureExpression) {
+                    console.log('Filtering with expression:', featureExpression);
+                    console.log('Plot data:', this.plotData);
+
                     this.plotData.forEach((point, index) => {
                         if (this.$store.state.filter.processFilterExpression(point, featureExpression, '&&')) {
                             highlightedArchsSet.add(point.id);

@@ -31,6 +31,7 @@
                 for (let functionality of this.allAvailableFunctionalities) {
                     allAvailableFuncs.push(functionality.name);
                 }
+                //console.log("availableFunctionalities", this.availableFunctionalities, allAvailableFuncs)
 
                 // Filter by the problem
                 let funcFilter = _.difference(allAvailableFuncs, this.problemFunctionalities);
@@ -42,6 +43,8 @@
                     funcFilter = _.union(funcFilter, experimentFuncFilter);
                 }
 
+                console.log("funcFilter", funcFilter)
+
                 // Create the list of avaliable functionalities
                 let functionalities = [];
                 for (let functionality of this.allAvailableFunctionalities) {
@@ -49,6 +52,8 @@
                         functionalities.push(functionality);
                     }
                 }
+
+                console.log("final functionalities", functionalities)
 
                 return functionalities;
             }

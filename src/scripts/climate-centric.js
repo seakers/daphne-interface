@@ -25,6 +25,7 @@ export default {
         'DataMining',
         'EOSSFilter',
         'FeatureApplication',
+        'HypothesisTester',
         'OrbitInstrInfo',
         'AvailableCommands',
         'CommandsInformation',
@@ -33,7 +34,7 @@ export default {
         'DesignBuilder',
         'OrbitInstrInfo',
         'AvailableCommands',
-        'CommandsInformation'
+        'CommandsInformation',
     ],
     async initFunction(problemName) {
         let extra = {};

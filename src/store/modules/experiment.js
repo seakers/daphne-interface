@@ -66,16 +66,18 @@ const state = {
                 'Details',
                 'BackgroundSearch',
                 'Diversifier',
-                'LiveSuggestions'
+                'LiveSuggestions',
+                'HypothesisTester',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
                 'DataMining',
+                'HypothesisTester',
                 'EOSSFilter',
                 'FeatureApplication',
                 'OrbitInstrInfo',
                 'AvailableCommands',
-                'CommandsInformation'
+                'CommandsInformation',
             ],
             restrictedQuestions: {
                 engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
@@ -390,6 +392,7 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'DesignBuilder',
                 'DataMining',
                 'EOSSFilter',
+                'HypothesisTester',
                 'FeatureApplication',
                 'OrbitInstrInfo',
                 'AvailableCommands',
@@ -405,6 +408,7 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'OrbitInstrInfo',
                 'AvailableCommands',
                 'CommandsInformation',
+                'HypothesisTester',
             ],
             restrictedQuestions: {
                 engineer: ['2000', '2001', '2002', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017'],
@@ -424,10 +428,12 @@ instrument-orbits pairings appear most often in the best architectures you can f
                 'AvailableCommands',
                 'BackgroundSearch',
                 'Diversifier',
-                'LiveSuggestions'
+                'LiveSuggestions',
+                'HypothesisTester',
             ],
             shownFunctionalities: [
                 'DesignBuilder',
+                'HypothesisTester',
                 'OrbitInstrInfo',
                 'AvailableCommands',
             ],

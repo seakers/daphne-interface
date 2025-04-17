@@ -37,6 +37,16 @@
                     <a class="button is-link" v-bind:href="downloadUrl">Download</a>
                 </div>
             </div>
+
+            <!-- New button for advanced configuration -->
+            <div class="field">
+                <div class="control">
+                    <a class="button is-primary" :href="'problem.html?problem=' + encodeURIComponent(problemName)"
+                    target="_blank" >
+                        Problem Formulation
+                    </a>
+                </div>
+            </div>
         </form>
     </div>
 </template>
@@ -80,6 +90,15 @@
             }
         },
         methods: {
+            navigateToAdvancedConfig() {
+                // If using Vue Router directly in component
+                if (this.$router) {
+                    this.$router.push(`/advanced-config/${encodeURIComponent(this.problemName)}`);
+                } else {
+                    // Fallback to direct navigation if router is not available
+                    window.location.href = `/#/advanced-config/${encodeURIComponent(this.problemName)}`;
+                }
+            },
             async changeProblem() {
                 // Flush the Daphne session if we are changing problems
                 try {
@@ -91,6 +110,7 @@
                         await this.$store.dispatch('initProblem');
                         // Load the new dataset
                         await this.$store.dispatch('loadNewData', this.datasetInformation);
+                        console.log("Problem changed to:", this.datasetInformation);
                         // Start the background search algorithm
                         if (this.$store.state.auth.isLoggedIn) {
                             this.$store.dispatch("startBackgroundSearch");

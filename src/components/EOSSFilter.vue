@@ -110,7 +110,7 @@
                                 }
                             ];
 
-                        case 'numOfInstruments':
+                        case 'numInstruments':
                             return [
                                 {
                                     text: 'Input an orbit name (Could be N/A): ',
@@ -236,7 +236,7 @@
                     let numbers = inputText[1].trim().replace(/\s+/g, '');
                     filterExpression = this.selectedFilter + '['+ orbRelabel + ';' + instRelabel + ';'+ numbers+']';
                 }
-                else if (this.selectedFilter === 'numOfInstruments') {
+                else if (this.selectedFilter === 'numInstruments') {
                     let orbit = inputText[0];
                     let instrument = inputText[1];
                     let number = inputText[2];
@@ -288,6 +288,7 @@
                     alert('Invalid input argument');
                     return false;
                 }
+                console.log("filter expression: ", filterExpression);
 
                 if (filterExpression.indexOf('paretoFront') === -1) {
                     // TODO: Port to Vue

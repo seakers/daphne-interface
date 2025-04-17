@@ -54,8 +54,13 @@
         methods: {
             run() {
                 // Remove all highlights in the scatter plot (retain target solutions)
-                this.$store.commit('clearHighlightedArchs');
+                let highlightedArchs = this.$store.state.tradespacePlot.highlightedArchs;
 
+                this.$store.commit('clearHighlightedArchs');
+                this.$store.commit('updateSelectedArchs', [
+                ...this.$store.state.tradespacePlot.selectedArchs,
+                ...Array.from(highlightedArchs)
+                ])
                 if (this.numSelectedPoints === 0) {
                     alert('First select target solutions!');
                 }

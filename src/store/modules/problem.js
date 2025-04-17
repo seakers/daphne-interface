@@ -64,11 +64,19 @@ const actions = {
             reqData.append('input_num', state.inputNum);
             reqData.append('input_type', state.inputType);
             reqData.append('output_num', state.outputNum);
+            console.log("problemName", state.problemName);
+            console.log("datasetInformation", datasetInformation);
+            console.log("inputNum", state.inputNum);
+            console.log("inputType", state.inputType);
+            console.log("outputNum", state.outputNum);
             let dataResponse = await fetchPost(API_URL + 'eoss/data/import-data', reqData);
+
 
             if (dataResponse.ok) {
                 let data = await dataResponse.json();
+                console.log('Data imported successfully:', data);
                 let problemData = state.importCallback(data, state.extra);
+                console.log('Problem extra data:', problemData);
                 calculateParetoRanking(problemData);
                 commit('updateProblemData', problemData);
                 commit('setDataUpdateFrom', 'loadNewData');

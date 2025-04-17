@@ -1,6 +1,6 @@
 // initial state
 import * as _ from 'lodash-es';
-import {fetchPost} from "../../scripts/fetch-helpers";
+import { fetchPost } from "../../scripts/fetch-helpers";
 
 
 const state = {
@@ -21,7 +21,7 @@ const getters = {
 // actions
 const actions = {
 
-    async runConjunctiveLocalSearch({ state, commit, rootState}){
+    async runConjunctiveLocalSearch({ state, commit, rootState }) {
         try {
             let reqData = new FormData();
             // Generate list of selected and not selected point ids
@@ -58,12 +58,12 @@ const actions = {
                 console.error('Error obtaining the driving features.');
             }
         }
-        catch(e) {
+        catch (e) {
             console.error('Networking error:', e);
         }
     },
 
-    async runDisjunctiveLocalSearch({ state, commit, rootState}){
+    async runDisjunctiveLocalSearch({ state, commit, rootState }) {
         try {
             let reqData = new FormData();
             // Generate list of selected and not selected point ids
@@ -100,7 +100,7 @@ const actions = {
                 console.error('Error obtaining the driving features.');
             }
         }
-        catch(e) {
+        catch (e) {
             console.error('Networking error:', e);
         }
     },
@@ -121,6 +121,7 @@ const actions = {
                     nonSelectedIds.push(point.id);
                 }
             });
+            console.log("selected ids", selectedIds);
             reqData.append('selected', JSON.stringify(selectedIds));
             reqData.append('non_selected', JSON.stringify(nonSelectedIds));
             reqData.append('problem', rootState.problem.problemName);
@@ -140,7 +141,7 @@ const actions = {
                 console.error('Error obtaining the driving features.');
             }
         }
-        catch(e) {
+        catch (e) {
             console.error('Networking error:', e);
         }
     },
@@ -149,22 +150,22 @@ const actions = {
         try {
             let reqData = new FormData();
             reqData.append('problem', rootState.problem.problemName);
-            if (!rootState.problem.extra){
+            if (!rootState.problem.extra) {
                 console.error("Data mining cannot run as there is no orbit or instrument info");
-            } else if(!rootState.problem.extra.instrumentList || !rootState.problem.extra.orbitList){
+            } else if (!rootState.problem.extra.instrumentList || !rootState.problem.extra.orbitList) {
                 console.error("Data mining cannot run as there is no orbit or instrument info");
-            }else {
-                let params = {orbit_list: rootState.problem.extra.orbitList, instrument_list: rootState.problem.extra.instrumentList};
+            } else {
+                let params = { orbit_list: rootState.problem.extra.orbitList, instrument_list: rootState.problem.extra.instrumentList };
                 reqData.append('params', JSON.stringify(params));
             }
             let dataResponse = await fetchPost(API_URL + 'eoss/analyst/set-problem-parameters', reqData);
 
-            if (dataResponse.ok) {}
+            if (dataResponse.ok) { }
             else {
                 console.error('Error obtaining the driving features.');
             }
         }
-        catch(e) {
+        catch (e) {
             console.error('Networking error:', e);
         }
     }
@@ -220,7 +221,7 @@ const mutations = {
         state.scores.unshift(Math.max(...state.scores) + 0.2);
 
         // Initialize ids
-        for(let i = 1; i < state.features.length; i++){
+        for (let i = 1; i < state.features.length; i++) {
             state.features[i].id = i;
         }
     },
@@ -229,7 +230,7 @@ const mutations = {
         state.features = state.features.concat(features);
         state.featureIDsJustAdded = [];
 
-        for(let i = 0; i < features.length; i++){
+        for (let i = 0; i < features.length; i++) {
             let index = state.features.length - 1 - features.length + i;
 
             // Initialize id
